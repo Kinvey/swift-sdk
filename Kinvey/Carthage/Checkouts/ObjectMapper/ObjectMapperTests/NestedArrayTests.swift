@@ -43,7 +43,7 @@ class NestedArrayTests: XCTestCase {
     }
 	
 	func testNestedArray() {
-		let JSON: [String: AnyObject] = [ "nested": [ ["value": 123], ["value": 456] ] ]
+		let JSON: [String: Any] = [ "nested": [ ["value": 123], ["value": 456] ] ]
 		
 		let mapper = Mapper<NestedArray>()
 		
@@ -60,7 +60,7 @@ class NestedArrayTests: XCTestCase {
 	
 	func testNestedObjectArray() {
 		let value = 456
-		let JSON: [String: AnyObject] = [ "nested": [ ["value": 123], ["value": value] ] ]
+		let JSON: [String: Any] = [ "nested": [ ["value": 123], ["value": value] ] ]
 		
 		let mapper = Mapper<NestedArray>()
 		
@@ -85,7 +85,7 @@ class NestedArray: Mappable {
 		
 	}
 	
-	func mapping(map: Map) {
+	func mapping(_ map: Map) {
 		value_0	<- map["nested.0.value"]
 		value_1	<- map["nested.1.value"]
 		
@@ -99,7 +99,7 @@ class NestedObject: Mappable {
 	
 	required init?(_ map: Map){}
 	
-	func mapping(map: Map) {
+	func mapping(_ map: Map) {
 		value	<- map["value"]
 	}
 }

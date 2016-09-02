@@ -14,36 +14,36 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     
     var executing: Bool {
         get {
-            return task?.state == .Running
+            return task?.state == .running
         }
     }
     
     var cancelled: Bool {
         get {
-            return task?.state == .Canceling || task?.error?.code == NSURLErrorCancelled
+            return task?.state == .canceling || (task?.error as? NSError)?.code == NSURLErrorCancelled
         }
     }
     
     let client: Client
-    var url: NSURL
+    var url: URL
     var file: File?
     
-    init(client: Client, url: NSURL) {
+    init(client: Client, url: URL) {
         self.client = client
         self.url = url
     }
     
-    convenience init(client: Client, task: NSURLSessionTask) {
-        self.init(client: client, url: task.originalRequest!.URL!)
+    convenience init(client: Client, task: URLSessionTask) {
+        self.init(client: client, url: task.originalRequest!.url!)
         self.task = task
         addObservers(task)
     }
     
     func cancel() {
-        if let file = self.file, let downloadTask = task as? NSURLSessionDownloadTask {
+        if let file = self.file, let downloadTask = task as? URLSessionDownloadTask {
             let lock = NSCondition()
             lock.lock()
-            downloadTask.cancelByProducingResumeData { (data) -> Void in
+            downloadTask.cancel { (data) -> Void in
                 lock.lock()
                 file.resumeDownloadData = data
                 lock.signal()
@@ -56,59 +56,59 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         }
     }
     
-    private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, fulfill: ((NSData, Response)) -> Void, reject: (ErrorType) -> Void) {
-        if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = NSData(contentsOfURL: url) {
+    fileprivate func downloadTask(_ url: URL?, response: URLResponse?, error: Swift.Error?, fulfill: ((Data, Response)) -> Void, reject: (Swift.Error) -> Void) {
+        if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = try? Data(contentsOf: url) {
             fulfill((data, HttpResponse(response: response)))
         } else if let error = error {
             reject(error)
         } else {
-            reject(Error.InvalidResponse)
+            reject(Error.invalidResponse)
         }
     }
     
-    private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, completionHandler: PathResponseCompletionHandler) {
-        if let response = response as? NSHTTPURLResponse?, let httpResponse = HttpResponse(response: response) where httpResponse.isOK || httpResponse.isNotModified, let url = url {
+    fileprivate func downloadTask(_ url: URL?, response: URLResponse?, error: Swift.Error?, completionHandler: PathResponseCompletionHandler) {
+        if let response = response as? HTTPURLResponse?, let httpResponse = HttpResponse(response: response) , httpResponse.isOK || httpResponse.isNotModified, let url = url {
             completionHandler(url, httpResponse, nil)
         } else if let error = error {
             completionHandler(nil, nil, error)
         } else {
-            completionHandler(nil, nil, Error.InvalidResponse)
+            completionHandler(nil, nil, Error.invalidResponse)
         }
     }
     
-    func downloadTaskWithURL(file: File, completionHandler: DataResponseCompletionHandler) {
+    func downloadTaskWithURL(_ file: File, completionHandler: DataResponseCompletionHandler) {
         self.file = file
-        Promise<(NSData, Response)> { fulfill, reject in
+        Promise<(Data, Response)> { fulfill, reject in
             if let resumeData = file.resumeDownloadData {
-                task = self.client.urlSession.downloadTaskWithResumeData(resumeData) { (url, response, error) -> Void in
+                task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
                     self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
                 }
             } else {
-                task = self.client.urlSession.downloadTaskWithURL(url) { (url, response, error) -> Void in
+                task = self.client.urlSession.downloadTask(with: url) { (url, response, error) -> Void in
                     self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
                 }
             }
             task!.resume()
         }.then { data, response in
             completionHandler(data, response, nil)
-        }.error { error in
+        }.catch { error in
             completionHandler(nil, nil, error)
         }
     }
     
-    func downloadTaskWithURL(file: File, completionHandler: PathResponseCompletionHandler) {
+    func downloadTaskWithURL(_ file: File, completionHandler: PathResponseCompletionHandler) {
         self.file = file
         
         if let resumeData = file.resumeDownloadData {
-            task = self.client.urlSession.downloadTaskWithResumeData(resumeData) { (url, response, error) -> Void in
+            task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
                 self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
             }
         } else {
-            let request = NSMutableURLRequest(URL: url)
+            var request = URLRequest(url: url)
             if let etag = file.etag {
                 request.setValue(etag, forHTTPHeaderField: "If-None-Match")
             }
-            task = self.client.urlSession.downloadTaskWithRequest(request) { (url, response, error) -> Void in
+            task = self.client.urlSession.downloadTask(with: request) { (url, response, error) -> Void in
                 self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
             }
         }

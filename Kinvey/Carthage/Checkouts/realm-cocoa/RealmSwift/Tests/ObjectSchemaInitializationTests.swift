@@ -136,6 +136,15 @@ class ObjectSchemaInitializationTests: TestCase {
             "Should throw when not ignoring a property of a type we can't persist")
         assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNonOptionalLinkProperty.self),
             "Should throw when not marking a link property as optional")
+
+        assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNSNumber.self),
+                     reason: "Can't persist NSNumber without default value: use a Swift-native number type " +
+                             "or provide a default value.",
+                     "Should throw when using not providing default value for NSNumber property on Swift model")
+        assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithOptionalNSNumber.self),
+                     reason: "Can't persist NSNumber without default value: use a Swift-native number type " +
+                             "or provide a default value.",
+                     "Should throw when using not providing default value for NSNumber property on Swift model")
     }
 
     func testPrimaryKey() {
@@ -167,7 +176,7 @@ class ObjectSchemaInitializationTests: TestCase {
 
         let unindexibleSchema = RLMObjectSchema(forObjectClass: SwiftObjectWithUnindexibleProperties.self)
         for propName in SwiftObjectWithUnindexibleProperties.indexedProperties() {
-            XCTAssertFalse(unindexibleSchema[propName as NSString]!.indexed,
+            XCTAssertFalse(unindexibleSchema[propName]!.indexed,
                 "Shouldn't mark unindexible property '\(propName)' as indexed")
         }
     }
@@ -182,7 +191,7 @@ class ObjectSchemaInitializationTests: TestCase {
         let types = Set(schema.properties.map { $0.type })
         XCTAssertEqual(types, Set([.string, .string, .data, .date, .object, .int, .float, .double, .bool]))
     }
-    
+
     func testImplicitlyUnwrappedOptionalsAreParsedAsOptionals() {
         let schema = SwiftImplicitlyUnwrappedOptionalObject().objectSchema
         XCTAssertTrue(schema["optObjectCol"]!.isOptional)
@@ -194,10 +203,6 @@ class ObjectSchemaInitializationTests: TestCase {
 
     func testNonRealmOptionalTypesDeclaredAsRealmOptional() {
         assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNonRealmOptionalType.self))
-    }
-
-    func testBoolPropertyStartingWithIs() {
-        XCTAssertEqual(SwiftTranslatedGetterObject().objectSchema.properties[0].name, "true")
     }
 }
 
@@ -238,15 +243,23 @@ class SwiftObjectWithStruct: SwiftFakeObject {
 }
 
 class SwiftObjectWithDatePrimaryKey: SwiftFakeObject {
-    dynamic var date = NSDate()
+    dynamic var date = Date()
 
     dynamic override class func primaryKey() -> String? {
         return "date"
     }
 }
 
+class SwiftObjectWithNSNumber: SwiftFakeObject {
+    dynamic var number = NSNumber()
+}
+
+class SwiftObjectWithOptionalNSNumber: SwiftFakeObject {
+    dynamic var number: NSNumber? = NSNumber()
+}
+
 class SwiftFakeObjectSubclass: SwiftFakeObject {
-    dynamic var dateCol = NSDate()
+    dynamic var dateCol = Date()
 }
 
 class SwiftObjectWithUnindexibleProperties: SwiftFakeObject {
@@ -255,7 +268,7 @@ class SwiftObjectWithUnindexibleProperties: SwiftFakeObject {
     dynamic var floatCol = 1.23 as Float
     dynamic var doubleCol = 12.3
     dynamic var binaryCol = "a".data(using: String.Encoding.utf8)!
-    dynamic var dateCol = NSDate(timeIntervalSince1970: 1)
+    dynamic var dateCol = Date(timeIntervalSince1970: 1)
     dynamic var objectCol: SwiftBoolObject? = SwiftBoolObject()
     let arrayCol = List<SwiftBoolObject>()
 
@@ -266,7 +279,7 @@ class SwiftObjectWithUnindexibleProperties: SwiftFakeObject {
 
 // swiftlint:disable:next type_name
 class SwiftObjectWithNonNullableOptionalProperties: SwiftFakeObject {
-    dynamic var optDateCol: NSDate?
+    dynamic var optDateCol: Date?
 }
 
 class SwiftObjectWithNonOptionalLinkProperty: SwiftFakeObject {
@@ -395,6 +408,15 @@ class ObjectSchemaInitializationTests: TestCase {
             "Should throw when not ignoring a property of a type we can't manage")
         assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNonOptionalLinkProperty.self),
             "Should throw when not marking a link property as optional")
+
+        assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNSNumber.self),
+                     reason: "Can't persist NSNumber without default value: use a Swift-native number type " +
+                             "or provide a default value.",
+                     "Should throw when using not providing default value for NSNumber property on Swift model")
+        assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithOptionalNSNumber.self),
+                     reason: "Can't persist NSNumber without default value: use a Swift-native number type " +
+                             "or provide a default value.",
+                     "Should throw when using not providing default value for NSNumber property on Swift model")
     }
 
     func testPrimaryKey() {
@@ -458,10 +480,6 @@ class ObjectSchemaInitializationTests: TestCase {
     func testNonRealmOptionalTypesDeclaredAsRealmOptional() {
         assertThrows(RLMObjectSchema(forObjectClass: SwiftObjectWithNonRealmOptionalType.self))
     }
-
-    func testBoolPropertyStartingWithIs() {
-        XCTAssertEqual(SwiftTranslatedGetterObject().objectSchema.properties[0].name, "isTrue")
-    }
 }
 
 class SwiftFakeObject: NSObject {
@@ -506,6 +524,14 @@ class SwiftObjectWithDatePrimaryKey: SwiftFakeObject {
     dynamic override class func primaryKey() -> String? {
         return "date"
     }
+}
+
+class SwiftObjectWithNSNumber: SwiftFakeObject {
+    dynamic var number = NSNumber()
+}
+
+class SwiftObjectWithOptionalNSNumber: SwiftFakeObject {
+    dynamic var number: NSNumber? = NSNumber()
 }
 
 class SwiftFakeObjectSubclass: SwiftFakeObject {

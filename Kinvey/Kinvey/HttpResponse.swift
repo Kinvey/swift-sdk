@@ -10,21 +10,21 @@ import Foundation
 
 struct HttpResponse: Response {
     
-    let response: NSHTTPURLResponse
+    let response: HTTPURLResponse
     
-    init(response: NSHTTPURLResponse) {
+    init(response: HTTPURLResponse) {
         self.response = response
     }
     
-    init?(response: NSHTTPURLResponse?) {
+    init?(response: HTTPURLResponse?) {
         guard let response = response else {
             return nil
         }
         self.init(response: response)
     }
     
-    init?(response: NSURLResponse?) {
-        guard let response = response as? NSHTTPURLResponse else {
+    init?(response: URLResponse?) {
+        guard let response = response as? HTTPURLResponse else {
             return nil
         }
         self.init(response: response)

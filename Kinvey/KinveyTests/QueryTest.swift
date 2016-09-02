@@ -12,13 +12,13 @@ import MapKit
 
 class QueryTest: XCTestCase {
     
-    func encodeQuery(query: Query) -> String {
-        return query.queryParams.urlQueryEncoded.stringByRemovingPercentEncoding!
+    func encodeQuery(_ query: Query) -> String {
+        return query.queryParams.urlQueryEncoded.removingPercentEncoding!
     }
     
-    func encodeURL(query: JsonDictionary) -> String {
-        let data = try! NSJSONSerialization.dataWithJSONObject(query, options: [])
-        let str = String(data: data, encoding: NSUTF8StringEncoding)!
+    func encodeURL(_ query: JsonDictionary) -> String {
+        let data = try! JSONSerialization.data(withJSONObject: query)
+        let str = String(data: data, encoding: String.Encoding.utf8)!
         return str
     }
     
@@ -74,14 +74,14 @@ class QueryTest: XCTestCase {
 
     
     func testQueryGeoWithinCenterSphere() {
-        let resultString = encodeQuery(Query(format: "location = %@", MKCircle(centerCoordinate: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)))
+        let resultString = encodeQuery(Query(format: "location = %@", MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)))
         let expectString = encodeURL(["location" : ["$geoWithin" : ["$centerSphere" : [ [-74, 40.74], 10/6378.1 ]]]])
         
         XCTAssertTrue(resultString.hasPrefix("query={"))
         XCTAssertTrue(resultString.hasSuffix("}"))
-        let resultQueryString = (resultString as NSString).substringFromIndex("query=".characters.count) as String
-        let result = try! NSJSONSerialization.JSONObjectWithData(resultQueryString.dataUsingEncoding(NSUTF8StringEncoding)!, options: []) as? [String : [String : [String : [AnyObject]]]]
-        let expect = try! NSJSONSerialization.JSONObjectWithData(expectString.dataUsingEncoding(NSUTF8StringEncoding)!, options: []) as? [String : [String : [String : [AnyObject]]]]
+        let resultQueryString = (resultString as NSString).substring(from: "query=".characters.count) as String
+        let result = try! JSONSerialization.jsonObject(with: resultQueryString.data(using: String.Encoding.utf8)!, options: []) as? [String : [String : [String : [AnyObject]]]]
+        let expect = try! JSONSerialization.jsonObject(with: expectString.data(using: String.Encoding.utf8)!, options: []) as? [String : [String : [String : [AnyObject]]]]
         
         XCTAssertNotNil(result)
         XCTAssertNotNil(expect)
@@ -114,9 +114,9 @@ class QueryTest: XCTestCase {
         
         XCTAssertTrue(resultString.hasPrefix("query={"))
         XCTAssertTrue(resultString.hasSuffix("}"))
-        let resultQueryString = (resultString as NSString).substringFromIndex("query=".characters.count) as String
-        let result = try! NSJSONSerialization.JSONObjectWithData(resultQueryString.dataUsingEncoding(NSUTF8StringEncoding)!, options: []) as? [String : [String : [String : [String : AnyObject]]]]
-        let expect = try! NSJSONSerialization.JSONObjectWithData(expectString.dataUsingEncoding(NSUTF8StringEncoding)!, options: []) as? [String : [String : [String : [String : AnyObject]]]]
+        let resultQueryString = (resultString as NSString).substring(from: "query=".characters.count) as String
+        let result = try! JSONSerialization.jsonObject(with: resultQueryString.data(using: String.Encoding.utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
+        let expect = try! JSONSerialization.jsonObject(with: expectString.data(using: String.Encoding.utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
         
         if var result = result, var expect = expect {
             let geometryResult = result["location"]!["$geoWithin"]!["$geometry"]!
@@ -132,7 +132,7 @@ class QueryTest: XCTestCase {
             
             if let coordinatesResult = coordinatesResult, let coordinatesExpect = coordinatesExpect {
                 XCTAssertEqual(coordinatesResult.count, coordinatesExpect.count)
-                for (index, _) in coordinatesResult.enumerate() {
+                for (index, _) in coordinatesResult.enumerated() {
                     XCTAssertEqual(coordinatesResult[index].count, coordinatesExpect[index].count)
                 }
             }

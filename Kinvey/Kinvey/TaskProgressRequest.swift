@@ -10,21 +10,21 @@ import Foundation
 
 /// It holds the progress status of a request.
 @objc(KNVProgressStatus)
-public class ProgressStatus: NSObject {
+open class ProgressStatus: NSObject {
     
     ///The number of bytes that the request has sent to the server in the request body. (read-only)
-    public let countOfBytesSent: Int64
+    open let countOfBytesSent: Int64
     
     ///The number of bytes that the request expects to send in the request body. (read-only)
-    public let countOfBytesExpectedToSend: Int64
+    open let countOfBytesExpectedToSend: Int64
     
     ///The number of bytes that the request has received from the server in the response body. (read-only)
-    public let countOfBytesReceived: Int64
+    open let countOfBytesReceived: Int64
     
     ///The number of bytes that the request expects to receive in the response body. (read-only)
-    public let countOfBytesExpectedToReceive: Int64
+    open let countOfBytesExpectedToReceive: Int64
     
-    init(_ task: NSURLSessionTask) {
+    init(_ task: URLSessionTask) {
         countOfBytesSent = task.countOfBytesSent
         countOfBytesExpectedToSend = task.countOfBytesExpectedToSend
         countOfBytesReceived = task.countOfBytesReceived
@@ -51,7 +51,7 @@ public func !=(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
 
 class TaskProgressRequest: NSObject {
     
-    var task: NSURLSessionTask? {
+    var task: URLSessionTask? {
         didSet {
             if let task = task {
                 addObservers(task)
@@ -61,29 +61,29 @@ class TaskProgressRequest: NSObject {
         }
     }
     
-    var progress: (ProgressStatus -> Void)? {
+    var progress: ((ProgressStatus) -> Void)? {
         didSet { addObservers(task) }
     }
     
     var progressObserving = false
     
-    private let lock = NSLock()
+    fileprivate let lock = NSLock()
     
-    func addObservers(task: NSURLSessionTask?) {
+    func addObservers(_ task: URLSessionTask?) {
         lock.lock()
         if let task = task {
             if !progressObserving && progress != nil {
                 progressObserving = true
-                task.addObserver(self, forKeyPath: "countOfBytesSent", options: [.New], context: nil)
-                task.addObserver(self, forKeyPath: "countOfBytesExpectedToSend", options: [.New], context: nil)
-                task.addObserver(self, forKeyPath: "countOfBytesReceived", options: [.New], context: nil)
-                task.addObserver(self, forKeyPath: "countOfBytesExpectedToReceive", options: [.New], context: nil)
+                task.addObserver(self, forKeyPath: "countOfBytesSent", options: [.new], context: nil)
+                task.addObserver(self, forKeyPath: "countOfBytesExpectedToSend", options: [.new], context: nil)
+                task.addObserver(self, forKeyPath: "countOfBytesReceived", options: [.new], context: nil)
+                task.addObserver(self, forKeyPath: "countOfBytesExpectedToReceive", options: [.new], context: nil)
             }
         }
         lock.unlock()
     }
     
-    func removeObservers(task: NSURLSessionTask?) {
+    func removeObservers(_ task: URLSessionTask?) {
         lock.lock()
         if let task = task {
             if progressObserving && progress != nil {
@@ -101,8 +101,8 @@ class TaskProgressRequest: NSObject {
         removeObservers(task)
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if let _ = object as? NSURLSessionTask, let keyPath = keyPath {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if let _ = object as? URLSessionTask, let keyPath = keyPath {
             switch keyPath {
             case "countOfBytesReceived":
                 reportProgress()
@@ -118,9 +118,9 @@ class TaskProgressRequest: NSObject {
         }
     }
     
-    private var lastProgressStatus: ProgressStatus?
+    fileprivate var lastProgressStatus: ProgressStatus?
     
-    private func reportProgress() {
+    fileprivate func reportProgress() {
         if let _ = progress,
             let task = task
         {
@@ -128,7 +128,7 @@ class TaskProgressRequest: NSObject {
             if (progressStatus.countOfBytesSent == progressStatus.countOfBytesExpectedToSend && progressStatus.countOfBytesReceived >= 0 && progressStatus.countOfBytesExpectedToReceive > 0) ||
                 (progressStatus.countOfBytesSent >= 0 && progressStatus.countOfBytesExpectedToSend > 0)
             {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     if self.lastProgressStatus == nil || (self.lastProgressStatus!) != progressStatus {
                         self.lastProgressStatus = progressStatus
                         self.progress?(progressStatus)

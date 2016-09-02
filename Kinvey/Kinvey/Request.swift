@@ -22,6 +22,6 @@ public protocol Request {
     func cancel()
     
     /// Report upload progress of the request
-    var progress: (ProgressStatus -> Void)? { get set }
+    var progress: ((ProgressStatus) -> Void)? { get set }
     
 }

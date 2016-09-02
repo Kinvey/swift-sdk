@@ -21,11 +21,11 @@ class StoreTestCase: KinveyTestCase {
     lazy var person: Person = self.newPerson
     
     func assertThread() {
-        XCTAssertTrue(NSThread.isMainThread())
+        XCTAssertTrue(Thread.isMainThread)
     }
     
-    func save<T: Persistable where T: NSObject>(persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) {
-        weak var expectationCreate = expectationWithDescription("Create")
+    func save<T: Persistable>(_ persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) where T: NSObject {
+        weak var expectationCreate = expectation(description: "Create")
         
         var savedPersistable: T? = nil
         
@@ -43,17 +43,17 @@ class StoreTestCase: KinveyTestCase {
             expectationCreate?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreate = nil
         }
         
         return (originalPersistable: persistable, savedPersistable: savedPersistable)
     }
     
-    func save(person: Person) -> Person {
+    func save(_ person: Person) -> Person {
         let age = person.age
         
-        weak var expectationCreate = expectationWithDescription("Create")
+        weak var expectationCreate = expectation(description: "Create")
         
         store.save(person) { (person, error) -> Void in
             self.assertThread()
@@ -71,7 +71,7 @@ class StoreTestCase: KinveyTestCase {
             expectationCreate?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreate = nil
         }
         
@@ -81,7 +81,7 @@ class StoreTestCase: KinveyTestCase {
     func save() -> Person {
         let person = self.person
         
-        weak var expectationCreate = expectationWithDescription("Create")
+        weak var expectationCreate = expectation(description: "Create")
         
         store.save(person) { (person, error) -> Void in
             self.assertThread()
@@ -99,7 +99,7 @@ class StoreTestCase: KinveyTestCase {
             expectationCreate?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreate = nil
         }
         

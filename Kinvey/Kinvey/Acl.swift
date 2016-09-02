@@ -15,10 +15,10 @@ class AclTransformType: TransformType {
     typealias Object = [String]
     typealias JSON = String
     
-    func transformFromJSON(value: AnyObject?) -> [String]? {
+    func transformFromJSON(_ value: Any?) -> [String]? {
         if let value = value as? String,
-            let data = value.dataUsingEncoding(NSUTF8StringEncoding),
-            let json = try? NSJSONSerialization.JSONObjectWithData(data, options: []),
+            let data = value.data(using: String.Encoding.utf8),
+            let json = try? JSONSerialization.jsonObject(with: data, options: []),
             let array = json as? [String]
         {
             return array
@@ -26,10 +26,10 @@ class AclTransformType: TransformType {
         return nil
     }
     
-    func transformToJSON(value: [String]?) -> String? {
+    func transformToJSON(_ value: [String]?) -> String? {
         if let value = value,
-            let data = try? NSJSONSerialization.dataWithJSONObject(value, options: []),
-            let json = String(data: data, encoding: NSUTF8StringEncoding)
+            let data = try? JSONSerialization.data(withJSONObject: value, options: []),
+            let json = String(data: data, encoding: String.Encoding.utf8)
         {
             return json
         }
@@ -39,7 +39,7 @@ class AclTransformType: TransformType {
 }
 
 /// This class represents the ACL (Access Control List) for a record.
-public class Acl: Object, Mappable, BuilderType {
+public final class Acl: Object, Mappable, BuilderType {
     
     static let CreatorKey = "creator"
     static let GlobalReadKey = "gr"
@@ -48,21 +48,21 @@ public class Acl: Object, Mappable, BuilderType {
     static let WritersKey = "w"
     
     /// The `userId` of the `User` used to create the record.
-    public dynamic var creator: String?
+    open dynamic var creator: String?
     
     /// The `userId` of the `User` used to create the record.
-    public let globalRead = RealmOptional<Bool>()
+    open let globalRead = RealmOptional<Bool>()
     
     /// The `userId` of the `User` used to create the record.
-    public let globalWrite = RealmOptional<Bool>()
+    open let globalWrite = RealmOptional<Bool>()
     
-    private dynamic var readersValue: String?
+    fileprivate dynamic var readersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to read the entity.
-    public var readers: [String]? {
+    open var readers: [String]? {
         get {
             if let value = readersValue,
-                let array = AclTransformType().transformFromJSON(value)
+                let array = AclTransformType().transformFromJSON(value as AnyObject?)
             {
                 return array
             }
@@ -77,13 +77,13 @@ public class Acl: Object, Mappable, BuilderType {
         }
     }
     
-    private dynamic var writersValue: String?
+    fileprivate dynamic var writersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
-    public var writers: [String]? {
+    open var writers: [String]? {
         get {
             if let value = writersValue,
-                let array = AclTransformType().transformFromJSON(value)
+                let array = AclTransformType().transformFromJSON(value as AnyObject?)
             {
                 return array
             }
@@ -137,7 +137,7 @@ public class Acl: Object, Mappable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public required init(value: AnyObject, schema: RLMSchema) {
+    public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
@@ -150,7 +150,7 @@ public class Acl: Object, Mappable, BuilderType {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    public func mapping(map: Map) {
+    open func mapping(_ map: Map) {
         creator <- map[Acl.CreatorKey]
         globalRead.value <- map[Acl.GlobalReadKey]
         globalWrite.value <- map[Acl.GlobalWriteKey]
@@ -162,7 +162,7 @@ public class Acl: Object, Mappable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func ignoredProperties() -> [String] {
+    open override class func ignoredProperties() -> [String] {
         return ["readers", "writers"]
     }
 

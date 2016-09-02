@@ -21,21 +21,21 @@ class DataStoreTypeTag: Hashable {
     }
     
     var hashValue: Int {
-        var hash = NSDecimalNumber(integer: 5)
-        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType as! AnyClass).hashValue)
-        hash = 23 * hash + NSDecimalNumber(integer: tag.hashValue)
-        hash = 23 * hash + NSDecimalNumber(integer: type.hashValue)
+        var hash = NSDecimalNumber(value: 5)
+        hash = 23 * hash + NSDecimalNumber(value: NSStringFromClass(persistableType as! AnyClass).hashValue)
+        hash = 23 * hash + NSDecimalNumber(value: tag.hashValue)
+        hash = 23 * hash + NSDecimalNumber(value: type.hashValue)
         return hash.hashValue
     }
     
 }
 
 func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.decimalNumberByAdding(rhs)
+    return lhs.adding(rhs)
 }
 
 func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.decimalNumberByMultiplyingBy(rhs)
+    return lhs.multiplying(by: rhs)
 }
 
 func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
@@ -45,33 +45,33 @@ func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
 }
 
 /// Class to interact with a specific collection in the backend.
-public class DataStore<T: Persistable where T: NSObject> {
+open class DataStore<T: Persistable> where T: NSObject {
     
-    public typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
-    public typealias ObjectCompletionHandler = (T?, ErrorType?) -> Void
-    public typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
-    public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [ErrorType]?) -> Void
-    public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [ErrorType]?) -> Void
+    public typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
+    public typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
+    public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
+    public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [Swift.Error]?) -> Void
+    public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [Swift.Error]?) -> Void
     
-    private let readPolicy: ReadPolicy
-    private let writePolicy: WritePolicy
+    fileprivate let readPolicy: ReadPolicy
+    fileprivate let writePolicy: WritePolicy
     
     /// Collection name that matches with the name in the backend.
-    public let collectionName: String
+    open let collectionName: String
     
     /// Client instance attached to the DataStore.
-    public let client: Client
+    open let client: Client
     
     /// DataStoreType defines how the DataStore will behave.
-    public let type: StoreType
+    open let type: StoreType
     
     internal let cache: Cache<T>?
     internal let sync: Sync<T>?
     
-    private var deltaSet: Bool
+    fileprivate var deltaSet: Bool
     
     /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
-    public var ttl: TTL? {
+    open var ttl: TTL? {
         didSet {
             if let cache = cache {
                 cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : nil
@@ -82,8 +82,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     /**
      Deprecated method. Please use `collection()` instead.
      */
-    @available(*, deprecated=3.0.22, message="Please use `collection()` instead")
-    public class func getInstance(type: StoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
+    open class func getInstance(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         return collection(type, deltaSet: deltaSet, client: client, tag: tag)
     }
 
@@ -95,7 +95,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
-    public class func collection(type: StoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
@@ -107,12 +107,12 @@ public class DataStore<T: Persistable where T: NSObject> {
         return dataStore!
     }
     
-    private init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
+    fileprivate init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: Data?) {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
         collectionName = T.collectionName()
-        if type != .Network, let _ = T.self as? Entity.Type {
+        if type != .network, let _ = T.self as? Entity.Type {
             cache = client.cacheManager.cache(filePath: filePath, type: T.self)
             sync = client.syncManager.sync(filePath: filePath, type: T.self)
         } else {
@@ -130,7 +130,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
+    open func findById(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         precondition(!id.isEmpty)
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = GetOperation<T>(id: id, readPolicy: readPolicy, cache: cache, client: client)
@@ -147,7 +147,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    public func find(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
+    open func find(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         return findById(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
     
@@ -159,7 +159,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    public func find(query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
+    open func find(_ query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let deltaSet = deltaSet ?? self.deltaSet
         let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, cache: cache, client: client)
@@ -174,7 +174,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    public func count(query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func count(_ query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = CountOperation<T>(query: query, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -182,15 +182,15 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Creates or updates a record.
-    public func save(inout persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
+    open func save(_ persistable: inout T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = SaveOperation<T>(persistable: &persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = SaveOperation<T>(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
     
     /// Creates or updates a record.
-    public func save(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
+    open func save(_ persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = SaveOperation<T>(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -198,15 +198,15 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Deletes a record.
-    public func remove(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
+    open func remove(_ persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
         guard let id = persistable.entityId else {
-            throw Error.ObjectIdMissing
+            throw Error.objectIdMissing
         }
         return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a list of records.
-    public func remove(array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func remove(_ array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.entityId {
@@ -217,7 +217,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Deletes a record using the `_id` of the record.
-    public func removeById(id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeById(_ id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         precondition(!id.isEmpty)
 
         let writePolicy = writePolicy ?? self.writePolicy
@@ -227,14 +227,14 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Deletes a list of records using the `_id` of the records.
-    public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeById(_ ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         precondition(ids.count > 0)
-        let query = Query(format: "\(T.entityIdProperty()) IN %@", ids)
+        let query = Query(format: "\(T.entityIdProperty()) IN %@", ids as AnyObject)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a list of records that matches with the query passed by parameter.
-    public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func remove(_ query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = RemoveByQueryOperation<T>(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -242,15 +242,15 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Deletes all the records.
-    public func removeAll(writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeAll(_ writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         return remove(writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     /// Sends to the backend all the pending records in the local cache.
-    public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntErrorTypeArrayCompletionHandler? = nil) -> Request {
+    open func push(timeout: TimeInterval? = nil, completionHandler: UIntErrorTypeArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        if type == .Network {
-            completionHandler?(nil, [Error.InvalidDataStoreType])
+        if type == .network {
+            completionHandler?(nil, [Error.invalidDataStoreType])
             return LocalRequest()
         }
         
@@ -260,26 +260,26 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
-    public func pull(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
+    open func pull(_ query: Query = Query(), deltaSet: Bool? = nil, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        if type == .Network {
-            completionHandler?(nil, Error.InvalidDataStoreType)
+        if type == .network {
+            completionHandler?(nil, Error.invalidDataStoreType)
             return LocalRequest()
         }
         
         if self.syncCount() > 0 {
-            completionHandler?(nil, Error.InvalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
+            completionHandler?(nil, Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
             return LocalRequest()
         }
         
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = PullOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, cache: cache, client: client)
+        let operation = PullOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .forceNetwork, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
     
     /// Returns the number of changes not synced yet.
-    public func syncCount() -> UInt {
+    open func syncCount() -> UInt {
         if let sync = sync {
             return UInt(sync.pendingOperations().count)
         }
@@ -287,16 +287,16 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
-    public func sync(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
+    open func sync(_ query: Query = Query(), deltaSet: Bool? = nil, completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        if type == .Network {
-            completionHandler?(nil, nil, [Error.InvalidDataStoreType])
+        if type == .network {
+            completionHandler?(nil, nil, [Error.invalidDataStoreType])
             return LocalRequest()
         }
         
         let requests = MultiRequest()
         let request = push() { count, errors in
-            if let count = count where errors == nil || errors!.isEmpty {
+            if let count = count , errors == nil || errors!.isEmpty {
                 let deltaSet = deltaSet ?? self.deltaSet
                 let request = self.pull(query, deltaSet: deltaSet) { results, error in
                     completionHandler?(count, results, error != nil ? [error!] : nil)
@@ -311,18 +311,18 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Deletes all the pending changes in the local cache.
-    public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
+    open func purge(_ query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         
-        if type == .Network {
-            completionHandler?(nil, Error.InvalidDataStoreType)
+        if type == .network {
+            completionHandler?(nil, Error.invalidDataStoreType)
             return LocalRequest()
         }
         
         let executor = Executor()
         
         let operation = PurgeOperation<T>(sync: sync, cache: cache, client: client)
-        let request = operation.execute { (count, error: ErrorType?) -> Void in
+        let request = operation.execute { (count, error: Swift.Error?) -> Void in
             if let count = count {
                 executor.execute {
                     self.pull(query) { (results, error) -> Void in
@@ -338,10 +338,10 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     //MARK: Dispatch Async Main Queue
     
-    private func dispatchAsyncMainQueue<R, E>(completionHandler: ((R, E) -> Void)? = nil) -> ((R, E) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R, E>(_ completionHandler: ((R, E) -> Void)? = nil) -> ((R, E) -> Void)? {
         if let completionHandler = completionHandler {
             return { (obj, error) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     completionHandler(obj, error)
                 })
             }
@@ -349,10 +349,10 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
     
-    private func dispatchAsyncMainQueue<R>(completionHandler: ((R?, ErrorType?) -> Void)? = nil) -> ((AnyObject?, ErrorType?) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((Any?, Swift.Error?) -> Void)? {
         if let completionHandler = completionHandler {
-            return { (obj: AnyObject?, error: ErrorType?) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            return { (obj: Any?, error: Swift.Error?) -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     completionHandler(obj as? R, error)
                 })
             }
@@ -360,10 +360,10 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
     
-    private func dispatchAsyncMainQueue<R1, R2>(completionHandler: ((R1?, R2?, ErrorType?) -> Void)? = nil) -> ((R1?, R2?, ErrorType?) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R1, R2>(_ completionHandler: ((R1?, R2?, Swift.Error?) -> Void)? = nil) -> ((R1?, R2?, Swift.Error?) -> Void)? {
         if let completionHandler = completionHandler {
-            return { (obj1: R1?, obj2: R2?, error: ErrorType?) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            return { (obj1: R1?, obj2: R2?, error: Swift.Error?) -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     completionHandler(obj1, obj2, error)
                 })
             }
@@ -371,10 +371,10 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
     
-    private func dispatchAsyncMainQueue<R1, R2, R3>(completionHandler: ((R1?, R2?, R3?) -> Void)? = nil) -> ((R1?, R2?, R3?) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R1, R2, R3>(_ completionHandler: ((R1?, R2?, R3?) -> Void)? = nil) -> ((R1?, R2?, R3?) -> Void)? {
         if let completionHandler = completionHandler {
             return { (obj1: R1?, obj2: R2?, error: R3?) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     completionHandler(obj1, obj2, error)
                 })
             }
@@ -383,12 +383,12 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Clear all data for all collections.
-    public class func clearCache(tag: String? = nil, client: Client = sharedClient) {
+    open class func clearCache(_ tag: String? = nil, client: Client = sharedClient) {
         client.cacheManager.clearAll(tag)
     }
 
     /// Clear all data for the collection attached to the DataStore.
-    public func clearCache() {
+    open func clearCache() {
         cache?.removeAllEntities()
         sync?.removeAllPendingOperations()
     }

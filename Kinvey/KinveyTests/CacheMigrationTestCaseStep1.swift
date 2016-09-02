@@ -22,7 +22,7 @@ class Person: Entity {
         return "CacheMigrationTestCase_Person"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         personId <- map[PersistableIdKey]
@@ -38,14 +38,15 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     
     override func setUp() {
         let realmConfiguration = Realm.Configuration.defaultConfiguration
-        if let fileURL = realmConfiguration.fileURL, var path = fileURL.path {
+        if let fileURL = realmConfiguration.fileURL {
+            var path = fileURL.path
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
-            path = NSString.pathWithComponents(pathComponents)
-            let fileManager = NSFileManager.defaultManager()
-            if fileManager.fileExistsAtPath(path) {
+            path = NSString.path(withComponents: pathComponents)
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: path) {
                 do {
-                    try fileManager.removeItemAtPath(path)
+                    try fileManager.removeItem(atPath: path)
                 } catch {
                     XCTFail()
                     return
@@ -57,13 +58,13 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     func testMigration() {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
         
-        let store = DataStore<Person>.collection(.Sync)
+        let store = DataStore<Person>.collection(.sync)
         
         var person = Person()
         person.firstName = "Victor"
         person.lastName = "Barros"
         
-        weak var expectationSave = expectationWithDescription("Save")
+        weak var expectationSave = expectation(description: "Save")
         
         store.save(&person) { (person, error) in
             XCTAssertNotNil(person)
@@ -77,7 +78,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
             expectationSave?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }

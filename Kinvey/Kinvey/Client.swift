@@ -12,46 +12,46 @@ private let lockEncryptionKey = NSLock()
 
 /// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
 @objc(__KNVClient)
-public class Client: NSObject, Credential {
+open class Client: NSObject, Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
-    public static let sharedClient = Client()
+    open static let sharedClient = Client()
     
     typealias UserChangedListener = (User?) -> Void
     var userChangedListener: UserChangedListener?
     
     /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
-    public internal(set) var activeUser: User? {
+    open internal(set) var activeUser: User? {
         willSet (newActiveUser) {
-            let userDefaults = NSUserDefaults.standardUserDefaults()
+            let userDefaults = Foundation.UserDefaults.standard
             if let activeUser = newActiveUser {
                 var json = activeUser.toJSON()
-                if var kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
-                    kmd.removeValueForKey(Metadata.AuthTokenKey)
+                if var kmd = json[PersistableMetadataKey] as? [String : Any] {
+                    kmd.removeValue(forKey: Metadata.AuthTokenKey)
                     json[PersistableMetadataKey] = kmd
                 }
-                userDefaults.setObject(json, forKey: appKey!)
+                userDefaults.set(json, forKey: appKey!)
                 userDefaults.synchronize()
                 
                 KCSKeychain2.setKinveyToken(
                     activeUser.metadata?.authtoken,
                     user: activeUser.userId,
                     appKey: appKey,
-                    accessible: KCSKeychain2.accessibleStringForDataProtectionLevel(KCSDataProtectionLevel.CompleteUntilFirstLogin) //TODO: using default value for now
+                    accessible: KCSKeychain2.accessibleString(for: KCSDataProtectionLevel.completeUntilFirstLogin) //TODO: using default value for now
                 )
                 if let authtoken = activeUser.metadata?.authtoken {
                     keychain.authtoken = authtoken
                 }
             } else if let appKey = appKey {
-                userDefaults.removeObjectForKey(appKey)
+                userDefaults.removeObject(forKey: appKey)
                 userDefaults.synchronize()
                 
-                KCSKeychain2.deleteTokensForUser(
-                    activeUser?.userId,
+                KCSKeychain2.deleteTokens(
+                    forUser: activeUser?.userId,
                     appKey: appKey
                 )
                 
-                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).clearAll()
+                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?).clearAll()
                 do {
                     try Keychain(appKey: appKey).removeAll()
                 } catch {
@@ -65,75 +65,75 @@ public class Client: NSObject, Credential {
         }
     }
     
-    private var keychain: Keychain {
+    fileprivate var keychain: Keychain {
         get {
             return Keychain(appKey: appKey!)
         }
     }
     
-    internal var urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration()) {
+    internal var urlSession = URLSession(configuration: URLSessionConfiguration.default) {
         willSet {
             urlSession.invalidateAndCancel()
         }
     }
     
     /// Holds the App ID for a specific Kinvey environment.
-    public private(set) var appKey: String?
+    open fileprivate(set) var appKey: String?
     
     /// Holds the App Secret for a specific Kinvey environment.
-    public private(set) var appSecret: String?
+    open fileprivate(set) var appSecret: String?
     
     /// Holds the `Host` for a specific Kinvey environment. The default value is `https://baas.kinvey.com/`
-    public private(set) var apiHostName: NSURL
+    open fileprivate(set) var apiHostName: URL
     
     /// Holds the `Authentication Host` for a specific Kinvey environment. The default value is `https://auth.kinvey.com/`
-    public private(set) var authHostName: NSURL
+    open fileprivate(set) var authHostName: URL
     
     /// Cache policy for this client instance.
-    public var cachePolicy: NSURLRequestCachePolicy = .UseProtocolCachePolicy
+    open var cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy
     
     /// Timeout interval for this client instance.
-    public var timeoutInterval: NSTimeInterval = 60
+    open var timeoutInterval: TimeInterval = 60
     
     /// App version for this client instance.
-    public var clientAppVersion: String?
+    open var clientAppVersion: String?
     
     /// Custom request properties for this client instance.
-    public var customRequestProperties: [String : String] = [:]
+    open var customRequestProperties: [String : String] = [:]
     
     /// The default value for `apiHostName` variable.
-    public static let defaultApiHostName = NSURL(string: "https://baas.kinvey.com/")!
+    open static let defaultApiHostName = URL(string: "https://baas.kinvey.com/")!
     
     /// The default value for `authHostName` variable.
-    public static let defaultAuthHostName = NSURL(string: "https://auth.kinvey.com/")!
+    open static let defaultAuthHostName = URL(string: "https://auth.kinvey.com/")!
     
     var networkRequestFactory: RequestFactory!
     var responseParser: ResponseParser!
     
-    var encryptionKey: NSData?
+    var encryptionKey: Data?
     
     /// Set a different schema version to perform migrations in your local cache.
-    public private(set) var schemaVersion: CUnsignedLongLong = 0
+    open fileprivate(set) var schemaVersion: CUnsignedLongLong = 0
     
-    internal private(set) var cacheManager: CacheManager!
-    internal private(set) var syncManager: SyncManager!
+    internal fileprivate(set) var cacheManager: CacheManager!
+    internal fileprivate(set) var syncManager: SyncManager!
     
     /// Use this variable to handle push notifications.
-    public private(set) var push: Push!
+    open fileprivate(set) var push: Push!
     
     /// Set a different type if you need a custom `User` class. Extends from `User` allows you to have custom properties in your `User` instances.
-    public var userType = User.self
+    open var userType = User.self
     
     ///Default Value for DataStore tag
-    public static let defaultTag = Kinvey.defaultTag
+    open static let defaultTag = Kinvey.defaultTag
     
     var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Enables logging for any network calls.
-    public var logNetworkEnabled = false {
+    open var logNetworkEnabled = false {
         didSet {
-            KCSClient.configureLoggingWithNetworkEnabled(
-                logNetworkEnabled,
+            KCSClient.configureLogging(
+                withNetworkEnabled: logNetworkEnabled,
                 debugEnabled: false,
                 traceEnabled: false,
                 warningEnabled: false,
@@ -143,7 +143,7 @@ public class Client: NSObject, Credential {
     }
     
     /// Stores the MIC API Version to be used in MIC calls 
-    public var micApiVersion: String? = "v1"
+    open var micApiVersion: String? = "v1"
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
@@ -158,26 +158,28 @@ public class Client: NSObject, Credential {
     }
     
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
-    public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
+    public convenience init(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName) {
         self.init()
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
-    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
         precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
 
-        var encryptionKey: NSData? = nil
+        var encryptionKey: Data? = nil
         if encrypted {
             lockEncryptionKey.lock()
             
             let keychain = Keychain(appKey: appKey)
             if let key = keychain.defaultEncryptionKey {
-                encryptionKey = key
+                encryptionKey = key as Data
             } else {
-                let key = NSMutableData(length: 64)!
-                let result = SecRandomCopyBytes(kSecRandomDefault, key.length, unsafeBitCast(key.mutableBytes, UnsafeMutablePointer<UInt8>.self))
+                let numberOfBytes = 64
+                var bytes = [UInt8](repeating: 0, count: numberOfBytes)
+                let result = SecRandomCopyBytes(kSecRandomDefault, numberOfBytes, &bytes)
                 if result == 0 {
+                    let key = Data(bytes: bytes)
                     keychain.defaultEncryptionKey = key
                     encryptionKey = key
                 }
@@ -190,20 +192,20 @@ public class Client: NSObject, Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, encryptionKey: NSData? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
         precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
-        cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
-        syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey)
+        cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?)
         
         var apiHostName = apiHostName
-        if let apiHostNameString = apiHostName.absoluteString as String? where apiHostNameString.characters.last == "/" {
-            apiHostName = NSURL(string: apiHostNameString.substringToIndex(apiHostNameString.characters.endIndex.predecessor()))!
+        if let apiHostNameString = apiHostName.absoluteString as String? , apiHostNameString.characters.last == "/" {
+            apiHostName = URL(string: apiHostNameString.substring(to: apiHostNameString.characters.index(before: apiHostNameString.characters.endIndex)))!
         }
         var authHostName = authHostName
-        if let authHostNameString = authHostName.absoluteString as String? where authHostNameString.characters.last == "/" {
-            authHostName = NSURL(string: authHostNameString.substringToIndex(authHostNameString.characters.endIndex.predecessor()))!
+        if let authHostNameString = authHostName.absoluteString as String? , authHostNameString.characters.last == "/" {
+            authHostName = URL(string: authHostNameString.substring(to: authHostNameString.characters.index(before: authHostNameString.characters.endIndex)))!
         }
         self.apiHostName = apiHostName
         self.authHostName = authHostName
@@ -211,9 +213,9 @@ public class Client: NSObject, Credential {
         self.appSecret = appSecret
         
         //legacy initilization
-        KCSClient.sharedClient().initializeKinveyServiceForAppKey(appKey, withAppSecret: appSecret, usingOptions: nil)
+        KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: nil)
         
-        if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
+        if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
             let user = Mapper<User>().map(json)
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
                 user.client = self
@@ -225,11 +227,11 @@ public class Client: NSObject, Credential {
     }
     
     /// Autorization header used for calls that don't requires a logged `User`.
-    public var authorizationHeader: String? {
+    open var authorizationHeader: String? {
         get {
             var authorization: String? = nil
             if let appKey = appKey, let appSecret = appSecret {
-                let appKeySecret = "\(appKey):\(appSecret)".dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([])
+                let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString(options: [])
                 if let appKeySecret = appKeySecret {
                     authorization = "Basic \(appKeySecret)"
                 }
@@ -242,20 +244,20 @@ public class Client: NSObject, Credential {
         return self.appKey != nil && self.appSecret != nil
     }
     
-    internal func filePath(tag: String = defaultTag) -> String {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+    internal func filePath(_ tag: String = defaultTag) -> String {
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let path = paths.first! as NSString
-        var filePath = path.stringByAppendingPathComponent(self.appKey!) as NSString
+        var filePath = path.appendingPathComponent(self.appKey!)
         
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         do {
             let filePath = filePath as String
-            if !fileManager.fileExistsAtPath(filePath) {
-                try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
+            if !fileManager.fileExists(atPath: filePath) {
+                try! fileManager.createDirectory(atPath: filePath, withIntermediateDirectories: true, attributes: nil)
             }
         }
         
-        filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
-        return filePath as String
+        filePath = (filePath as NSString).appendingPathComponent("\(tag).realm")
+        return filePath
     }
 }

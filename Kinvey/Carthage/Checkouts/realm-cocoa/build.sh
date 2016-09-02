@@ -14,7 +14,7 @@ set -o pipefail
 set -e
 
 # You can override the version of the core library
-: ${REALM_CORE_VERSION:=1.3.1} # set to "current" to always use the current build
+: ${REALM_CORE_VERSION:=1.5.0} # set to "current" to always use the current build
 
 # You can override the xcmode used
 : ${XCMODE:=xcodebuild} # must be one of: xcodebuild (default), xcpretty, xctool
@@ -90,7 +90,7 @@ EOF
 
 xcode() {
     mkdir -p build/DerivedData
-    CMD="xcodebuild -IDECustomDerivedDataLocation=build/DerivedData $@ $REALM_EXTRA_BUILD_ARGUMENTS"
+    CMD="xcodebuild -IDECustomDerivedDataLocation=build/DerivedData $@"
     echo "Building with command:" $CMD
     eval "$CMD"
 }
@@ -98,16 +98,17 @@ xcode() {
 xc() {
     # Logs xcodebuild output in realtime
     : ${NSUnbufferedIO:=YES}
+    args="$@ SWIFT_VERSION=$REALM_SWIFT_VERSION $REALM_EXTRA_BUILD_ARGUMENTS"
     if [[ "$XCMODE" == "xcodebuild" ]]; then
-        xcode "$@"
+        xcode "$args"
     elif [[ "$XCMODE" == "xcpretty" ]]; then
         mkdir -p build
-        xcode "$@" | tee build/build.log | xcpretty -c ${XCPRETTY_PARAMS} || {
+        xcode "$args" | tee build/build.log | xcpretty -c ${XCPRETTY_PARAMS} || {
             echo "The raw xcodebuild output is available in build/build.log"
             exit 1
         }
     elif [[ "$XCMODE" == "xctool" ]]; then
-        xctool "$@"
+        xctool "$args"
     fi
 }
 
@@ -169,17 +170,6 @@ build_combined() {
     fi
 }
 
-xc_work_around_rdar_23055637() {
-    # xcodebuild times out waiting for the iOS simulator to launch if it takes > 120 seconds for the tests to
-    # build (<http://openradar.appspot.com/23055637>). Work around this by having the test phases intentionally
-    # exit after they finish building the first time, then run the tests for real.
-    ( REALM_EXIT_AFTER_BUILDING_TESTS=YES xc "$1" ) || true
-    # Xcode 7.2.1 fails to run tests in the iOS simulator for unknown reasons. Resetting the simulator here works
-    # around this issue.
-    sh build.sh prelaunch-simulator
-    xc "$1"
-}
-
 clean_retrieve() {
   mkdir -p "$2"
   rm -rf "$2/$3"
@@ -192,12 +182,18 @@ move_to_clean_dir() {
     mv "$1" "$2"
 }
 
-shutdown_simulators() {
-    # Shut down simulators until there's no booted ones left
-    # Only do one at a time because devices sometimes show up multiple times
-    while xcrun simctl list | grep -q Booted; do
-      xcrun simctl list | grep Booted | sed 's/.* (\(.*\)) (Booted)/\1/' | head -n 1 | xargs xcrun simctl shutdown
-    done
+test_ios_static() {
+    destination="$1"
+    xc "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination '$destination' build"
+    xc "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination '$destination' test 'ARCHS=\$(ARCHS_STANDARD_32_BIT)'"
+
+    # Xcode's depending tracking is lacking and it doesn't realize that the Realm static framework's static library
+    # needs to be recreated when the active architectures change. Help Xcode out by removing the static library.
+    settings=$(xcode "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination '$destination' -showBuildSettings")
+    path=$(echo "$settings" | awk '/CONFIGURATION_BUILD_DIR/ { cbd = $3; } /EXECUTABLE_PATH/ { ep = $3; } END { printf "%s/%s\n", cbd, ep; }')
+    rm "$path"
+
+    xc "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination '$destination' test"
 }
 
 ######################################
@@ -371,36 +367,6 @@ case "$COMMAND" in
         ;;
 
     ######################################
-    # Object Store
-    ######################################
-    "push-object-store-changes")
-        commit="$2"
-        path="$3"
-        if [ -z "$commit" -o -z "$path" ]; then
-            echo "usage: sh build.sh push-object-store-changes [base commit] [path to objectore repo]"
-            exit 1
-        fi
-
-        # List all commits since $commit which touched the objecstore, generate
-        # patches for each of them, and then apply those patches to the
-        # objectstore repo
-        git rev-list --reverse $commit..HEAD -- Realm/ObjectStore \
-            | xargs -I@ git format-patch --stdout @^! Realm/ObjectStore \
-            | git -C $path am -p 3 --directory src
-        ;;
-
-    "pull-object-store-changes")
-        commit="$2"
-        path="$3"
-        if [ -z "$commit" -o -z "$path" ]; then
-            echo "usage: sh build.sh pull-object-store-changes [base commit] [path to objectore repo]"
-            exit 1
-        fi
-
-        git -C $path format-patch --stdout $commit..HEAD src | git am -p 2 --directory Realm/ObjectStore --exclude='*CMake*' --reject
-        ;;
-
-    ######################################
     # Swift versioning
     ######################################
     "set-swift-version")
@@ -528,30 +494,26 @@ case "$COMMAND" in
         ;;
 
     "test-ios-static")
-        xc_work_around_rdar_23055637 "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
-        shutdown_simulators
-        xc_work_around_rdar_23055637 "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' test"
+        test_ios_static "name=iPhone 6"
         exit 0
         ;;
 
     "test-ios7-static")
-        xc_work_around_rdar_23055637 "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 5S,OS=7.1' test"
-        shutdown_simulators
-        xc_work_around_rdar_23055637 "-scheme 'Realm iOS static' -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s,OS=7.1' test"
+        test_ios_static "name=iPhone 5S,OS=7.1"
         exit 0
         ;;
 
     "test-ios-dynamic")
-        xc_work_around_rdar_23055637 "-scheme Realm -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
-        shutdown_simulators
-        xc_work_around_rdar_23055637 "-scheme Realm -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' test"
+        xc "-scheme Realm -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' build"
+        xc "-scheme Realm -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test 'ARCHS=\$(ARCHS_STANDARD_32_BIT)'"
+        xc "-scheme Realm -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
         exit 0
         ;;
 
     "test-ios-swift")
-        xc_work_around_rdar_23055637 "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' build test"
-        shutdown_simulators
-        xc_work_around_rdar_23055637 "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 4s' build test"
+        xc "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' build"
+        xc "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test 'ARCHS=\$(ARCHS_STANDARD_32_BIT)'"
+        xc "-scheme RealmSwift -configuration $CONFIGURATION -sdk iphonesimulator -destination 'name=iPhone 6' test"
         exit 0
         ;;
 
@@ -574,12 +536,12 @@ case "$COMMAND" in
         ;;
 
     "test-tvos")
-        xc_work_around_rdar_23055637 "-scheme Realm -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p' test"
+        xc "-scheme Realm -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p' test"
         exit $?
         ;;
 
     "test-tvos-swift")
-        xc_work_around_rdar_23055637 "-scheme RealmSwift -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p' test"
+        xc "-scheme RealmSwift -configuration $CONFIGURATION -sdk appletvsimulator -destination 'name=Apple TV 1080p' test"
         exit $?
         ;;
 
@@ -883,17 +845,32 @@ case "$COMMAND" in
         fi
 
         if [[ "$2" != "swift" ]]; then
+          if [ ! -d Realm/ObjectStore/src ]; then
+            cat >&2 <<EOM
+
+
+ERROR: One of Realm's submodules is missing!
+
+If you're using Realm and/or RealmSwift from a git branch, please add 'submodules: true' to
+their entries in your Podfile.
+
+
+EOM
+            exit 1
+          fi
+
           rm -rf include
           mkdir -p include
           mv core/include include/core
 
           mkdir -p include/impl/apple
-          mkdir -p include/util
+          mkdir -p include/util/apple
           cp Realm/*.hpp include
-          cp Realm/ObjectStore/*.hpp include
-          cp Realm/ObjectStore/impl/*.hpp include/impl
-          cp Realm/ObjectStore/impl/apple/*.hpp include/impl/apple
-          cp Realm/ObjectStore/util/*.hpp include/util
+          cp Realm/ObjectStore/src/*.hpp include
+          cp Realm/ObjectStore/src/impl/*.hpp include/impl
+          cp Realm/ObjectStore/src/impl/apple/*.hpp include/impl/apple
+          cp Realm/ObjectStore/src/util/*.hpp include/util
+          cp Realm/ObjectStore/src/util/apple/*.hpp include/util/apple
 
           touch Realm/RLMPlatform.h
           if [ -n "$COCOAPODS_VERSION" ]; then
@@ -926,7 +903,7 @@ case "$COMMAND" in
         elif [ "$target" = "swiftlint" ]; then
             sh build.sh verify-swiftlint
         else
-            export sha=$ghprbSourceBranch
+            export sha=$GITHUB_PR_SOURCE_BRANCH
             export REALM_SWIFT_VERSION=$swift_version
             export CONFIGURATION=$configuration
             export REALM_EXTRA_BUILD_ARGUMENTS='GCC_GENERATE_DEBUGGING_SYMBOLS=NO REALM_PREFIX_HEADER=Realm/RLMPrefix.h'

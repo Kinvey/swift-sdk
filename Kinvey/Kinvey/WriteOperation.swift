@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal class WriteOperation<T: Persistable, R where T: NSObject>: Operation<T> {
+internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject {
     
-    typealias CompletionHandler = (R, ErrorType?) -> Void
+    typealias CompletionHandler = (R, Swift.Error?) -> Void
     
     let writePolicy: WritePolicy
     let sync: Sync<T>?
@@ -21,23 +21,23 @@ internal class WriteOperation<T: Persistable, R where T: NSObject>: Operation<T>
         super.init(cache: cache, client: client)
     }
     
-    func execute(completionHandler: CompletionHandler?) -> Request {
+    func execute(_ completionHandler: CompletionHandler?) -> Request {
         switch writePolicy {
-        case .ForceLocal:
+        case .forceLocal:
             return executeLocal(completionHandler)
-        case .LocalThenNetwork:
+        case .localThenNetwork:
             executeLocal(completionHandler)
             fallthrough
-        case .ForceNetwork:
+        case .forceNetwork:
             return executeNetwork(completionHandler)
         }
     }
     
-    func executeLocal(completionHandler: CompletionHandler?) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     
-    func executeNetwork(completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     

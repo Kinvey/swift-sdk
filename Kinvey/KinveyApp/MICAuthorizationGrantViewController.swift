@@ -25,8 +25,8 @@ class MICAuthorizationGrantViewController: UIViewController {
         )
     }
     
-    @IBAction func login(sender: UIButton) {
-        let redirectURI = NSURL(string: "micAuthGrantFlow://")!
+    @IBAction func login(_ sender: UIButton) {
+        let redirectURI = URL(string: "micAuthGrantFlow://")!
         User.loginWithAuthorization(
             redirectURI: redirectURI,
             username: textFieldUsername.text!,

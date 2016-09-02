@@ -114,7 +114,7 @@
         [realm commitWriteTransaction];
     }
 
-    // Delete `*.lock` and `.note` files to simulate opening Realm in an app bundle
+    // Delete '*.lock' and '.note' files to simulate opening Realm in an app bundle
     [[NSFileManager defaultManager] removeItemAtURL:[RLMTestRealmURL() URLByAppendingPathExtension:@"lock"] error:nil];
     [[NSFileManager defaultManager] removeItemAtURL:[RLMTestRealmURL() URLByAppendingPathExtension:@"note"] error:nil];
 
@@ -1621,7 +1621,7 @@
 
     RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
     configuration.fileURL = realm.configuration.fileURL;
-    XCTAssertThrows([RLMRealm migrateRealm:configuration]);
+    XCTAssertThrows([RLMRealm performMigrationForConfiguration:configuration error:nil]);
 }
 
 - (void)testNotificationPipeBufferOverfull {

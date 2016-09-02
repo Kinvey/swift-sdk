@@ -10,37 +10,37 @@ import Foundation
 
 /// Class that represents a query including filters and sorts.
 @objc(KNVQuery)
-public class Query: NSObject, BuilderType {
+public final class Query: NSObject, BuilderType {
     
     /// Fields to be included in the results of the query.
-    public var fields: Set<String>?
+    open var fields: Set<String>?
     
     /// `NSPredicate` used to filter records.
-    public var predicate: NSPredicate?
+    open var predicate: NSPredicate?
     
     /// Array of `NSSortDescriptor`s used to sort records.
-    public var sortDescriptors: [NSSortDescriptor]?
+    open var sortDescriptors: [NSSortDescriptor]?
     
     /// Skip a certain amount of records in the results of the query.
-    public var skip: Int?
+    open var skip: Int?
     
     /// Impose a limit of records in the results of the query.
-    public var limit: Int?
+    open var limit: Int?
     
-    private func translateExpression(expression: NSExpression) -> NSExpression {
+    fileprivate func translateExpression(_ expression: NSExpression) -> NSExpression {
         switch expression.expressionType {
-        case .KeyPathExpressionType:
+        case .keyPath:
             var keyPath = expression.keyPath
             var persistableType = self.persistableType
-            if keyPath.containsString(".") {
+            if keyPath.contains(".") {
                 var keyPaths = [String]()
-                for item in keyPath.componentsSeparatedByString(".") {
+                for item in keyPath.components(separatedBy: ".") {
                     keyPaths.append(persistableType?.propertyMapping(item) ?? item)
                     if let persistableTypeTmp = persistableType {
                         persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
-                keyPath = keyPaths.joinWithSeparator(".")
+                keyPath = keyPaths.joined(separator: ".")
             } else if let translatedKeyPath = persistableType?.propertyMapping(keyPath) {
                 keyPath = translatedKeyPath
             }
@@ -50,7 +50,7 @@ public class Query: NSObject, BuilderType {
         }
     }
     
-    private func translatePredicate(predicate: NSPredicate) -> NSPredicate {
+    fileprivate func translatePredicate(_ predicate: NSPredicate) -> NSPredicate {
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
                 leftExpression: translateExpression(predicate.leftExpression),
@@ -73,16 +73,16 @@ public class Query: NSObject, BuilderType {
         return self.predicate == nil && self.sortDescriptors == nil
     }
     
-    private var queryStringEncoded: String? {
+    fileprivate var queryStringEncoded: String? {
         get {
             if let predicate = predicate {
                 let translatedPredicate = translatePredicate(predicate)
-                let queryObj = try! MongoDBPredicateAdaptor.queryDictFromPredicate(translatedPredicate)
+                let queryObj = try! MongoDBPredicateAdaptor.queryDict(from: translatedPredicate)
                 
-                let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])
-                var queryStr = String(data: data, encoding: NSUTF8StringEncoding)!
-                queryStr = queryStr.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
-                return queryStr.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+                let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
+                var queryStr = String(data: data, encoding: String.Encoding.utf8)!
+                queryStr = queryStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
             }
             
             return nil
@@ -93,7 +93,7 @@ public class Query: NSObject, BuilderType {
         get {
             var queryParams = [String : String]()
             
-            if let queryParam = queryStringEncoded where !queryParam.isEmpty {
+            if let queryParam = queryStringEncoded , !queryParam.isEmpty {
                 queryParams["query"] = queryParam
             }
             
@@ -102,12 +102,12 @@ public class Query: NSObject, BuilderType {
                 for sortDescriptor in sortDescriptors {
                     sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
                 }
-                let data = try! NSJSONSerialization.dataWithJSONObject(sorts, options: [])
-                queryParams["sort"] = String(data: data, encoding: NSUTF8StringEncoding)!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
+                let data = try! JSONSerialization.data(withJSONObject: sorts, options: [])
+                queryParams["sort"] = String(data: data, encoding: String.Encoding.utf8)!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             }
             
             if let fields = fields {
-                queryParams["fields"] = fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
+                queryParams["fields"] = fields.joined(separator: ",").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             }
             
             if let skip = skip {
@@ -157,17 +157,17 @@ public class Query: NSObject, BuilderType {
     }
     
     /// Constructor using a similar way to construct a `NSPredicate`.
-    public convenience init(format: String, _ args: AnyObject...) {
+    public convenience init(format: String, _ args: Any...) {
         self.init(format: format, argumentArray: args)
     }
     
     /// Constructor using a similar way to construct a `NSPredicate`.
-    public convenience init(format: String, args: CVarArgType) {
+    public convenience init(format: String, args: CVarArg) {
         self.init(predicate: NSPredicate(format: format, args))
     }
     
     /// Constructor using a similar way to construct a `NSPredicate`.
-    public convenience init(format: String, argumentArray: [AnyObject]?) {
+    public convenience init(format: String, argumentArray: [Any]?) {
         self.init(predicate: NSPredicate(format: format, argumentArray: argumentArray))
     }
     
@@ -189,14 +189,14 @@ public class Query: NSObject, BuilderType {
     }
     
     /// Copy Constructor.
-    public convenience init(_ query: Query, @noescape _ block: ((Query) -> Void)) {
+    public convenience init(_ query: Query, _ block: ((Query) -> Void)) {
         self.init(query)
         block(self)
     }
     
     let sortLock = NSLock()
     
-    private func addSort(property: String, ascending: Bool) {
+    fileprivate func addSort(_ property: String, ascending: Bool) {
         sortLock.lock()
         if sortDescriptors == nil {
             sortDescriptors = []
@@ -206,14 +206,14 @@ public class Query: NSObject, BuilderType {
     }
     
     /// Adds ascending properties to be sorted.
-    public func ascending(properties: String...) {
+    open func ascending(_ properties: String...) {
         for property in properties {
             addSort(property, ascending: true)
         }
     }
     
     /// Adds descending properties to be sorted.
-    public func descending(properties: String...) {
+    open func descending(_ properties: String...) {
         for property in properties {
             addSort(property, ascending: false)
         }
@@ -221,7 +221,7 @@ public class Query: NSObject, BuilderType {
 
 }
 
-extension Dictionary where Key: StringLiteralConvertible, Value: StringLiteralConvertible {
+extension Dictionary where Key: ExpressibleByStringLiteral, Value: ExpressibleByStringLiteral {
     
     internal var urlQueryEncoded: String {
         get {
@@ -229,7 +229,7 @@ extension Dictionary where Key: StringLiteralConvertible, Value: StringLiteralCo
             for (key, value) in self {
                 queryParams.append("\(key)=\(value)")
             }
-            return queryParams.joinWithSeparator("&")
+            return queryParams.joined(separator: "&")
         }
     }
     
@@ -238,7 +238,7 @@ extension Dictionary where Key: StringLiteralConvertible, Value: StringLiteralCo
 @objc(__KNVQuery)
 internal class __KNVQuery: NSObject {
     
-    class func query(query: Query, persistableType: Persistable.Type) -> Query {
+    class func query(_ query: Query, persistableType: Persistable.Type) -> Query {
         return Query(query: query, persistableType: persistableType)
     }
     

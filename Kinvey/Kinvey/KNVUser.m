@@ -204,15 +204,15 @@
               completionHandler:completionHandler];
 }
 
--(id<KNVRequest>)saveWithClient:(KNVClient*)client
-              completionHandler:(KNVUserUserHandler)completionHandler
-{
-    return [self.user saveWithClient:client.client
-                   completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
-    {
-        KNVUserDispatchCompletionHandler(completionHandler, user, error);
-    }];
-}
+//-(id<KNVRequest>)saveWithClient:(KNVClient*)client
+//              completionHandler:(KNVUserUserHandler)completionHandler
+//{
+//    return [self.user saveWithClient:client.client
+//                   completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
+//    {
+//        KNVUserDispatchCompletionHandler(completionHandler, user, error);
+//    }];
+//}
 
 +(void)presentMICViewControllerWithRedirectURI:(NSURL *)redirectURI
                              completionHandler:(KNVUserUserHandler)completionHandler
@@ -243,18 +243,18 @@
                                 completionHandler:completionHandler];
 }
 
-+(void)presentMICViewControllerWithRedirectURI:(NSURL*)redirectURI
-                                       timeout:(NSTimeInterval)timeout
-                                        client:(KNVClient*)client
-                             completionHandler:(KNVUserUserHandler)completionHandler
-{
-    [__KNVUser presentMICViewControllerWithRedirectURI:redirectURI
-                                               timeout:timeout
-                                                client:client.client
-                                     completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
-    {
-        KNVUserDispatchCompletionHandler(completionHandler, user, error);
-    }];
-}
+//+(void)presentMICViewControllerWithRedirectURI:(NSURL*)redirectURI
+//                                       timeout:(NSTimeInterval)timeout
+//                                        client:(KNVClient*)client
+//                             completionHandler:(KNVUserUserHandler)completionHandler
+//{
+//    [__KNVUser presentMICViewControllerWithRedirectURI:redirectURI
+//                                               timeout:timeout
+//                                                client:client.client
+//                                     completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
+//    {
+//        KNVUserDispatchCompletionHandler(completionHandler, user, error);
+//    }];
+//}
 
 @end

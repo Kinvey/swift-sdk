@@ -12,14 +12,14 @@ import Kinvey
 class Event : Entity {
     
     var name: String?
-    var date: NSDate?
+    var date: Date?
     var location: String?
     
     override class func collectionName() -> String {
         return "Event"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         name <- ("name", map["name"])

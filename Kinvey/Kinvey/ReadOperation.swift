@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal class ReadOperation<T: Persistable where T: NSObject>: Operation<T> {
+internal class ReadOperation<T: Persistable>: Operation<T> where T: NSObject {
     
-    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    typealias CompletionHandler = (Any?, Swift.Error?) -> Void
     
     let readPolicy: ReadPolicy
     
@@ -19,13 +19,13 @@ internal class ReadOperation<T: Persistable where T: NSObject>: Operation<T> {
         super.init(cache: cache, client: client)
     }
     
-    func execute(completionHandler: CompletionHandler? = nil) -> Request {
+    func execute(_ completionHandler: CompletionHandler? = nil) -> Request {
         switch readPolicy {
-        case .ForceLocal:
+        case .forceLocal:
             return executeLocal(completionHandler)
-        case .ForceNetwork:
+        case .forceNetwork:
             return executeNetwork(completionHandler)
-        case .Both:
+        case .both:
             let request = MultiRequest()
             executeLocal() { obj, error in
                 completionHandler?(obj, nil)
@@ -35,11 +35,11 @@ internal class ReadOperation<T: Persistable where T: NSObject>: Operation<T> {
         }
     }
     
-    func executeLocal(completionHandler: CompletionHandler?) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     
-    func executeNetwork(completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     

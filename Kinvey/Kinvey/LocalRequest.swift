@@ -16,7 +16,7 @@ internal class LocalRequest: NSObject, Request {
     
     typealias LocalHandler = () -> Void
     
-    var progress: (ProgressStatus -> Void)?
+    var progress: ((ProgressStatus) -> Void)?
     
     let localHandler: LocalHandler?
     
@@ -24,7 +24,7 @@ internal class LocalRequest: NSObject, Request {
         self.localHandler = localHandler
     }
     
-    func execute(@noescape completionHandler: LocalHandler) {
+    func execute(_ completionHandler: LocalHandler) {
         localHandler?()
         completionHandler()
     }

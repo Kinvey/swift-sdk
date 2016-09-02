@@ -20,26 +20,27 @@ import Realm
 
 #if swift(>=3.0)
     extension RLMRealm {
-        public class func schemaVersion(at url: URL, usingEncryptionKey key: Data? = nil) throws -> UInt64 {
-            var error: NSError?
-            let version = __schemaVersion(at: url, encryptionKey: key, error: &error)
-            guard version != RLMNotVersioned else {
-                throw error!
-            }
-            return version
-        }
+        // TODO: Figure out why this causes the Swift 3 compiler to segfault.
+//        public class func schemaVersion(at url: URL, usingEncryptionKey key: Data? = nil) throws -> UInt64 {
+//            var error: NSError?
+//            let version = __schemaVersion(at: url, encryptionKey: key, error: &error)
+//            guard version != RLMNotVersioned else {
+//                throw error!
+//            }
+//            return version
+//        }
     }
 
     extension RLMObject {
         // Swift query convenience functions
         public class func objects(where predicateFormat: String, _ args: CVarArg...) -> RLMResults<RLMObject> {
-            return objects(with: Predicate(format: predicateFormat, arguments: getVaList(args)))
+            return objects(with: NSPredicate(format: predicateFormat, arguments: getVaList(args)))
         }
 
         public class func objects(in realm: RLMRealm,
                                   where predicateFormat: String,
                                   _ args: CVarArg...) -> RLMResults<RLMObject> {
-            return objects(in: realm, with: Predicate(format: predicateFormat, arguments: getVaList(args)))
+            return objects(in: realm, with: NSPredicate(format: predicateFormat, arguments: getVaList(args)))
         }
     }
 
@@ -55,7 +56,7 @@ import Realm
         }
     }
 
-    // TODO: Figure out why this causes the Swift 3 compiler to segfault.
+    // SR-2348: A bug in Objective-C generics currently make this impossible w/o an error or compiler crash.
 //    extension RLMArray: Sequence  {
 //        // Support Sequence-style enumeration
 //        public func makeIterator() -> RLMIterator {
@@ -80,11 +81,11 @@ import Realm
     extension RLMCollection {
         // Swift query convenience functions
         public func indexOfObject(where predicateFormat: String, _ args: CVarArg...) -> UInt {
-            return indexOfObject(with: Predicate(format: predicateFormat, arguments: getVaList(args)))
+            return indexOfObject(with: NSPredicate(format: predicateFormat, arguments: getVaList(args)))
         }
 
         public func objects(where predicateFormat: String, _ args: CVarArg...) -> RLMResults<RLMObject> {
-            return objects(with: Predicate(format: predicateFormat, arguments: getVaList(args)))
+            return objects(with: NSPredicate(format: predicateFormat, arguments: getVaList(args)))
         }
     }
 

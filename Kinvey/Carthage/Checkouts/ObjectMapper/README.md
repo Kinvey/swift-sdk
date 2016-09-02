@@ -32,7 +32,6 @@ To support mapping, a class or struct just needs to implement the ```Mappable```
 public protocol Mappable {
     init?(_ map: Map)
     mutating func mapping(map: Map)
-    static func objectForMapping(map: Map) -> Mappable? // Optional
 }
 ```
 ObjectMapper uses the ```<-``` operator to define how each member variable maps to and from JSON.
@@ -113,10 +112,13 @@ ObjectMapper can map classes composed of the following types:
 ## `Mappable` Protocol
 
 #### `init?(_ map: Map)` 
-This failable initializer can be used for JSON validation prior to object serialization. Returning nil within the function will prevent the mapping from occuring. You can inspect the JSON stored within the `Map` object to do your validation:
+This failable initializer can be used for JSON validation prior to object serialization. Returning nil within the function will prevent the mapping from occuring. You can inspect the JSON stored within the `Map` object to do your validation. See two approaches to do this below:
 ```swift
 required init?(_ map: Map){
 	// check if a required "name" property exists within the JSON.
+	if map["name"].value() == nil {
+		return nil
+	}
 	if map.JSONDictionary["name"] == nil {
 		return nil
 	}
@@ -128,7 +130,7 @@ This function is where all mapping definitions should go. When parsing JSON, it 
 
 ### `StaticMappable` Protocol
 
-This is a sub protocol of Mappable that provides an extra static function that can be used instead of `init?(_ map: Map)`
+This is a extension to the Mappable protocol that provides an extra static function that can be used instead of `init?(_ map: Map)`
 
 #### `static func objectForMapping(map: Map) -> Mappable?` 
 If this function is implemented, `init?(_ map: Map)` will no longer be called by ObjectMapper. This function should be used to:

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?> {
+class RemoveOperation<T: Persistable>: WriteOperation<T, UInt?> where T: NSObject {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
@@ -22,14 +22,14 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
         preconditionFailure("Method needs to be implemented")
     }
     
-    override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
+    override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             var count: UInt?
             if let cache = self.cache {
                 let realmObjects = cache.findEntityByQuery(self.query)
                 count = UInt(realmObjects.count)
-                let detachedObjects = cache.detach(realmObjects, query: query)
+                let detachedObjects = cache.detach(realmObjects, query: self.query)
                 if cache.removeEntities(realmObjects) {
                     let idKey = T.entityIdProperty()
                     for object in detachedObjects {
@@ -50,9 +50,9 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
         return request
     }
     
-    override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
+    override func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         request.execute() { data, response, error in
-            if let response = response where response.isOK,
+            if let response = response , response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? UInt
             {

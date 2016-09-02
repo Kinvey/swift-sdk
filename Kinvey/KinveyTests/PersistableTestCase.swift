@@ -14,21 +14,21 @@ class PersistableTestCase: StoreTestCase {
     func testAclNull() {
         store = DataStore<Person>.collection()
         
-        class NullAclURLProtocol : NSURLProtocol {
+        class NullAclURLProtocol : URLProtocol {
             
-            private override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            private override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
+            fileprivate override func startLoading() {
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
                     [
-                        "_id" : NSUUID().UUIDString,
+                        "_id" : UUID().uuidString,
                         "name" : "Victor",
                         "age" : 29,
                         "_kmd" : [
@@ -37,14 +37,14 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json, options: [])
                 
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: data)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
-            private override func stopLoading() {
+            fileprivate override func stopLoading() {
             }
             
         }
@@ -52,9 +52,9 @@ class PersistableTestCase: StoreTestCase {
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .ForceNetwork) { (results, error) in
+        store.find(readPolicy: .forceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -65,7 +65,7 @@ class PersistableTestCase: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -73,21 +73,21 @@ class PersistableTestCase: StoreTestCase {
     func testAclEmpty() {
         store = DataStore<Person>.collection()
         
-        class NullAclURLProtocol : NSURLProtocol {
+        class NullAclURLProtocol : URLProtocol {
             
-            private override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            private override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
+            fileprivate override func startLoading() {
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
                     [
-                        "_id" : NSUUID().UUIDString,
+                        "_id" : UUID().uuidString,
                         "name" : "Victor",
                         "age" : 29,
                         "_acl" : JsonDictionary(),
@@ -97,14 +97,14 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json)
                 
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: data)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
-            private override func stopLoading() {
+            fileprivate override func stopLoading() {
             }
             
         }
@@ -112,9 +112,9 @@ class PersistableTestCase: StoreTestCase {
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .ForceNetwork) { (results, error) in
+        store.find(readPolicy: .forceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -125,7 +125,7 @@ class PersistableTestCase: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -133,36 +133,36 @@ class PersistableTestCase: StoreTestCase {
     func testKmdNull() {
         store = DataStore<Person>.collection()
         
-        class NullAclURLProtocol : NSURLProtocol {
+        class NullAclURLProtocol : URLProtocol {
             
-            private override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            private override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
+            fileprivate override func startLoading() {
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
                     [
-                        "_id" : NSUUID().UUIDString,
+                        "_id" : UUID().uuidString,
                         "name" : "Victor",
                         "age" : 29,
                         "_acl" : [
-                            "creator" : NSUUID().UUIDString
+                            "creator" : UUID().uuidString
                         ]
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json, options: [])
                 
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: data)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
-            private override func stopLoading() {
+            fileprivate override func stopLoading() {
             }
             
         }
@@ -170,9 +170,9 @@ class PersistableTestCase: StoreTestCase {
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .ForceNetwork) { (results, error) in
+        store.find(readPolicy: .forceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -183,7 +183,7 @@ class PersistableTestCase: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -191,37 +191,37 @@ class PersistableTestCase: StoreTestCase {
     func testKmdEmpty() {
         store = DataStore<Person>.collection()
         
-        class NullAclURLProtocol : NSURLProtocol {
+        class NullAclURLProtocol : URLProtocol {
             
-            private override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            private override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
+            fileprivate override func startLoading() {
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
                     [
-                        "_id" : NSUUID().UUIDString,
+                        "_id" : UUID().uuidString,
                         "name" : "Victor",
                         "age" : 29,
                         "_acl" : [
-                            "creator" : NSUUID().UUIDString
+                            "creator" : UUID().uuidString
                         ],
                         "_kmd" : JsonDictionary()
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json)
                 
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: data)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
-            private override func stopLoading() {
+            fileprivate override func stopLoading() {
             }
             
         }
@@ -229,9 +229,9 @@ class PersistableTestCase: StoreTestCase {
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .ForceNetwork) { (results, error) in
+        store.find(readPolicy: .forceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -242,7 +242,7 @@ class PersistableTestCase: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
