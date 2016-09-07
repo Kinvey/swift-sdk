@@ -12,10 +12,13 @@ import RealmSwift
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
-    while className.hasPrefix("RLMStandalone_") || className.hasPrefix("RLMUnmanaged_") {
+    let regex = try! NSRegularExpression(pattern: "RLM.+_.+") // regex to catch Realm classnames like `RLMStandalone_`, `RLMUnmanaged_` or `RLMAccessor_`
+    var nMatches = regex.numberOfMatches(in: className, range: NSRange(location: 0, length: className.characters.count))
+    while nMatches > 0 {
         let classObj: AnyClass! = NSClassFromString(className)!
         let superClass: AnyClass! = class_getSuperclass(classObj)
         className = NSStringFromClass(superClass)
+        nMatches = regex.numberOfMatches(in: className, range: NSRange(location: 0, length: className.characters.count))
     }
     return className
 }

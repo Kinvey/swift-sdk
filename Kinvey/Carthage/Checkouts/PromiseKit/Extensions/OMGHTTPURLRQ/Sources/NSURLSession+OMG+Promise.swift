@@ -1,7 +1,9 @@
 import OMGHTTPURLRQ
 import Foundation
+
 #if !COCOAPODS
 @_exported import class PMKFoundation.URLDataPromise
+import PMKFoundation
 import PromiseKit
 #endif
 

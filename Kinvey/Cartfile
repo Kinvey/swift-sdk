@@ -1,5 +1,5 @@
 github "tjboneman/NSPredicate-MongoDB-Adaptor" "master"
-github "mxcl/PromiseKit" "4.0.0"
+github "heyzooi/PromiseKit" "master"
 github "kishikawakatsumi/KeychainAccess" "swift-3.0"
 github "realm/realm-cocoa" "master"
 github "Hearst-DD/ObjectMapper" "swift-3"

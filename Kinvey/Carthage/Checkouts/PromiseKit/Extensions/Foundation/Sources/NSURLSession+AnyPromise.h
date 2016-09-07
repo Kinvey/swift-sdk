@@ -61,6 +61,6 @@
 
  @see https://github.com/mxcl/OMGHTTPURLRQ
 */
-- (AnyPromise *)promiseDataTaskWithRequest:(NSURLRequest *)request;
+- (AnyPromise *)promiseDataTaskWithRequest:(NSURLRequest *)request NS_REFINED_FOR_SWIFT;
 
 @end

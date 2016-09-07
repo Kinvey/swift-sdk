@@ -37,12 +37,12 @@ class PMKDefaultDispatchQueueTest: XCTestCase {
         waitForExpectations(timeout: 1)
     }
 
-    func testDidNotOverrodeDefaultCatchQueue() {
+    func testOverrodeDefaultCatchQueue() {
         let ex = expectation(description: "resolving")
 
         Promise<Int>(error: Error.dummy).catch { _ in
             ex.fulfill()
-            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertFalse(Thread.isMainThread)
         }
 
         XCTAssertTrue(Thread.isMainThread)

@@ -58,58 +58,68 @@ class AclTestCase: StoreTestCase {
         
         store = DataStore<Person>.collection(.sync)
         
-        weak var expectationFind = expectation(description: "Find")
-        
-        store.find(person.personId!, readPolicy: .forceNetwork) { person, error in
-            self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+        do {
+            weak var expectationFind = expectation(description: "Find")
             
-            expectationFind?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { (error) in
-            expectationFind = nil
-        }
-        
-        weak var expectationRemove = expectation(description: "Remove")
-        
-        try! store.remove(person) { (count, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            
-            expectationRemove?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationRemove = nil
-        }
-        
-        weak var expectationPush = expectation(description: "Push")
-        
-        store.push() { count, errors in
-            self.assertThread()
-            XCTAssertEqual(count, 0)
-            XCTAssertNotNil(errors)
-            
-            if let errors = errors {
-                XCTAssertNotNil(errors.first as? Kinvey.Error)
-                if let error = errors.first as? Kinvey.Error {
-                    switch error {
-                    case .unauthorized(let error, _):
-                        XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
-                    default:
-                        XCTFail()
-                    }
-                }
+            store.find(person.personId!, readPolicy: .forceNetwork) { person, error in
+                self.assertThread()
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
             }
             
-            expectationPush?.fulfill()
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
         }
         
-        waitForExpectations(timeout: defaultTimeout) { (error) in
-            expectationPush = nil
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        do {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            try! store.remove(person) { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        do {
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { count, errors in
+                self.assertThread()
+                XCTAssertEqual(count, 0)
+                XCTAssertNotNil(errors)
+                
+                if let errors = errors {
+                    XCTAssertNotNil(errors.first as? Kinvey.Error)
+                    if let error = errors.first as? Kinvey.Error {
+                        switch error {
+                        case .unauthorized(let error, _):
+                            XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
+                        default:
+                            XCTFail()
+                        }
+                    }
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
         }
     }
     

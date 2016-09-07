@@ -76,7 +76,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         }
     }
     
-    func downloadTaskWithURL(_ file: File, completionHandler: DataResponseCompletionHandler) {
+    func downloadTaskWithURL(_ file: File, completionHandler: @escaping DataResponseCompletionHandler) {
         self.file = file
         Promise<(Data, Response)> { fulfill, reject in
             if let resumeData = file.resumeDownloadData {
@@ -96,7 +96,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         }
     }
     
-    func downloadTaskWithURL(_ file: File, completionHandler: PathResponseCompletionHandler) {
+    func downloadTaskWithURL(_ file: File, completionHandler: @escaping PathResponseCompletionHandler) {
         self.file = file
         
         if let resumeData = file.resumeDownloadData {

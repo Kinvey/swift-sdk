@@ -1,8 +1,7 @@
 #import <UIKit/UIImagePickerController.h>
 #import <UIKit/UINavigationController.h>
+#import "UIViewController+AnyPromise.h"
 #import <PromiseKit/PromiseKit.h>
-#import <PMKUIKit/PMKUIKit.h>
-
 
 #if TARGET_OS_TV
 #define UIImagePickerControllerDelegate UINavigationControllerDelegate

@@ -58,3 +58,6 @@
 [submodule "Extensions/OMGHTTPURLRQ"]
 	path = Extensions/OMGHTTPURLRQ
 	url = https://github.com/PromiseKit/OMGHTTPURLRQ
+[submodule "Extensions/AVFoundation"]
+	path = Extensions/AVFoundation
+	url = https://github.com/PromiseKit/AVFoundation

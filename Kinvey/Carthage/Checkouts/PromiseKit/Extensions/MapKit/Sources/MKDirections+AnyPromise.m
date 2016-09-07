@@ -1,5 +1,4 @@
 #import "MKDirections+AnyPromise.h"
-@import PromiseKit;
 
 
 @implementation MKDirections (PromiseKit)
@@ -18,20 +17,6 @@
             resolve(err ?: rsp);
         }];
     }];
-}
-
-@end
-
-
-
-@implementation MKDirections (PMKDeprecated)
-
-+ (AnyPromise *)promise:(MKDirectionsRequest *)request {
-    return [[[MKDirections alloc] initWithRequest:request] calculateDirections];
-}
-
-+ (AnyPromise *)promiseETA:(MKDirectionsRequest *)request {
-    return [[[MKDirections alloc] initWithRequest:request] calculateETA];
 }
 
 @end

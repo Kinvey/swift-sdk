@@ -26,9 +26,13 @@ platform with a `swiftc`, it has *excellent* Objective-C bridging and
 
 # Quick Start
 
+We recommend [CocoaPods] or [Carthage], however you can just drop `PromiseKit.xcodeproj` into your project and add `PromiseKit.framework` to your app’s embedded frameworks.
+
+## Xcode 8 / Swift 3
+
 ```ruby
 # CocoaPods
-pod "PromiseKit", :git => 'https://github.com/mxcl/PromiseKit.git', :branch => 'swift-3.0'
+pod "PromiseKit", "~> 4.0"
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
@@ -49,8 +53,15 @@ let package = Package(
 )
 ```
 
-Alternatively, drop `PromiseKit.xcodeproj` into your project and add
-`PromiseKit.framework` to your app’s embedded frameworks.
+## Xcode 8 / Swift 2.3 or Xcode 7
+
+```ruby
+# CocoaPods
+pod "PromiseKit", "~> 3.5"
+
+# Carthage
+github "mxcl/PromiseKit" ~> 3.5
+```
 
 # Documentation
 
@@ -120,13 +131,12 @@ Complete and progressive learning guide at [promisekit.org].
 
 PromiseKit contains Swift, so we engage in an unending battle with Xcode:
 
-| Xcode | Swift | PromiseKit |   CI Status  |   Release Notes   |
+| Swift | Xcode | PromiseKit |   CI Status  |   Release Notes   |
 | ----- | ----- | ---------- | ------------ | ----------------- |
-|   8   |  3.0  |      4     | ![ci-swift3] | [Pending][news-4] |
-|   8   |  2.3  |      3     | ![ci-master] | [2015/10][news-3] |
-|   7   |  2.2  |      3     | ![ci-master] | [2015/10][news-3] |
-|   6   |  1.2  |      2     |  –           | [2015/05][news-2] |
-|   *   | *N/A* |      1†    | ![ci-legacy] |                   |
+|   3   |   8   |      4     | ![ci-master] | [2016/09][news-4] |
+|   2   |  7/8  |      3     | ![ci-swift2] | [2015/10][news-3] |
+|   1   |   7   |      3     |       –      | [2015/10][news-3] |
+| *N/A* |   *   |      1†    | ![ci-legacy] |         –         |
 
 † PromiseKit 1 is pure Objective-C and thus can be used with any Xcode, it is
 also your only choice if you need to support iOS 7 or below.
@@ -189,20 +199,20 @@ For [AFNetworking] we recommend [csotiriou/AFNetworking].
 
 # Support
 
-Ask your question on [Gitter chat](https://gitter.im/mxcl/PromiseKit) or
+Ask your question at our [Gitter chat channel](https://gitter.im/mxcl/PromiseKit) or on
 [our bug tracker](https://github.com/mxcl/PromiseKit/issues/new).
 
 
 [travis]: https://travis-ci.org/mxcl/PromiseKit
 [ci-master]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=master
 [ci-legacy]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=legacy-1.x
-[ci-swift3]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=swift-3.0
+[ci-swift2]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=swift-2.x
 [ci-23]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=swift-2.3-minimal-changes
 [ci-22]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=swift-2.2-minimal-changes
 [ci-20]: https://travis-ci.org/mxcl/PromiseKit.svg?branch=swift-2.0-minimal-changes
 [news-2]: http://promisekit.org/news/2015/05/PromiseKit-2.0-Released/
 [news-3]: https://github.com/mxcl/PromiseKit/blob/master/CHANGELOG.markdown#300-oct-1st-2015
-[news-4]: http://promisekit.org/news/
+[news-4]: http://promisekit.org/news/2016/09/PromiseKit-4.0-Released/
 [swift-2.3-minimal-changes]: https://github.com/mxcl/PromiseKit/tree/swift-2.3-minimal-changes
 [swift-2.2-minimal-changes]: https://github.com/mxcl/PromiseKit/tree/swift-2.2-minimal-changes
 [swift-2.0-minimal-changes]: https://github.com/mxcl/PromiseKit/tree/swift-2.0-minimal-changes
@@ -216,3 +226,5 @@ Ask your question on [Gitter chat](https://gitter.im/mxcl/PromiseKit) or
 [Alamofire]: http://alamofire.org
 [AFNetworking]: https://github.com/AFNetworking/AFNetworking
 [csotiriou/AFNetworking]: https://github.com/csotiriou/AFNetworking-PromiseKit
+[CocoaPods]: http://cocoapods.org
+[Carthage]: 2016-09-05-PromiseKit-4.0-Released

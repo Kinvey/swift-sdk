@@ -1,4 +1,3 @@
-#import <PMKFoundation/NSURLSession+AnyPromise.h>
 #import <Foundation/NSJSONSerialization.h>
 #import <OMGHTTPURLRQ/OMGHTTPURLRQ.h>
 #import <Foundation/NSURLResponse.h>
@@ -11,6 +10,12 @@
 #import <Foundation/NSError.h>
 #import <Foundation/NSURL.h>
 #import "PMKOMGHTTPURLRQ.h"
+
+#if !COCOAPODS
+#import <PMKFoundation/NSURLSession+AnyPromise.h>
+#else
+#import <PromiseKit/NSURLSession+AnyPromise.h>
+#endif
 
 static id PMKURLRequestFromURLFormat(NSError **err, id urlFormat, ...);
 static id go(NSURLSession *, NSMutableURLRequest *);
