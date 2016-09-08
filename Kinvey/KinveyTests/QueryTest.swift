@@ -67,6 +67,11 @@ class QueryTest: XCTestCase {
     func testQueryRegex() {
         XCTAssertEqual(encodeQuery(Query(format: "name MATCHES %@", "acme.*corp")), "query=\(encodeURL(["name" : ["$regex" : "acme.*corp"]]))")
     }
+
+    func testQueryBeginsWith() {
+        XCTAssertEqual(encodeQuery(Query(format: "name BEGINSWITH %@", "acme")), encodeURL(["name" : ["$regex" : "^acme"]]))
+    }
+
     
     func testQueryGeoWithinCenterSphere() {
         let resultString = encodeQuery(Query(format: "location = %@", MKCircle(centerCoordinate: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)))

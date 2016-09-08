@@ -262,7 +262,7 @@ NSString *const jsEqualsOperator = @"===";
     NSPredicate *newPredicate = nil;
     id constant = predicate.rightExpression.constantValue;
     if (constant) {
-        NSString *beginsWithRegex = [NSString stringWithFormat:@"/^%@/",predicate.rightExpression.constantValue];
+        NSString *beginsWithRegex = [NSString stringWithFormat:@"^%@",predicate.rightExpression.constantValue];
         newPredicate = [MongoDBPredicateAdaptor replacementPredicateForPredicate:predicate withRegexString:beginsWithRegex];
     }
     return newPredicate;
@@ -272,7 +272,7 @@ NSString *const jsEqualsOperator = @"===";
     NSPredicate *newPredicate = nil;
     id constant = predicate.rightExpression.constantValue;
     if (constant) {
-        NSString *endsWithRegex = [NSString stringWithFormat:@"/.*%@/",predicate.rightExpression.constantValue];
+        NSString *endsWithRegex = [NSString stringWithFormat:@".*%@",predicate.rightExpression.constantValue];
         newPredicate = [MongoDBPredicateAdaptor replacementPredicateForPredicate:predicate withRegexString:endsWithRegex];
     }
     return newPredicate;
@@ -282,7 +282,7 @@ NSString *const jsEqualsOperator = @"===";
     NSPredicate *newPredicate = nil;
     id constant = predicate.rightExpression.constantValue;
     if (constant) {
-        NSString *containsRegex = [NSString stringWithFormat:@"/.*%@.*/",predicate.rightExpression.constantValue];
+        NSString *containsRegex = [NSString stringWithFormat:@".*%@.*",predicate.rightExpression.constantValue];
         newPredicate = [MongoDBPredicateAdaptor replacementPredicateForPredicate:predicate withRegexString:containsRegex];
     }
     return newPredicate;
