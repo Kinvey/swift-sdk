@@ -273,9 +273,12 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPushInvalidDataStoreType() {
-        //save()
+        save()
         
         store = DataStore<Person>.collection(.Network)
+        defer {
+            store.clearCache()
+        }
         
         weak var expectationPush = expectationWithDescription("Push")
         
