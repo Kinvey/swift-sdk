@@ -65,8 +65,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// DataStoreType defines how the DataStore will behave.
     public let type: StoreType
     
-    private let cache: Cache<T>?
-    private let sync: Sync<T>?
+    internal let cache: Cache<T>?
+    internal let sync: Sync<T>?
     
     private var deltaSet: Bool
     
