@@ -93,7 +93,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     func detach(_ results: RealmSwift.Results<Entity>, query: Query?) -> [T] {
-        return results.map { $0 as! T }
+        return detach(results.map { $0 as! T }, query: query)
     }
     
     override func saveEntity(_ entity: T) {
@@ -153,13 +153,13 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return results
     }
     
-    override func count(_ query: Query? = nil) -> UInt {
-        var result = UInt(0)
+    override func count(_ query: Query? = nil) -> Int {
+        var result = 0
         executor.executeAndWait {
             if let query = query {
-                result = UInt(self.results(query).count)
+                result = self.results(query).count
             } else {
-                result = UInt(self.realm.allObjects(ofType: self.entityType).count)
+                result = self.realm.allObjects(ofType: self.entityType).count
             }
         }
         return result
@@ -169,7 +169,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         var result = false
         executor.executeAndWait {
             try! self.realm.write {
-                let entity = self.realm.object(ofType: (type(of: entity) as! Entity.Type), forPrimaryKey: entity.entityId)!
+                let entity = self.realm.object(ofType: (type(of: entity) as! Entity.Type), forPrimaryKey: entity.entityId!)!
                 self.realm.delete(entity)
             }
             result = true
@@ -193,12 +193,12 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func removeEntitiesByQuery(_ query: Query) -> UInt {
-        var result = UInt(0)
+    override func removeEntitiesByQuery(_ query: Query) -> Int {
+        var result = 0
         executor.executeAndWait {
             try! self.realm.write {
                 let results = self.results(query)
-                result = UInt(results.count)
+                result = results.count
                 self.realm.delete(results)
             }
         }

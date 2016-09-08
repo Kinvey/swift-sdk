@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable>: WriteOperation<T, UInt?> where T: NSObject {
+class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
@@ -25,10 +25,10 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, UInt?> where T: NSObjec
     override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            var count: UInt?
+            var count: Int?
             if let cache = self.cache {
                 let realmObjects = cache.findEntityByQuery(self.query)
-                count = UInt(realmObjects.count)
+                count = realmObjects.count
                 let detachedObjects = cache.detach(realmObjects, query: self.query)
                 if cache.removeEntities(realmObjects) {
                     let idKey = T.entityIdProperty()
@@ -54,7 +54,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, UInt?> where T: NSObjec
         request.execute() { data, response, error in
             if let response = response , response.isOK,
                 let results = self.client.responseParser.parse(data),
-                let count = results["count"] as? UInt
+                let count = results["count"] as? Int
             {
                 self.cache?.removeEntitiesByQuery(self.query)
                 completionHandler?(count, nil)

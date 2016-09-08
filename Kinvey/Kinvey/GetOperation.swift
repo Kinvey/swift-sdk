@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class GetOperation<T: Persistable>: ReadOperation<T> where T: NSObject {
+internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error> where T: NSObject {
     
     let id: String
     

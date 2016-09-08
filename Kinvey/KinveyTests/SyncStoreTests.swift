@@ -834,7 +834,7 @@ class SyncStoreTests: StoreTestCase {
         var i = 0
         
         measure {
-            var person = Person {
+            let person = Person {
                 $0.name = "Person \(i)"
             }
             

@@ -78,6 +78,7 @@ class StoreTestCase: KinveyTestCase {
         return person
     }
     
+    @discardableResult
     func save() -> Person {
         let person = self.person
         

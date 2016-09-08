@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal class ReadOperation<T: Persistable>: Operation<T> where T: NSObject {
+internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObject {
     
-    typealias CompletionHandler = (Any?, Swift.Error?) -> Void
+    typealias CompletionHandler = (R?, E?) -> Void
     
     let readPolicy: ReadPolicy
     
@@ -19,6 +19,7 @@ internal class ReadOperation<T: Persistable>: Operation<T> where T: NSObject {
         super.init(cache: cache, client: client)
     }
     
+    @discardableResult
     func execute(_ completionHandler: CompletionHandler? = nil) -> Request {
         switch readPolicy {
         case .forceLocal:
@@ -35,10 +36,12 @@ internal class ReadOperation<T: Persistable>: Operation<T> where T: NSObject {
         }
     }
     
+    @discardableResult
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     
+    @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }

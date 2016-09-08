@@ -49,7 +49,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     public typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
     public typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
-    public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
+    public typealias IntCompletionHandler = (Int?, Swift.Error?) -> Void
     public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [Swift.Error]?) -> Void
     public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [Swift.Error]?) -> Void
     
@@ -131,12 +131,8 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
-    open func findById(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
-        precondition(!id.isEmpty)
-        let readPolicy = readPolicy ?? self.readPolicy
-        let operation = GetOperation<T>(id: id, readPolicy: readPolicy, cache: cache, client: client)
-        let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
-        return request
+    open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> Request {
+        return find(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
     
     /**
@@ -149,8 +145,12 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
-    open func find(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
-        return findById(id, readPolicy: readPolicy, completionHandler: completionHandler)
+    open func find(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> Request {
+        precondition(!id.isEmpty)
+        let readPolicy = readPolicy ?? self.readPolicy
+        let operation = GetOperation<T>(id: id, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
+        return request
     }
     
     /**
@@ -162,7 +162,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
-    open func find(_ query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
+    open func find(_ query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ArrayCompletionHandler) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let deltaSet = deltaSet ?? self.deltaSet
         let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, cache: cache, client: client)
@@ -178,7 +178,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
-    open func count(_ query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func count(_ query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = CountOperation<T>(query: query, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -205,7 +205,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a record.
     @discardableResult
-    open func remove(_ persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
+    open func remove(_ persistable: T, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) throws -> Request {
         guard let id = persistable.entityId else {
             throw Error.objectIdMissing
         }
@@ -214,7 +214,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a list of records.
     @discardableResult
-    open func remove(_ array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func remove(_ array: [T], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.entityId {
@@ -226,7 +226,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a record using the `_id` of the record.
     @discardableResult
-    open func removeById(_ id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeById(_ id: String, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         precondition(!id.isEmpty)
 
         let writePolicy = writePolicy ?? self.writePolicy
@@ -237,7 +237,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a list of records using the `_id` of the records.
     @discardableResult
-    open func removeById(_ ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeById(_ ids: [String], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         precondition(ids.count > 0)
         let query = Query(format: "\(T.entityIdProperty()) IN %@", ids as AnyObject)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
@@ -245,7 +245,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a list of records that matches with the query passed by parameter.
     @discardableResult
-    open func remove(_ query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func remove(_ query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = RemoveByQueryOperation<T>(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -254,7 +254,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes all the records.
     @discardableResult
-    open func removeAll(_ writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+    open func removeAll(_ writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         return remove(writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
@@ -327,7 +327,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes all the pending changes in the local cache.
     @discardableResult
-    open func purge(_ query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
+    open func purge(_ query: Query = Query(), completionHandler: DataStore<T>.IntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         
         if type == .network {
@@ -354,44 +354,22 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     //MARK: Dispatch Async Main Queue
     
-    fileprivate func dispatchAsyncMainQueue<R, E>(_ completionHandler: ((R, E) -> Void)? = nil) -> ((R, E) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R, E>(_ completionHandler: ((R?, E?) -> Void)?) -> ((R?, E?) -> Void)? {
         if let completionHandler = completionHandler {
-            return { (obj, error) -> Void in
+            return { (obj1: R?, obj2: E?) -> Void in
                 DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj, error)
+                    completionHandler(obj1, obj2)
                 })
             }
         }
         return nil
     }
     
-    fileprivate func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((Any?, Swift.Error?) -> Void)? {
+    fileprivate func dispatchAsyncMainQueue<R1, R2, R3>(_ completionHandler: ((R1?, R2?, R3?) -> Void)?) -> ((R1?, R2?, R3?) -> Void)? {
         if let completionHandler = completionHandler {
-            return { (obj: Any?, error: Swift.Error?) -> Void in
+            return { (obj1: R1?, obj2: R2?, obj3: R3?) -> Void in
                 DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj as? R, error)
-                })
-            }
-        }
-        return nil
-    }
-    
-    fileprivate func dispatchAsyncMainQueue<R1, R2>(_ completionHandler: ((R1?, R2?, Swift.Error?) -> Void)? = nil) -> ((R1?, R2?, Swift.Error?) -> Void)? {
-        if let completionHandler = completionHandler {
-            return { (obj1: R1?, obj2: R2?, error: Swift.Error?) -> Void in
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj1, obj2, error)
-                })
-            }
-        }
-        return nil
-    }
-    
-    fileprivate func dispatchAsyncMainQueue<R1, R2, R3>(_ completionHandler: ((R1?, R2?, R3?) -> Void)? = nil) -> ((R1?, R2?, R3?) -> Void)? {
-        if let completionHandler = completionHandler {
-            return { (obj1: R1?, obj2: R2?, error: R3?) -> Void in
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj1, obj2, error)
+                    completionHandler(obj1, obj2, obj3)
                 })
             }
         }

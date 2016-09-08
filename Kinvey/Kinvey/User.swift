@@ -39,6 +39,7 @@ open class User: NSObject, Credential, Mappable {
     internal var client: Client
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
+    @discardableResult
     open class func signup(username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to sign up.")
 
@@ -61,6 +62,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Deletes a `User` by the `userId` property.
+    @discardableResult
     open class func destroy(userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
         Promise<Void> { fulfill, reject in
@@ -83,6 +85,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Deletes the `User`.
+    @discardableResult
     open func destroy(hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return User.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
     }
@@ -94,6 +97,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
+    @discardableResult
     open class func login(authSource: AuthSource, _ authData: [String : Any], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
         
@@ -116,6 +120,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Sign in a user and set as a current active user.
+    @discardableResult
     open class func login(username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
 
@@ -146,6 +151,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
+    @discardableResult
     open class func sendEmailConfirmation(forUsername username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildSendEmailConfirmation(forUsername: username)
         Promise<Void> { fulfill, reject in
@@ -172,6 +178,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
+    @discardableResult
     open func sendEmailConfirmation(_ client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         guard let username = username else {
             preconditionFailure("Username is required to send the email confirmation")
@@ -202,16 +209,19 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Sends an email to the user with a link to reset the password using the `username` property.
+    @discardableResult
     open class func resetPassword(username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password using the `email` property.
+    @discardableResult
     open class func resetPassword(email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password.
+    @discardableResult
     open func resetPassword(_ client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         if let email = email {
             return User.resetPassword(email: email, client: client, completionHandler: completionHandler)
@@ -231,6 +241,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
+    @discardableResult
     open func changePassword(newPassword: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         return save(newPassword: newPassword, client: client, completionHandler: completionHandler)
     }
@@ -241,6 +252,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
+    @discardableResult
     open class func forgotUsername(email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
         Promise<Void> { fulfill, reject in
@@ -260,6 +272,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Checks if a `username` already exists or not.
+    @discardableResult
     open class func exists(username: String, client: Client = Kinvey.sharedClient, completionHandler: BoolHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
@@ -279,6 +292,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Gets a `User` instance using the `userId` property.
+    @discardableResult
     open class func get(userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<User> { fulfill, reject in
@@ -338,6 +352,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Creates or updates a `User`.
+    @discardableResult
     open func save(newPassword: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSave(user: self, newPassword: newPassword)
         Promise<User> { fulfill, reject in
@@ -360,6 +375,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
      */
+    @discardableResult
     open func lookup(_ userQuery: UserQuery, client: Client = Kinvey.sharedClient, completionHandler: UsersHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserLookup(user: self, userQuery: userQuery)
         Promise<[User]> { fulfill, reject in

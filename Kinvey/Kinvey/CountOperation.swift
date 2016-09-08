@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CountOperation<T: Persistable>: ReadOperation<T> where T: NSObject {
+class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error> where T: NSObject {
     
     let query: Query?
     
@@ -17,7 +17,7 @@ class CountOperation<T: Persistable>: ReadOperation<T> where T: NSObject {
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
-    override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    override func executeLocal(_ completionHandler: ((Int?, Swift.Error?) -> Void)? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
@@ -30,7 +30,7 @@ class CountOperation<T: Persistable>: ReadOperation<T> where T: NSObject {
         return request
     }
     
-    override func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    override func executeNetwork(_ completionHandler: ((Int?, Swift.Error?) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(collectionName: T.collectionName(), query: query)
         request.execute() { data, response, error in
             if let response = response , response.isOK,

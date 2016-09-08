@@ -195,7 +195,7 @@ class NetworkStoreTests: StoreTestCase {
     func testCount() {
         let store = DataStore<Event>.collection(.network)
         
-        var eventsCount: UInt? = nil
+        var eventsCount: Int? = nil
         
         do {
             weak var expectationCount = expectation(description: "Count")
@@ -244,7 +244,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertNil(error)
                 
                 if let eventsCount = eventsCount, let count = count {
-                    XCTAssertEqual(eventsCount + UInt(1), count)
+                    XCTAssertEqual(eventsCount + 1, count)
                 }
                 
                 expectationCount?.fulfill()

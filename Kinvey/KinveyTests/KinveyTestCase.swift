@@ -33,7 +33,7 @@ extension XCTestCase {
 
 class KinveyTestCase: XCTestCase {
     
-    var client: Client!
+    let client = Kinvey.sharedClient
     var encrypted = false
     
     static let defaultTimeout = TimeInterval(Int8.max)
@@ -47,7 +47,7 @@ class KinveyTestCase: XCTestCase {
     static let appInitialize = appInitializeProduction
     
     func initializeDevelopment() {
-        client = Kinvey.sharedClient.initialize(
+        Kinvey.sharedClient.initialize(
             appKey: KinveyTestCase.appInitializeDevelopment.appKey,
             appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
             apiHostName: URL(string: "https://v3yk1n-kcs.kinvey.com")!,
@@ -56,7 +56,7 @@ class KinveyTestCase: XCTestCase {
     }
     
     func initializeProduction() {
-        client = Kinvey.sharedClient.initialize(
+        Kinvey.sharedClient.initialize(
             appKey: KinveyTestCase.appInitializeProduction.appKey,
             appSecret: KinveyTestCase.appInitializeProduction.appSecret,
             encrypted: encrypted
@@ -138,7 +138,7 @@ class KinveyTestCase: XCTestCase {
     override func tearDown() {
         setURLProtocol(nil)
         
-        if let user = client?.activeUser {
+        if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             user.destroy { (error) -> Void in
@@ -165,7 +165,7 @@ class KinveyTestCase: XCTestCase {
             client.urlSession = URLSession(configuration: sessionConfiguration)
             XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
         } else {
-            client?.urlSession = URLSession(configuration: URLSessionConfiguration.default)
+            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
         }
     }
     

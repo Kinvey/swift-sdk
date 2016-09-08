@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-internal class PurgeOperation<T: Persistable>: SyncOperation<T, UInt?, Swift.Error?> where T: NSObject {
+internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Error?> where T: NSObject {
     
     internal override init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
@@ -66,7 +66,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, UInt?, Swift.Err
         }
         
         when(fulfilled: promises).then { results in
-            completionHandler?(UInt(results.count), nil)
+            completionHandler?(results.count, nil)
         }.catch { error in
             completionHandler?(nil, error)
         }

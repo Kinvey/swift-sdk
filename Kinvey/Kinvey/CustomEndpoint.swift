@@ -16,11 +16,12 @@ open class CustomEndpoint: NSObject {
     public typealias CompletionHandler = (JsonDictionary?, Swift.Error?) -> Void
     
     /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
     open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildCustomEndpoint(name)
         if let params = params {
             request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.request.httpBody = try! JSONSerialization.data(withJSONObject: params, options: [])
+            request.request.httpBody = try! JSONSerialization.data(withJSONObject: params.toJson(), options: [])
         }
         request.request.setValue(nil, forHTTPHeaderField: RequestIdHeaderKey)
         request.execute() { data, response, error in

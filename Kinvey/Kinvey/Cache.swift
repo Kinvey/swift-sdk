@@ -28,13 +28,13 @@ internal protocol CacheType {
     
     func findAll() -> [Type]
     
-    func count(_ query: Query?) -> UInt
+    func count(_ query: Query?) -> Int
     
     func removeEntity(_ entity: Type) -> Bool
     
     func removeEntities(_ entity: [Type]) -> Bool
     
-    func removeEntitiesByQuery(_ query: Query) -> UInt
+    func removeEntitiesByQuery(_ query: Query) -> Int
     
     func removeAllEntities()
     
@@ -94,22 +94,26 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func count(_ query: Query? = nil) -> UInt {
+    func count(_ query: Query? = nil) -> Int {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
+    @discardableResult
     func removeEntity(_ entity: T) -> Bool {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
+    @discardableResult
     func removeEntities(_ entity: [T]) -> Bool {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeEntitiesByQuery(_ query: Query) -> UInt {
+    @discardableResult
+    func removeEntitiesByQuery(_ query: Query) -> Int {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
+    @discardableResult
     func removeAllEntities() {
         preconditionFailure("Method \(#function) must be overridden")
     }

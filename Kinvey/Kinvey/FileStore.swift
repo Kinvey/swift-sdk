@@ -53,6 +53,7 @@ open class FileStore {
 
 #if os(iOS)
     /// Uploads a `UIImage` in a PNG format.
+    @discardableResult
     open func upload(_ file: File, image: UIImage, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = UIImagePNGRepresentation(image)!
         file.mimeType = "image/png"
@@ -61,11 +62,13 @@ open class FileStore {
 #endif
     
     /// Uploads a file using the file path.
+    @discardableResult
     open func upload(_ file: File, path: String, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(file, fromData: nil, fromFile: URL(fileURLWithPath: path), ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Uploads a file using a input stream.
+    @discardableResult
     open func upload(_ file: File, stream: InputStream, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = NSMutableData()
         stream.open()
@@ -127,6 +130,7 @@ open class FileStore {
     }
     
     /// Uploads a file using a `NSData`.
+    @discardableResult
     open func upload(_ file: File, data: Data, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(file, fromData: data, fromFile: nil, ttl: ttl, completionHandler: completionHandler)
     }
@@ -258,6 +262,7 @@ open class FileStore {
     }
     
     /// Refresh a `File` instance.
+    @discardableResult
     open func refresh(_ file: File, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let fileMetadata = getFileMetadata(file, ttl: ttl)
         let request = fileMetadata.0
@@ -269,6 +274,7 @@ open class FileStore {
         return request
     }
     
+    @discardableResult
     fileprivate func downloadFile(_ file: File, storeType: StoreType = .cache, downloadURL: URL, completionHandler: FilePathCompletionHandler? = nil) -> NSURLSessionTaskRequest {
         let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<URL> { fulfill, reject in
@@ -333,6 +339,7 @@ open class FileStore {
         return downloadTaskRequest
     }
     
+    @discardableResult
     fileprivate func downloadFile(_ file: File, downloadURL: URL, completionHandler: FileDataCompletionHandler? = nil) -> NSURLSessionTaskRequest {
         let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<Data> { fulfill, reject in
@@ -371,6 +378,7 @@ open class FileStore {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
     open func download(_ file: File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         var file = file
         return download(&file, storeType: storeType, ttl: ttl, completionHandler: completionHandler)
@@ -383,13 +391,14 @@ open class FileStore {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
     open func download(_ file: inout File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         requiresFileId(&file)
         
         if storeType == .sync || storeType == .cache, let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
             file = cachedFile
             DispatchQueue.main.async { [file] in
-                completionHandler?(file, file.pathURL as URL?, nil)
+                completionHandler?(file, file.pathURL, nil)
             }
         }
         
@@ -415,12 +424,14 @@ open class FileStore {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
     open func download(_ file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
         var file = file
         return download(&file, ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
     open func download(_ file: inout File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
         requiresFileId(&file)
         
@@ -451,6 +462,7 @@ open class FileStore {
     }
     
     /// Deletes a file instance in the backend.
+    @discardableResult
     open func remove(_ file: File, completionHandler: UIntCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
@@ -477,6 +489,7 @@ open class FileStore {
     }
     
     /// Gets a list of files that matches with the query passed by parameter.
+    @discardableResult
     open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: FileArrayCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
         Promise<[File]> { fulfill, reject in

@@ -160,7 +160,7 @@ class QueryTest: XCTestCase {
     }
     
     func testPredicateSortSkipAndLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 }), "skip=2&limit=5&sort=\(encodeURL(["age" : -1]))&query=\(encodeURL(["lastName" : "Barros"]))")
+        XCTAssertEqual(encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 }), "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))")
     }
     
 }

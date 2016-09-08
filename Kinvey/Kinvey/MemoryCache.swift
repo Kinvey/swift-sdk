@@ -60,24 +60,26 @@ class MemoryCache<T: Persistable>: Cache<T> where T: NSObject {
         return findEntityByQuery(Query())
     }
     
-    override func count(_ query: Query? = nil) -> UInt {
+    override func count(_ query: Query? = nil) -> Int {
         if let query = query {
-            return UInt(findEntityByQuery(query).count)
+            return findEntityByQuery(query).count
         }
-        return UInt(memory.count)
+        return memory.count
     }
     
+    @discardableResult
     override func removeEntity(_ entity: T) -> Bool {
         let objId = entity.entityId!
         return memory.removeValue(forKey: objId) != nil
     }
     
-    override func removeEntitiesByQuery(_ query: Query) -> UInt {
+    @discardableResult
+    override func removeEntitiesByQuery(_ query: Query) -> Int {
         let objs = findEntityByQuery(query)
         for obj in objs {
             removeEntity(obj)
         }
-        return UInt(objs.count)
+        return objs.count
     }
     
     override func removeAllEntities() {

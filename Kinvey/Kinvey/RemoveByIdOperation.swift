@@ -18,7 +18,7 @@ internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> where T: 
     
     internal init(objectId: String, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.objectId = objectId
-        let query = Query(format: "\(T.entityIdProperty()) == %@", objectId as AnyObject)
+        let query = Query(format: "\(T.entityIdProperty()) == %@", objectId as Any)
         super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     

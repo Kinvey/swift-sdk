@@ -1020,7 +1020,7 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginWKWebView() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
@@ -1103,7 +1103,7 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginWKWebViewModal() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
@@ -1194,7 +1194,7 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginUIWebView() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
@@ -1271,7 +1271,7 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginUIWebViewTimeoutError() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
@@ -1316,7 +1316,7 @@ class UserTests: KinveyTestCase {
     
     func testMICErrorMessage() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
@@ -1356,11 +1356,11 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginAutomatedAuthorizationGrantFlow() {
-        if let user = client?.activeUser {
+        if let user = client.activeUser {
             user.logout()
         }
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }

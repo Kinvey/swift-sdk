@@ -60,7 +60,7 @@ open class File: Object {
     dynamic var pathURL: URL? {
         get {
             if let path = path {
-                return URL(string: path)
+                return URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
             }
             return nil
         }

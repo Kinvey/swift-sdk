@@ -21,6 +21,7 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
         super.init(cache: cache, client: client)
     }
     
+    @discardableResult
     func execute(_ completionHandler: CompletionHandler?) -> Request {
         switch writePolicy {
         case .forceLocal:
@@ -33,10 +34,12 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
         }
     }
     
+    @discardableResult
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     
+    @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }

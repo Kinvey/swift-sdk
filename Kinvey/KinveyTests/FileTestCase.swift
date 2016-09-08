@@ -367,10 +367,14 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(url?.path)
                 XCTAssertNil(error)
                 
-                if let url = url,
-                    let dataTmp = try? Data(contentsOf: url)
-                {
-                    XCTAssertEqual(dataTmp.count, data.count)
+                if let url = url {
+                    XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+                    
+                    if let dataTmp = try? Data(contentsOf: url) {
+                        XCTAssertEqual(dataTmp.count, data.count)
+                    } else {
+                        XCTFail()
+                    }
                 } else {
                     XCTFail()
                 }

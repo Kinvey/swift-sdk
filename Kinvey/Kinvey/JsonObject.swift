@@ -56,7 +56,7 @@ extension JsonObject {
     
 }
 
-extension Dictionary where Key: ExpressibleByStringLiteral, Value: AnyObject {
+extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
     
     fileprivate func translateValue(_ value: Any) -> Any {
         if let query = value as? Query, let predicate = query.predicate, let value = try? MongoDBPredicateAdaptor.queryDict(from: predicate) {
