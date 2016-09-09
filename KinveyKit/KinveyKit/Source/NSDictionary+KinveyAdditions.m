@@ -23,6 +23,9 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSObjectMapper.h"
 #import "KCSFile.h"
+#import "NSDate+ISO8601.h"
+#import "KinveyUser.h"
+#import "KinveyCollection.h"
 
 #if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
