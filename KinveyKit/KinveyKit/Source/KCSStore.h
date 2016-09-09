@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSStore_h
 #define KinveyKit_KCSStore_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSBlockDefs.h"
 #import "KCSQuery.h"
 #import "KinveyHeaderInfo.h"

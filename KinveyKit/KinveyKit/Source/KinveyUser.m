@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
@@ -27,7 +29,14 @@
 #import "KCSNetworkResponse.h"
 #import "KCSPush.h"
 #import "KinveyUser+Private.h"
+#import "KCSUser2+KinveyUserService+Private.h"
+#import "KCSClient+Private.h"
+#import <Kinvey/Kinvey-Swift.h>
+#import "KNVClient.h"
+
+#if TARGET_OS_IOS
 #import "KCSMICLoginViewController.h"
+#endif
 
 #pragma mark - Constants
 
@@ -189,6 +198,8 @@ void setActive(KCSUser* user)
     }];
 }
 
+#if TARGET_OS_IOS
+
 +(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
 {
     [KCSUser2 loginWithAuthorizationCodeLoginPage:redirectURI];
@@ -212,6 +223,13 @@ void setActive(KCSUser* user)
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
 {
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
+}
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(KNVClient*)client
+{
+    return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI
+                                            client:client];
 }
 
 +(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
@@ -258,9 +276,21 @@ void setActive(KCSUser* user)
                     forURL:(NSURL *)url
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
+    [self parseMICRedirectURI:redirectURI
+                       forURL:url
+                       client:[KCSClient sharedClient].client
+          withCompletionBlock:completionBlock];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(KNVClient*)client
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
     SWITCH_TO_MAIN_THREAD_USER_BLOCK(completionBlock);
     [KCSUser2 parseMICRedirectURI:redirectURI
                            forURL:url
+                           client:client
               withCompletionBlock:^(id<KCSUser2> user, NSError *error)
     {
         if (completionBlock) {
@@ -279,6 +309,8 @@ void setActive(KCSUser* user)
     return [KCSUser2 micApiVersion];
 }
 
+#endif
+
 - (void)logout
 {
     if (![self isEqual:[KCSUser activeUser]]){
@@ -291,7 +323,9 @@ void setActive(KCSUser* user)
         // the right thing.  This might be less efficient than just iterating, but these routines have
         // been optimized, we do this now, since there's no other place guarenteed to merge.
         // Login/create store this info
+#if TARGET_OS_IOS
         [[KCSPush sharedPush] setDeviceToken:nil];
+#endif
         
         [KCSUser clearSavedCredentials];
         [[KCSAppdataStore caches] clear];
@@ -547,3 +581,5 @@ void setActive(KCSUser* user)
 }
 
 @end
+
+#pragma clang diagnostic pop

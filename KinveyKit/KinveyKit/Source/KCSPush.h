@@ -19,8 +19,11 @@
 #ifndef KinveyKit_KCSPush_h
 #define KinveyKit_KCSPush_h
 
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
+#if TARGET_OS_IOS
+@import UIKit;
+#endif
+
+@import Foundation;
 
 #import "KinveyHeaderInfo.h"
 #import "KCSBlockDefs.h"
@@ -84,6 +87,8 @@
  */
 - (void)onUnloadHelper;
 
+#if TARGET_OS_IOS
+
 ///---------------------------------------------------------------------------------------
 /// @name Receiving Notifications
 ///---------------------------------------------------------------------------------------
@@ -122,7 +127,6 @@
  @since 1.17.0
  */
 - (void) registerForRemoteNotifications;
-
 
 /*! Register device for remote notifications
  
@@ -164,6 +168,8 @@
  @since 1.17.0
  */
 - (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+
+#endif
 
 ///---------------------------------------------------------------------------------------
 /// @name Badge Management

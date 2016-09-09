@@ -44,7 +44,7 @@
 {
     NSData *imageData = [image TIFFRepresentation];
     NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imageData];
-    imageData = [imageRep representationUsingType:NSPNGFileType properties:nil];
+    imageData = [imageRep representationUsingType:NSPNGFileType properties:@{}];
     return imageData;
 }
 

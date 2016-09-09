@@ -21,6 +21,7 @@
 #import "KinveyEntity.h"
 
 #import "KCSLogManager.h"
+#import "KinveyPersistable.h"
 
 
 // NOTE: We're supressing the remainder of protocol warnings here

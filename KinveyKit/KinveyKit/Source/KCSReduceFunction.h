@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSReduceFunction_h
 #define KinveyKit_KCSReduceFunction_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 /**
  The purpose of this object is to represent the reduce function applied to a collection when using `KCSStore`'s groupBy: method. 

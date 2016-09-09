@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-W#warnings"
+
 #import "KCSPersistableDescription.h"
 #import "KinveyPersistable.h"
 #import "KinveyCoreInternal.h"
@@ -266,3 +269,5 @@ BOOL kcsIsContainerClass(Class aClass)
 }
 
 @end
+
+#pragma clang diagnostic pop

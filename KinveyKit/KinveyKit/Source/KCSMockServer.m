@@ -245,8 +245,10 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
 - (NSError *)errorForRequest:(NSURLRequest *)request
 {
     if (self.offline) {
+#if !TARGET_OS_WATCH
         NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:kCFURLErrorNotConnectedToInternet userInfo:nil];
         return error;
+#endif
     }
     
     NSString* url = [request.URL path];

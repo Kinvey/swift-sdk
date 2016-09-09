@@ -63,3 +63,10 @@ FOUNDATION_EXPORT const unsigned char KinveyKitVersionString[];
 #import <KinveyKit/NSString+KinveyAdditions.h>
 #import <KinveyKit/NSURL+KinveyAdditions.h>
 #import <KinveyKit/KinveyVersion.h>
+#import <KinveyKit/KCSMICLoginViewController.h>
+#import <KinveyKit/KCSRealmEntityPersistence.h>
+#import <KinveyKit/KCSCache.h>
+#import <KinveyKit/KCSSync.h>
+#import <KinveyKit/KCSPendingOperation.h>
+#import <KinveyKit/KCSKeychain.h>
+#import <KinveyKit/KCSCacheManager.h>

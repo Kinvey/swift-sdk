@@ -6,12 +6,12 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface DataStoreOperation : NSOperation
 
 @property (nonatomic, copy) dispatch_block_t block;
-@property (nonatomic) BOOL executing;
-@property (nonatomic) BOOL finished;
+@property (atomic, getter=isExecuting) BOOL executing;
+@property (atomic, getter=isFinished) BOOL finished;
 
 @end

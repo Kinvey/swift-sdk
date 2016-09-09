@@ -24,6 +24,8 @@
 // THE SOFTWARE.
 //
 
+#if !TARGET_OS_WATCH
+
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
@@ -198,3 +200,5 @@ onReachabilityAchieved:(dispatch_block_t) onReachabilityAchieved;
 @property(nonatomic,readonly,retain) KCS_KSReachability* reachability;
 
 @end
+
+#endif

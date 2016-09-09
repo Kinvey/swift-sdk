@@ -17,11 +17,15 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#pragma clang diagnostic ignored "-Wconversion"
 
 #import "KCSFileStore.h"
 
 #if TARGET_OS_IPHONE
-#import <MobileCoreServices/MobileCoreServices.h>
+@import MobileCoreServices;
 #endif
 
 #import "NSMutableDictionary+KinveyAdditions.h"
@@ -45,6 +49,7 @@
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
 #import "KCSFileRequest.h"
+#import "KinveyPersistable.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -90,8 +95,10 @@ NSString* kcsMimeType(id filenameOrURL)
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:@"GET"];
+#if !TARGET_OS_WATCH
     NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     [connection start];
+#endif
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -1379,3 +1386,4 @@ NSString* const KCSFileStoreCollectionName = @"_blob";
 
 @end
 
+#pragma clang diagnostic pop

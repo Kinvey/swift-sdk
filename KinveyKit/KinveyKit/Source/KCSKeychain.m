@@ -17,6 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSKeychain.h"
 #import "KinveyCoreInternal.h"
 #import "KCSClient.h"
@@ -25,11 +28,16 @@
 
 @implementation KCSKeychain2
 
-+ (CFTypeRef) accessKey
++ (NSString *) accessKey
 {
     KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];
+    return [self accessibleStringForDataProtectionLevel:level];
+}
+
++(NSString *)accessibleStringForDataProtectionLevel:(KCSDataProtectionLevel)dataProtectionLevel
+{
     CFTypeRef access = kSecAttrAccessibleAlwaysThisDeviceOnly;
-    switch (level) {
+    switch (dataProtectionLevel) {
         case KCSDataComplete:
             access = kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
             break;
@@ -42,7 +50,7 @@
         default:
             break;
     }
-    return access;
+    return (__bridge id)access;
     
 }
 
@@ -53,7 +61,9 @@
         case errSecSuccess               : message = @"No error."; break;
         case errSecUnimplemented         : message = @"Function or operation not implemented."; break;
         case errSecIO                    : message = @"I/O error (bummers)"; break;
+#if TARGET_OS_IOS
         case errSecOpWr                  : message = @"File already open with with write permission"; break;
+#endif
         case errSecParam                 : message = @"One or more parameters passed to a function where not valid."; break;
         case errSecAllocate              : message = @"Failed to allocate memory."; break;
         case errSecUserCanceled          : message = @"User canceled the operation."; break;
@@ -70,34 +80,60 @@
     return message;
 }
 
-static NSMutableDictionary* lastValidTokenMap = nil;
+static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSString*>*>* lastValidTokenMap = nil;
 
 +(void)initialize
 {
-    [super initialize];
-    
-    lastValidTokenMap = [NSMutableDictionary dictionary];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        lastValidTokenMap = [NSMutableDictionary dictionary];
+    });
 }
 
 + (BOOL) setKinveyToken:(NSString*)token user:(NSString*)userId
 {
+    return [self setKinveyToken:token
+                           user:userId
+                         appKey:nil];
+}
+
++(BOOL)setKinveyToken:(NSString *)token
+                 user:(NSString *)userId
+               appKey:(NSString *)appKey
+{
+    return [self setKinveyToken:token
+                           user:userId
+                         appKey:appKey
+                     accessible:[self accessKey]];
+}
+
++(BOOL)setKinveyToken:(NSString *)token
+                 user:(NSString *)userId
+               appKey:(NSString *)appKey
+           accessible:(NSString *)accessible
+{
     @synchronized (self) {
         NSData *tokenData = [token dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary* attributes = @{(__bridge id)kSecAttrAccessible  : (__bridge id)[self accessKey],
-                                     (__bridge id)kSecValueData       : tokenData,
-                                     (__bridge id)kSecAttrDescription : @"Kinvey Auth Token",
-                                     (__bridge id)kSecAttrAccount     : userId,
-                                     (__bridge id)kSecAttrService     : @"com.kinvey.KinveyKit.authToken"
-                                     };
+        NSMutableDictionary* attributes = @{(__bridge id)kSecAttrAccessible  : accessible,
+                                            (__bridge id)kSecValueData       : tokenData,
+                                            (__bridge id)kSecAttrDescription : @"Kinvey Auth Token",
+                                            (__bridge id)kSecAttrService     : @"com.kinvey.KinveyKit.authToken"
+                                            }.mutableCopy;
+        if (userId) {
+            attributes[(__bridge id)kSecAttrAccount] = userId;
+        }
+        if (appKey) {
+            attributes[(__bridge id)kSecAttrLabel] = appKey;
+        }
         OSStatus status;
-        if ([self kinveyTokenForUserId:userId]) {
+        if ([self kinveyTokenForUserId:userId appKey:appKey]) {
             NSDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
                                     (__bridge id)kSecAttrAccount : userId,
                                     (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken"
                                     };
             status = SecItemUpdate((__bridge CFDictionaryRef)query, (__bridge CFDictionaryRef)attributes);
         } else {
-            attributes = [attributes dictionaryByAddingDictionary:@{(__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword}];
+            attributes[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
             status = SecItemAdd((__bridge CFDictionaryRef)(attributes), NULL);
         }
         BOOL success = status == errSecSuccess;
@@ -115,7 +151,9 @@ static NSMutableDictionary* lastValidTokenMap = nil;
             }
         } else {
             if (token) {
-                lastValidTokenMap[userId] = token;
+                [self setCacheToken:token
+                               user:userId
+                             appKey:appKey];
             } else {
                 [lastValidTokenMap removeObjectForKey:userId];
             }
@@ -124,15 +162,43 @@ static NSMutableDictionary* lastValidTokenMap = nil;
     }
 }
 
++(void)setCacheToken:(NSString *)token
+                user:(NSString *)userId
+              appKey:(NSString *)appKey
+{
+    @synchronized (self) {
+        if (!appKey) appKey = @"";
+        NSMutableDictionary<NSString*, NSString*>* keys = lastValidTokenMap[appKey];
+        if (keys == nil) {
+            keys = [NSMutableDictionary dictionary];
+            lastValidTokenMap[appKey] = keys;
+        }
+        if (!userId) userId = @"";
+        keys[userId] = token;
+    }
+}
+
 + (NSString*) kinveyTokenForUserId:(NSString*)userId
+{
+    return [self kinveyTokenForUserId:userId
+                               appKey:nil];
+}
+
++(NSString *)kinveyTokenForUserId:(NSString *)userId
+                           appKey:(NSString *)appKey
 {
     @synchronized (self) {
         CFTypeRef result = nil;
-        NSDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
-                                (__bridge id)kSecAttrAccount : userId,
-                                (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
-                                (__bridge id)kSecReturnData  : @YES
-                                };
+        NSMutableDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
+                                       (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
+                                       (__bridge id)kSecReturnData  : @YES
+                                       }.mutableCopy;
+        if (userId) {
+            query[(__bridge id)kSecAttrAccount] = userId;
+        }
+        if (appKey) {
+            query[(__bridge id)kSecAttrLabel] = appKey;
+        }
         OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
         BOOL success = status == errSecSuccess;
         
@@ -147,10 +213,10 @@ static NSMutableDictionary* lastValidTokenMap = nil;
              Try to get the value from the keychain, if it fails with the error code that we know that causes the issue (-34018), we return the last valid value (in memory) that we have
              */
             if (status == KCS_KEYCHAIN_BUG_ERROR_CODE) {
-                token = lastValidTokenMap[userId];
+                token = lastValidTokenMap[appKey ? appKey : @""][userId];
             } else {
                 //if it's not the error code that we know that causes the issue (-34018), update the last valid value variable
-                [lastValidTokenMap removeObjectForKey:userId];
+                [lastValidTokenMap[appKey ? appKey : @""] removeObjectForKey:userId];
                 
                 if (status != errSecItemNotFound) {
                     //only log if error is something other than not found
@@ -161,7 +227,9 @@ static NSMutableDictionary* lastValidTokenMap = nil;
             if (result != nil) {
                 token = [[NSString alloc] initWithData:(NSData*)CFBridgingRelease(result) encoding:NSUTF8StringEncoding];
                 if (token) {
-                    lastValidTokenMap[userId] = token;
+                    [self setCacheToken:token
+                                   user:userId
+                                 appKey:appKey];
                 }
             }
         }
@@ -172,10 +240,23 @@ static NSMutableDictionary* lastValidTokenMap = nil;
 
 + (BOOL) hasTokens
 {
+    return [self hasTokensForUser:nil
+                           appKey:nil];
+}
+
++(BOOL)hasTokensForUser:(NSString *)userId
+                 appKey:(NSString *)appKey
+{
     @synchronized (self) {
-        NSDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
-                                (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
-                                };
+        NSMutableDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
+                                       (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
+                                       }.mutableCopy;
+        if (userId) {
+            query[(__bridge id)kSecAttrAccount] = userId;
+        }
+        if (appKey) {
+            query[(__bridge id)kSecAttrLabel] = appKey;
+        }
         OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, NULL);
         
         BOOL success = status == errSecSuccess;
@@ -198,10 +279,23 @@ static NSMutableDictionary* lastValidTokenMap = nil;
 
 + (BOOL) deleteTokens
 {
+    return [self deleteTokensForUser:nil
+                              appKey:nil];
+}
+
++(BOOL)deleteTokensForUser:(NSString *)userId
+                    appKey:(NSString *)appKey
+{
     @synchronized (self) {
-        NSDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
-                                (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
-                                };
+        NSMutableDictionary* query = @{(__bridge id)kSecClass       : (__bridge id)kSecClassGenericPassword,
+                                       (__bridge id)kSecAttrService : @"com.kinvey.KinveyKit.authToken",
+                                       }.mutableCopy;
+        if (userId) {
+            query[(__bridge id)kSecAttrAccount] = userId;
+        }
+        if (appKey) {
+            query[(__bridge id)kSecAttrLabel] = appKey;
+        }
         OSStatus status = SecItemDelete((__bridge CFDictionaryRef)(query));
         
         BOOL success = status == errSecSuccess;
@@ -219,3 +313,5 @@ static NSMutableDictionary* lastValidTokenMap = nil;
 }
 
 @end
+
+#pragma clang diagnostic pop
