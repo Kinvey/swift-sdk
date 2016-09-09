@@ -16,8 +16,7 @@
 // contents is a violation of applicable laws.
 //
 
-
-#import <CoreLocation/CoreLocation.h>
+@import CoreLocation;
 
 @interface CLCircularRegion (KinveyKit)
 

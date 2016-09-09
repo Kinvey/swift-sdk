@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSHttpRequest.h"
 #import "KinveyCoreInternal.h"
@@ -28,7 +30,7 @@
 #import "KinveyUser+Private.h"
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSLogManager.h"
-#import "KCSClient.h"
+#import "KCSClient+Private.h"
 
 #define kHeaderAuthorization           @"Authorization"
 #define kHeaderDate                    @"Date"
@@ -62,6 +64,7 @@ KCS_CONST_IMPL KCSRESTMethodPUT    = @"PUT";
 
 #define KCS_VERSION @"3"
 
+#import <Kinvey/Kinvey-Swift.h>
 
 #define MAX_DATE_STRING_LENGTH_K 40
 KK2(make just 1)
@@ -107,7 +110,21 @@ static NSOperationQueue* kcsRequestQueue;
                                  route:route
                                options:options
                            credentials:credentials
-                  requestConfiguration:nil];
+                                client:[KCSClient sharedClient].client];
+}
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                                client:(KNVClient*)client
+{
+    return [self requestWithCompletion:completion
+                                 route:route
+                               options:options
+                           credentials:credentials
+                  requestConfiguration:nil
+                                client:client];
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
@@ -116,7 +133,22 @@ static NSOperationQueue* kcsRequestQueue;
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
-    KCSHttpRequest* request = [[KCSHttpRequest alloc] init];
+    return [self requestWithCompletion:completion
+                                 route:route
+                               options:options
+                           credentials:credentials
+                  requestConfiguration:requestConfiguration
+                                client:[KCSClient sharedClient].client];
+}
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                  requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                                client:(KNVClient*)client
+{
+    KCSHttpRequest* request = [[KCSHttpRequest alloc] initWithClient:client];
     request.useMock = [options[KCSRequestOptionUseMock] boolValue];
     request.completionBlock = completion;
     request.credentials = credentials;
@@ -128,25 +160,34 @@ static NSOperationQueue* kcsRequestQueue;
 
 - (instancetype) init
 {
+    return [self initWithClient:[KCSClient sharedClient].client];
+}
+
+- (instancetype) initWithClient:(KNVClient*)client
+{
     self = [super init];
     if (self) {
         _contentType = kHeaderValueJson;
         _method = KCSRESTMethodGET;
+        _client = client;
     }
     return self;
 }
 
-
 # pragma mark -
 - (NSString*)finalURL
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    NSString* baseURL = [config baseURL];
-    NSString* kid = config.appKey;
+    NSMutableString* endpoint = self.client.apiHostName.absoluteString.mutableCopy;
+    if ([endpoint characterAtIndex:endpoint.length - 1] != '/') {
+        [endpoint appendString:@"/"];
+    }
+    NSString* kid = self.client.appKey;
 
     if (_useMock && kid == nil) {
         kid = @"mock";
-        baseURL = baseURL ? baseURL : @"https://localhost:2110/";
+        if (!endpoint) {
+            endpoint = @"https://localhost:2110/".mutableCopy;
+        }
     }
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
@@ -158,7 +199,7 @@ static NSOperationQueue* kcsRequestQueue;
             urlStr = [urlStr stringByAppendingFormat:@"/%@",self.queryString];
         }
     }
-    NSString* endpoint = [baseURL stringByAppendingString:urlStr];
+    [endpoint appendString:urlStr];
 
     return endpoint;
 }
@@ -216,11 +257,16 @@ static NSOperationQueue* kcsRequestQueue;
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    
+    return [self requestForURL:url
+                        client:[KCSClient sharedClient].client];
+}
+
++(NSMutableURLRequest *)requestForURL:(NSURL *)url
+                               client:(KNVClient*)client
+{
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
-                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-                                                       timeoutInterval:config.connectionTimeout];
+                                                           cachePolicy:client.cachePolicy
+                                                       timeoutInterval:client.timeoutInterval];
     if (url.host) {
         [request setValue:url.host
        forHTTPHeaderField:@"Host"];
@@ -235,13 +281,13 @@ static NSOperationQueue* kcsRequestQueue;
     [request setValue:[KCSPlatformUtils platformString]
    forHTTPHeaderField:kHeaderDeviceInfo];
     
-    NSString* clientAppVersion = self.clientAppVersion;
+    NSString* clientAppVersion = client.clientAppVersion;
     if (clientAppVersion) {
         [request setValue:clientAppVersion
        forHTTPHeaderField:kHeaderClientAppVersion];
     }
     
-    NSString* customRequestPropertiesJsonString = self.customRequestProperties && self.customRequestProperties.count > 0 ? self.customRequestProperties.jsonString : nil;
+    NSString* customRequestPropertiesJsonString = client.customRequestProperties && client.customRequestProperties.count > 0 ? client.customRequestProperties.jsonString : nil;
     if (customRequestPropertiesJsonString) {
         [request setValue:customRequestPropertiesJsonString
        forHTTPHeaderField:kHeaderCustomRequestProperties];
@@ -255,7 +301,8 @@ static NSOperationQueue* kcsRequestQueue;
 
 -(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
-    NSMutableURLRequest* request = [self.class requestForURL:url];
+    NSMutableURLRequest* request = [self.class requestForURL:url
+                                                      client:self.client];
     
     NSString* clientAppVersion = self.clientAppVersion;
     if (clientAppVersion) {
@@ -300,7 +347,13 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:request.allHTTPHeaderFields];
     @try {
-        headers[kHeaderAuthorization] = [self.credentials authString];
+        NSString* authorizationHeader;
+        if ([KCSClient sharedClient].appKey && [KCSClient sharedClient].appSecret) {
+            authorizationHeader = [self.credentials authString];
+        } else {
+            authorizationHeader = self.client.authorizationHeader;
+        }
+        headers[kHeaderAuthorization] = authorizationHeader;
     }
     @catch (NSException *exception) {
         KCSLogError(@"Error setting the authorization header: %@", exception);
@@ -404,6 +457,7 @@ BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
     if (op.error) {
         if ([[op.error domain] isEqualToString:NSURLErrorDomain]) {
             switch (op.error.code) {
+#if !TARGET_OS_WATCH
                 case kCFURLErrorUnknown:
                 case kCFURLErrorTimedOut:
                 case kCFURLErrorCannotFindHost:
@@ -414,6 +468,7 @@ BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
                 case kCFURLErrorRequestBodyStreamExhausted:
                     isError = YES;
                     break;
+#endif
             }
         }
     }
@@ -551,3 +606,5 @@ static NSMutableArray* _sRequestArray;
 }
 
 @end
+
+#pragma clang diagnostic pop

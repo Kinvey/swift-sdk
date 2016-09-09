@@ -24,6 +24,8 @@
 // THE SOFTWARE.
 //
 
+#if !TARGET_OS_WATCH
+
 #import "KCS_KSReachability.h"
 #import <netdb.h>
 #import "KCSLogManager.h"
@@ -74,15 +76,14 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
                                   SCNetworkReachabilityFlags flags,
                                   void* info);
 
-
 @implementation KCS_KSReachability
 
 @synthesize onInitializationComplete = _onInitializationComplete;
 @synthesize onReachabilityChanged = _onReachabilityChanged;
 @synthesize flags = _flags;
+@synthesize reachabilityRef = _reachabilityRef;
 @synthesize reachable = _reachable;
 @synthesize WWANOnly = _WWANOnly;
-@synthesize reachabilityRef = _reachabilityRef;
 @synthesize hostname = _hostname;
 @synthesize notificationName = _notificationName;
 @synthesize initialized = _initialized;
@@ -466,3 +467,5 @@ onReachabilityAchieved:(dispatch_block_t) onReachabilityAchieved
 }
 
 @end
+
+#endif

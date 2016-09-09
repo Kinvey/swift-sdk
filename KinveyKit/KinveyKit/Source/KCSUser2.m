@@ -17,6 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSUser2.h"
 
 #import "KCSHiddenMethods.h"
@@ -161,3 +164,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop

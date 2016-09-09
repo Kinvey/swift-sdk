@@ -17,6 +17,8 @@
 //
 
 #import "KCSHttpRequest.h"
+#import "KNVClient.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 @interface KCSHttpRequest ()
 
@@ -26,5 +28,9 @@
 @property (nonatomic, weak) id<KCSCredentials> credentials;
 @property (nonatomic, retain) NSString* route;
 @property (nonatomic, copy) NSDictionary* options;
+@property (nonatomic, strong) KNVClient* client;
+
++(NSMutableURLRequest *)requestForURL:(NSURL *)url
+                               client:(id)client;
 
 @end

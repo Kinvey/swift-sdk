@@ -16,7 +16,7 @@
 //
 
 #ifdef __OBJC__
-    #import <Foundation/Foundation.h>
+    @import Foundation;
 #endif
 
 
@@ -306,3 +306,4 @@ static NSInteger referenceCount = 0; \
 }
 
 #import "KinveyHeaderInfo.h"
+#import "KinveyInternal-Swift.h"

@@ -16,8 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
-#import "KinveyPersistable.h"
+@import Foundation;
+@protocol KCSPersistable;
 
 /**
  Category to support using NS(Mutable)Dictionary objects as first-class Kinvey Entities.

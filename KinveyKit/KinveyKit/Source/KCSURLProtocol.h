@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 /**
  NSURLProtocol wrapper for Kinvey requests.

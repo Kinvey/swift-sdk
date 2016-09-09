@@ -20,10 +20,10 @@
 
 #import "KCSObjectMapper.h"
 
-#import <objc/runtime.h>
+@import ObjectiveC;
 
 //TODO: remove core location as dependency injection
-#import <CoreLocation/CoreLocation.h>
+@import CoreLocation;
 
 #import "KCSPropertyUtil.h"
 

@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSRequestConfiguration_h
 #define KinveyKit_KCSRequestConfiguration_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 /**
  Configuration wrapper for setting up Kinvey requests such as Client App Version and Custom Request Properties.

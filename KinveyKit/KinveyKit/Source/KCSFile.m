@@ -28,6 +28,7 @@
 
 #define kTypeResourceValue @"resource"
 #define kImageMimeType @"image/png"
+#import "KinveyPersistable.h"
 
 @interface KCSFile ()
 @property (nonatomic, retain) NSString* refType;

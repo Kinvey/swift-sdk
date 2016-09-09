@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSUser2_h
 #define KinveyKit_KCSUser2_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #import "KinveyPersistable.h"
 @class KCSMetadata;

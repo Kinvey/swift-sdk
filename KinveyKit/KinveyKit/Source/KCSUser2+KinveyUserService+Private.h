@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSUser2+KinveyUserService.h"
 
 extern NSString* const kKCSMICRefreshTokenKey;
@@ -16,6 +16,18 @@ extern NSString* const kKCSMICRedirectURIKey;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                             isLoginPage:(BOOL)isLoginPage;
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(id)client;
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                            isLoginPage:(BOOL)isLoginPage
+                                 client:(id)client;
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(id)client
+       withCompletionBlock:(KCSUser2CompletionBlock)completionBlock;
 
 +(void)oAuthTokenWithRefreshToken:(NSString*)refreshToken
                       redirectURI:(NSString*)redirectURI

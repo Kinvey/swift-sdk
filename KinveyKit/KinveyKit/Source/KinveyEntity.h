@@ -16,10 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
-#import "KinveyPersistable.h"
+@import Foundation;
 
 #import "KinveyHeaderInfo.h"
+#import "KinveyPersistable.h"
 
 /*!  Add ActiveRecord-style capabilities to the built-in root object (NSObject) of the AppKit/Foundation system.
 *

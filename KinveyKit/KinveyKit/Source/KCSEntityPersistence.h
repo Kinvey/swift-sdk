@@ -16,7 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+
+#import "KCSQueryProtocol.h"
 
 @interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
@@ -59,3 +61,34 @@
 
 @end
 
+@protocol KCSEntityPersistence <NSObject>
+
+@property (nonatomic, readonly) NSString* persistenceId;
+
+-(instancetype)initWithPersistenceId:(NSString*)persistenceId;
+
+-(void)saveEntity:(NSDictionary<NSString*, id>*)entity
+         forClass:(Class)clazz;
+
+-(void)saveEntities:(NSArray<NSDictionary<NSString*, id>*>*)entities
+           forClass:(Class)clazz;
+
+-(void)removeEntity:(NSDictionary<NSString*, id>*)entity
+           forClass:(Class)clazz;
+
+-(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
+                          forClass:(Class)clazz;
+
+-(void)removeAllEntities;
+
+-(void)removeAllEntitiesForClass:(Class)clazz;
+
+-(NSDictionary<NSString*, id>*)findEntity:(NSString*)objectId
+                                 forClass:(Class)clazz;
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
+                                                  forClass:(Class)clazz;
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findAllForClass:(Class)clazz;
+
+@end

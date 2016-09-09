@@ -16,7 +16,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 /**
  This protocol is to install a custom logger into KinveyKit's debugging logging system. Use this with KCSClient option `KCS_LOG_SINK` to install the implementing class.
  @since 1.14.0

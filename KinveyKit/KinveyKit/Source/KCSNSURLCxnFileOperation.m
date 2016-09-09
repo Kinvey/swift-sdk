@@ -17,6 +17,10 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wconversion"
+
 #import "KCSNSURLCxnFileOperation.h"
 #import "KinveyErrorCodes.h"
 #import "KinveyCoreInternal.h"
@@ -101,10 +105,11 @@
         } else {
             _isUpload = YES;
         }
-
+#if !TARGET_OS_WATCH
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         [_connection setDelegateQueue:[NSOperationQueue mainQueue]];
         [_connection start];
+#endif
     }
 }
 
@@ -233,3 +238,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop

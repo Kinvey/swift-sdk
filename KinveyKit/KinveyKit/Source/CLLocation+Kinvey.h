@@ -16,7 +16,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <CoreLocation/CoreLocation.h>
+@import CoreLocation;
 
 /** Convert a CLLocationCoordinate2D to the Kinvey representation;
  @since 1.26.0
