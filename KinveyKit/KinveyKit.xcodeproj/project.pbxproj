@@ -4682,9 +4682,6 @@
 					57FF3D881AB9B9C900128BC7 = {
 						CreatedOnToolsVersion = 6.2;
 					};
-					D32A60C714716EE300F77A3F = {
-						DevelopmentTeam = 5W7CYNR7UE;
-					};
 				};
 			};
 			buildConfigurationList = D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */;
@@ -10911,8 +10908,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1.409;
 				FRAMEWORK_VERSION = A;
