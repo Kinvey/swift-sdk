@@ -103,6 +103,16 @@ static NSMutableDictionary* lastValidTokenMap = nil;
         BOOL success = status == errSecSuccess;
         if (!success) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not write token to keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+            if (status == KCS_KEYCHAIN_BUG_ERROR_CODE) {
+                NSString* reason = [NSString stringWithFormat:@"Could not write token to keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status)];
+                NSDictionary* userInfo = @{
+                    NSLocalizedDescriptionKey : reason,
+                    NSLocalizedFailureReasonErrorKey : reason
+                };
+                @throw [NSException exceptionWithName:@"KinveyException"
+                                               reason:reason
+                                             userInfo:userInfo];
+            }
         } else {
             if (token) {
                 lastValidTokenMap[userId] = token;
