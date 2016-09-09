@@ -24,7 +24,6 @@
 
 //TODO: remove core location as dependency injection
 #import <CoreLocation/CoreLocation.h>
-#import <CoreData/CoreData.h>
 
 #import "KCSPropertyUtil.h"
 
@@ -363,10 +362,9 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                                 [objVals addObject:[references[refIdx] object]];
                             }
                         } else {
-                            NSMutableDictionary* kinveyRefDict = nil;
+                            NSDictionary* kinveyRefDict = nil;
                             NSString *_collection = nil, *_id = nil;
-                            if ([valClass isSubclassOfClass:[NSManagedObject class]] &&
-                                [arVal isKindOfClass:[NSDictionary class]] &&
+                            if ([arVal isKindOfClass:[NSDictionary class]] &&
                                 (kinveyRefDict = (NSDictionary*)arVal) &&
                                 [kinveyRefDict[@"_type"] isEqualToString:@"KinveyRef"] &&
                                 (_collection = kinveyRefDict[@"_collection"]) &&
