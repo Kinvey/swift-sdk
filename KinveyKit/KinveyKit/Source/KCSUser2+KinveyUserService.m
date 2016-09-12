@@ -18,6 +18,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSUser2+KinveyUserService.h"
 
 #import "KinveyCoreInternal.h"
@@ -31,10 +34,14 @@ KK2(Cleanup!)
 
 #import "NSString+KinveyAdditions.h"
 #import "NSURL+KinveyAdditions.h"
+#import "NSDictionary+KinveyAdditions.h"
 
 #import "KCSURLConnectionDelegateAdapter.h"
 #import "KCSRequest+Private.h"
 #import "KCSMICRequest2.h"
+#import "KCSClient+Private.h"
+#import "KCSHttpRequest+Private.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 #define KCSEntityKeyKMD @"_kmd"
 #define KCSEntityKeyAuthtoken @"authtoken"
@@ -125,7 +132,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
-+ (void) createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider loginBody:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock;
++ (void)createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider
+                     loginBody:(NSDictionary*)body
+                        client:(KNVClient*)client
+                    completion:(KCSUser2CompletionBlock)completionBlock;
 {
     KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
@@ -142,9 +152,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
     }
-                                                        route:KCSRESTRouteUser
-                                                      options:@{KCSRequestLogMethod}
-                                                  credentials:[KCSClient2 sharedClient]];
+                                                              route:KCSRESTRouteUser
+                                                            options:@{KCSRequestLogMethod}
+                                                        credentials:[KCSClient2 sharedClient]
+                                                             client:client];
     request.method = KCSRESTMethodPOST;
     request.body = body;
     [request start];
@@ -188,6 +199,17 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                      accessDictionary:(NSDictionary*)accessDictionary
                            completion:(KCSUser2CompletionBlock)completionBlock
 {
+    return [self connectWithAuthProvider:provider
+                        accessDictionary:accessDictionary
+                                  client:[KCSClient sharedClient].client
+                              completion:completionBlock];
+}
+
++(KCSRequest*)connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider
+                     accessDictionary:(NSDictionary*)accessDictionary
+                               client:(KNVClient*)client
+                           completion:(KCSUser2CompletionBlock)completionBlock
+{
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
     NSDictionary* loginDict = [self loginDictForProvider:provider accessDictionary:accessDictionary];
     
@@ -195,7 +217,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             if (response.isKCSError == YES && response.code == KCSNotFoundError) {
                 //This is new user, create
-                [self createWithAuthProvider:provider loginBody:loginDict completion:completionBlock];
+                [self createWithAuthProvider:provider
+                                   loginBody:loginDict
+                                      client:client
+                                  completion:completionBlock];
             } else {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 [self setActive:nil];
@@ -218,14 +243,27 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
     }
-                                                        route:KCSRESTRouteUser
-                                                      options:@{KCSRequestLogMethod}
-                                                  credentials:[KCSClient2 sharedClient]];
+                                                              route:KCSRESTRouteUser
+                                                            options:@{KCSRequestLogMethod}
+                                                        credentials:[KCSClient2 sharedClient]
+                                                             client:client];
     request.path = @[@"login"];
     request.method = KCSRESTMethodPOST;
     request.body = loginDict;
+    request.client = client;
     return [KCSRequest requestWithNetworkOperation:[request start]];
 }
+
++(KCSClientConfiguration*)clientConfiguration
+{
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    if (!config) {
+        config = [KCSClient sharedClient].configuration;
+    }
+    return config;
+}
+
+#if TARGET_OS_IOS
 
 +(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
 {
@@ -285,15 +323,6 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     }];
     req = [KCSRequest requestWithNetworkOperation:[request start]];
     return req;
-}
-
-+(KCSClientConfiguration*)clientConfiguration
-{
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    if (!config) {
-        config = [KCSClient sharedClient].configuration;
-    }
-    return config;
 }
 
 /**
@@ -413,6 +442,17 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                     forURL:(NSURL *)url
        withCompletionBlock:(KCSUser2CompletionBlock)completionBlock
 {
+    [self parseMICRedirectURI:redirectURI
+                       forURL:url
+                       client:[KCSClient sharedClient].client
+          withCompletionBlock:completionBlock];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(KNVClient*)client
+       withCompletionBlock:(KCSUser2CompletionBlock)completionBlock
+{
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
     NSDictionary* queryParams = nil;
     if ([self isValidMICRedirectURI:redirectURI
@@ -420,6 +460,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                              params:&queryParams]) {
         [self oAuthTokenWithCode:queryParams[@"code"]
                      redirectURI:redirectURI
+                          client:client
                       completion:completionBlock];
     }
 }
@@ -428,9 +469,21 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
               redirectURI:(NSString *)redirectURI
                completion:(KCSUser2CompletionBlock)completionBlock
 {
+    [self oAuthTokenWithCode:code
+                 redirectURI:redirectURI
+                      client:[KCSClient sharedClient].client
+                  completion:completionBlock];
+}
+
++(void)oAuthTokenWithCode:(NSString*)code
+              redirectURI:(NSString *)redirectURI
+                   client:(KNVClient*)client
+               completion:(KCSUser2CompletionBlock)completionBlock
+{
     [self oAuthTokenWithToken:code
                       refresh:NO
                   redirectURI:redirectURI
+                       client:client
                    completion:completionBlock];
 }
 
@@ -454,7 +507,21 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     [self oAuthTokenWithToken:token
                       refresh:refresh
                   redirectURI:redirectURI
+                       client:[KCSClient sharedClient].client
+                   completion:completionBlock];
+}
+
++(void)oAuthTokenWithToken:(NSString*)token
+                   refresh:(BOOL)refresh
+               redirectURI:(NSString*)redirectURI
+                    client:(KNVClient*)client
+                completion:(KCSUser2CompletionBlock)completionBlock
+{
+    [self oAuthTokenWithToken:token
+                      refresh:refresh
+                  redirectURI:redirectURI
                          sync:NO
+                       client:client
                    completion:completionBlock];
 }
 
@@ -467,21 +534,36 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                       sync:(BOOL)sync
                 completion:(KCSUser2CompletionBlock)completionBlock
 {
-    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/token", [self baseMicURL]]];
-    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
+    [self oAuthTokenWithToken:token
+                      refresh:refresh
+                  redirectURI:redirectURI
+                         sync:sync
+                       client:[KCSClient sharedClient].client
+                   completion:completionBlock];
+}
+
++(void)oAuthTokenWithToken:(NSString*)token
+                   refresh:(BOOL)refresh
+               redirectURI:(NSString*)redirectURI
+                      sync:(BOOL)sync
+                    client:(KNVClient*)client
+                completion:(KCSUser2CompletionBlock)completionBlock
+{
+    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/token", [self baseMicURLForClient:client]]];
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url client:client];
     request.HTTPMethod = @"POST";
     
     NSDictionary* bodyParams;
     if (refresh) {
         bodyParams = @{
-            @"client_id" : [self clientConfiguration].appKey,
+            @"client_id" : client.appKey,
             kKCSMICRedirectURIKey : redirectURI,
             @"grant_type" : @"refresh_token",
             kKCSMICRefreshTokenKey : token
         };
     } else {
         bodyParams = @{
-            @"client_id" : [self clientConfiguration].appKey,
+            @"client_id" : client.appKey,
             kKCSMICRedirectURIKey : redirectURI,
             @"grant_type" : @"authorization_code",
             @"code" : token
@@ -496,8 +578,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     [request setValue:@"application/x-www-form-urlencoded"
    forHTTPHeaderField:@"Content-Type"];
     
-    KCSClientConfiguration* clientConfig = [self clientConfiguration];
-    NSString* basicAuthHash = [[[NSString stringWithFormat:@"%@:%@", clientConfig.appKey, clientConfig.appSecret] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
+    NSString* basicAuthHash = [[[NSString stringWithFormat:@"%@:%@", client.appKey, client.appSecret] dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
     [request setValue:[NSString stringWithFormat:@"Basic %@", basicAuthHash]
    forHTTPHeaderField:@"Authorization"];
     
@@ -518,6 +599,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                     response[kKCSMICRedirectURIKey] = redirectURI;
                     [self connectWithAuthProvider:KCSSocialIDKinvey
                                  accessDictionary:response
+                                           client:client
                                        completion:completionBlock];
                 }
             } else {
@@ -562,23 +644,21 @@ static NSString* micApiVersion = nil;
 
 +(NSMutableString*)baseMicURL
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    return [self baseMicURLForClient:[KCSClient sharedClient].client];
+}
+
++(NSMutableString*)baseMicURLForClient:(KNVClient*)client
+{
+    NSString* hostProtocol = client.authHostName.scheme;
     
-    NSString* hostProtocol = config.hostProtocol;
+    NSString* hostDomain = client.authHostName.host;
     
-    NSString* authHostname = config.authHostname;
-    if (authHostname.length > 0 && ![authHostname hasSuffix:@"."]) {
-        authHostname = [NSString stringWithFormat:@"%@.", authHostname];
+    NSString* hostPort = @"";
+    if (client.authHostName.port) {
+        hostPort = [NSString stringWithFormat:@":%@", client.authHostName.port];
     }
     
-    NSString* hostDomain = config.hostDomain;
-    
-    NSString* hostPort = config.hostPort;
-    if (hostPort.length > 0 && ![hostPort hasPrefix:@":"]) {
-        hostPort = [NSString stringWithFormat:@":%@", hostPort];
-    }
-    
-    NSMutableString* baseURL = [NSMutableString stringWithFormat:@"%@://%@%@%@", hostProtocol, authHostname, hostDomain, hostPort];
+    NSMutableString* baseURL = [NSMutableString stringWithFormat:@"%@://%@%@", hostProtocol, hostDomain, hostPort];
     if (micApiVersion && micApiVersion.length > 0) {
         [baseURL appendFormat:@"/%@", micApiVersion];
     }
@@ -593,13 +673,30 @@ static NSString* micApiVersion = nil;
 }
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(KNVClient*)client
+{
+    return [self URLforLoginWithMICRedirectURI:redirectURI
+                                   isLoginPage:YES
+                                        client:client];
+}
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                             isLoginPage:(BOOL)isLoginPage
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/auth", [self baseMicURL]];
+    return [self URLforLoginWithMICRedirectURI:redirectURI
+                                   isLoginPage:isLoginPage
+                                        client:[KCSClient sharedClient].client];
+}
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                            isLoginPage:(BOOL)isLoginPage
+                                 client:(KNVClient*)client
+{
+    if (!client) client = [KCSClient sharedClient].client;
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/auth", [self baseMicURLForClient:client]];
     if (isLoginPage) {
         NSString* query = @{
-            @"client_id" : config.appKey,
+            @"client_id" : client.appKey,
             kKCSMICRedirectURIKey : redirectURI,
             @"response_type" : @"code"
         }.queryString;
@@ -609,6 +706,8 @@ static NSString* micApiVersion = nil;
     
     return [NSURL URLWithString:url];
 }
+
+#endif
 
 + (NSDictionary*) loginDictForProvider:(KCSUserSocialIdentifyProvider)provder accessDictionary:(NSDictionary*)accessDictionary
 {
@@ -735,7 +834,9 @@ static NSString* micApiVersion = nil;
         //                }
         //            } withProgressBlock:nil];
         //        }
+#if TARGET_OS_IOS
         [[KCSPush sharedPush] setDeviceToken:nil];
+#endif
         
         [KCSUser2 clearSavedCredentials];
         [[KCSAppdataStore caches] clear];
@@ -747,7 +848,9 @@ static NSString* micApiVersion = nil;
 }
 
 #pragma mark - User Object Management
-+ (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock checkAuth:(BOOL) checkAuth
++(void)setupActiveUser:(NSDictionary*)body
+            completion:(KCSUser2CompletionBlock)completionBlock
+             checkAuth:(BOOL)checkAuth
 {
     if (![body isKindOfClass:[NSDictionary class]]) {
         //check data type in case server is corrupted, yes this has happened
@@ -806,10 +909,12 @@ static NSString* micApiVersion = nil;
     }
     [self setActive:user];
     [[KCSAppdataStore caches] cacheActiveUser:user];
-    
+
+#if TARGET_OS_IOS
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
         if (completionBlock) completionBlock(user, nil);
     }];
+#endif
 }
 
 +(KCSRequest*)changePasswordForUser:(id<KCSUser2>)user
@@ -846,7 +951,7 @@ static NSString* micApiVersion = nil;
             return copyObject;
         };
         transformWeak = transform;
-        entity = transform(entity);
+        entity = transform(entity.mutableCopy);
         
         NSDictionary* body = [entity dictionaryByAddingDictionary:@{KCSUserAttributePassword : newPassword}];
         
@@ -1118,3 +1223,5 @@ static NSString* micApiVersion = nil;
 }
 
 @end
+
+#pragma clang diagnostic pop

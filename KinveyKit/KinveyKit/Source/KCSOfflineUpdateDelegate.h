@@ -17,7 +17,7 @@
 //
 
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 /**
  The `KCSClient` object can have single delegate for all data stores that implements this protocol. In order to participate in offline updates, there must be a global offline delegate, and each instance of `KCSCachedStore` or `KCSLinkedAppdataStore` must also have the option `KCSStoreKeyOfflineUpdateEnabled` set to YES.

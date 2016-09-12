@@ -19,8 +19,7 @@
 #ifndef KinveyKit_KinveyUser_h
 #define KinveyKit_KinveyUser_h
 
-#import <Foundation/Foundation.h>
-#import "KinveyPersistable.h"
+@import Foundation;
 #import "KinveyEntity.h"
 #import "KinveyHeaderInfo.h"
 #import "KCSBlockDefs.h"
@@ -33,6 +32,7 @@
 // Need to predefine our classes here
 @class KCSUser;
 @class KCSUserResult;
+@protocol KCSPersistable;
 
 /** Social Network login providers supported for log-in
  */
@@ -187,6 +187,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 @property (nonatomic) BOOL emailVerified;
 
+@property (nonatomic, readonly) NSString* authString;
+
 /** Checks if credentials have been stored in the keychain. 
  
  This is useful to check if a user will be loaded on the first call to Kinvey, or if an implicit user will be created instead. 
@@ -323,6 +325,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
                      accessDictionary:(NSDictionary*)accessDictionary
                   withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
+#if TARGET_OS_IOS
+
 #pragma mark - MIC helper methods
 
 /**
@@ -409,6 +413,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  Getter that returns the MIC API Version
  */
 +(NSString*)micApiVersion;
+
+#endif
 
 #pragma mark -
 

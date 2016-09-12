@@ -2,6 +2,15 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:KinveyKit/KinveyKit.xcodeproj">
+      location = "group:Kinvey/Kinvey.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:SampleApplications/MICSampleApp/MICSampleApp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:SampleApplications/iPhoneCoreDataRecipes/Recipes.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:SampleApplications/TestDrive/TestDrive.xcodeproj">
    </FileRef>
 </Workspace>

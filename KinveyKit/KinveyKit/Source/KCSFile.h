@@ -19,10 +19,10 @@
 #ifndef KinveyKit_KCSFile_h
 #define KinveyKit_KCSFile_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
-#import "KinveyPersistable.h"
 #import "KCSMetadata.h"
+#import "KinveyPersistable.h"
 
 /**
  This class is a wrapper for file store information.
