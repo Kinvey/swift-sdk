@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSNSURLRequestOperation.h"
 #import "KCSClient.h"
@@ -52,11 +54,12 @@
         
         self.downloadedData = [NSMutableData data];
         self.response = [[KCSNetworkResponse alloc] init];
-        
+#if !TARGET_OS_WATCH
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
         [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
         [_connection start];
+#endif
         [runLoop run];
     }
 }
@@ -126,3 +129,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop

@@ -16,11 +16,12 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #import "KinveyHeaderInfo.h"
 #import "KCSNetworkDefs.h"
 #import "KCSRequestConfiguration.h"
+#import "KNVClient.h"
 
 KCS_CONSTANT KCSRequestOptionUseMock;
 KCS_CONSTANT KCSRequestOptionClientMethod;
@@ -67,6 +68,12 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
                                  route:(NSString*)route
                                options:(NSDictionary*)options
                            credentials:(id)credentials;
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                                client:(KNVClient*)client;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route

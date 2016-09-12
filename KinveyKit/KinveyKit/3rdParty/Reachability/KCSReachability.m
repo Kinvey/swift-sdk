@@ -15,6 +15,7 @@
 // contents is a violation of applicable laws.
 //
 
+#if !TARGET_OS_WATCH
 
 #import "KCSReachability.h"
 #import "KCS_KSReachability.h"
@@ -93,3 +94,5 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
 }
 
 @end
+       
+#endif

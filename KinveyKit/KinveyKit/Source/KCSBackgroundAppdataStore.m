@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSBackgroundAppdataStore.h"
 
@@ -1104,6 +1106,7 @@ NSError* createCacheError(NSString* message)
         }
     } else if ([[error domain] isEqualToString:NSURLErrorDomain]) {
         switch (error.code) {
+#if !TARGET_OS_WATCH
             case kCFURLErrorUnknown:
             case kCFURLErrorTimedOut:
             case kCFURLErrorNotConnectedToInternet:
@@ -1111,6 +1114,7 @@ NSError* createCacheError(NSString* message)
                 KCSLogNetwork(@"Got a network error (%d) on save, adding to queue.");
                 isNetworkError = YES;
                 break;
+#endif
             default:
                 KCSLogNetwork(@"Got a network error (%d) on save, but NOT queueing.", error.code);
         }
@@ -1546,3 +1550,5 @@ andResaveAfterReferencesSaved:^{
 }
 
 @end
+
+#pragma clang diagnostic pop

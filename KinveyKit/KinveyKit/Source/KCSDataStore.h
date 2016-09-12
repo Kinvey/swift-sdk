@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSRequest.h"
 
 typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
@@ -54,3 +57,5 @@ typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
            deleteCompletion:(KCSDataStoreObjectCompletion)completion;
 
 @end
+
+#pragma clang diagnostic pop

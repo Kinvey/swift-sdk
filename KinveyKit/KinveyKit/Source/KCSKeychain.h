@@ -17,13 +17,24 @@
 //
 
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+#import "KCSClientConfiguration.h"
 
 @interface KCSKeychain2 : NSObject
 
 + (BOOL) setKinveyToken:(NSString*)token user:(NSString*)userId;
++ (BOOL) setKinveyToken:(NSString*)token user:(NSString*)userId appKey:(NSString*)appKey;
++ (BOOL) setKinveyToken:(NSString *)token user:(NSString *)userId appKey:(NSString *)appKey accessible:(NSString *)accessible;
+
 + (NSString*) kinveyTokenForUserId:(NSString*)userId;
++ (NSString*) kinveyTokenForUserId:(NSString*)userId appKey:(NSString*)appKey;
+
 + (BOOL) deleteTokens;
++ (BOOL) deleteTokensForUser:(NSString *)userId appKey:(NSString *)appKey;
+
 + (BOOL) hasTokens;
++ (BOOL) hasTokensForUser:(NSString *)userId appKey:(NSString *)appKey;
+
++ (NSString*) accessibleStringForDataProtectionLevel:(KCSDataProtectionLevel)dataProtectionLevel;
 
 @end

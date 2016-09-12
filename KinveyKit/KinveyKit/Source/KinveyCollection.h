@@ -19,10 +19,11 @@
 #ifndef KinveyKit_KinveyCollection_h
 #define KinveyKit_KinveyCollection_h
 
-#import <Foundation/Foundation.h>
-#import "KinveyPersistable.h"
+@import Foundation;
 #import "KCSBlockDefs.h"
 #import "KinveyHeaderInfo.h"
+
+@class KCSCollection;
 
 /** The name of the special case user collection
  @since 1.10.2

@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSAppdataStore_h
 #define KinveyKit_KCSAppdataStore_h
  
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSStore.h"
 #import "KCSBackgroundAppdataStore.h"
 
@@ -57,7 +57,6 @@
  */
 @interface KCSAppdataStore : KCSBackgroundAppdataStore
 
-@property (nonatomic, strong) KCSAuthHandler *authHandler KCS_DEPRECATED(Auth handler not used, 1.22.0);
 
 
 /** Initialize an empty store with the given collections, options and the default authentication
