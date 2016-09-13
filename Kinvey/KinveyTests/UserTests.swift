@@ -1387,6 +1387,110 @@ class UserTests: KinveyTestCase {
             }
         }
         
+        class MICLoginAutomatedAuthorizationGrantFlowURLProtocol: NSURLProtocol {
+            
+            static let code = "7af647ad1414986bec71d7799ced85fd271050a8"
+            static let tempLoginUri = "https://auth.kinvey.com/oauth/authenticate/b3ca941c1141468bb19d2f2c7409f7a6"
+            lazy var code: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.code
+            lazy var tempLoginUri: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.tempLoginUri
+            static var count = 0
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                switch self.dynamicType.count {
+                case 0:
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let json = [
+                        "temp_login_uri" : tempLoginUri
+                    ]
+                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                    client?.URLProtocol(self, didLoadData: data)
+                    client?.URLProtocolDidFinishLoading(self)
+                case 1:
+                    XCTAssertEqual(request.URL!.absoluteString, tempLoginUri)
+                    let redirectRequest = NSURLRequest(URL: NSURL(string: "micauthgrantflow://?code=\(code)")!)
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 302, HTTPVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.URL!.absoluteString])!
+                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    client?.URLProtocol(self, wasRedirectedToRequest: redirectRequest, redirectResponse: response)
+                    let data = "Found. Redirecting to micauthgrantflow://?code=\(code)".dataUsingEncoding(NSUTF8StringEncoding)!
+                    client?.URLProtocol(self, didLoadData: data)
+                    client?.URLProtocolDidFinishLoading(self)
+                case 2:
+                    let requestBody = String(data: request.HTTPBody!, encoding: NSUTF8StringEncoding)!
+                    XCTAssertEqual(requestBody, "client_id=kid_rJVLE1Z5&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
+                    
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let json = [
+                        "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
+                        "token_type" : "bearer",
+                        "expires_in" : 3599,
+                        "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
+                    ]
+                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                    client?.URLProtocol(self, didLoadData: data)
+                    client?.URLProtocolDidFinishLoading(self)
+                case 3:
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 404, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let json = [
+                        "error" : "UserNotFound",
+                        "description" : "This user does not exist for this app backend",
+                        "debug" : ""
+                    ]
+                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                    client?.URLProtocol(self, didLoadData: data)
+                    client?.URLProtocolDidFinishLoading(self)
+                case 4:
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 201, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let json = [
+                        "_socialIdentity" : [
+                            "kinveyAuth": [
+                                "access_token" : "a10a3743028e2e92b97037825b50a2666608b874",
+                                "refresh_token" : "627b034f5ec409899252a8017cb710566dfd2620",
+                                "id" : "custom",
+                                "audience" : "kid_rJVLE1Z5"
+                            ]
+                        ],
+                        "username" : "3b788b0c-cb99-4692-b3ae-a6b10b3d76f2",
+                        "password" : "fa0f771f-6480-4f11-a11b-dc85cce52beb",
+                        "_kmd" : [
+                            "lmt" : "2016-09-01T01:48:01.177Z",
+                            "ect" : "2016-09-01T01:48:01.177Z",
+                            "authtoken" : "12ed2b41-a5a1-4f37-a640-3a9c62c3fefd.rUHKOlQuRb4pW4NjmCimJ64rd2BF3drXy1SjHtuVCoM="
+                        ],
+                        "_id" : "57c788d168d976c525ee4602",
+                        "_acl" : [
+                            "creator" : "57c788d168d976c525ee4602"
+                        ]
+                    ]
+                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
+                    client?.URLProtocol(self, didLoadData: data)
+                    client?.URLProtocolDidFinishLoading(self)
+                default:
+                    XCTFail()
+                }
+                self.dynamicType.count += 1
+            }
+            
+            override func stopLoading() {
+            }
+        }
+        
+        KCSURLProtocol.registerClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
+        defer {
+            KCSURLProtocol.unregisterClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
+        }
+        
         Kinvey.sharedClient.initialize(appKey: "kid_rJVLE1Z5", appSecret: "cd385840cbd94e2caaa8f824c2ff7f46")
         
         XCTAssertNil(client.activeUser)
