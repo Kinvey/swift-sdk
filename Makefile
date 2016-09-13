@@ -17,6 +17,12 @@ build-ios:
 	cd Kinvey; \
 	carthage build --no-skip-current --platform ios
 
+test: test-ios
+
+	
+test-ios:
+	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 6s,OS=9.3'
+
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
 	cd Kinvey/Carthage/Build/iOS; \
