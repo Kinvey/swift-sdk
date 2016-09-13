@@ -1273,8 +1273,10 @@ class UserTests: KinveyTestCase {
     func find() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
+        Kinvey.sharedClient.logNetworkEnabled = true
+        
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.collection()
+            let store = DataStore<Person>.collection(.Network)
             
             weak var expectationFind = expectationWithDescription("Find")
             
