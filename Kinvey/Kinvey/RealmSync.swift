@@ -32,7 +32,7 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
         executor = Executor()
-        print("\(realm.configuration.fileURL!.path!)")
+//        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
     }
     

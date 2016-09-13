@@ -69,7 +69,7 @@ class QueryTest: XCTestCase {
     }
 
     func testQueryBeginsWith() {
-        XCTAssertEqual(encodeQuery(Query(format: "name BEGINSWITH %@", "acme")), encodeURL(["name" : ["$regex" : "^acme"]]))
+        XCTAssertEqual(encodeQuery(Query(format: "name BEGINSWITH %@", "acme")), "query=\(encodeURL(["name" : ["$regex" : "^acme"]]))")
     }
 
     

@@ -107,20 +107,24 @@ internal enum Endpoint {
         case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
             let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
             
-            if let query = query {
-                var queryParams = query.queryParams
-                
-                if tls {
-                    queryParams["tls"] = "true"
+            var queryParams = [String : String]()
+            
+            if tls {
+                queryParams["tls"] = "true"
+            }
+            
+            if let ttlInSeconds = ttlInSeconds {
+                queryParams["ttl_in_seconds"] = String(ttlInSeconds)
+            }
+            
+            if let query = query where query.queryParams.count > 0 {
+                for (key, value) in query.queryParams {
+                    queryParams[key] = value
                 }
-                
-                if let ttlInSeconds = ttlInSeconds {
-                    queryParams["ttl_in_seconds"] = String(ttlInSeconds)
-                }
-                
-                if queryParams.count > 0 {
-                    return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
-                }
+            }
+            
+            if queryParams.count > 0 {
+                return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
             }
             return NSURL(string: url)!
         case .BlobByQuery(let client, let query):

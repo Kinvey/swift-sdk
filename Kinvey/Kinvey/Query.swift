@@ -226,8 +226,8 @@ extension Dictionary where Key: StringLiteralConvertible, Value: StringLiteralCo
     internal var urlQueryEncoded: String {
         get {
             var queryParams = [String]()
-            for keyValuePair in self {
-                queryParams.append("\(keyValuePair.0)=\(keyValuePair.1)")
+            for (key, value) in self {
+                queryParams.append("\(key)=\(value)")
             }
             return queryParams.joinWithSeparator("&")
         }
