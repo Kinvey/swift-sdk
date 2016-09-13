@@ -41,7 +41,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
         executor = Executor()
-        print("\(realm.configuration.fileURL!.path!)")
+//        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
     }
     
@@ -134,7 +134,9 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [String : String]()
         executor.executeAndWait {
             for entity in self.results(Query(predicate: query.predicate)) {
-                results[entity.entityId!] = entity.metadata!.lmt!
+                if let entityId = entity.entityId, let lmt = entity.metadata?.lmt {
+                    results[entityId] = lmt
+                }
             }
         }
         return results
