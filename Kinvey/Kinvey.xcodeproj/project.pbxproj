@@ -296,7 +296,7 @@
 		57B23F3D1C7FB14F006403CC /* KCSSaveGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DA01C7F9414006403CC /* KCSSaveGraph.m */; };
 		57B23F3E1C7FB154006403CC /* KCSSaveGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D9F1C7F9414006403CC /* KCSSaveGraph.h */; };
 		57B23F3F1C7FB15C006403CC /* KCSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E1E1C7F9414006403CC /* KCSURLProtocol.m */; };
-		57B23F401C7FB15E006403CC /* KCSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1D1C7F9414006403CC /* KCSURLProtocol.h */; };
+		57B23F401C7FB15E006403CC /* KCSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1D1C7F9414006403CC /* KCSURLProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23F411C7FB167006403CC /* KCSUser2.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E3D1C7F9414006403CC /* KCSUser2.m */; };
 		57B23F421C7FB169006403CC /* KCSUser2.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3C1C7F9414006403CC /* KCSUser2.h */; };
 		57B23F451C7FB180006403CC /* KCS_CLLocation_Realm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D791C7F9414006403CC /* KCS_CLLocation_Realm.h */; };
