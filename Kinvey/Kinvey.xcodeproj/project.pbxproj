@@ -612,6 +612,7 @@
 		575792BF1D412CD20065CC22 /* UserQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserQuery.swift; sourceTree = "<group>"; };
 		5759854D1CC833930054DF08 /* LongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongData.swift; sourceTree = "<group>"; };
 		5759854F1CC834FE0054DF08 /* MedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedData.swift; sourceTree = "<group>"; };
+		575D628B1D899C4A00A972D8 /* KinveyApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KinveyApp.entitlements; sourceTree = "<group>"; };
 		5765B8351C92365700080FFA /* FindOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperationTest.swift; sourceTree = "<group>"; };
 		5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicStoreTestCase.swift; sourceTree = "<group>"; };
 		5765B83C1C972D7000080FFA /* URLProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLProtocols.swift; sourceTree = "<group>"; };
@@ -1172,6 +1173,7 @@
 		5765B8451C9771BC00080FFA /* KinveyApp */ = {
 			isa = PBXGroup;
 			children = (
+				575D628B1D899C4A00A972D8 /* KinveyApp.entitlements */,
 				5765B8461C9771BC00080FFA /* AppDelegate.swift */,
 				57BEAE341C98AB3900479206 /* MainViewController.swift */,
 				5765B8481C9771BC00080FFA /* MICLoginViewController.swift */,
@@ -2357,10 +2359,17 @@
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					5793B86C1D2306A60088B5F9 = {
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					57A27C801C178F17000DF951 = {
 						CreatedOnToolsVersion = 7.2;
@@ -2372,19 +2381,23 @@
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					57A465811CC02A59009E7384 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
 						TestTargetID = 5765B8431C9771BC00080FFA;
 					};
 					57D642EF1CA3268000F6D16E = {
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					57D643161CA3268600F6D16E = {
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -2851,6 +2864,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
@@ -2865,6 +2880,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
@@ -2880,6 +2897,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2904,6 +2922,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3017,7 +3036,7 @@
 			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_ENTITLEMENTS = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -3045,7 +3064,7 @@
 			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_ENTITLEMENTS = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -3072,6 +3091,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3096,6 +3116,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3119,6 +3140,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3138,6 +3160,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3157,6 +3180,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3182,6 +3206,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3206,6 +3231,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3231,6 +3257,7 @@
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
