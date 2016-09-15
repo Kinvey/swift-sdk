@@ -71,8 +71,8 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     }
     
     func merge(_ persistable: inout T, json: JsonDictionary) {
-        let map = Map(mappingType: .fromJSON, JSONDictionary: json)
-        persistable.mapping(map)
+        let map = Map(mappingType: .fromJSON, JSON: json)
+        persistable.mapping(map: map)
     }
     
 }

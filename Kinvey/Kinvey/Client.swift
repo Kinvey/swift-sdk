@@ -216,7 +216,7 @@ open class Client: NSObject, Credential {
         KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: nil)
         
         if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
-            let user = Mapper<User>().map(json)
+            let user = Mapper<User>().map(JSON: json)
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
                 user.client = self
                 metadata.authtoken = authtoken

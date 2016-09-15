@@ -115,7 +115,7 @@ public final class Acl: Object, Mappable, BuilderType {
     }
     
     /// Constructor that validates if the map contains at least the creator.
-    public required convenience init?(_ map: Map) {
+    public required convenience init?(map: Map) {
         var creator: String?
         
         creator <- map[Acl.CreatorKey]
@@ -150,7 +150,7 @@ public final class Acl: Object, Mappable, BuilderType {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(_ map: Map) {
+    open func mapping(map: Map) {
         creator <- map[Acl.CreatorKey]
         globalRead.value <- map[Acl.GlobalReadKey]
         globalWrite.value <- map[Acl.GlobalWriteKey]

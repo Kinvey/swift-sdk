@@ -40,7 +40,7 @@ class PerformanceTests: XCTestCase {
 		
         self.measure {
             // Put the code you want to measure the time of here.
-			_ = Mapper<Person>().mapArray(JSONString)
+			_ = Mapper<Person>().mapArray(JSONString: JSONString)
         }
     }
 	
@@ -49,7 +49,7 @@ class PerformanceTests: XCTestCase {
 		
 		self.measure {
 			// Put the code you want to measure the time of here.
-			_ = Mapper<PersonCluster>().mapArray(JSONString)
+			_ = Mapper<PersonCluster>().mapArray(JSONString: JSONString)
 		}
 	}
 }
@@ -66,10 +66,11 @@ class Person: Mappable {
 	var smoker: Bool?
 	var arr: [AnyObject] = []
 	var arrOptional: [AnyObject]?
-	var dict: [String : AnyObject] = [:]
-	var dictOptional: [String : AnyObject]?
-	var dictString: [String : String]?
-	var friendDictionary: [String : Person]?
+	var dict: [String: AnyObject] = [:]
+	var dictKey1: String?
+	var dictOptional: [String: AnyObject]?
+	var dictString: [String: String]?
+	var friendDictionary: [String: Person]?
 	var friend: Person?
 	var friends: [Person]? = []
 	
@@ -77,11 +78,11 @@ class Person: Mappable {
 		
 	}
 	
-	required init?(_ map: Map){
+	required init?(map: Map){
 		
 	}
 	
-	func mapping(_ map: Map) {
+	func mapping(map: Map) {
 		username         <- map["username"]
 		identifier       <- map["identifier"]
 		photoCount       <- map["photoCount"]
@@ -93,6 +94,7 @@ class Person: Mappable {
 		arr              <- map["arr"]
 		arrOptional      <- map["arrOpt"]
 		dict             <- map["dict"]
+		dictKey1         <- map["dict.key1"]
 		dictOptional     <- map["dictOpt"]
 		friend           <- map["friend"]
 		friends          <- map["friends"]
@@ -114,9 +116,10 @@ class PersonCluster: StaticMappable {
 	var arr: [AnyObject] = []
 	var arrOptional: [AnyObject]?
 	var dict: [String : AnyObject] = [:]
-	var dictOptional: [String : AnyObject]?
-	var dictString: [String : String]?
-	var friendDictionary: [String : Person]?
+	var dictKey1: String?
+	var dictOptional: [String: AnyObject]?
+	var dictString: [String: String]?
+	var friendDictionary: [String: Person]?
 	var friend: Person?
 	var friends: [Person]? = []
 	
@@ -124,15 +127,11 @@ class PersonCluster: StaticMappable {
 		
 	}
 	
-	required init?(_ map: Map){
-		
-	}
-	
-	static func objectForMapping(_ map: Map) -> Mappable? {
+	static func objectForMapping(map: Map) -> BaseMappable? {
 		return PersonCluster()
 	}
 	
-	func mapping(_ map: Map) {
+	func mapping(map: Map) {
 		username         <- map["username"]
 		identifier       <- map["identifier"]
 		photoCount       <- map["photoCount"]
@@ -144,6 +143,7 @@ class PersonCluster: StaticMappable {
 		arr              <- map["arr"]
 		arrOptional      <- map["arrOpt"]
 		dict             <- map["dict"]
+		dictKey1         <- map["dict.key1"]
 		dictOptional     <- map["dictOpt"]
 		friend           <- map["friend"]
 		friends          <- map["friends"]

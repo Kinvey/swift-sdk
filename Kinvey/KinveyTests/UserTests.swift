@@ -361,8 +361,8 @@ class UserTests: KinveyTestCase {
         
         var foo: String?
         
-        override func mapping(_ map: Map) {
-            super.mapping(map)
+        override func mapping(map: Map) {
+            super.mapping(map: map)
             
             foo <- map["foo"]
         }
@@ -1252,7 +1252,7 @@ class UserTests: KinveyTestCase {
         Kinvey.sharedClient.logNetworkEnabled = true
         
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.collection(.Network)
+            let store = DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             

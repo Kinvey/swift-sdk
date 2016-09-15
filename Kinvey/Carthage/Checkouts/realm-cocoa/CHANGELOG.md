@@ -16,6 +16,8 @@ x.x.x Release notes (yyyy-MM-dd)
 * Fix compilation with Swift 2.3 using Xcode 8 beta 2.
 * Further reduce the download size of the prebuilt static libraries.
 * Improve sort performance, especially on non-nullable columns.
+* Allow partial initialization of object by `initWithValue:`, deferring
+  required property checks until object is added to Realm.
 
 ### Bugfixes
 
@@ -24,6 +26,9 @@ x.x.x Release notes (yyyy-MM-dd)
   deallocated on a different thread than it was created on.
 * Fix a crash when the last reference to an observed object is released from
   within the observation.
+* Fix a crash when `initWithValue:` is used to create a nested object for a class
+  with an uninitialized schema.
+* Enforce uniqueness for `RealmOptional` primary keys when using the `value` setter.
 
 1.0.2 Release notes (2016-07-13)
 =============================================================

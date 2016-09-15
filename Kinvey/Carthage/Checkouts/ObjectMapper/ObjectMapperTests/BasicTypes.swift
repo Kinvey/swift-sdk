@@ -131,11 +131,11 @@ class BasicTypes: Mappable {
 		
 	}
 	
-	required init?(_ map: Map){
+	required init?(map: Map){
 
 	}
 	
-	func mapping(_ map: Map) {
+	func mapping(map: Map) {
 		bool								<- map["bool"]
 		boolOptional						<- map["boolOpt"]
 		boolImplicityUnwrapped				<- map["boolImp"]
@@ -216,7 +216,7 @@ class BasicTypes: Mappable {
 	}
 }
 
-class TestCollectionOfPrimitives : Mappable {
+class TestCollectionOfPrimitives: Mappable {
 	var dictStringString: [String: String] = [:]
 	var dictStringInt: [String: Int] = [:]
 	var dictStringBool: [String: Bool] = [:]
@@ -233,16 +233,16 @@ class TestCollectionOfPrimitives : Mappable {
 		
 	}
 	
-	required init?(_ map: Map){
+	required init?(map: Map){
 		if map["value"].value() == nil {
 			
 		}
-		if map.JSONDictionary["value"] == nil {
+		if map.JSON["value"] == nil {
 			
 		}
 	}
 	
-	func mapping(_ map: Map) {
+	func mapping(map: Map) {
 		dictStringString    <- map["dictStringString"]
 		dictStringBool      <- map["dictStringBool"]
 		dictStringInt       <- map["dictStringInt"]

@@ -400,7 +400,7 @@ class SyncStoreTests: StoreTestCase {
                 XCTAssertNil(error)
                 
                 if let results = results {
-                    XCTAssertEqual(results.count, 3)
+                    XCTAssertEqual(results.count, 1)
                 }
                 
                 expectationPull?.fulfill()
@@ -431,14 +431,6 @@ class SyncStoreTests: StoreTestCase {
                 
                 if let results = results {
                     XCTAssertEqual(results.count, 0)
-                    
-                    if let person = results.first {
-                        XCTAssertEqual(person.personId, "Victor")
-                        
-                        let cacheCount = Int((self.store.cache?.count())!)
-                        XCTAssertEqual(cacheCount, results.count)
-
-                    }
                 }
                 
                 expectationPull?.fulfill()
@@ -458,7 +450,7 @@ class SyncStoreTests: StoreTestCase {
                 XCTAssertNil(error)
                 
                 if let results = results {
-                    XCTAssertEqual(results.count, 2)
+                    XCTAssertEqual(results.count, 0)
                 }
                 
                 expectationPull?.fulfill()

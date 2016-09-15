@@ -695,7 +695,7 @@ class FileTestCase: StoreTestCase {
         XCTAssertNotNil(file.expiresAt)
         
         if let expiresAt = file.expiresAt {
-            XCTAssertGreaterThan(expiresAt.timeIntervalSinceDate(beforeDate), ttl.1.toTimeInterval(ttl.0 - 1))
+            XCTAssertGreaterThan(expiresAt.timeIntervalSince(beforeDate), ttl.1.toTimeInterval(ttl.0 - 1))
             
             let twentySecs = TTL(20, .second)
             XCTAssertLessThan(expiresAt.timeIntervalSince(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))

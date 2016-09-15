@@ -8,25 +8,29 @@
 
 import Foundation
 
-public protocol Mappable {
-	/// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
-	init?(_ map: Map)
+/// BaseMappable should not be implemented directly. Mappable or StaticMappable should be used instead
+public protocol BaseMappable {
 	/// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-	mutating func mapping(_ map: Map)
+	mutating func mapping(map: Map)
 }
 
-public protocol StaticMappable: Mappable {
-	/// This function that can be used to:
+public protocol Mappable: BaseMappable {
+    /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
+    init?(map: Map)
+}
+
+public protocol StaticMappable: BaseMappable {
+	/// This is function that can be used to:
 	///		1) provide an existing cached object to be used for mapping
 	///		2) return an object of another class (which conforms to Mappable) to be used for mapping. For instance, you may inspect the JSON to infer the type of object that should be used for any given mapping
-	static func objectForMapping(_ map: Map) -> Mappable?
+	static func objectForMapping(map: Map) -> BaseMappable?
 }
 
-public extension Mappable {
+public extension BaseMappable {
 	
 	/// Initializes object from a JSON String
-	public init?(JSONString: String) {
-		if let obj: Self = Mapper().map(JSONString) {
+	public init?(JSONString: String, context: MapContext? = nil) {
+		if let obj: Self = Mapper(context: context).map(JSONString: JSONString) {
 			self = obj
 		} else {
 			return nil
@@ -34,8 +38,8 @@ public extension Mappable {
 	}
 	
 	/// Initializes object from a JSON Dictionary
-	public init?(JSON: [String : Any]) {
-		if let obj: Self = Mapper().map(JSON) {
+	public init?(JSON: [String: Any], context: MapContext? = nil) {
+		if let obj: Self = Mapper(context: context).map(JSON: JSON) {
 			self = obj
 		} else {
 			return nil
@@ -48,16 +52,16 @@ public extension Mappable {
 	}
 	
 	/// Returns the JSON String for the object
-	public func toJSONString(_ prettyPrint: Bool = false) -> String? {
+	public func toJSONString(prettyPrint: Bool = false) -> String? {
 		return Mapper().toJSONString(self, prettyPrint: prettyPrint)
 	}
 }
 
-public extension Array where Element: Mappable {
+public extension Array where Element: BaseMappable {
 	
 	/// Initialize Array from a JSON String
-	public init?(JSONString: String) {
-		if let obj: [Element] = Mapper().mapArray(JSONString) {
+	public init?(JSONString: String, context: MapContext? = nil) {
+		if let obj: [Element] = Mapper(context: context).mapArray(JSONString: JSONString) {
 			self = obj
 		} else {
 			return nil
@@ -65,8 +69,8 @@ public extension Array where Element: Mappable {
 	}
 	
 	/// Initialize Array from a JSON Array
-	public init?(JSONArray: [[String : Any]]) {
-		if let obj: [Element] = Mapper().mapArray(JSONArray) {
+	public init?(JSONArray: [[String: Any]], context: MapContext? = nil) {
+		if let obj: [Element] = Mapper(context: context).mapArray(JSONArray: JSONArray) {
 			self = obj
 		} else {
 			return nil
@@ -74,21 +78,21 @@ public extension Array where Element: Mappable {
 	}
 	
 	/// Returns the JSON Array
-	public func toJSON() -> [[String : Any]] {
+	public func toJSON() -> [[String: Any]] {
 		return Mapper().toJSONArray(self)
 	}
 	
 	/// Returns the JSON String for the object
-	public func toJSONString(_ prettyPrint: Bool = false) -> String? {
+	public func toJSONString(prettyPrint: Bool = false) -> String? {
 		return Mapper().toJSONString(self, prettyPrint: prettyPrint)
 	}
 }
 
-public extension Set where Element: Mappable {
+public extension Set where Element: BaseMappable {
 	
 	/// Initializes a set from a JSON String
-	public init?(JSONString: String) {
-		if let obj: Set<Element> = Mapper().mapSet(JSONString) {
+	public init?(JSONString: String, context: MapContext? = nil) {
+		if let obj: Set<Element> = Mapper(context: context).mapSet(JSONString: JSONString) {
 			self = obj
 		} else {
 			return nil
@@ -96,18 +100,20 @@ public extension Set where Element: Mappable {
 	}
 	
 	/// Initializes a set from JSON
-	public init?(JSONArray: [[String : Any]]) {
-		guard let obj = Mapper().mapSet(JSONArray) as Set<Element>? else {return nil}
+	public init?(JSONArray: [[String: Any]], context: MapContext? = nil) {
+		guard let obj = Mapper(context: context).mapSet(JSONArray: JSONArray) as Set<Element>? else {
+            return nil
+        }
 		self = obj
 	}
 	
 	/// Returns the JSON Set
-	public func toJSON() -> [[String : Any]] {
+	public func toJSON() -> [[String: Any]] {
 		return Mapper().toJSONSet(self)
 	}
 	
 	/// Returns the JSON String for the object
-	public func toJSONString(_ prettyPrint: Bool = false) -> String? {
+	public func toJSONString(prettyPrint: Bool = false) -> String? {
 		return Mapper().toJSONString(self, prettyPrint: prettyPrint)
 	}
 }

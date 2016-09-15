@@ -63,7 +63,7 @@ public final class Metadata: Object, Mappable, BuilderType {
     open internal(set) var authtoken: String?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(_ map: Map) {
+    public required init?(map: Map) {
         super.init()
     }
     
@@ -89,7 +89,7 @@ public final class Metadata: Object, Mappable, BuilderType {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(_ map: Map) {
+    open func mapping(map: Map) {
         lmt <- map[Metadata.LmtKey]
         ect <- map[Metadata.EctKey]
         authtoken <- map[Metadata.AuthTokenKey]

@@ -63,11 +63,11 @@ public final class UserQuery: Mappable, BuilderType {
     }
     
     /// Constructor for object mapping.
-    public init?(_ map: Map) {
+    public init?(map: Map) {
     }
     
     /// Performs the object mapping.
-    public func mapping(_ map: Map) {
+    public func mapping(map: Map) {
         userId <- map["_id"]
         username <- map["username"]
         firstName <- map["first_name"]

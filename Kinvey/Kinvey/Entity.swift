@@ -41,7 +41,7 @@ open class Entity: Object, Persistable {
     public dynamic var acl: Acl?
     
     /// Constructor that validates if the map contains the required fields.
-    public required init?(_ map: Map) {
+    public required init?(map: Map) {
         super.init()
     }
     
@@ -103,7 +103,7 @@ open class Entity: Object, Persistable {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    public func mapping(_ map: Map) {
+    public func mapping(map: Map) {
         let originalThread = Thread.current
         let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
         if runningMapping {

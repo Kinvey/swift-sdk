@@ -35,9 +35,9 @@ class JsonResponseParser: ResponseParser {
     }
     
     fileprivate func parseUser<U: User>(_ json: JsonDictionary, userType: U.Type) -> U? {
-        let map = Map(mappingType: .fromJSON, JSONDictionary: json)
-        let user = userType.init(map)
-        user?.mapping(map)
+        let map = Map(mappingType: .fromJSON, JSON: json)
+        let user = userType.init(map: map)
+        user?.mapping(map: map)
         return user
     }
     

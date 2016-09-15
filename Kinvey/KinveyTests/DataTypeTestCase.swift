@@ -214,10 +214,10 @@ class FullName2: NSObject, Mappable {
     override init() {
     }
     
-    required init?(_ map: Map) {
+    required init?(map: Map) {
     }
     
-    func mapping(_ map: Map) {
+    func mapping(map: Map) {
         firstName <- map["firstName"]
         lastName <- map["lastName"]
         fontDescriptor <- (map["fontDescriptor"], UIFontDescriptorTransformType())

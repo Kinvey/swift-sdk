@@ -47,6 +47,14 @@ internal func gsub(pattern: String, template: String, string: String, error: NSE
                                            withTemplate: template)
 }
 
+extension Object {
+    // Must *only* be used to call Realm Objective-C APIs that are exposed on `RLMObject`
+    // but actually operate on `RLMObjectBase`. Do not expose cast value to user.
+    internal func unsafeCastToRLMObject() -> RLMObject {
+        return unsafeBitCast(self, to: RLMObject.self)
+    }
+}
+
 // MARK: CustomObjectiveCBridgeable
 
 internal func dynamicBridgeCast<T>(fromObjectiveC x: Any) -> T {
@@ -105,6 +113,22 @@ extension Int64: CustomObjectiveCBridgeable {
         return NSNumber(value: self)
     }
 }
+extension Optional: CustomObjectiveCBridgeable {
+    static func bridging(objCValue: Any) -> Optional {
+        if objCValue is NSNull {
+            return nil
+        } else {
+            return .some(dynamicBridgeCast(fromObjectiveC: objCValue))
+        }
+    }
+    var objCValue: Any {
+        if let value = self {
+            return value
+        } else {
+            return NSNull()
+        }
+    }
+}
 
 #else
 
@@ -123,6 +147,14 @@ internal func gsub(pattern: String, template: String, string: String, error: NSE
     return regex?.stringByReplacingMatchesInString(string, options: [],
                                                    range: NSRange(location: 0, length: string.utf16.count),
                                                    withTemplate: template)
+}
+
+extension Object {
+    // Must *only* be used to call Realm Objective-C APIs that are exposed on `RLMObject`
+    // but actually operate on `RLMObjectBase`. Do not expose cast value to user.
+    internal func unsafeCastToRLMObject() -> RLMObject {
+        return unsafeBitCast(self, RLMObject.self)
+    }
 }
 
 // MARK: CustomObjectiveCBridgeable

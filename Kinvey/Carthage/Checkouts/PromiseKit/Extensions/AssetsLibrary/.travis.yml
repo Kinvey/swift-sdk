@@ -2,7 +2,7 @@ language: objective-c
 osx_image: xcode8
 
 env:
-  - PLATFORM=iOS  SDK=iphonesimulator  UUID='9793E592-F0FF-4C4A-BEEF-FDD50A67E8C1'
+  - PLATFORM=iOS SDK=iphonesimulator UUID='7FC06F6D-AF72-4B38-9A96-1F934EA2E27F'
 
 install:
   - carthage bootstrap --platform $PLATFORM

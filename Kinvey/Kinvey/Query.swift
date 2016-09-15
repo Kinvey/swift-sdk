@@ -102,7 +102,7 @@ public final class Query: NSObject, BuilderType {
                 for sortDescriptor in sortDescriptors {
                     sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
                 }
-                let data = try! JSONSerialization.data(withJSONObject: sorts, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: sorts)
                 queryParams["sort"] = String(data: data, encoding: String.Encoding.utf8)!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             }
             
