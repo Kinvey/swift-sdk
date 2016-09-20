@@ -232,7 +232,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.HTTPMethod ?? "GET"
-        url = request.URL!.absoluteString
+        url = request.URL!.absoluteString!
         headers = try! NSJSONSerialization.dataWithJSONObject(request.allHTTPHeaderFields!, options: [])
         body = request.HTTPBody
         super.init()

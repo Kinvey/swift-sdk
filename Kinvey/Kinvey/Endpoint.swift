@@ -42,41 +42,41 @@ internal enum Endpoint {
     func url() -> NSURL {
         switch self {
         case .User(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")!
         case .UserById(let client, let userId):
-            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")!
         case .UserDelete(let client, let userId, let hard):
             let url = client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
             if hard {
-                return NSURL(string: url.absoluteString + "?hard=true")!
+                return NSURL(string: url!.absoluteString! + "?hard=true")!
             }
-            return url
+            return url!
         case .UserLookup(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/_lookup")
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/_lookup")!
         case .UserExistsByUsername(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")!
         case .UserLogin(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")!
         case .SendEmailConfirmation(let client, let username):
-            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(username)/user-email-verification-initiate")
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(username)/user-email-verification-initiate")!
         case .UserResetPassword(let usernameOrEmail, let client):
-            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")!
         case .UserForgotUsername(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")!
         case .OAuthAuth(let client, let redirectURI):
             let characterSet = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
             characterSet.removeCharactersInString(":#[]@!$&'()*+,;=")
-            let redirectURIEncoded = redirectURI.absoluteString.stringByAddingPercentEncodingWithAllowedCharacters(characterSet) ?? redirectURI.absoluteString
+            let redirectURIEncoded = redirectURI.absoluteString!.stringByAddingPercentEncodingWithAllowedCharacters(characterSet) ?? redirectURI.absoluteString
             let query = "?client_id=\(client.appKey!)&redirect_uri=\(redirectURIEncoded)&response_type=code"
-            return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth").absoluteString + query)!
+            return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth")!.absoluteString! + query)!
         case .OAuthToken(let client):
-            return client.authHostName.URLByAppendingPathComponent("/oauth/token")
+            return client.authHostName.URLByAppendingPathComponent("/oauth/token")!
         case .AppData(let client, let collectionName):
-            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
+            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")!
         case .AppDataById(let client, let collectionName, let id):
-            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
+            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")!
         case .AppDataByQuery(let client, let collectionName, let query):
-            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
+            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/")!.absoluteString!
             if (query.isEmpty()){
                 return NSURL(string: url)!
             }
@@ -88,7 +88,7 @@ internal enum Endpoint {
             
             return NSURL(string: url)!
         case .AppDataCount(let client, let collectionName, let query):
-            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count").absoluteString
+            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count")!.absoluteString!
             if let query = query {
                 let queryParams = query.queryParams
                 if queryParams.count > 0 {
@@ -97,15 +97,15 @@ internal enum Endpoint {
             }
             return NSURL(string: url)!
         case .PushRegisterDevice(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")!
         case .PushUnRegisterDevice(let client):
-            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")!
         case .BlobById(let client, let fileId):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url()
         case .BlobUpload(let client, let fileId, let tls):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
         case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
-            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
+            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")")!.absoluteString!
             
             var queryParams = [String : String]()
             
@@ -132,7 +132,7 @@ internal enum Endpoint {
         case .URL(let url):
             return url
         case .CustomEndpooint(let client, let name):
-            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")!
         }
     }
     
