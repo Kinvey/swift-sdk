@@ -22,6 +22,7 @@
 
 #import "CLLocation+Kinvey.h"
 #import "KCSClient.h"
+#import "KCSLogManager.h"
 
 @implementation KCSAttributedStringBuilder
 + (id)JSONCompatabileValueForObject:(id)object
@@ -64,8 +65,12 @@
     if ([object isKindOfClass:[NSDate class]]) {
         return object;
     } else if ([object isKindOfClass:[NSString class]]) {
-        NSString *tmp = [(NSString *)object stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
-        tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
+        NSString* tmp = (NSString*) object;
+        if ([tmp hasPrefix:@"ISODate("] && [tmp hasSuffix:@")"]) {
+            KCSLogWarning(@"Detected NSDate value in ISODate() format, which is now deprecated. We strongly recommend migrating your date values to the new format YYYY-MM-DDThh:mm:ssZ");
+            tmp = [tmp stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
+            tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
+        }
         NSDate *date = [NSDate dateFromISO8601EncodedString:tmp];
         return date;
     }
