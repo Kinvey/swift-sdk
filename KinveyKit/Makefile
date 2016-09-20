@@ -9,7 +9,7 @@ PWD=$(dir $(shell pwd))$(notdir $(shell pwd))
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/KinveyKit/Info.plist")
 DEPLOY_FOLDER=$(OUTPUT_FOLDER)/$(PRODUCT_NAME)-$(VERSION)
 
-all: build doc
+all: build doc pkg
 	
 build:
 	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) ONLY_ACTIVE_ARCH=NO -sdk iphoneos
@@ -36,7 +36,7 @@ doc:
 	cd ../Tools; \
 	./build-doc ../KinveyKit
 
-pkg: all
+pkg: build doc
 	rm -Rf mkdir -p $(DEPLOY_FOLDER)
 	mkdir -p $(DEPLOY_FOLDER)
 	cp -R doc/built-docs/com.kinvey.$(PRODUCT_NAME).docset $(DEPLOY_FOLDER)
