@@ -21,6 +21,7 @@
 #import "KCSBuilders.h"
 
 #import "CLLocation+Kinvey.h"
+#import "KCSClient.h"
 
 @implementation KCSAttributedStringBuilder
 + (id)JSONCompatabileValueForObject:(id)object
@@ -55,7 +56,8 @@
 @implementation KCSDateBuilder
 + (id) JSONCompatabileValueForObject:(id)object
 {
-    return [NSString stringWithFormat:@"ISODate(%c%@%c)", '"', [object stringWithISO8601Encoding], '"'];
+    NSString* dateString = [object stringWithISO8601Encoding];
+    return [KCSClient sharedClient].useISODateFormat ? [NSString stringWithFormat:@"ISODate(%c%@%c)", '"', dateString, '"'] : dateString;
 }
 + (id) objectForJSONObject:(id)object
 {
