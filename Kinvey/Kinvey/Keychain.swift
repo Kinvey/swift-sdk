@@ -49,8 +49,8 @@ class Keychain {
         }
     }
     
-    func removeAll() {
-        try! keychain.removeAll()
+    func removeAll() throws {
+        try keychain.removeAll()
     }
     
 }

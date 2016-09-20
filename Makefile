@@ -31,8 +31,7 @@ pack:
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
 docs:
-	jazzy --swift-version 2.2 \
-	      --author Kinvey \
+	jazzy --author Kinvey \
 				--author_url http://www.kinvey.com \
 				--module-version $(VERSION) \
 				--readme README-API-Reference-Docs.md \
