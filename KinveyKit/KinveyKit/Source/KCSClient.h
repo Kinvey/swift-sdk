@@ -142,7 +142,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 /** NSDateFormatter String for Date storage. Set via configuration. */
 @property (retain, nonatomic, readonly) NSString *dateStorageFormatString;
 
-
+@property (nonatomic) BOOL useISODateFormat;
 
 #pragma mark -
 #pragma mark Initializers
