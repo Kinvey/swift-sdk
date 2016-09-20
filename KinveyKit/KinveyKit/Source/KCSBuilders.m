@@ -67,7 +67,7 @@
     } else if ([object isKindOfClass:[NSString class]]) {
         NSString* tmp = (NSString*) object;
         if ([tmp hasPrefix:@"ISODate("] && [tmp hasSuffix:@")"]) {
-            KCSLogWarning(@"Detected NSDate value in ISODate() format, which is now deprecated. We strongly recommend migrating your date values to the new format YYYY-MM-DDThh:mm:ssZ");
+            KCSLogWarning(@"Detected NSDate value in ISODate(YYYY-MM-DDThh:mm:ss.SSSZ) format, which is now deprecated. We strongly recommend migrating your date values to the new format YYYY-MM-DDThh:mm:ss.SSSZ");
             tmp = [tmp stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
             tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
         }
