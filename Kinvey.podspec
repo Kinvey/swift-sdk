@@ -138,8 +138,8 @@ Pod::Spec.new do |s|
   s.xcconfig = { "OTHER_LDFLAGS" => "-ObjC" }
 	
   s.dependency "PromiseKit", "~> 3.5.1"
-  s.dependency "KeychainAccess", "~> 2.3.6"
-  s.dependency "Realm", "~> 1.0.2"
-  s.dependency "RealmSwift", "~> 1.0.2"
+  s.dependency "KeychainAccess", "~> 2.4.0"
+  s.dependency "Realm", "~> 1.1.0"
+  s.dependency "RealmSwift", "~> 1.1.0"
 
 end

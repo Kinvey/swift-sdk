@@ -1,6 +1,6 @@
 github "tjboneman/NSPredicate-MongoDB-Adaptor" "master"
 github "mxcl/PromiseKit" "3.5.1"
-github "kishikawakatsumi/KeychainAccess" "v2.3.6"
-github "realm/realm-cocoa" "v1.0.2"
+github "kishikawakatsumi/KeychainAccess" "v2.4.0"
+github "realm/realm-cocoa" "v1.1.0"
 github "Hearst-DD/ObjectMapper" "1.4.0"
 github "kif-framework/KIF" "master"
