@@ -6269,6 +6269,7 @@
 				SDKROOT = iphoneos;
 				SEPARATE_STRIP = NO;
 				STRIP_STYLE = "non-global";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DebugForTest_run_tests;
@@ -10762,6 +10763,7 @@
 				SDKROOT = iphoneos;
 				SEPARATE_STRIP = NO;
 				STRIP_STYLE = "non-global";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DebugForTest;
@@ -10861,6 +10863,7 @@
 				SDKROOT = iphoneos;
 				SEPARATE_STRIP = NO;
 				STRIP_STYLE = "non-global";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -10899,6 +10902,7 @@
 				SDKROOT = iphoneos;
 				SEPARATE_STRIP = YES;
 				STRIP_STYLE = debugging;
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
