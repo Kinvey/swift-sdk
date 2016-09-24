@@ -244,7 +244,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         
         if client.logNetworkEnabled {
             do {
-                print("\(request)")
+                print("\(request.description)")
             }
         }
         
