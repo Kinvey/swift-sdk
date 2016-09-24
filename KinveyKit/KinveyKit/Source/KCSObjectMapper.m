@@ -37,6 +37,7 @@
 #import "KCSFileStore.h"
 
 #import "KCSBuilders.h"
+#import "KCSValueConverter.h"
 
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
@@ -408,43 +409,18 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                 Class valClass = objc_getClass([valueType UTF8String]);
                 Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
                 
-                static NSSet* mutableTypes = nil;
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                    /*
-                     Based on the basic classes:
-                     https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/ObjectMutability/ObjectMutability.html
-                     */
-                    mutableTypes = [NSSet setWithArray:@[@"NSMutableArray",
-                                                         @"NSMutableDictionary",
-                                                         @"NSMutableSet",
-                                                         @"NSMutableIndexSet",
-                                                         @"NSMutableCharacterSet",
-                                                         @"NSMutableData",
-                                                         @"NSMutableString",
-                                                         @"NSMutableAttributedString",
-                                                         @"NSMutableURLRequest"]];
-                });
-                id (^mutableValue)(id value) = ^(id value){
-                    if ([mutableTypes containsObject:valueType] &&
-                        [value isKindOfClass:[NSObject class]] &&
-                        [value respondsToSelector:@selector(mutableCopy)])
-                    {
-                        return ((NSObject*) value).mutableCopy;
-                    }
-                    return value;
-                };
-                
                 if (builder != nil) {
                     id builtValue = [builder objectForJSONObject:value];
-                    builtValue = mutableValue(builtValue);
+                    builtValue = [KCSValueConverter convert:builtValue
+                                                  valueType:valueType];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
                     if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isKindOfClass:[NSString class]] && [[object kinveyObjectId] isEqualToString:value] == NO) {
                         KCSLogWarning(@"%@ is having it's id overwritten.", object);
                     }
                     if ([object respondsToSelector:@selector(setValue:forKey:)]) {
-                        value = mutableValue(value);
+                        value = [KCSValueConverter convert:value
+                                                 valueType:valueType];
                         [object setValue:value forKey:hostKey];
                     } else {
                         KCSLogWarning(@"%@ cannot setValue for %@", hostKey);

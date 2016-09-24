@@ -23,6 +23,7 @@
 #import "CLLocation+Kinvey.h"
 #import "KCSClient.h"
 #import "KCSLogManager.h"
+#import "KCSValueConverter.h"
 
 @implementation KCSAttributedStringBuilder
 + (id)JSONCompatabileValueForObject:(id)object
@@ -88,7 +89,8 @@
     if ([object isKindOfClass:[NSSet class]]) {
         return object;
     } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSSet setWithArray:object];
+        return [NSSet setWithArray:[KCSValueConverter convert:object
+                                                    valueType:NSStringFromClass([NSMutableArray class])]];
     }
     return [NSNull null];
 }
@@ -99,7 +101,8 @@
     if ([object isKindOfClass:[NSSet class]]) {
         return object;
     } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSMutableSet setWithArray:object];
+        return [NSMutableSet setWithArray:[KCSValueConverter convert:object
+                                                           valueType:NSStringFromClass([NSMutableArray class])]];
     }
     return [NSNull null];
 }
@@ -115,7 +118,8 @@
     if ([object isKindOfClass:[NSOrderedSet class]]) {
         return object;
     } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSOrderedSet orderedSetWithArray:object];
+        return [NSOrderedSet orderedSetWithArray:[KCSValueConverter convert:object
+                                                                  valueType:NSStringFromClass([NSMutableArray class])]];
     } else if ([object isKindOfClass:[NSSet class]]) {
         return [NSOrderedSet orderedSetWithSet:object];
     }
@@ -128,7 +132,8 @@
     if ([object isKindOfClass:[NSOrderedSet class]]) {
         return object;
     } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSMutableOrderedSet orderedSetWithArray:object];
+        return [NSMutableOrderedSet orderedSetWithArray:[KCSValueConverter convert:object
+                                                                         valueType:NSStringFromClass([NSMutableArray class])]];
     } else if ([object isKindOfClass:[NSSet class]]) {
         return [NSMutableOrderedSet orderedSetWithSet:object];
     }
