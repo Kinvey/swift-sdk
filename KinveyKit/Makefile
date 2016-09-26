@@ -69,6 +69,7 @@ deploy-reference:
 	git push production master
 
 deploy-cocoapods:
+	#use FORK_XCODE_WRITING=true to fix an issue with CocoaPods and Xcode 8 if necessary
 	cd ..; \
 	pod trunk push KinveyKit.podspec --verbose
 	
