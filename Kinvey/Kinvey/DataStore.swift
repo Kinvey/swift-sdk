@@ -65,6 +65,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// DataStoreType defines how the DataStore will behave.
     open let type: StoreType
     
+    fileprivate let filePath: String?
+    
     internal let cache: Cache<T>?
     internal let sync: Sync<T>?
     
@@ -107,10 +109,15 @@ open class DataStore<T: Persistable> where T: NSObject {
         return dataStore!
     }
     
+    open func collection<NewType: Persistable where NewType: NSObject>(newType: NewType.Type) -> DataStore<NewType> {
+        return DataStore<NewType>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
+    }
+    
     fileprivate init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: Data?) {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
+        self.filePath = filePath
         collectionName = T.collectionName()
         if type != .network, let _ = T.self as? Entity.Type {
             cache = client.cacheManager.cache(filePath: filePath, type: T.self)
