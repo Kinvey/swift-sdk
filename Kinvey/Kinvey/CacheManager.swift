@@ -89,7 +89,7 @@ internal class CacheManager: NSObject {
                     }
                     if let realm = try? Realm(configuration: realmConfiguration) , !realm.isEmpty {
                         try! realm.write {
-                            realm.deleteAllObjects()
+                            realm.deleteAll()
                         }
                     }
                 }

@@ -63,7 +63,7 @@ extension UIViewController {
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        reject(UIImagePickerController.Error.cancelled)
+        reject(UIImagePickerController.PMKError.cancelled)
         retainCycle = nil
     }
 }
@@ -71,7 +71,7 @@ extension UIViewController {
 
 extension UIImagePickerController {
     /// Errors representing PromiseKit UIImagePickerController failures
-    public enum Error: CancellableError {
+    public enum PMKError: CancellableError {
         /// The user cancelled the UIImagePickerController.
         case cancelled
         /// - Returns: true

@@ -1027,7 +1027,7 @@ class UserTests: KinveyTestCase {
         
         tester().tapView(withAccessibilityIdentifier: "MIC Login")
         defer {
-            tester().tapView(withAccessibilityLabel: "Back")
+            tester().tapView(withAccessibilityLabel: "Back", traits: UIAccessibilityTraitButton)
         }
         tester().tapView(withAccessibilityIdentifier: "Login")
         

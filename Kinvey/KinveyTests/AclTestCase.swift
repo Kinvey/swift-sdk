@@ -128,8 +128,12 @@ class AclTestCase: StoreTestCase {
         
         store = DataStore<Person>.collection(.network)
         
+        guard let userId = Kinvey.sharedClient.activeUser?.userId else {
+            return
+        }
+        
         let newPerson = self.newPerson
-        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalRead: true)
+        newPerson.acl = Acl(creator: userId, globalRead: true)
         let person = save(newPerson)
         
         XCTAssertNotNil(person.personId)

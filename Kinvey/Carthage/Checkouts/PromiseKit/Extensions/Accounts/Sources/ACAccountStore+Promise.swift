@@ -28,7 +28,7 @@ extension ACAccountStore {
                 } else if let error = error {
                     reject(error)
                 } else {
-                    reject(Error.accessDenied)
+                    reject(PMKError.accessDenied)
                 }
             })
         }
@@ -45,7 +45,7 @@ extension ACAccountStore {
     }
 
     /// PromiseKit ACAccountStore errors
-    public enum Error: Swift.Error, CustomStringConvertible {
+    public enum PMKError: Error, CustomStringConvertible {
         /// The request for accounts access was denied.
         case accessDenied
 

@@ -39,7 +39,7 @@ open class Migration: NSObject {
                         self.realmMigration.delete(newObject)
                     }
                     if let newDictionary = newDictionary {
-                        self.realmMigration.createObject(ofType: className, populatedWith: newDictionary)
+                        self.realmMigration.create(className, value: newDictionary)
                     }
                 }
             }
