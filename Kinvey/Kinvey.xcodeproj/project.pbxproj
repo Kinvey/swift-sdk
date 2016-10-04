@@ -2869,6 +2869,7 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2885,6 +2886,7 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";

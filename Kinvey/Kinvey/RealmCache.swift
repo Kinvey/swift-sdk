@@ -46,18 +46,18 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
-        var realmResults = self.realm.allObjects(ofType: self.entityType)
+        var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
-            realmResults = realmResults.filter(using: predicate)
+            realmResults = realmResults.filter(predicate)
         }
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
-                realmResults = realmResults.sorted(onProperty: sortDescriptor.key!, ascending: sortDescriptor.ascending)
+                realmResults = realmResults.sorted(byProperty: sortDescriptor.key!, ascending: sortDescriptor.ascending)
             }
         }
         
         if let ttl = ttl, let kmdKey = T.metadataProperty() {
-            realmResults = realmResults.filter(using: "\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
+            realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
         return realmResults
@@ -99,7 +99,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     override func saveEntity(_ entity: T) {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.createObject(ofType: (type(of: entity) as! Entity.Type), populatedWith: entity, update: true)
+                self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
             }
         }
     }
@@ -108,7 +108,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             try! self.realm.write {
                 for entity in entities {
-                    self.realm.createObject(ofType: (type(of: entity) as! Entity.Type), populatedWith: entity, update: true)
+                    self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
                 }
             }
         }
@@ -148,7 +148,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     override func findAll() -> [T] {
         var results = [T]()
         executor.executeAndWait {
-            results = self.detach(self.realm.allObjects(ofType: self.entityType), query: nil)
+            results = self.detach(self.realm.objects(self.entityType), query: nil)
         }
         return results
     }
@@ -159,7 +159,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
             if let query = query {
                 result = self.results(query).count
             } else {
-                result = self.realm.allObjects(ofType: self.entityType).count
+                result = self.realm.objects(self.entityType).count
             }
         }
         return result
@@ -208,7 +208,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     override func removeAllEntities() {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.delete(self.realm.allObjects(ofType: self.entityType))
+                self.realm.delete(self.realm.objects(self.entityType))
             }
         }
     }

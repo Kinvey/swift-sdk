@@ -23,7 +23,7 @@ extension UIViewController {
         return Promise { fulfill, reject in
             vc.completionHandler = { result in
                 if result == .cancelled {
-                    reject(SLComposeViewController.Error.cancelled)
+                    reject(SLComposeViewController.PMKError.cancelled)
                 } else {
                     fulfill()
                 }
@@ -34,7 +34,7 @@ extension UIViewController {
 
 extension SLComposeViewController {
     /// Errors representing PromiseKit SLComposeViewController failures
-    public enum Error: CancellableError {
+    public enum PMKError: CancellableError {
         /// The user cancelled the view controller.
         case cancelled
 

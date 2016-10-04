@@ -25,7 +25,7 @@ class SLRequestTests: XCTestCase {
 }
 
 extension SLRequest {
-    @objc private func pmk_performRequestWithHandler(_ handler: SLRequestHandler) {
+    @objc private func pmk_performRequestWithHandler(_ handler: @escaping SLRequestHandler) {
         after(interval: 0.0).then { _ -> Void in
             let rsp = HTTPURLResponse(url: URL(string: "http://example.com")!, statusCode: 200, httpVersion: "2.0", headerFields: [:])
             handler(Data(), rsp, nil)

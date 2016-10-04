@@ -109,8 +109,8 @@ open class DataStore<T: Persistable> where T: NSObject {
         return dataStore!
     }
     
-    open func collection<NewType: Persistable where NewType: NSObject>(newType: NewType.Type) -> DataStore<NewType> {
-        return DataStore<NewType>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
+    open func collection<NewType: Persistable>(newType: NewType.Type) -> DataStore<NewType> where NewType: NSObject {
+        return DataStore<NewType>(type: type, deltaSet: deltaSet, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
     }
     
     fileprivate init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: Data?) {

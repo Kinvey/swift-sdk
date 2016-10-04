@@ -47,7 +47,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     override func savePendingOperation(_ pendingOperation: RealmPendingOperation) {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.createObject(ofType: RealmPendingOperation.self, populatedWith: pendingOperation, update: true)
+                self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: true)
             }
         }
     }
@@ -59,9 +59,9 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     override func pendingOperations(_ objectId: String?) -> Results<RealmPendingOperation> {
         var results: Results<RealmPendingOperation>?
         executor.executeAndWait {
-            var realmResults = self.realm.allObjects(ofType: RealmPendingOperation.self)
+            var realmResults = self.realm.objects(RealmPendingOperation.self)
             if let objectId = objectId {
-                realmResults = realmResults.filter(using: "objectId == %@", objectId)
+                realmResults = realmResults.filter("objectId == %@", objectId)
             }
             results = Results(realmResults)
         }
@@ -83,9 +83,9 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     override func removeAllPendingOperations(_ objectId: String?) {
         executor.executeAndWait {
             try! self.realm.write {
-                var realmResults = self.realm.allObjects(ofType: RealmPendingOperation.self)
+                var realmResults = self.realm.objects(RealmPendingOperation.self)
                 if let objectId = objectId {
-                    realmResults = realmResults.filter(using: "objectId == %@", objectId)
+                    realmResults = realmResults.filter("objectId == %@", objectId)
                 }
                 self.realm.delete(realmResults)
             }
