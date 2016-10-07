@@ -12,7 +12,7 @@ private let lockEncryptionKey = NSLock()
 
 /// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
 @objc(__KNVClient)
-open class Client: NSObject, Credential {
+open class Client: NSObject, NSCoding, Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
     open static let sharedClient = Client()
@@ -258,5 +258,24 @@ open class Client: NSObject, Credential {
         
         filePath = (filePath as NSString).appendingPathComponent("\(tag).realm")
         return filePath
+    }
+    
+    public convenience required init?(coder aDecoder: NSCoder) {
+        guard
+            let appKey = aDecoder.decodeObject(of: NSString.self, forKey: "appKey") as? String,
+            let appSecret = aDecoder.decodeObject(of: NSString.self, forKey: "appSecret") as? String,
+            let apiHostName = aDecoder.decodeObject(of: NSURL.self, forKey: "apiHostName") as? URL,
+            let authHostName = aDecoder.decodeObject(of: NSURL.self, forKey: "authHostName") as? URL
+        else {
+                return nil
+        }
+        self.init(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
+    }
+    
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(appKey, forKey: "appKey")
+        aCoder.encode(appSecret, forKey: "appSecret")
+        aCoder.encode(apiHostName, forKey: "apiHostName")
+        aCoder.encode(authHostName, forKey: "authHostName")
     }
 }
