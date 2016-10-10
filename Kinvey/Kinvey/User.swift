@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import SafariServices
 
 /// Class that represents an `User`.
 @objc(__KNVUser)
@@ -444,6 +445,62 @@ open class User: NSObject, Credential, Mappable {
             onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
     }
+    
+    private static let MICSafariViewControllerNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController")
+    
+    private static var MICSafariViewControllerNotificationObserver: Any? = nil {
+        willSet {
+            if let token = MICSafariViewControllerNotificationObserver {
+                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerNotificationName, object: nil)
+            }
+        }
+    }
+
+    /// Presents the MIC URL using SFSafariViewController to sign in a user using MIC (Mobile Identity Connect).
+    @available(iOS 9, *)
+    open class func presentMICSafariViewController(redirectURI: URL, completionHandler: UserHandler? = nil) {
+        let url = KCSUser.urLforLogin(withMICRedirectURI: redirectURI.absoluteString)!
+        let micVC = SFSafariViewController(url: url)
+        micVC.modalPresentationStyle = .overCurrentContext
+        var viewController = UIApplication.shared.keyWindow?.rootViewController
+        if let presentedViewController =  viewController?.presentedViewController {
+            viewController = presentedViewController
+        }
+        MICSafariViewControllerNotificationObserver = NotificationCenter.default.addObserver(
+            forName: MICSafariViewControllerNotificationName,
+            object: nil,
+            queue: OperationQueue.main)
+        { notification in
+            micVC.dismiss(animated: true) {
+                MICSafariViewControllerNotificationObserver = nil
+                
+                let user = notification.userInfo?["user"] as? User
+                let error = notification.userInfo?["error"] as? Error
+                completionHandler?(user, error)
+            }
+        }
+        viewController?.present(micVC, animated: true)
+    }
+    
+    @available(iOS 9, *)
+    open class func tryLogin(redirectURI: URL, micURL: URL, client: Client = Kinvey.sharedClient) -> Bool {
+        if KCSUser.isValidMICRedirectURI(redirectURI.absoluteString, for: micURL) {
+            KCSUser.parseMICRedirectURI(redirectURI.absoluteString, for: micURL, withCompletionBlock: { (kcsUser, error, actionResult) in
+                onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client) { user, error in
+                    NotificationCenter.default.post(
+                        name: MICSafariViewControllerNotificationName,
+                        object: nil,
+                        userInfo: [
+                            "user" : user,
+                            "error" : error
+                        ]
+                    )
+                }
+            })
+            return true
+        }
+        return false
+    }
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
@@ -461,7 +518,7 @@ open class User: NSObject, Credential, Mappable {
         
         var viewController = UIApplication.shared.keyWindow?.rootViewController
         if let presentedViewController =  viewController?.presentedViewController {
-            viewController = presentedViewController;
+            viewController = presentedViewController
         }
         viewController?.present(navigationVC, animated: true)
     }

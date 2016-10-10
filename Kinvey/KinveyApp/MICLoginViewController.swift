@@ -14,6 +14,7 @@ open class MICLoginViewController: UIViewController {
 
     @IBOutlet weak var userIdLabel: UILabel!
     @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
+    @IBOutlet weak var useSafariViewControllerSwitch: UISwitch!
     
     open var completionHandler: User.UserHandler?
     
@@ -37,12 +38,20 @@ open class MICLoginViewController: UIViewController {
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
         
-        let redirectURI = URL(string: "kinveyAuthDemo://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.isOn) { (user, error) -> Void in
-            if let user = user {
-                self.userIdLabel.text = user.userId
+        if useSafariViewControllerSwitch.isOn {
+            User.presentMICSafariViewController(redirectURI: redirectURI) { user, error in
+                if let user = user {
+                    self.userIdLabel.text = user.userId
+                }
+                self.completionHandler?(user, error)
             }
-            self.completionHandler?(user, error)
+        } else {
+            User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.isOn) { (user, error) -> Void in
+                if let user = user {
+                    self.userIdLabel.text = user.userId
+                }
+                self.completionHandler?(user, error)
+            }
         }
     }
 
