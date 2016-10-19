@@ -20,7 +20,7 @@
 
 #import "KCSEntityDict.h"
 #import "KCSLogManager.h"
-
+#import "KinveyPersistable.h"
 
 @implementation NSDictionary (KCSEntityDict)
 
