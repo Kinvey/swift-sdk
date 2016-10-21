@@ -21,7 +21,7 @@ test: test-ios
 
 	
 test-ios:
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 6s,OS=9.3'
+	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0'
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
