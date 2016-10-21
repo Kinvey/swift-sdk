@@ -1,3 +1,4 @@
 language: objective-c
 xcode_workspace: Kinvey.xcworkspace
 xcode_scheme: Kinvey
+osx_image: xcode8
