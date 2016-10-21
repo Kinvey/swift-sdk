@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.2.0"
+  s.version      = "3.2.1"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -79,7 +79,8 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :http => "http://download.kinvey.com/iOS/Kinvey-#{s.version}.zip" }
+  s.source       = { :git => "https://github.com/Kinvey/ios-library.git",
+                     :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -90,10 +91,15 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey-#{s.version}/Kinvey.framework/Headers/*"
-  # s.exclude_files = "Classes/Exclude"
-
-  s.public_header_files = "Kinvey-#{s.version}/Kinvey.framework/Headers/*"
+  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/**/*.{h,m,mm}", "KinveyKit/KinveyKit/3rdParty/**/*.{h,m,mm}", "KinveyKit/KinveyKitExtras/**/*.{h,m,mm}", "Kinvey/Carthage/Checkouts/ObjectMapper/ObjectMapper/**/*.swift", "Kinvey/Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}", "KinveyKit/KinveyKit/KinveyHeaderInfo.h"
+  
+  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "Kinvey/Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h"
+  
+  s.private_header_files = "KinveyKit/KinveyKit/Source/KCSQuery.h", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/KinveyCore.h"
+  
+  s.exclude_files = "KinveyKit/KinveyKit/Source/KCSCacheManager.{h,m}", "KinveyKit/KinveyKit/Source/KCSSyncManager.{h,m}", "KinveyKit/KinveyKitExtras/KCSWebView.{h,m}", "KinveyKit/KinveyKitExtras/TestUtils.{h,m}"
+  
+  s.prefix_header_file = "KinveyKit/KinveyKit/KinveyKit-Prefix.pch"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -107,13 +113,9 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "Kinvey-#{s.version}/**"
-  s.prepare_command = <<-CMD
-    cat Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\.h\"/g' > Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h_
-		rm Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h
-		mv Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h_ Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h
-  CMD
-  s.ios.vendored_frameworks = "Kinvey-#{s.version}/Kinvey.framework"
+  s.preserve_paths = "Kinvey/**", "KinveyKit/**"
+  # s.prepare_command = ""
+  # s.ios.vendored_frameworks = "Kinvey-#{s.version}/Kinvey.framework"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -124,7 +126,7 @@ Pod::Spec.new do |s|
   s.frameworks = "Accounts", "CoreGraphics", "CoreLocation", "MobileCoreServices", "Security", "Social", "SystemConfiguration"
   s.weak_framework = "WebKit"
 
-	s.libraries = "sqlite3"
+  s.libraries = "sqlite3"
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
