@@ -15,6 +15,14 @@ build-debug:
 	
 build-ios:
 	cd Kinvey; \
+	cd Carthage/Checkouts/PromiseKit; \
+	zip -r Extensions.zip Extensions; \
+	rm -Rf Extensions; \
+	cd ../../..; \
+	cd Carthage/Checkouts/realm-cocoa; \
+	zip -r examples.zip examples; \
+	rm -Rf examples; \
+	cd ../../..; \
 	carthage build --no-skip-current --platform ios
 
 test: test-ios
