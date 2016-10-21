@@ -1,6 +1,4 @@
 language: objective-c
-xcode_workspace: Kinvey.xcworkspace
-xcode_scheme: Kinvey
 osx_image: xcode8
 script:
   - xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0' build test
