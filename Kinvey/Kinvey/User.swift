@@ -488,10 +488,6 @@ open class User: NSObject, Credential, Mappable {
             let url = KCSUser.urLforLogin(withMICRedirectURI: redirectURI.absoluteString)!
             micVC = SFSafariViewController(url: url)
             micVC.modalPresentationStyle = .overCurrentContext
-            var viewController = UIApplication.shared.keyWindow?.rootViewController
-            if let presentedViewController =  viewController?.presentedViewController {
-                viewController = presentedViewController
-            }
             MICSafariViewControllerNotificationObserver = NotificationCenter.default.addObserver(
                 forName: MICSafariViewControllerNotificationName,
                 object: nil,
