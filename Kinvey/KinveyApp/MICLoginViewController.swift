@@ -39,14 +39,14 @@ public class MICLoginViewController: UIViewController {
         WKWebsiteDataStore.defaultDataStore().removeDataOfTypes(WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: NSDate(timeIntervalSince1970: 0), completionHandler: {})
         
         if useSafariViewControllerSwitch.on {
-            User.presentMICSafariViewController(redirectURI: redirectURI) { user, error in
+            User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .Safari) { (user, error) -> Void in
                 if let user = user {
                     self.userIdLabel.text = user.userId
                 }
                 self.completionHandler?(user, error)
             }
         } else {
-            User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.on) { (user, error) -> Void in
+            User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: forceUIWebViewSwitch.on ? .UIWebView : .WKWebView) { (user, error) -> Void in
                 if let user = user {
                     self.userIdLabel.text = user.userId
                 }

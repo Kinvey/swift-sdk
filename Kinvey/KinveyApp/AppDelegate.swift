@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
-        if User.tryLogin(redirectURI: redirectURI, micURL: url) {
+        if User.login(redirectURI: redirectURI, micURL: url) {
             return true
         }
         
