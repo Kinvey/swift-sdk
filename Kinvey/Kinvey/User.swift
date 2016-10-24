@@ -480,7 +480,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, currentViewController: UIViewController? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
         
         var micVC: UIViewController!
@@ -516,9 +516,12 @@ open class User: NSObject, Credential, Mappable {
             micLoginVC.micApiVersion = client.micApiVersion
             micVC = UINavigationController(rootViewController: micLoginVC)
         }
-        var viewController = UIApplication.shared.keyWindow?.rootViewController
-        if let presentedViewController =  viewController?.presentedViewController {
-            viewController = presentedViewController
+        var viewController = currentViewController
+        if viewController == nil {
+            viewController = UIApplication.shared.keyWindow?.rootViewController
+            if let presentedViewController =  viewController?.presentedViewController {
+                viewController = presentedViewController
+            }
         }
         viewController?.present(micVC, animated: true)
     }
