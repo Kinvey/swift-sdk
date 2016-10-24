@@ -474,7 +474,7 @@ open class User: NSObject, Credential, Mappable {
     }
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    @available(*, deprecated: 3.3.1, message: "Please use the method presentMICViewController(micUserInterface:) instead")
+    @available(*, deprecated: 3.3.2, message: "Please use the method presentMICViewController(micUserInterface:) instead")
     open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         presentMICViewController(redirectURI: redirectURI, timeout: timeout, micUserInterface: forceUIWebView ? .uiWebView : .wkWebView, client: client, completionHandler: completionHandler)
     }
