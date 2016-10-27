@@ -214,47 +214,4 @@
     }];
 }
 
-+(void)presentMICViewControllerWithRedirectURI:(NSURL *)redirectURI
-                             completionHandler:(KNVUserUserHandler)completionHandler
-{
-    [self presentMICViewControllerWithRedirectURI:redirectURI
-                                          timeout:0
-                                           client:[KNVClient sharedClient]
-                                completionHandler:completionHandler];
-}
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL *)redirectURI
-                                       timeout:(NSTimeInterval)timeout
-                             completionHandler:(KNVUserUserHandler)completionHandler
-{
-    [self presentMICViewControllerWithRedirectURI:redirectURI
-                                          timeout:timeout
-                                           client:[KNVClient sharedClient]
-                                completionHandler:completionHandler];
-}
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL *)redirectURI
-                                        client:(KNVClient *)client
-                             completionHandler:(KNVUserUserHandler)completionHandler
-{
-    [self presentMICViewControllerWithRedirectURI:redirectURI
-                                          timeout:0
-                                           client:client
-                                completionHandler:completionHandler];
-}
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL*)redirectURI
-                                       timeout:(NSTimeInterval)timeout
-                                        client:(KNVClient*)client
-                             completionHandler:(KNVUserUserHandler)completionHandler
-{
-    [__KNVUser presentMICViewControllerWithRedirectURI:redirectURI
-                                               timeout:timeout
-                                                client:client.client
-                                     completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
-    {
-        KNVUserDispatchCompletionHandler(completionHandler, user, error);
-    }];
-}
-
 @end
