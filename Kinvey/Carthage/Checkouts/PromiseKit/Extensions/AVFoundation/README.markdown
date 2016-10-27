@@ -1,11 +1,11 @@
-# PromiseKit Accounts Extensions ![Build Status]
+# PromiseKit AVFoundation Extensions ![Build Status]
 
-This project adds promises to Apple’s Accounts framework.
+This project adds promises to Apple’s AVFoundation framework.
 
 ## CococaPods
 
 ```ruby
-pod "PromiseKit/Accounts" ~> 4.0
+pod "PromiseKit/AVFoundation" ~> 4.0
 ```
 
 The extensions are built into `PromiseKit.framework` thus nothing else is needed.
@@ -13,7 +13,7 @@ The extensions are built into `PromiseKit.framework` thus nothing else is needed
 ## Carthage
 
 ```ruby
-github "PromiseKit/Accounts" ~> 1.0
+github "PromiseKit/AVFoundation" ~> 1.0
 ```
 
 The extensions are built into their own framework:
@@ -21,14 +21,14 @@ The extensions are built into their own framework:
 ```swift
 // swift
 import PromiseKit
-import PMKAccounts
+import PMKAVFoundation
 ```
 
 ```objc
 // objc
 @import PromiseKit;
-@import PMKAccounts;
+@import PMKAVFoundation;
 ```
 
 
-[Build Status]: https://travis-ci.org/PromiseKit/Accounts.svg?branch=master
+[Build Status]: https://travis-ci.org/PromiseKit/AVFoundation.svg?branch=master

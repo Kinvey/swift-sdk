@@ -184,7 +184,7 @@ public final class Query: NSObject, BuilderType {
             $0.sortDescriptors = query.sortDescriptors
             $0.skip = query.skip
             $0.limit = query.limit
-            $0.persistableType = persistableType
+            $0.persistableType = query.persistableType
         }
     }
     
