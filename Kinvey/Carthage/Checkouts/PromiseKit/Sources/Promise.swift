@@ -332,6 +332,9 @@ open class Promise<T> {
     @available(*, unavailable, renamed: "catch")
     public func report(policy: CatchPolicy = .allErrors, execute body: (Error) -> Void) { fatalError() }
 
+    @available(*, unavailable, renamed: "init(value:)")
+    public init(_ value: T) { fatalError() }
+
 //MARK: disallow `Promise<Error>`
 
     @available(*, unavailable, message: "cannot instantiate Promise<Error>")
@@ -422,6 +425,15 @@ public enum Result<T> {
             self = .rejected(error)
         }
     }
+
+    public var boolValue: Bool {
+        switch self {
+        case .fulfilled:
+            return true
+        case .rejected:
+            return false
+        }
+    }
 }
 
 
@@ -438,5 +450,29 @@ extension Promise {
 
     public func join(_ joint: PMKJoint<T>) {
         state.pipe(joint.resolve)
+    }
+}
+
+
+extension Promise where T: Collection {
+    /**
+     `map` transforms a `Promise` where `T` is a `Collection`, eg. an `Array` returning a `Promise<[U]>`
+
+         URLSession.shared.dataTask(url: /*…*/).asArray().map { result in
+             return download(result)
+         }.then { images in
+             // images is `[UIImage]`
+         }
+
+     - Parameter on: The queue to which the provided closure dispatches.
+     - Parameter transform: The closure that executes when this promise resolves.
+     - Returns: A new promise, resolved with this promise’s resolution.
+     */
+    public func map<U>(on: DispatchQueue = .default, transform: @escaping (T.Iterator.Element) throws -> Promise<U>) -> Promise<[U]> {
+        return Promise<[U]> { resolve in
+            return state.then(on: zalgo, else: resolve) { tt in
+                when(fulfilled: try tt.map(transform)).state.pipe(resolve)
+            }
+        }
     }
 }
