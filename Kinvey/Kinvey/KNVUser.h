@@ -88,20 +88,4 @@ typedef void(^KNVUserVoidHandler)(NSError* _Nullable);
 -(id<KNVRequest> _Nonnull)saveWithClient:(KNVClient* _Nonnull)client
                        completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
 
-+(void)presentMICViewControllerWithRedirectURI:(NSURL* _Nonnull)redirectURI
-                             completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL* _Nonnull)redirectURI
-                                       timeout:(NSTimeInterval)timeout
-                             completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL* _Nonnull)redirectURI
-                                        client:(KNVClient* _Nonnull)client
-                             completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(void)presentMICViewControllerWithRedirectURI:(NSURL* _Nonnull)redirectURI
-                                       timeout:(NSTimeInterval)timeout
-                                        client:(KNVClient* _Nonnull)client
-                             completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
 @end

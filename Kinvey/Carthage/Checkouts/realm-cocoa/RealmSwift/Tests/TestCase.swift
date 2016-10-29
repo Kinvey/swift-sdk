@@ -81,8 +81,8 @@ class TestCase: XCTestCase {
         autoreleasepool { super.invokeTest() }
 
         if !exceptionThrown {
-            XCTAssertFalse(RLMHasCachedRealmForPath(defaultRealmURL().path!))
-            XCTAssertFalse(RLMHasCachedRealmForPath(testRealmURL().path!))
+            XCTAssertFalse(RLMHasCachedRealmForPath(defaultRealmURL().path))
+            XCTAssertFalse(RLMHasCachedRealmForPath(testRealmURL().path))
         }
 
         resetRealmState()
@@ -95,7 +95,8 @@ class TestCase: XCTestCase {
 
         // Verify that there are no remaining realm files after the test
         let parentDir = (testDir as NSString).deletingLastPathComponent
-        for url in FileManager().enumerator(atPath: parentDir)! {
+        for url in FileManager.default.enumerator(atPath: parentDir)! {
+            let url = url as! NSString
             XCTAssertNotEqual(url.pathExtension, "realm", "Lingering realm file at \(parentDir)/\(url)")
             assert(url.pathExtension != "realm")
         }
@@ -105,7 +106,7 @@ class TestCase: XCTestCase {
         RLMRealm.resetRealmState()
     }
 
-    func dispatchSyncNewThread(block: () -> Void) {
+    func dispatchSyncNewThread(block: @escaping () -> Void) {
         queue.async {
             autoreleasepool {
                 block()
@@ -114,14 +115,20 @@ class TestCase: XCTestCase {
         queue.sync { }
     }
 
-    func assertThrows<T>(_ block: @autoclosure(escaping)() -> T, _ message: String? = nil,
-                         named: String? = RLMExceptionName, fileName: String = #file, lineNumber: UInt = #line) {
+    func assertThrows<T>(_ block: @autoclosure @escaping() -> T, named: String? = RLMExceptionName,
+                         _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
         exceptionThrown = true
-        RLMAssertThrows(self, { _ = block() }, named, message, fileName, lineNumber)
+        RLMAssertThrowsWithName(self, { _ = block() }, named, message, fileName, lineNumber)
+    }
+
+    func assertThrows<T>(_ block: @autoclosure @escaping () -> T, reason regexString: String,
+                         _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
+        exceptionThrown = true
+        RLMAssertThrowsWithReasonMatching(self, { _ = block() }, regexString, message, fileName, lineNumber)
     }
 
     func assertSucceeds(message: String? = nil, fileName: StaticString = #file,
-                        lineNumber: UInt = #line, block: @noescape () throws -> ()) {
+                        lineNumber: UInt = #line, block: () throws -> ()) {
         do {
             try block()
         } catch {
@@ -130,14 +137,14 @@ class TestCase: XCTestCase {
         }
     }
 
-    func assertFails<T>(_ expectedError: Error, _ message: String? = nil,
+    func assertFails<T>(_ expectedError: RealmSwift.Error.Code, _ message: String? = nil,
                         fileName: StaticString = #file, lineNumber: UInt = #line,
-                        block: @noescape () throws -> T) {
+                        block: () throws -> T) {
         do {
             _ = try block()
             XCTFail("Expected to catch <\(expectedError)>, but no error was thrown.",
                 file: fileName, line: lineNumber)
-        } catch expectedError {
+        } catch let e as RealmSwift.Error where e.code == expectedError {
             // Success!
         } catch {
             XCTFail("Expected to catch <\(expectedError)>, but instead caught <\(error)>.",
@@ -164,7 +171,7 @@ class TestCase: XCTestCase {
 
     private func realmURLForFile(_ fileName: String) -> URL {
         let directory = URL(fileURLWithPath: testDir, isDirectory: true)
-        return try! directory.appendingPathComponent(fileName, isDirectory: false)
+        return directory.appendingPathComponent(fileName, isDirectory: false)
     }
 }
 
@@ -257,10 +264,16 @@ class TestCase: XCTestCase {
         dispatch_sync(queue) {}
     }
 
-    func assertThrows<T>(@autoclosure(escaping) block: () -> T, _ message: String? = nil,
-                         named: String? = RLMExceptionName, fileName: String = #file, lineNumber: UInt = #line) {
+    func assertThrows<T>(@autoclosure(escaping) block: () -> T, named: String? = RLMExceptionName,
+                         _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
         exceptionThrown = true
-        RLMAssertThrows(self, { _ = block() } as dispatch_block_t, named, message, fileName, lineNumber)
+        RLMAssertThrowsWithName(self, { _ = block() } as dispatch_block_t, named, message, fileName, lineNumber)
+    }
+
+    func assertThrows<T>(@autoclosure(escaping) block: () -> T, reason regexString: String,
+                         _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
+        exceptionThrown = true
+        RLMAssertThrowsWithReasonMatching(self, { _ = block() } as dispatch_block_t, regexString, message, fileName, lineNumber)
     }
 
     func assertSucceeds(message: String? = nil, fileName: StaticString = #file,
@@ -317,7 +330,11 @@ class TestCase: XCTestCase {
 
     private func realmURLForFile(fileName: String) -> NSURL {
         let directory = NSURL(fileURLWithPath: testDir, isDirectory: true)
-        return directory.URLByAppendingPathComponent(fileName, isDirectory: false)!
+        #if swift(>=2.3)
+            return directory.URLByAppendingPathComponent(fileName, isDirectory: false)!
+        #else
+            return directory.URLByAppendingPathComponent(fileName, isDirectory: false)
+        #endif
     }
 }
 

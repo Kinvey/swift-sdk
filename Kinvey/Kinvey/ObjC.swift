@@ -63,20 +63,6 @@ extension User {
         })
     }
     
-    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) {
-        presentMICViewController(redirectURI: redirectURI, timeout: timeout, forceUIWebView: false, client: client) { (user: User?, error: ErrorType?) -> Void in
-            completionHandler?(user, error as? NSError)
-        }
-    }
-    
-    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) {
-        presentMICViewController(redirectURI: redirectURI, timeout: timeout, forceUIWebView: forceUIWebView, client: client) { (user: User?, error: ErrorType?) -> Void in
-            completionHandler?(user, error as? NSError)
-        }
-    }
-    
 }
 
 @objc(__KNVError)
