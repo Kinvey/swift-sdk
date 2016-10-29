@@ -74,10 +74,7 @@ class SwiftArrayPropertyTests: RLMTestCase {
         XCTAssertEqual((array.array[1] as! SwiftStringObject).stringCol, "b", "Second element should have property value 'b'")
         XCTAssertEqual((array.array[2] as! SwiftStringObject).stringCol, "a", "Third element should have property value 'a'")
 
-        // Temporary fix until we figure out why iterators segfault
-//        for obj in array.array {
-        for i in 0..<array.array.count {
-            let obj = array.array[i]
+        for obj in array.array {
             XCTAssertFalse(obj.description.isEmpty, "Object should have description")
         }
     }
@@ -110,7 +107,7 @@ class SwiftArrayPropertyTests: RLMTestCase {
         let child1 = SwiftStringObject.create(in: realm, withValue: ["a"])
         let child2 = SwiftStringObject()
         child2.stringCol = "b"
-        obj.array.addObjects([child2, child1])
+        obj.array.addObjects([child2, child1] as NSArray)
         try! realm.commitWriteTransaction()
 
         let children = SwiftStringObject.allObjects(in: realm)
@@ -221,7 +218,7 @@ class SwiftArrayPropertyTests: RLMTestCase {
         let child1 = StringObject.create(in: realm, withValue: ["a"])
         let child2 = StringObject()
         child2.stringCol = "b"
-        obj.array.addObjects([child2, child1])
+        obj.array.addObjects([child2, child1] as NSArray)
         try! realm.commitWriteTransaction()
 
         let children = StringObject.allObjects(in: realm)
