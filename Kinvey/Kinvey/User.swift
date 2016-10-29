@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import SafariServices
 
 /// Class that represents an `User`.
 @objc(__KNVUser)
@@ -444,27 +445,108 @@ open class User: NSObject, Credential, Mappable {
             onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
     }
+    
+    private static let MICSafariViewControllerNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController")
+    
+    private static var MICSafariViewControllerNotificationObserver: Any? = nil {
+        willSet {
+            if let token = MICSafariViewControllerNotificationObserver {
+                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerNotificationName, object: nil)
+            }
+        }
+    }
+    
+    /// Performs a login using the MIC Redirect URL that contains a temporary token.
+    open class func login(redirectURI: URL, micURL: URL, client: Client = Kinvey.sharedClient) -> Bool {
+        if KCSUser.isValidMICRedirectURI(redirectURI.absoluteString, for: micURL) {
+            KCSUser.parseMICRedirectURI(redirectURI.absoluteString, for: micURL, withCompletionBlock: { (kcsUser, error, actionResult) in
+                onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client) { user, error in
+                    let object = UserError(user: user, error: error)
+                    NotificationCenter.default.post(
+                        name: MICSafariViewControllerNotificationName,
+                        object: object
+                    )
+                }
+            })
+            return true
+        }
+        return false
+    }
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+    @available(*, deprecated: 3.3.2, message: "Please use the method presentMICViewController(micUserInterface:) instead")
+    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+        presentMICViewController(redirectURI: redirectURI, timeout: timeout, micUserInterface: forceUIWebView ? .uiWebView : .wkWebView, client: client, completionHandler: completionHandler)
+    }
+    
+    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
+    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, currentViewController: UIViewController? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
-
-        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
-            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
-        }
-        if forceUIWebView {
-            micVC.setValue(forceUIWebView, forKey: "forceUIWebView")
-        }
-        micVC.client = client
-        micVC.micApiVersion = client.micApiVersion
-        let navigationVC = UINavigationController(rootViewController: micVC)
         
-        var viewController = UIApplication.shared.keyWindow?.rootViewController
-        if let presentedViewController =  viewController?.presentedViewController {
-            viewController = presentedViewController;
+        var micVC: UIViewController!
+        if micUserInterface == .safari {
+            let url = KCSUser.urLforLogin(withMICRedirectURI: redirectURI.absoluteString)!
+            micVC = SFSafariViewController(url: url)
+            micVC.modalPresentationStyle = .overCurrentContext
+            MICSafariViewControllerNotificationObserver = NotificationCenter.default.addObserver(
+                forName: MICSafariViewControllerNotificationName,
+                object: nil,
+                queue: OperationQueue.main)
+            { notification in
+                micVC.dismiss(animated: true) {
+                    MICSafariViewControllerNotificationObserver = nil
+                    
+                    let object = notification.object as? UserError
+                    completionHandler?(object?.user, object?.error)
+                }
+            }
+        } else {
+            let micLoginVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
+                onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
+            }
+            let forceUIWebView = micUserInterface == .uiWebView
+            if forceUIWebView {
+                micLoginVC.setValue(forceUIWebView, forKey: "forceUIWebView")
+            }
+            micLoginVC.client = client
+            micLoginVC.micApiVersion = client.micApiVersion
+            micVC = UINavigationController(rootViewController: micLoginVC)
         }
-        viewController?.present(navigationVC, animated: true)
+        var viewController = currentViewController
+        if viewController == nil {
+            viewController = UIApplication.shared.keyWindow?.rootViewController
+            if let presentedViewController =  viewController?.presentedViewController {
+                viewController = presentedViewController
+            }
+        }
+        viewController?.present(micVC, animated: true)
     }
 #endif
 
+}
+
+private struct UserError {
+    
+    let user: User?
+    let error: Swift.Error?
+    
+    init(user: User?, error: Swift.Error?) {
+        self.user = user
+        self.error = error
+    }
+    
+}
+
+/// Used to tell which user interface must be used during the login process using MIC.
+public enum MICUserInterface {
+    
+    /// Uses SFSafariViewController
+    case safari
+    
+    /// Uses WKWebView
+    case wkWebView
+    
+    /// Uses UIWebView
+    case uiWebView
+    
 }
