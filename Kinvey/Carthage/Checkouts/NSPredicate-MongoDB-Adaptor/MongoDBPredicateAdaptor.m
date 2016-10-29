@@ -497,10 +497,12 @@ NSString *const jsEqualsOperator = @"===";
     else if ([constant isKindOfClass:[NSSet class]]){
         result = [MongoDBPredicateAdaptor transformSetConstant:constant];
     }
+#if !TARGET_OS_WATCH
     else if ([constant isKindOfClass:[MKShape class]]){
         result = [MongoDBPredicateAdaptor transformGeoShapeConstant:constant];
         *operator = geoInOperator;
     }
+#endif
     
     return result;
 }
@@ -532,7 +534,9 @@ NSString *const jsEqualsOperator = @"===";
 +(NSArray *) transformSetConstant:(NSSet *)set{
     return [set allObjects];
 }
-              
+
+#if !TARGET_OS_WATCH
+
 +(NSDictionary*)transformGeoShapeConstant:(MKShape*)constant{
     NSDictionary *result = nil;
     if ([constant isKindOfClass:[MKCircle class]]) {
@@ -554,5 +558,6 @@ NSString *const jsEqualsOperator = @"===";
     return result;
 }
 
+#endif
 
 @end

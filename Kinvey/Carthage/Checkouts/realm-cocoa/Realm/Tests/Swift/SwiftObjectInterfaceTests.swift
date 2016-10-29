@@ -41,15 +41,15 @@ class SwiftDefaultObject: RLMObject {
     dynamic var intCol = 1
     dynamic var boolCol = true
 
-    override class func defaultPropertyValues() -> [NSObject : AnyObject]? {
+    override class func defaultPropertyValues() -> [AnyHashable : Any]? {
         return ["intCol": 2]
     }
 }
 
 class SwiftOptionalNumberObject: RLMObject {
     dynamic var intCol: NSNumber? = 1
-    dynamic var floatCol: NSNumber? = 2.2 as Float
-    dynamic var doubleCol: NSNumber? = 3.3 as Double
+    dynamic var floatCol: NSNumber? = 2.2 as Float as NSNumber
+    dynamic var doubleCol: NSNumber? = 3.3
     dynamic var boolCol: NSNumber? = true
 }
 
@@ -70,7 +70,7 @@ class SwiftObjectInterfaceTests: RLMTestCase {
         obj.doubleCol = 2.2
         obj.stringCol = "abcd"
         obj.binaryCol = "abcd".data(using: String.Encoding.utf8)
-        obj.dateCol = NSDate(timeIntervalSince1970: 123)
+        obj.dateCol = Date(timeIntervalSince1970: 123)
         obj.objectCol = SwiftBoolObject()
         obj.objectCol.boolCol = true
         obj.arrayCol.add(obj.objectCol)
@@ -85,7 +85,7 @@ class SwiftObjectInterfaceTests: RLMTestCase {
         XCTAssertEqual(firstObj.doubleCol, 2.2, "should be 2.2")
         XCTAssertEqual(firstObj.stringCol, "abcd", "should be abcd")
         XCTAssertEqual(firstObj.binaryCol!, data!)
-        XCTAssertEqual(firstObj.dateCol, NSDate(timeIntervalSince1970: 123), "should be epoch + 123")
+        XCTAssertEqual(firstObj.dateCol, Date(timeIntervalSince1970: 123), "should be epoch + 123")
         XCTAssertEqual(firstObj.objectCol.boolCol, true, "should be true")
         XCTAssertEqual(obj.arrayCol.count, UInt(1), "array count should be 1")
         XCTAssertEqual((obj.arrayCol.firstObject() as? SwiftBoolObject)!.boolCol, true, "should be true")
@@ -106,7 +106,7 @@ class SwiftObjectInterfaceTests: RLMTestCase {
         XCTAssertEqual(firstObj.doubleCol, 12.3, "should be 12.3")
         XCTAssertEqual(firstObj.stringCol, "a", "should be a")
         XCTAssertEqual(firstObj.binaryCol!, data!)
-        XCTAssertEqual(firstObj.dateCol, NSDate(timeIntervalSince1970: 1), "should be epoch + 1")
+        XCTAssertEqual(firstObj.dateCol, Date(timeIntervalSince1970: 1), "should be epoch + 1")
         XCTAssertEqual(firstObj.objectCol.boolCol, false, "should be false")
         XCTAssertEqual(firstObj.arrayCol.count, UInt(0), "array count should be zero")
     }
@@ -152,7 +152,7 @@ class SwiftObjectInterfaceTests: RLMTestCase {
         XCTAssertEqual([.int, .float, .double, .bool], no.objectSchema.properties.map { $0.type })
 
         XCTAssertEqual(1, no.intCol!)
-        XCTAssertEqual(2.2 as Float, no.floatCol!)
+        XCTAssertEqual(2.2 as Float as NSNumber, no.floatCol!)
         XCTAssertEqual(3.3, no.doubleCol!)
         XCTAssertEqual(true, no.boolCol!)
 
@@ -171,13 +171,13 @@ class SwiftObjectInterfaceTests: RLMTestCase {
 
         try! realm.transaction {
             no.intCol = 1.1
-            no.floatCol = 2.2 as Float
+            no.floatCol = 2.2 as Float as NSNumber
             no.doubleCol = 3.3
             no.boolCol = false
         }
 
         XCTAssertEqual(1, no.intCol!)
-        XCTAssertEqual(2.2 as Float, no.floatCol!)
+        XCTAssertEqual(2.2 as Float as NSNumber, no.floatCol!)
         XCTAssertEqual(3.3, no.doubleCol!)
         XCTAssertEqual(false, no.boolCol!)
     }
@@ -199,14 +199,14 @@ class SwiftObjectInterfaceTests: RLMTestCase {
 
             firstObj.optStringCol = "Hi!"
             firstObj.optNSStringCol = "Hi!"
-            firstObj.optBinaryCol = NSData(bytes: "hi", length: 2)
-            firstObj.optDateCol = NSDate(timeIntervalSinceReferenceDate: 10)
+            firstObj.optBinaryCol = Data(bytes: "hi", count: 2)
+            firstObj.optDateCol = Date(timeIntervalSinceReferenceDate: 10)
         }
         XCTAssertTrue(firstObj.optObjectCol!.boolCol)
         XCTAssertEqual(firstObj.optStringCol!, "Hi!")
         XCTAssertEqual(firstObj.optNSStringCol!, "Hi!")
-        XCTAssertEqual(firstObj.optBinaryCol!, NSData(bytes: "hi", length: 2))
-        XCTAssertEqual(firstObj.optDateCol!,  NSDate(timeIntervalSinceReferenceDate: 10))
+        XCTAssertEqual(firstObj.optBinaryCol!, Data(bytes: "hi", count: 2))
+        XCTAssertEqual(firstObj.optDateCol!,  Date(timeIntervalSinceReferenceDate: 10))
 
         try! realm.transaction {
             firstObj.optObjectCol = nil
