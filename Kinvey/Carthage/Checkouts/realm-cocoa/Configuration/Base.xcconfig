@@ -36,7 +36,8 @@ SWIFT_OPTIMIZATION_LEVEL = -Owholemodule;
 SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
 WARNING_CFLAGS = -Wmismatched-tags -Wunused-private-field;
 
-OTHER_CPLUSPLUSFLAGS = $(OTHER_CPLUSPLUSFLAGS) -isystem core/include -IRealm/ObjectStore;
+OTHER_CPLUSPLUSFLAGS = $(inherited) -isystem core/include;
+HEADER_SEARCH_PATHS = $(inherited) Realm/ObjectStore/src;
 
 CODE_SIGN_IDENTITY[sdk=iphone*] = iPhone Developer;
 CODE_SIGNING_REQUIRED[sdk=macosx] = NO;
@@ -45,3 +46,7 @@ MACOSX_DEPLOYMENT_TARGET = 10.9;
 IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 WATCHOS_DEPLOYMENT_TARGET = 2.0;
 TVOS_DEPLOYMENT_TARGET = 9.0;
+
+// SWIFT_VERSION is only recognized by Xcode 8 and higher.
+// Prior versions of Xcode support only one Swift version.
+SWIFT_VERSION = 3.0;
