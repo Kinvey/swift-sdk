@@ -11,11 +11,11 @@ import Foundation
 @objc(__KNVOperationQueueRequest)
 class OperationQueueRequest: NSObject, Request {
     
-    let operationQueue: NSOperationQueue
-    var progress: (ProgressStatus -> Void)?
+    let operationQueue: OperationQueue
+    var progress: ((ProgressStatus) -> Void)?
     
     override init() {
-        operationQueue = NSOperationQueue()
+        operationQueue = OperationQueue()
     }
     
     var executing: Bool {

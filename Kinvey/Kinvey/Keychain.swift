@@ -12,15 +12,15 @@ import KeychainAccess
 class Keychain {
     
     let appKey: String
-    private let keychain: KeychainAccess.Keychain
+    fileprivate let keychain: KeychainAccess.Keychain
     
     init(appKey: String) {
         self.appKey = appKey
-        self.keychain = KeychainAccess.Keychain(service: "com.kinvey.Kinvey.\(appKey)").accessibility(.AfterFirstUnlockThisDeviceOnly)
+        self.keychain = KeychainAccess.Keychain(service: "com.kinvey.Kinvey.\(appKey)").accessibility(.afterFirstUnlockThisDeviceOnly)
     }
     
-    private static let deviceTokenKey = "deviceToken"
-    var deviceToken: NSData? {
+    fileprivate static let deviceTokenKey = "deviceToken"
+    var deviceToken: Data? {
         get {
             return keychain[data: Keychain.deviceTokenKey]
         }
@@ -29,7 +29,7 @@ class Keychain {
         }
     }
     
-    private static let authtokenKey = "authtoken"
+    fileprivate static let authtokenKey = "authtoken"
     var authtoken: String? {
         get {
             return keychain[Keychain.authtokenKey]
@@ -39,8 +39,8 @@ class Keychain {
         }
     }
     
-    private static let defaultEncryptionKeyKey = "defaultEncryptionKey"
-    var defaultEncryptionKey: NSData? {
+    fileprivate static let defaultEncryptionKeyKey = "defaultEncryptionKey"
+    var defaultEncryptionKey: Data? {
         get {
             return keychain[data: Keychain.defaultEncryptionKeyKey]
         }

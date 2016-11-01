@@ -12,29 +12,29 @@ internal protocol CacheType {
     
     var persistenceId: String { get }
     var collectionName: String { get }
-    var ttl: NSTimeInterval? { get set }
+    var ttl: TimeInterval? { get set }
     
-    associatedtype Type
+    associatedtype `Type`
     
-    func saveEntity(entity: Type)
+    func saveEntity(_ entity: Type)
     
-    func saveEntities(entities: [Type])
+    func saveEntities(_ entities: [Type])
     
-    func findEntity(objectId: String) -> Type?
+    func findEntity(_ objectId: String) -> Type?
     
-    func findEntityByQuery(query: Query) -> [Type]
+    func findEntityByQuery(_ query: Query) -> [Type]
     
-    func findIdsLmtsByQuery(query: Query) -> [String : String]
+    func findIdsLmtsByQuery(_ query: Query) -> [String : String]
     
     func findAll() -> [Type]
     
-    func count(query: Query?) -> UInt
+    func count(_ query: Query?) -> Int
     
-    func removeEntity(entity: Type) -> Bool
+    func removeEntity(_ entity: Type) -> Bool
     
-    func removeEntities(entity: [Type]) -> Bool
+    func removeEntities(_ entity: [Type]) -> Bool
     
-    func removeEntitiesByQuery(query: Query) -> UInt
+    func removeEntitiesByQuery(_ query: Query) -> Int
     
     func removeAllEntities()
     
@@ -48,45 +48,45 @@ extension CacheType {
     
 }
 
-internal class Cache<T: Persistable where T: NSObject>: CacheType {
+internal class Cache<T: Persistable>: CacheType where T: NSObject {
     
-    internal typealias Type = T
+    internal typealias `Type` = T
     
     let persistenceId: String
     let collectionName: String
-    var ttl: NSTimeInterval?
+    var ttl: TimeInterval?
     
-    init(persistenceId: String, ttl: NSTimeInterval? = nil) {
+    init(persistenceId: String, ttl: TimeInterval? = nil) {
         self.persistenceId = persistenceId
         self.collectionName = T.collectionName()
         self.ttl = ttl
     }
     
-    func detach(entity: T) -> T {
+    func detach(_ entity: T) -> T {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func detach(entity: [T], query: Query) -> [T] {
+    func detach(_ entity: [T], query: Query) -> [T] {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func saveEntity(entity: T) {
+    func saveEntity(_ entity: T) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func saveEntities(entities: [T]) {
+    func saveEntities(_ entities: [T]) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findEntity(objectId: String) -> T? {
+    func findEntity(_ objectId: String) -> T? {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findEntityByQuery(query: Query) -> [T] {
+    func findEntityByQuery(_ query: Query) -> [T] {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findIdsLmtsByQuery(query: Query) -> [String : String] {
+    func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
@@ -94,22 +94,26 @@ internal class Cache<T: Persistable where T: NSObject>: CacheType {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func count(query: Query? = nil) -> UInt {
+    func count(_ query: Query? = nil) -> Int {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeEntity(entity: T) -> Bool {
+    @discardableResult
+    func removeEntity(_ entity: T) -> Bool {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeEntities(entity: [T]) -> Bool {
+    @discardableResult
+    func removeEntities(_ entity: [T]) -> Bool {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeEntitiesByQuery(query: Query) -> UInt {
+    @discardableResult
+    func removeEntitiesByQuery(_ query: Query) -> Int {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
+    @discardableResult
     func removeAllEntities() {
         preconditionFailure("Method \(#function) must be overridden")
     }

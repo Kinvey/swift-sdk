@@ -13,12 +13,12 @@ import Foundation
 public enum WritePolicy: UInt {
     
     /// Writes in the local cache first and then try to write trought the network (backend).
-    case LocalThenNetwork = 0
+    case localThenNetwork = 0
     
     /// Doesn't hit the network, forcing to write the data only in the local cache.
-    case ForceLocal
+    case forceLocal
     
     /// Doesn't hit the local cache, forcing to write the data only trought the network (backend).
-    case ForceNetwork
+    case forceNetwork
     
 }

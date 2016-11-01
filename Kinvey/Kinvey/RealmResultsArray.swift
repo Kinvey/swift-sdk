@@ -9,21 +9,21 @@
 import Foundation
 import RealmSwift
 
-class RealmResultsArray<T: Object>: NSArray {
-    
-    let results: RealmSwift.Results<T>
-    
-    init(_ results: RealmSwift.Results<T>) {
-        self.results = results
-        super.init()
-    }
-    
-    override var count: Int {
-        return results.count
-    }
-    
-    override func objectAtIndex(index: Int) -> AnyObject {
-        return results[index]
-    }
-    
-}
+//class RealmResultsArray<T: Object>: Array {
+//    
+//    let results: RealmSwift.Results<T>
+//    
+//    init(_ results: RealmSwift.Results<T>) {
+//        self.results = results
+//        super.init()
+//    }
+//    
+//    override var count: Int {
+//        return results.count
+//    }
+//    
+//    override func object(at index: Int) -> Any {
+//        return results[index]
+//    }
+//    
+//}

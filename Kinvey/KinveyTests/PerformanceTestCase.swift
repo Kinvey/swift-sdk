@@ -17,7 +17,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.collection(.Sync)
+            store = DataStore<Person>.collection(.sync)
             
             let n = 1000
             
@@ -25,7 +25,7 @@ class PerformanceTestCase: StoreTestCase {
                 save(newPerson)
             }
             
-            weak var expectationPush = self.expectationWithDescription("Push")
+            weak var expectationPush = self.expectation(description: "Push")
             
             store.push(timeout: 300) { count, error in
                 XCTAssertNotNil(count)
@@ -38,14 +38,14 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(NSTimeInterval(Int16.max)) { error in
+            self.waitForExpectations(timeout: TimeInterval(Int16.max)) { error in
                 expectationPush = nil
             }
             
             let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator ==  %@", user.userId)
             
-            self.measureBlock {
-                weak var expectationFind = self.expectationWithDescription("Find")
+            self.measure {
+                weak var expectationFind = self.expectation(description: "Find")
                 
                 self.store.find(query, deltaSet: false) { results, error in
                     XCTAssertNotNil(results)
@@ -58,7 +58,7 @@ class PerformanceTestCase: StoreTestCase {
                     expectationFind?.fulfill()
                 }
                 
-                self.waitForExpectationsWithTimeout(self.defaultTimeout) { error in
+                self.waitForExpectations(timeout: self.defaultTimeout) { error in
                     expectationFind = nil
                 }
             }
@@ -71,7 +71,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.collection(.Sync)
+            store = DataStore<Person>.collection(.sync)
             
             let n = 10000
             
@@ -79,7 +79,7 @@ class PerformanceTestCase: StoreTestCase {
                 save(newPerson)
             }
             
-            weak var expectationPush = self.expectationWithDescription("Push")
+            weak var expectationPush = self.expectation(description: "Push")
             
             store.push(timeout: 1800) { count, error in
                 XCTAssertNotNil(count)
@@ -92,14 +92,14 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(NSTimeInterval(Int16.max)) { error in
+            self.waitForExpectations(timeout: TimeInterval(Int16.max)) { error in
                 expectationPush = nil
             }
             
             let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator ==  %@", user.userId)
             
-            self.measureBlock {
-                weak var expectationFind = self.expectationWithDescription("Find")
+            self.measure {
+                weak var expectationFind = self.expectation(description: "Find")
                 
                 self.store.find(query, deltaSet: false) { results, error in
                     XCTAssertNotNil(results)
@@ -112,7 +112,7 @@ class PerformanceTestCase: StoreTestCase {
                     expectationFind?.fulfill()
                 }
                 
-                self.waitForExpectationsWithTimeout(self.defaultTimeout) { error in
+                self.waitForExpectations(timeout: self.defaultTimeout) { error in
                     expectationFind = nil
                 }
             }

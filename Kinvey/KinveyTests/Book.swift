@@ -16,7 +16,7 @@ class Book: Entity {
         return "Book"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         Kinvey.sharedClient.timeoutInterval = 120 //2 minutes timeout

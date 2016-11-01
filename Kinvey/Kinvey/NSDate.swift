@@ -8,10 +8,10 @@
 
 import Foundation
 
-extension NSDate {
+extension Date {
     
     func toString() -> String {
-        return NSDate2StringValueTransformer.rfc3339MilliSecondsDateFormatter.stringFromDate(self)
+        return NSDate2StringValueTransformer.rfc3339MilliSecondsDateFormatter.string(from: self)
     }
     
 }
