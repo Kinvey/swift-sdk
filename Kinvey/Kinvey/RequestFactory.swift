@@ -10,34 +10,34 @@ import Foundation
 
 protocol RequestFactory {
     
-    func buildUserSignUp(username username: String?, password: String?) -> HttpRequest
-    func buildUserDelete(userId userId: String, hard: Bool) -> HttpRequest
-    func buildUserSocialLogin(authSource: String, authData: [String : AnyObject]) -> HttpRequest
-    func buildUserLogin(username username: String, password: String) -> HttpRequest
-    func buildUserExists(username username: String) -> HttpRequest
-    func buildUserGet(userId userId: String) -> HttpRequest
-    func buildUserSave(user user: User) -> HttpRequest
-    func buildUserSave(user user: User, newPassword: String?) -> HttpRequest
-    func buildUserLookup(user user: User, userQuery: UserQuery) -> HttpRequest
-    func buildSendEmailConfirmation(forUsername forUsername: String) -> HttpRequest
-    func buildUserResetPassword(usernameOrEmail usernameOrEmail: String) -> HttpRequest
-    func buildUserForgotUsername(email email: String) -> HttpRequest
+    func buildUserSignUp(username: String?, password: String?) -> HttpRequest
+    func buildUserDelete(userId: String, hard: Bool) -> HttpRequest
+    func buildUserSocialLogin(_ authSource: String, authData: [String : Any]) -> HttpRequest
+    func buildUserLogin(username: String, password: String) -> HttpRequest
+    func buildUserExists(username: String) -> HttpRequest
+    func buildUserGet(userId: String) -> HttpRequest
+    func buildUserSave(user: User) -> HttpRequest
+    func buildUserSave(user: User, newPassword: String?) -> HttpRequest
+    func buildUserLookup(user: User, userQuery: UserQuery) -> HttpRequest
+    func buildSendEmailConfirmation(forUsername: String) -> HttpRequest
+    func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
+    func buildUserForgotUsername(email: String) -> HttpRequest
     
-    func buildAppDataGetById(collectionName collectionName: String, id: String) -> HttpRequest
-    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
-    func buildAppDataCountByQuery(collectionName collectionName: String, query: Query?) -> HttpRequest
-    func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest
-    func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
-    func buildAppDataRemoveById(collectionName collectionName: String, objectId: String) -> HttpRequest
+    func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest
+    func buildAppDataFindByQuery(collectionName: String, query: Query) -> HttpRequest
+    func buildAppDataCountByQuery(collectionName: String, query: Query?) -> HttpRequest
+    func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest
+    func buildAppDataRemoveByQuery(collectionName: String, query: Query) -> HttpRequest
+    func buildAppDataRemoveById(collectionName: String, objectId: String) -> HttpRequest
     
-    func buildPushRegisterDevice(deviceToken: NSData) -> HttpRequest
-    func buildPushUnRegisterDevice(deviceToken: NSData) -> HttpRequest
+    func buildPushRegisterDevice(_ deviceToken: Data) -> HttpRequest
+    func buildPushUnRegisterDevice(_ deviceToken: Data) -> HttpRequest
     
-    func buildBlobUploadFile(file: File) -> HttpRequest
-    func buildBlobDownloadFile(file: File, ttl: TTL?) -> HttpRequest
-    func buildBlobDeleteFile(file: File) -> HttpRequest
-    func buildBlobQueryFile(query: Query, ttl: TTL?) -> HttpRequest
+    func buildBlobUploadFile(_ file: File) -> HttpRequest
+    func buildBlobDownloadFile(_ file: File, ttl: TTL?) -> HttpRequest
+    func buildBlobDeleteFile(_ file: File) -> HttpRequest
+    func buildBlobQueryFile(_ query: Query, ttl: TTL?) -> HttpRequest
     
-    func buildCustomEndpoint(name: String) -> HttpRequest
+    func buildCustomEndpoint(_ name: String) -> HttpRequest
     
 }

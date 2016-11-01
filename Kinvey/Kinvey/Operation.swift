@@ -8,12 +8,12 @@
 
 import Foundation
 
-internal class Operation<T: Persistable where T: NSObject>: NSObject {
+internal class Operation<T: Persistable>: NSObject where T: NSObject {
     
-    typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
-    typealias ObjectCompletionHandler = (T?, ErrorType?) -> Void
-    typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
-    typealias UIntArrayCompletionHandler = (UInt?, [T]?, ErrorType?) -> Void
+    typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
+    typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
+    typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
+    typealias UIntArrayCompletionHandler = (UInt?, [T]?, Swift.Error?) -> Void
     
     let cache: Cache<T>?
     let client: Client
@@ -23,7 +23,7 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
         self.client = client
     }
     
-    func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : String] {
+    func reduceToIdsLmts(_ jsonArray: [JsonDictionary]) -> [String : String] {
         var items = [String : String](minimumCapacity: jsonArray.count)
         for json in jsonArray {
             if let id = json[PersistableIdKey] as? String,
@@ -36,25 +36,25 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
         return items
     }
     
-    func computeDeltaSet(query: Query, refObjs: [String : String]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
+    func computeDeltaSet(_ query: Query, refObjs: [String : String]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
         guard let cache = cache else {
             return (created: Set<String>(), updated: Set<String>(), deleted: Set<String>())
         }
         let refKeys = Set<String>(refObjs.keys)
         let cachedObjs = cache.findIdsLmtsByQuery(query)
         let cachedKeys = Set<String>(cachedObjs.keys)
-        let createdKeys = refKeys.subtract(cachedKeys)
-        let deletedKeys = cachedKeys.subtract(refKeys)
-        var updatedKeys = refKeys.intersect(cachedKeys)
+        let createdKeys = refKeys.subtracting(cachedKeys)
+        let deletedKeys = cachedKeys.subtracting(refKeys)
+        var updatedKeys = refKeys.intersection(cachedKeys)
         if updatedKeys.count > 0 {
             updatedKeys = Set<String>(updatedKeys.filter({ refObjs[$0] != cachedObjs[$0] }))
         }
         return (created: createdKeys, updated: updatedKeys, deleted: deletedKeys)
     }
     
-    func fillObject(inout persistable: T) -> T {
+    func fillObject(_ persistable: inout T) -> T {
         if persistable.entityId == nil {
-            persistable.entityId = "\(ObjectIdTmpPrefix)\(NSUUID().UUIDString)"
+            persistable.entityId = "\(ObjectIdTmpPrefix)\(UUID().uuidString)"
         }
         if persistable.acl == nil, let activeUser = client.activeUser {
             persistable.acl = Acl(creator: activeUser.userId)
@@ -62,17 +62,17 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
         return persistable
     }
     
-    func merge(inout persistableArray: [T], jsonArray: [JsonDictionary]) {
+    func merge(_ persistableArray: inout [T], jsonArray: [JsonDictionary]) {
         if persistableArray.count == jsonArray.count && persistableArray.count > 0 {
-            for (index, _) in persistableArray.enumerate() {
+            for (index, _) in persistableArray.enumerated() {
                 merge(&persistableArray[index], json: jsonArray[index])
             }
         }
     }
     
-    func merge(inout persistable: T, json: JsonDictionary) {
-        let map = Map(mappingType: .FromJSON, JSONDictionary: json)
-        persistable.mapping(map)
+    func merge(_ persistable: inout T, json: JsonDictionary) {
+        let map = Map(mappingType: .fromJSON, JSON: json)
+        persistable.mapping(map: map)
     }
     
 }

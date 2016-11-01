@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class SyncOperation<T: Persistable, R, E where T: NSObject>: Operation<T> {
+internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObject {
     
     internal typealias CompletionHandler = (R, E) -> Void
     
@@ -19,7 +19,7 @@ internal class SyncOperation<T: Persistable, R, E where T: NSObject>: Operation<
         super.init(cache: cache, client: client)
     }
     
-    func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
+    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     

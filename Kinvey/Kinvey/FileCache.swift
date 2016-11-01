@@ -10,10 +10,10 @@ import Foundation
 
 protocol FileCache {
     
-    func save(file: File, beforeSave: (() -> Void)?)
+    func save(_ file: File, beforeSave: (() -> Void)?)
     
-    func remove(file: File)
+    func remove(_ file: File)
     
-    func get(fileId: String) -> File?
+    func get(_ fileId: String) -> File?
     
 }

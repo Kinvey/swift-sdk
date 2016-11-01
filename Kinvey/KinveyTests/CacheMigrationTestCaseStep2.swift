@@ -20,7 +20,7 @@ class Person: Entity {
         return "CacheMigrationTestCase_Person"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         personId <- map[PersistableIdKey]
@@ -35,14 +35,15 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     
     override func tearDown() {
         let realmConfiguration = Realm.Configuration.defaultConfiguration
-        if let fileURL = realmConfiguration.fileURL, var path = fileURL.path {
+        if let fileURL = realmConfiguration.fileURL {
+            var path = fileURL.path
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
-            path = NSString.pathWithComponents(pathComponents)
-            let fileManager = NSFileManager.defaultManager()
-            if fileManager.fileExistsAtPath(path) {
+            path = NSString.path(withComponents: pathComponents)
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: path) {
                 do {
-                    try fileManager.removeItemAtPath(path)
+                    try fileManager.removeItem(atPath: path)
                 } catch {
                     XCTFail()
                     return
@@ -63,8 +64,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 var newEntity = oldEntity
                 if oldSchemaVersion < 2 {
                     newEntity["fullName"] = "\(oldEntity["firstName"]!) \(oldEntity["lastName"]!)"
-                    newEntity.removeValueForKey("firstName")
-                    newEntity.removeValueForKey("lastName")
+                    newEntity.removeValue(forKey: "firstName")
+                    newEntity.removeValue(forKey: "lastName")
                 }
                 
                 return newEntity
@@ -74,9 +75,9 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         XCTAssertTrue(migrationCalled)
         XCTAssertTrue(migrationPersonCalled)
         
-        let store = DataStore<Person>.collection(.Sync)
+        let store = DataStore<Person>.collection(.sync)
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
         store.find { persons, error in
             XCTAssertNotNil(persons)
@@ -93,7 +94,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }

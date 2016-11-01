@@ -10,24 +10,24 @@ import Foundation
 
 class Executor {
     
-    private let operationQueue: NSOperationQueue
-    private let thread: NSThread
+    fileprivate let operationQueue: OperationQueue
+    fileprivate let thread: Thread
     
     init() {
-        operationQueue = NSOperationQueue.currentQueue()!
+        operationQueue = OperationQueue.current!
         operationQueue.maxConcurrentOperationCount = 1
-        thread = NSThread.currentThread()
+        thread = Thread.current
     }
     
-    func execute(block: () -> Void) {
-        operationQueue.addOperationWithBlock(block)
+    func execute(_ block: @escaping () -> Void) {
+        operationQueue.addOperation(block)
     }
     
-    func executeAndWait(block: () -> Void) {
-        if thread == NSThread.currentThread() {
+    func executeAndWait(_ block: @escaping () -> Void) {
+        if thread == Thread.current {
             block()
         } else {
-            operationQueue.addOperationWithBlock(block)
+            operationQueue.addOperation(block)
             operationQueue.waitUntilAllOperationsAreFinished()
         }
     }

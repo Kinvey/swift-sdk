@@ -12,10 +12,10 @@ import Kinvey
 class PerformanceTestMedData: PerformanceTestData {
     
     override func test() {
-        startDate = NSDate()
+        startDate = Date()
         let store: DataStore<MedData> = self.store()
-        store.find(deltaSet: deltaSetSwitch.on) { results, error in
-            self.endDate = NSDate()
+        store.find(deltaSet: deltaSetSwitch.isOn) { results, error in
+            self.endDate = Date()
             self.durationLabel.text = "\(self.durationLabel.text ?? "")\n\(results?.count ?? 0)"
         }
     }

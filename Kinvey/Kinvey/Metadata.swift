@@ -11,26 +11,26 @@ import Realm
 import RealmSwift
 
 /// This class represents the metadata information for a record
-public class Metadata: Object, Mappable, BuilderType {
+public final class Metadata: Object, Mappable, BuilderType {
     
     /// Last Modification Time Key.
-    public static let LmtKey = "lmt"
+    open static let LmtKey = "lmt"
     
     /// Entity Creation Time Key.
-    public static let EctKey = "ect"
+    open static let EctKey = "ect"
     
     /// Last Read Time Key.
     internal static let LrtKey = "lrt"
     
     /// Authentication Token Key.
-    public static let AuthTokenKey = "authtoken"
+    open static let AuthTokenKey = "authtoken"
     
     internal dynamic var lmt: String?
     internal dynamic var ect: String?
-    internal dynamic var lrt: NSDate = NSDate()
+    internal dynamic var lrt: Date = Date()
     
     /// Last Read Time
-    public var lastReadTime: NSDate {
+    open var lastReadTime: Date {
         get {
             return self.lrt
         }
@@ -40,7 +40,7 @@ public class Metadata: Object, Mappable, BuilderType {
     }
     
     /// Last Modification Time.
-    public var lastModifiedTime: NSDate? {
+    open var lastModifiedTime: Date? {
         get {
             return self.lmt?.toDate()
         }
@@ -50,7 +50,7 @@ public class Metadata: Object, Mappable, BuilderType {
     }
     
     /// Entity Creation Time.
-    public var entityCreationTime: NSDate? {
+    open var entityCreationTime: Date? {
         get {
             return self.ect?.toDate()
         }
@@ -60,10 +60,10 @@ public class Metadata: Object, Mappable, BuilderType {
     }
     
     /// Authentication Token.
-    public internal(set) var authtoken: String?
+    open internal(set) var authtoken: String?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(_ map: Map) {
+    public required init?(map: Map) {
         super.init()
     }
     
@@ -84,12 +84,12 @@ public class Metadata: Object, Mappable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public required init(value: AnyObject, schema: RLMSchema) {
+    public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    public func mapping(map: Map) {
+    open func mapping(map: Map) {
         lmt <- map[Metadata.LmtKey]
         ect <- map[Metadata.EctKey]
         authtoken <- map[Metadata.AuthTokenKey]
@@ -99,7 +99,7 @@ public class Metadata: Object, Mappable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func ignoredProperties() -> [String] {
+    open override class func ignoredProperties() -> [String] {
         return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
     }
 
