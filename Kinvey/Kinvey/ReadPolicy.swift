@@ -13,12 +13,12 @@ import Foundation
 public enum ReadPolicy: UInt {
     
     /// Doesn't hit the network, forcing the data to be read only from the local cache.
-    case ForceLocal = 0
+    case forceLocal = 0
     
     /// Doesn't hit the local cache, forcing the data to be read only from the network (backend).
-    case ForceNetwork
+    case forceNetwork
     
     /// Read first from the local cache and then try to get data from the network (backend).
-    case Both
+    case both
     
 }

@@ -8,11 +8,11 @@
 
 import Foundation
 
-extension NSData {
+extension Data {
     
     func hexString() -> String {
         let str = NSMutableString()
-        let bytes = UnsafeBufferPointer<UInt8>(start: UnsafePointer(self.bytes), count:self.length)
+        let bytes = UnsafeBufferPointer<UInt8>(start: (self as NSData).bytes.bindMemory(to: UInt8.self, capacity: self.count), count:self.count)
         for byte in bytes {
             str.appendFormat("%02hhx", byte)
         }

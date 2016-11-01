@@ -18,21 +18,21 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUp404StatusCode() {
-        class ErrorURLProtocol: NSURLProtocol {
+        class ErrorURLProtocol: URLProtocol {
             
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
             override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 404, HTTPVersion: "HTTP/1.1", headerFields: [:])!
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                client!.URLProtocol(self, didLoadData: NSData())
-                client!.URLProtocolDidFinishLoading(self)
+                let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: Data())
+                client!.urlProtocolDidFinishLoading(self)
             }
             
             override func stopLoading() {
@@ -43,7 +43,7 @@ class UserTests: KinveyTestCase {
         setURLProtocol(ErrorURLProtocol.self)
         
         signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
         }
@@ -53,15 +53,15 @@ class UserTests: KinveyTestCase {
         setURLProtocol(TimeoutErrorURLProtocol.self)
         
         signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
         }
     }
     
     func testSignUpWithUsernameAndPassword() {
-        let username = NSUUID().UUIDString
-        let password = NSUUID().UUIDString
+        let username = UUID().uuidString
+        let password = UUID().uuidString
         signUp(username: username, password: password)
     }
     
@@ -69,16 +69,16 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             user.destroy(client: client, completionHandler: { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationDestroyUser?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -93,15 +93,15 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             userId = user.userId
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             user.destroy(hard: true, completionHandler: { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 expectationDestroyUser?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -111,7 +111,7 @@ class UserTests: KinveyTestCase {
         signUp()
 
         if let _ = client.activeUser {
-            weak var expectationFindDestroyedUser = expectationWithDescription("Find Destoyed User")
+            weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
             User.get(userId: userId , completionHandler: { (user, error) in
                 XCTAssertNil(user)
@@ -120,7 +120,7 @@ class UserTests: KinveyTestCase {
             })
             
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFindDestroyedUser = nil
             }
 
@@ -132,16 +132,16 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, completionHandler: { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationDestroyUser?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -153,16 +153,16 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, hard: true, completionHandler: { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationDestroyUser?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -174,16 +174,16 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, client: client, completionHandler: { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationDestroyUser?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -203,16 +203,16 @@ class UserTests: KinveyTestCase {
         let store = DataStore<Person>.collection()
         
         do {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .ForceNetwork) { results, error in
+            store.find(readPolicy: .forceNetwork) { results, error in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
@@ -223,7 +223,7 @@ class UserTests: KinveyTestCase {
                 client.logNetworkEnabled = false
             }
             
-            weak var expectationChangePassword = expectationWithDescription("Change Password")
+            weak var expectationChangePassword = expectation(description: "Change Password")
             
             user.changePassword(newPassword: "test") { user, error in
                 XCTAssertNotNil(user)
@@ -232,22 +232,22 @@ class UserTests: KinveyTestCase {
                 expectationChangePassword?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationChangePassword = nil
             }
         }
         
         do {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .ForceNetwork) { results, error in
+            store.find(readPolicy: .forceNetwork) { results, error in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
@@ -257,17 +257,17 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
-            weak var expectationUserExists = expectationWithDescription("User Exists")
+            weak var expectationUserExists = expectation(description: "User Exists")
             
             User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationUserExists?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserExists = nil
             }
         }
@@ -279,25 +279,25 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             setURLProtocol(TimeoutErrorURLProtocol.self)
             
-            weak var expectationUserExists = expectationWithDescription("User Exists")
+            weak var expectationUserExists = expectation(description: "User Exists")
             
             User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationUserExists?.fulfill()
             })
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserExists = nil
             }
         }
     }
     
     func testLookup() {
-        let username = NSUUID().UUIDString
-        let password = NSUUID().UUIDString
+        let username = UUID().uuidString
+        let password = UUID().uuidString
         let email = "\(username)@kinvey.com"
         signUp(username: username, password: password)
         
@@ -305,19 +305,19 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                weak var expectationSave = expectationWithDescription("Save")
+                weak var expectationSave = expectation(description: "Save")
                 
                 user.email = email
                 
                 user.save() { user, error in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     XCTAssertNotNil(user)
                     
                     expectationSave?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationSave = nil
                 }
             }
@@ -325,14 +325,14 @@ class UserTests: KinveyTestCase {
             do {
                 client.logNetworkEnabled = true
                 
-                weak var expectationUserLookup = expectationWithDescription("User Lookup")
+                weak var expectationUserLookup = expectation(description: "User Lookup")
                 
                 let userQuery = UserQuery {
                     $0.username = username
                 }
                 
                 user.lookup(userQuery) { users, error in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(users)
                     XCTAssertNil(error)
                     
@@ -348,7 +348,7 @@ class UserTests: KinveyTestCase {
                     expectationUserLookup?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationUserLookup = nil
                 }
                 
@@ -362,7 +362,7 @@ class UserTests: KinveyTestCase {
         var foo: String?
         
         override func mapping(map: Map) {
-            super.mapping(map)
+            super.mapping(map: map)
             
             foo <- map["foo"]
         }
@@ -378,12 +378,12 @@ class UserTests: KinveyTestCase {
         XCTAssertTrue(client.activeUser is MyUser)
         
         if let user = client.activeUser as? MyUser {
-            weak var expectationUserSave = expectationWithDescription("User Save")
+            weak var expectationUserSave = expectation(description: "User Save")
             
             user.foo = "bar"
             
             user.save { (user, error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 XCTAssertTrue(user is MyUser)
@@ -394,7 +394,7 @@ class UserTests: KinveyTestCase {
                 expectationUserSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserSave = nil
             }
         }
@@ -411,27 +411,27 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser as? MyUser {
             setURLProtocol(TimeoutErrorURLProtocol.self)
             
-            weak var expectationUserSave = expectationWithDescription("User Save")
+            weak var expectationUserSave = expectation(description: "User Save")
             
             user.foo = "bar"
             
             user.save { (user, error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationUserSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserSave = nil
             }
         }
     }
     
     func testLogoutLogin() {
-        let username = NSUUID().UUIDString
-        let password = NSUUID().UUIDString
+        let username = UUID().uuidString
+        let password = UUID().uuidString
         signUp(username: username, password: password)
         
         XCTAssertNotNil(client.activeUser)
@@ -441,55 +441,55 @@ class UserTests: KinveyTestCase {
             
             XCTAssertNil(client.activeUser)
             
-            let userDefaults = NSUserDefaults.standardUserDefaults()
-            XCTAssertNil(userDefaults.objectForKey(client.appKey!))
+            let userDefaults = UserDefaults.standard
+            XCTAssertNil(userDefaults.object(forKey: client.appKey!))
             
-            weak var expectationUserLogin = expectationWithDescription("User Login")
+            weak var expectationUserLogin = expectation(description: "User Login")
             
             User.login(username: username, password: password) { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationUserLogin?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserLogin = nil
             }
         }
     }
     
     func testLogoutLoginTimeoutError() {
-        let username = NSUUID().UUIDString
-        let password = NSUUID().UUIDString
+        let username = UUID().uuidString
+        let password = UUID().uuidString
         signUp(username: username, password: password)
         defer {
-            weak var expectationUserLogin = expectationWithDescription("User Login")
+            weak var expectationUserLogin = expectation(description: "User Login")
             
             User.login(username: username, password: password) { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationUserLogin?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserLogin = nil
             }
             
             if let activeUser = client.activeUser {
-                weak var expectationDestroy = expectationWithDescription("Destroy")
+                weak var expectationDestroy = expectation(description: "Destroy")
                 
                 activeUser.destroy { (error) -> Void in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     
                     expectationDestroy?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationDestroy = nil
                 }
             }
@@ -507,52 +507,52 @@ class UserTests: KinveyTestCase {
                 setURLProtocol(nil)
             }
             
-            weak var expectationUserLogin = expectationWithDescription("User Login")
+            weak var expectationUserLogin = expectation(description: "User Login")
             
             User.login(username: username, password: password) { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationUserLogin?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserLogin = nil
             }
         }
     }
     
     func testLogoutLogin200ButInvalidResponseError() {
-        let username = NSUUID().UUIDString
-        let password = NSUUID().UUIDString
+        let username = UUID().uuidString
+        let password = UUID().uuidString
         signUp(username: username, password: password)
         defer {
-            weak var expectationUserLogin = expectationWithDescription("User Login")
+            weak var expectationUserLogin = expectation(description: "User Login")
             
             User.login(username: username, password: password) { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationUserLogin?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserLogin = nil
             }
             
             if let activeUser = client.activeUser {
-                weak var expectationDestroy = expectationWithDescription("Destroy")
+                weak var expectationDestroy = expectation(description: "Destroy")
                 
                 activeUser.destroy { (error) -> Void in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     
                     expectationDestroy?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationDestroy = nil
                 }
             }
@@ -565,22 +565,22 @@ class UserTests: KinveyTestCase {
             
             XCTAssertNil(client.activeUser)
             
-            class InvalidUserResponseErrorURLProtocol: NSURLProtocol {
+            class InvalidUserResponseErrorURLProtocol: URLProtocol {
                 
-                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
                 
-                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                     return request
                 }
                 
                 override func startLoading() {
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
-                    client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                    let data = try! NSJSONSerialization.dataWithJSONObject(["userId":"123"], options: [])
-                    client!.URLProtocol(self, didLoadData: data)
-                    client!.URLProtocolDidFinishLoading(self)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
+                    client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let data = try! JSONSerialization.data(withJSONObject: ["userId":"123"], options: [])
+                    client!.urlProtocol(self, didLoad: data)
+                    client!.urlProtocolDidFinishLoading(self)
                 }
                 
                 override func stopLoading() {
@@ -593,17 +593,17 @@ class UserTests: KinveyTestCase {
                 setURLProtocol(nil)
             }
             
-            weak var expectationUserLogin = expectationWithDescription("User Login")
+            weak var expectationUserLogin = expectation(description: "User Login")
             
             User.login(username: username, password: password) { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationUserLogin?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserLogin = nil
             }
         }
@@ -618,17 +618,17 @@ class UserTests: KinveyTestCase {
             XCTAssertNotNil(user.username)
             
             if let username = user.username {
-                weak var expectationUserExists = expectationWithDescription("User Exists")
+                weak var expectationUserExists = expectation(description: "User Exists")
                 
                 User.exists(username: username) { (exists, error) -> Void in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     XCTAssertTrue(exists)
                     
                     expectationUserExists?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationUserExists = nil
                 }
             }
@@ -646,17 +646,17 @@ class UserTests: KinveyTestCase {
             if let username = user.username {
                 setURLProtocol(TimeoutErrorURLProtocol.self)
                 
-                weak var expectationUserExists = expectationWithDescription("User Exists")
+                weak var expectationUserExists = expectation(description: "User Exists")
                 
                 User.exists(username: username) { (exists, error) -> Void in
-                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(error)
                     XCTAssertFalse(exists)
                     
                     expectationUserExists?.fulfill()
                 }
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationUserExists = nil
                 }
             }
@@ -669,16 +669,16 @@ class UserTests: KinveyTestCase {
         setURLProtocol(TimeoutErrorURLProtocol.self)
         
         if let activeUser = client.activeUser {
-            weak var expectationDestroy = expectationWithDescription("Destroy")
+            weak var expectationDestroy = expectation(description: "Destroy")
             
             activeUser.destroy { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 
                 expectationDestroy?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroy = nil
             }
         }
@@ -690,40 +690,40 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             user.email = "\(user.username!)@kinvey.com"
             
             user.save() { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
             
-            class Mock204URLProtocol: NSURLProtocol {
+            class Mock204URLProtocol: URLProtocol {
                 
-                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
                 
-                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                     return request
                 }
                 
-                private override func startLoading() {
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 204, HTTPVersion: "HTTP/1.1", headerFields: [:])!
-                    client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                    client!.URLProtocol(self, didLoadData: NSData())
-                    client!.URLProtocolDidFinishLoading(self)
+                fileprivate override func startLoading() {
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 204, httpVersion: "HTTP/1.1", headerFields: [:])!
+                    client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client!.urlProtocol(self, didLoad: Data())
+                    client!.urlProtocolDidFinishLoading(self)
                 }
                 
-                private override func stopLoading() {
+                fileprivate override func stopLoading() {
                 }
                 
             }
@@ -733,16 +733,16 @@ class UserTests: KinveyTestCase {
                 setURLProtocol(nil)
             }
             
-            weak var expectationSendEmailConfirmation = expectationWithDescription("Send Email Confirmation")
+            weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
             
             user.sendEmailConfirmation { error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationSendEmailConfirmation?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSendEmailConfirmation = nil
             }
         }
@@ -756,38 +756,38 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             user.email = "\(user.username!)@kinvey.com"
             
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             user.save() { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
             
-            class Mock204URLProtocol: NSURLProtocol {
+            class Mock204URLProtocol: URLProtocol {
                 
-                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
                 
-                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                     return request
                 }
                 
-                private override func startLoading() {
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 204, HTTPVersion: "HTTP/1.1", headerFields: [:])!
-                    client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                    client!.URLProtocol(self, didLoadData: NSData())
-                    client!.URLProtocolDidFinishLoading(self)
+                fileprivate override func startLoading() {
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 204, httpVersion: "HTTP/1.1", headerFields: [:])!
+                    client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client!.urlProtocol(self, didLoad: Data())
+                    client!.urlProtocolDidFinishLoading(self)
                 }
                 
-                private override func stopLoading() {
+                fileprivate override func stopLoading() {
                 }
                 
             }
@@ -797,16 +797,16 @@ class UserTests: KinveyTestCase {
                 setURLProtocol(nil)
             }
             
-            weak var expectationResetPassword = expectationWithDescription("Reset Password")
+            weak var expectationResetPassword = expectation(description: "Reset Password")
             
             user.resetPassword { error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationResetPassword?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationResetPassword = nil
             }
         }
@@ -818,16 +818,16 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            weak var expectationResetPassword = expectationWithDescription("Reset Password")
+            weak var expectationResetPassword = expectation(description: "Reset Password")
             
             user.resetPassword { error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationResetPassword?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationResetPassword = nil
             }
         }
@@ -841,30 +841,30 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             user.username = nil
             
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             user.save() { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
             
-            weak var expectationResetPassword = expectationWithDescription("Reset Password")
+            weak var expectationResetPassword = expectation(description: "Reset Password")
             
             user.resetPassword { error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 
                 expectationResetPassword?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationResetPassword = nil
             }
         }
@@ -876,48 +876,48 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             user.save() { user, error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
             
             setURLProtocol(TimeoutErrorURLProtocol.self)
             
-            weak var expectationResetPassword = expectationWithDescription("Reset Password")
+            weak var expectationResetPassword = expectation(description: "Reset Password")
             
             user.resetPassword { error in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 
                 expectationResetPassword?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationResetPassword = nil
             }
         }
     }
     
     func testForgotUsername() {
-        weak var expectationForgotUsername = expectationWithDescription("Forgot Username")
+        weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
-        User.forgotUsername(email: "\(NSUUID().UUIDString)@kinvey.com") { error in
-            XCTAssertTrue(NSThread.isMainThread())
+        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") { error in
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             
             expectationForgotUsername?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationForgotUsername = nil
         }
     }
@@ -925,28 +925,28 @@ class UserTests: KinveyTestCase {
     func testForgotUsernameTimeoutError() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
         
-        weak var expectationForgotUsername = expectationWithDescription("Forgot Username")
+        weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
-        User.forgotUsername(email: "\(NSUUID().UUIDString)@kinvey.com") { error in
-            XCTAssertTrue(NSThread.isMainThread())
+        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") { error in
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             
             expectationForgotUsername?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationForgotUsername = nil
         }
     }
     
     func testFacebookLogin() {
-        class FakeFacebookSocialLoginURLProtocol: NSURLProtocol {
+        class FakeFacebookSocialLoginURLProtocol: URLProtocol {
             
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
@@ -956,8 +956,8 @@ class UserTests: KinveyTestCase {
                     "Location" : "https://baas.kinvey.com/user/:appKey/\(userId)",
                     "Content-Type" : "application/json"
                 ]
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 201, HTTPVersion: "HTTP/1.1", headerFields: headers)!
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: headers)!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 
                 let jsonResponse = [
                     "_id": userId,
@@ -981,11 +981,11 @@ class UserTests: KinveyTestCase {
                     "_acl": [
                         "creator": "503bc9806065332d6f000005"
                     ]
-                ]
+                ] as [String : Any]
                 
-                let data = try! NSJSONSerialization.dataWithJSONObject(jsonResponse, options: [])
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
+                let data = try! JSONSerialization.data(withJSONObject: jsonResponse, options: [])
+                client!.urlProtocol(self, didLoad: data)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
             override func stopLoading() {
@@ -998,20 +998,20 @@ class UserTests: KinveyTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFacebookLogin = expectationWithDescription("Facebook Login")
+        weak var expectationFacebookLogin = expectation(description: "Facebook Login")
         
         let fakeFacebookData = [
             "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
             "expires": "5105388"
         ]
-        User.login(authSource: .Facebook, fakeFacebookData) { user, error in
+        User.login(authSource: .facebook, fakeFacebookData) { user, error in
             XCTAssertNotNil(user)
             XCTAssertNil(error)
             
             expectationFacebookLogin?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFacebookLogin = nil
         }
         
@@ -1020,21 +1020,21 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginWKWebView() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        tester().tapViewWithAccessibilityIdentifier("MIC Login")
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
         defer {
-            tester().tapViewWithAccessibilityLabel("Back")
+            tester().tapView(withAccessibilityLabel: "Back", traits: UIAccessibilityTraitButton)
         }
-        tester().tapViewWithAccessibilityIdentifier("Login")
+        tester().tapView(withAccessibilityIdentifier: "Login")
         
         tester().waitForAnimationsToFinish()
-        tester().waitForTimeInterval(1)
+        tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController as? UINavigationController,
+        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
@@ -1042,37 +1042,37 @@ class UserTests: KinveyTestCase {
             weak var expectationLogin: XCTestExpectation? = nil
             
             micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationLogin?.fulfill()
             }
             
-            let webView = micViewController.valueForKey("webView") as? WKWebView
+            let webView = micViewController.value(forKey: "webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
                 var wait = true
                 while wait {
-                    weak var expectationWait = expectationWithDescription("Wait")
+                    weak var expectationWait = expectation(description: "Wait")
                     
                     webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result where !(result is NSNull) {
+                        if let result = result , !(result is NSNull) {
                             wait = false
                         }
                         expectationWait?.fulfill()
                     })
                     
-                    waitForExpectationsWithTimeout(defaultTimeout) { error in
+                    waitForExpectations(timeout: defaultTimeout) { error in
                         expectationWait = nil
                     }
                 }
                 
                 tester().waitForAnimationsToFinish()
-                tester().waitForTimeInterval(1)
+                tester().wait(forTimeInterval: 1)
                 
-                weak var expectationTypeUsername = expectationWithDescription("Type Username")
-                weak var expectationTypePassword = expectationWithDescription("Type Password")
+                weak var expectationTypeUsername = expectation(description: "Type Username")
+                weak var expectationTypePassword = expectation(description: "Type Password")
                 
                 webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
                     expectationTypeUsername?.fulfill()
@@ -1081,18 +1081,18 @@ class UserTests: KinveyTestCase {
                     expectationTypePassword?.fulfill()
                 })
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationTypeUsername = nil
                     expectationTypePassword = nil
                 }
                 
-                weak var expectationSubmitForm = expectationWithDescription("Submit Form")
+                weak var expectationSubmitForm = expectation(description: "Submit Form")
                 
                 webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
                     expectationSubmitForm?.fulfill()
                 })
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationSubmitForm = nil
                 }
             }
@@ -1103,26 +1103,26 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginWKWebViewModal() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        tester().tapViewWithAccessibilityIdentifier("MIC Login Modal")
+        tester().tapView(withAccessibilityIdentifier: "MIC Login Modal")
         defer {
-            if let navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController as? UINavigationController,
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
                 let micLoginViewController = navigationController.presentedViewController as? MICLoginViewController
             {
-                micLoginViewController.performSegueWithIdentifier("back", sender: nil)
+                micLoginViewController.performSegue(withIdentifier: "back", sender: nil)
                 tester().waitForAnimationsToFinish()
             }
         }
-        tester().tapViewWithAccessibilityIdentifier("Login")
+        tester().tapView(withAccessibilityIdentifier: "Login")
         
         tester().waitForAnimationsToFinish()
-        tester().waitForTimeInterval(1)
+        tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController as? UINavigationController,
+        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.presentedViewController as? MICLoginViewController,
             let navigationController2 = micLoginViewController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
@@ -1130,7 +1130,7 @@ class UserTests: KinveyTestCase {
             weak var expectationLogin: XCTestExpectation? = nil
             
             micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
@@ -1138,32 +1138,32 @@ class UserTests: KinveyTestCase {
             }
             
             tester().waitForAnimationsToFinish()
-            tester().waitForTimeInterval(1)
+            tester().wait(forTimeInterval: 1)
             
-            let webView = micViewController.valueForKey("webView") as? WKWebView
+            let webView = micViewController.value(forKey: "webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
                 var wait = true
                 while wait {
-                    weak var expectationWait = expectationWithDescription("Wait")
+                    weak var expectationWait = expectation(description: "Wait")
                     
                     webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result where !(result is NSNull) {
+                        if let result = result , !(result is NSNull) {
                             wait = false
                         }
                         expectationWait?.fulfill()
                     })
                     
-                    waitForExpectationsWithTimeout(defaultTimeout) { error in
+                    waitForExpectations(timeout: defaultTimeout) { error in
                         expectationWait = nil
                     }
                 }
                 
                 tester().waitForAnimationsToFinish()
-                tester().waitForTimeInterval(1)
+                tester().wait(forTimeInterval: 1)
                 
-                weak var expectationTypeUsername = expectationWithDescription("Type Username")
-                weak var expectationTypePassword = expectationWithDescription("Type Password")
+                weak var expectationTypeUsername = expectation(description: "Type Username")
+                weak var expectationTypePassword = expectation(description: "Type Password")
                 
                 webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
                     expectationTypeUsername?.fulfill()
@@ -1172,18 +1172,18 @@ class UserTests: KinveyTestCase {
                     expectationTypePassword?.fulfill()
                 })
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationTypeUsername = nil
                     expectationTypePassword = nil
                 }
                 
-                weak var expectationSubmitForm = expectationWithDescription("Submit Form")
+                weak var expectationSubmitForm = expectation(description: "Submit Form")
                 
                 webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
                     expectationSubmitForm?.fulfill()
                 })
                 
-                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                waitForExpectations(timeout: defaultTimeout) { error in
                     expectationSubmitForm = nil
                 }
             }
@@ -1194,24 +1194,24 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginUIWebView() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        tester().tapViewWithAccessibilityIdentifier("MIC Login")
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
         defer {
-            tester().tapViewWithAccessibilityLabel("Back")
+            tester().tapView(withAccessibilityLabel: "Back")
         }
         
         tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Force UIWebView Value")
         tester().waitForAnimationsToFinish()
-        tester().tapViewWithAccessibilityIdentifier("Login")
+        tester().tapView(withAccessibilityIdentifier: "Login")
         
         tester().waitForAnimationsToFinish()
-        tester().waitForTimeInterval(1)
+        tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController as? UINavigationController,
+        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
@@ -1219,27 +1219,27 @@ class UserTests: KinveyTestCase {
             weak var expectationLogin: XCTestExpectation? = nil
             
             micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationLogin?.fulfill()
             }
             
-            let webView = micViewController.valueForKey("webView") as? UIWebView
+            let webView = micViewController.value(forKey: "webView") as? UIWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
                 var result: String?
                 while result == nil {
-                    result = webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-username').value")
+                    result = webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value")
                 }
                 
                 tester().waitForAnimationsToFinish()
-                tester().waitForTimeInterval(1)
+                tester().wait(forTimeInterval: 1)
                 
-                webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-username').value = 'ivan'")
-                webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-password').value = 'Zse45rfv'")
-                webView.stringByEvaluatingJavaScriptFromString("document.getElementById('userpass').submit()")
+                webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value = 'ivan'")
+                webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-password').value = 'Zse45rfv'")
+                webView.stringByEvaluatingJavaScript(from: "document.getElementById('userpass').submit()")
             }
         } else {
             XCTFail()
@@ -1252,9 +1252,9 @@ class UserTests: KinveyTestCase {
         Kinvey.sharedClient.logNetworkEnabled = true
         
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.collection(.Network)
+            let store = DataStore<Person>.collection(.network)
             
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             store.find() { results, error in
                 XCTAssertNotNil(results)
@@ -1263,7 +1263,7 @@ class UserTests: KinveyTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
@@ -1271,42 +1271,42 @@ class UserTests: KinveyTestCase {
     
     func testMICLoginUIWebViewTimeoutError() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        tester().tapViewWithAccessibilityIdentifier("MIC Login")
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
         defer {
-            tester().tapViewWithAccessibilityLabel("Back")
+            tester().tapView(withAccessibilityLabel: "Back")
         }
         
         tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Force UIWebView Value")
         tester().waitForAnimationsToFinish()
         
-        let registered = NSURLProtocol.registerClass(TimeoutErrorURLProtocol.self)
+        let registered = URLProtocol.registerClass(TimeoutErrorURLProtocol.self)
         defer {
             if registered {
-                NSURLProtocol.unregisterClass(TimeoutErrorURLProtocol.self)
+                URLProtocol.unregisterClass(TimeoutErrorURLProtocol.self)
             }
         }
         
-        if let navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController as? UINavigationController,
+        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController
         {
-            weak var expectationLogin = expectationWithDescription("Login")
+            weak var expectationLogin = expectation(description: "Login")
             
             micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationLogin?.fulfill()
             }
             
-            tester().tapViewWithAccessibilityIdentifier("Login")
+            tester().tapView(withAccessibilityIdentifier: "Login")
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationLogin = nil
             }
         } else {
@@ -1316,23 +1316,23 @@ class UserTests: KinveyTestCase {
     
     func testMICErrorMessage() {
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        weak var expectationLogin = expectationWithDescription("Login")
+        weak var expectationLogin = expectation(description: "Login")
         
-        let redirectURI = NSURL(string: "throwAnError://")!
+        let redirectURI = URL(string: "throwAnError://")!
         User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNotNil(error as? Kinvey.Error)
             XCTAssertNil(user)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .UnknownJsonError(let json):
+                case .unknownJsonError(let json):
                     let responseBody = [
                         "error" : "invalid_client",
                         "error_description" : "Client authentication failed.",
@@ -1350,22 +1350,22 @@ class UserTests: KinveyTestCase {
             expectationLogin?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationLogin = nil
         }
     }
     
     func testMICLoginAutomatedAuthorizationGrantFlow() {
-        if let user = client?.activeUser {
+        if let user = client.activeUser {
             user.logout()
         }
         defer {
-            if let user = client?.activeUser {
+            if let user = client.activeUser {
                 user.logout()
             }
         }
         
-        class MICLoginAutomatedAuthorizationGrantFlowURLProtocol: NSURLProtocol {
+        class MICLoginAutomatedAuthorizationGrantFlowURLProtocol: URLProtocol {
             
             static let code = "7af647ad1414986bec71d7799ced85fd271050a8"
             static let tempLoginUri = "https://auth.kinvey.com/oauth/authenticate/b3ca941c1141468bb19d2f2c7409f7a6"
@@ -1373,63 +1373,63 @@ class UserTests: KinveyTestCase {
             lazy var tempLoginUri: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.tempLoginUri
             static var count = 0
             
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
             override func startLoading() {
-                switch self.dynamicType.count {
+                switch type(of: self).count {
                 case 0:
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
                         "temp_login_uri" : tempLoginUri
                     ]
-                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
-                    client?.URLProtocol(self, didLoadData: data)
-                    client?.URLProtocolDidFinishLoading(self)
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 case 1:
-                    XCTAssertEqual(request.URL!.absoluteString, tempLoginUri)
-                    let redirectRequest = NSURLRequest(URL: NSURL(string: "micauthgrantflow://?code=\(code)")!)
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 302, HTTPVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.URL!.absoluteString!])!
-                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
-                    client?.URLProtocol(self, wasRedirectedToRequest: redirectRequest, redirectResponse: response)
-                    let data = "Found. Redirecting to micauthgrantflow://?code=\(code)".dataUsingEncoding(NSUTF8StringEncoding)!
-                    client?.URLProtocol(self, didLoadData: data)
-                    client?.URLProtocolDidFinishLoading(self)
+                    XCTAssertEqual(request.url!.absoluteString, tempLoginUri)
+                    let redirectRequest = URLRequest(url: URL(string: "micauthgrantflow://?code=\(code)")!)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 302, httpVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.url!.absoluteString])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client?.urlProtocol(self, wasRedirectedTo: redirectRequest, redirectResponse: response)
+                    let data = "Found. Redirecting to micauthgrantflow://?code=\(code)".data(using: String.Encoding.utf8)!
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 case 2:
-                    let requestBody = String(data: request.HTTPBody!, encoding: NSUTF8StringEncoding)!
+                    let requestBody = String(data: request.httpBody!, encoding: String.Encoding.utf8)!
                     XCTAssertEqual(requestBody, "client_id=kid_rJVLE1Z5&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
                     
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
                         "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
                         "token_type" : "bearer",
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
-                    ]
-                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
-                    client?.URLProtocol(self, didLoadData: data)
-                    client?.URLProtocolDidFinishLoading(self)
+                    ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 case 3:
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 404, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
                         "error" : "UserNotFound",
                         "description" : "This user does not exist for this app backend",
                         "debug" : ""
                     ]
-                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
-                    client?.URLProtocol(self, didLoadData: data)
-                    client?.URLProtocolDidFinishLoading(self)
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 case 4:
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 201, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                    client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
                         "_socialIdentity" : [
                             "kinveyAuth": [
@@ -1450,14 +1450,14 @@ class UserTests: KinveyTestCase {
                         "_acl" : [
                             "creator" : "57c788d168d976c525ee4602"
                         ]
-                    ]
-                    let data = try! NSJSONSerialization.dataWithJSONObject(json, options: [])
-                    client?.URLProtocol(self, didLoadData: data)
-                    client?.URLProtocolDidFinishLoading(self)
+                    ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 default:
                     XCTFail()
                 }
-                self.dynamicType.count += 1
+                type(of: self).count += 1
             }
             
             override func stopLoading() {
@@ -1473,9 +1473,9 @@ class UserTests: KinveyTestCase {
         
         XCTAssertNil(client.activeUser)
         
-        weak var expectationLogin = expectationWithDescription("Login")
+        weak var expectationLogin = expectation(description: "Login")
         
-        let redirectURI = NSURL(string: "micAuthGrantFlow://")!
+        let redirectURI = URL(string: "micAuthGrantFlow://")!
         User.loginWithAuthorization(
             redirectURI: redirectURI,
             username: "custom",
@@ -1487,7 +1487,7 @@ class UserTests: KinveyTestCase {
             expectationLogin?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationLogin = nil
         }
         

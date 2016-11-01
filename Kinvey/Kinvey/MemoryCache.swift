@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
+class MemoryCache<T: Persistable>: Cache<T> where T: NSObject {
     
     var memory = [String : T]()
     
@@ -16,35 +16,35 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
         super.init(persistenceId: "")
     }
     
-    override func saveEntity(entity: T) {
+    override func saveEntity(_ entity: T) {
         let objId = entity.entityId!
         memory[objId] = entity
     }
     
-    override func saveEntities(entities: [T]) {
+    override func saveEntities(_ entities: [T]) {
         for entity in entities {
             saveEntity(entity)
         }
     }
     
-    override func findEntity(objectId: String) -> T? {
+    override func findEntity(_ objectId: String) -> T? {
         return memory[objectId]
     }
     
-    override func findEntityByQuery(query: Query) -> [T] {
+    override func findEntityByQuery(_ query: Query) -> [T] {
         guard let predicate = query.predicate else {
             return memory.values.map({ (json) -> Type in
                 return json
             })
         }
         return memory.filter({ (key, obj) -> Bool in
-            return predicate.evaluateWithObject(obj)
+            return predicate.evaluate(with: obj)
         }).map({ (key, obj) -> Type in
             return obj
         })
     }
     
-    override func findIdsLmtsByQuery(query: Query) -> [String : String] {
+    override func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
         var results = [String : String]()
         let array = findEntityByQuery(query).map { (entity) -> (String, String) in
             let kmd = entity.metadata!
@@ -60,24 +60,26 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
         return findEntityByQuery(Query())
     }
     
-    override func count(query: Query? = nil) -> UInt {
+    override func count(_ query: Query? = nil) -> Int {
         if let query = query {
-            return UInt(findEntityByQuery(query).count)
+            return findEntityByQuery(query).count
         }
-        return UInt(memory.count)
+        return memory.count
     }
     
-    override func removeEntity(entity: T) -> Bool {
+    @discardableResult
+    override func removeEntity(_ entity: T) -> Bool {
         let objId = entity.entityId!
-        return memory.removeValueForKey(objId) != nil
+        return memory.removeValue(forKey: objId) != nil
     }
     
-    override func removeEntitiesByQuery(query: Query) -> UInt {
+    @discardableResult
+    override func removeEntitiesByQuery(_ query: Query) -> Int {
         let objs = findEntityByQuery(query)
         for obj in objs {
             removeEntity(obj)
         }
-        return UInt(objs.count)
+        return objs.count
     }
     
     override func removeAllEntities() {

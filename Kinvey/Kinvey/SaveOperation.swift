@@ -8,11 +8,11 @@
 
 import Foundation
 
-internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T?> {
+internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSObject {
     
     var persistable: T
     
-    init(inout persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: inout T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
@@ -22,7 +22,7 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    override func executeLocal(completionHandler: CompletionHandler?) -> Request {
+    override func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
@@ -40,11 +40,11 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
         return request
     }
     
-    override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
+    override func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataSave(persistable)
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
-                if let response = response where response.isOK {
+                if let response = response , response.isOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
                         let persistable = T(JSON: json)
@@ -62,7 +62,7 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
         return request
     }
     
-    private func checkRequirements(completionHandler: ObjectCompletionHandler?) -> Bool {
+    fileprivate func checkRequirements(_ completionHandler: ObjectCompletionHandler?) -> Bool {
         guard let _ = client.activeUser else {
             completionHandler?(nil, KinveyError.NoActiveUser)
             return false

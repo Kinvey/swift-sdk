@@ -149,6 +149,9 @@
 		57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B0C2161CDCF25900492D6C /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
+		57B129D61DB7FB5000737775 /* KinveyVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF11C7F9414006403CC /* KinveyVersion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		57B129D71DB7FBB400737775 /* KinveyCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF31C7F9414006403CC /* KinveyCore.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		57B129D81DB80EBF00737775 /* KCS_OAuthCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E781C7F9414006403CC /* KCS_OAuthCore.h */; };
 		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
 		57B23E831C7F9510006403CC /* KCSCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D871C7F9414006403CC /* KCSCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -748,8 +751,6 @@
 		57B23D5F1C7F9414006403CC /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		57B23D671C7F9414006403CC /* KCSCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCacheManager.h; sourceTree = "<group>"; };
 		57B23D681C7F9414006403CC /* KCSCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCacheManager.m; sourceTree = "<group>"; };
-		57B23D691C7F9414006403CC /* KCSRealmEntityPersistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRealmEntityPersistence.h; sourceTree = "<group>"; };
-		57B23D6A1C7F9414006403CC /* KCSRealmEntityPersistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRealmEntityPersistence.m; sourceTree = "<group>"; };
 		57B23D711C7F9414006403CC /* KCSObjcRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSObjcRuntime.h; sourceTree = "<group>"; };
 		57B23D721C7F9414006403CC /* KCSObjcRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjcRuntime.m; sourceTree = "<group>"; };
 		57B23D731C7F9414006403CC /* KCSPendingOperationRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPendingOperationRealm.h; sourceTree = "<group>"; };
@@ -1548,8 +1549,6 @@
 			children = (
 				57B23D671C7F9414006403CC /* KCSCacheManager.h */,
 				57B23D681C7F9414006403CC /* KCSCacheManager.m */,
-				57B23D691C7F9414006403CC /* KCSRealmEntityPersistence.h */,
-				57B23D6A1C7F9414006403CC /* KCSRealmEntityPersistence.m */,
 				57B23D711C7F9414006403CC /* KCSObjcRuntime.h */,
 				57B23D721C7F9414006403CC /* KCSObjcRuntime.m */,
 				57B23D731C7F9414006403CC /* KCSPendingOperationRealm.h */,
@@ -2140,6 +2139,7 @@
 				57B23E9F1C7FA2BF006403CC /* KCSHttpRequest.h in Headers */,
 				57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */,
 				57B23ED21C7FA810006403CC /* KCSGroup.h in Headers */,
+				57B129D61DB7FB5000737775 /* KinveyVersion.h in Headers */,
 				57B23EE91C7FA976006403CC /* KCSMockServer.h in Headers */,
 				57B23F3C1C7FB142006403CC /* KCSRequest+Private.h in Headers */,
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
@@ -2157,6 +2157,7 @@
 				57B23ED41C7FA836006403CC /* KCSImageUtils.h in Headers */,
 				57E4DB2B1C8A5B620017B406 /* KNVWritePolicy.h in Headers */,
 				57B23F5D1C7FB1B6006403CC /* KCS_DDTTYLogger.h in Headers */,
+				57B129D71DB7FBB400737775 /* KinveyCore.h in Headers */,
 				57B23F631C7FB1C6006403CC /* KCS_FMResultSet.h in Headers */,
 				57B23F671C7FB1C6006403CC /* KCS_FMDatabaseQueue.h in Headers */,
 				57B23F451C7FB180006403CC /* KCS_CLLocation_Realm.h in Headers */,
@@ -2188,6 +2189,7 @@
 				57B23F4B1C7FB187006403CC /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h in Headers */,
 				57B23EB61C7FA610006403CC /* KCSCachedStore.h in Headers */,
 				57B23F6A1C7FB1D4006403CC /* KCS_KSReachability.h in Headers */,
+				57B129D81DB80EBF00737775 /* KCS_OAuthCore.h in Headers */,
 				57B23ED81C7FA884006403CC /* KCSLogManager.h in Headers */,
 				57B23F261C7FB000006403CC /* KCSMetadata.h in Headers */,
 				57B23F491C7FB187006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.h in Headers */,
@@ -2869,10 +2871,11 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -2885,10 +2888,11 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -2913,7 +2917,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -2937,7 +2941,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -3035,6 +3039,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -3053,7 +3058,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
@@ -3063,6 +3068,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -3080,7 +3086,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
@@ -3090,6 +3096,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -3107,7 +3114,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -3115,6 +3122,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -3131,7 +3139,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -3197,7 +3205,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -3222,7 +3230,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -3248,7 +3256,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -3273,7 +3281,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

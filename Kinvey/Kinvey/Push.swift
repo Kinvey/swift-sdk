@@ -16,19 +16,19 @@ import ObjectiveC
 
 /// Class used to register and unregister a device to receive push notifications.
 @objc(KNVPush)
-public class Push: NSObject {
+open class Push: NSObject {
     
-    public typealias BoolCompletionHandler = (Bool, ErrorType?) -> Void
+    public typealias BoolCompletionHandler = (Bool, Swift.Error?) -> Void
     
-    private let client: Client
+    fileprivate let client: Client
     
-    private var keychain: Keychain {
+    fileprivate var keychain: Keychain {
         get {
             return Keychain(appKey: client.appKey!)
         }
     }
     
-    private var deviceToken: NSData? {
+    fileprivate var deviceToken: Data? {
         get {
             return keychain.deviceToken
         }
@@ -43,12 +43,12 @@ public class Push: NSObject {
 
 #if os(iOS)
     /// Sets and returns the number for the icon badge for the current running app.
-    public var badgeNumber: Int {
+    open var badgeNumber: Int {
         get {
-            return UIApplication.sharedApplication().applicationIconBadgeNumber
+            return UIApplication.shared.applicationIconBadgeNumber
         }
         set {
-            let app = UIApplication.sharedApplication()
+            let app = UIApplication.shared
             guard app.applicationIconBadgeNumber == newValue else {
                 return
             }
@@ -56,18 +56,18 @@ public class Push: NSObject {
         }
     }
     
-    private typealias ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = @convention(c) (NSObject, Selector, UIApplication, NSData) -> Void
-    private typealias ApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = @convention(c) (NSObject, Selector, UIApplication, NSError) -> Void
+    fileprivate typealias ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = @convention(c) (NSObject, Selector, UIApplication, Data) -> Void
+    fileprivate typealias ApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = @convention(c) (NSObject, Selector, UIApplication, NSError) -> Void
 #endif
     
-    private var originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation: IMP?
-    private var originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation: IMP?
+    fileprivate var originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation: IMP?
+    fileprivate var originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation: IMP?
 
 #if os(iOS)
-    private func replaceAppDelegateMethods(completionHandler: BoolCompletionHandler?) {
-        let app = UIApplication.sharedApplication()
+    fileprivate func replaceAppDelegateMethods(_ completionHandler: BoolCompletionHandler?) {
+        let app = UIApplication.shared
         guard let appDelegate = app.delegate else { return }
-        let appDelegateType = appDelegate.dynamicType
+        let appDelegateType = type(of: appDelegate)
         
         let applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector = #selector(UIApplicationDelegate.application(_:didRegisterForRemoteNotificationsWithDeviceToken:))
         let applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector = #selector(UIApplicationDelegate.application(_:didFailToRegisterForRemoteNotificationsWithError:))
@@ -75,24 +75,24 @@ public class Push: NSObject {
         let originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod = class_getInstanceMethod(appDelegateType, applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector)
         let originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod = class_getInstanceMethod(appDelegateType, applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector)
         
-        let applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock: @convention(block) (NSObject, UIApplication, NSData) -> Void = { obj, application, deviceToken in
+        let applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock: @convention(block) (NSObject, UIApplication, Data) -> Void = { obj, application, deviceToken in
             self.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken, completionHandler: completionHandler)
             
             if let originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = self.originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation {
-                let implementation = unsafeBitCast(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation, ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation.self)
+                let implementation = unsafeBitCast(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation, to: ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation.self)
                 implementation(obj, applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector, application, deviceToken)
             }
         }
         
         let originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorBlock: @convention(block) (NSObject, UIApplication, NSError) -> Void = { obj, application, error in
             if let originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = self.originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation {
-                let implementation = unsafeBitCast(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation, ApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation.self)
+                let implementation = unsafeBitCast(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation, to: ApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation.self)
                 implementation(obj, applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector, application, error)
             }
         }
         
-        let applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = imp_implementationWithBlock(unsafeBitCast(applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock, AnyObject.self))
-        let applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = imp_implementationWithBlock(unsafeBitCast(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorBlock, AnyObject.self))
+        let applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = imp_implementationWithBlock(unsafeBitCast(applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock, to: AnyObject.self))
+        let applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = imp_implementationWithBlock(unsafeBitCast(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorBlock, to: AnyObject.self))
         
         if originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod == nil {
             class_addMethod(appDelegateType, applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector, applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation, method_getTypeEncoding(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod))
@@ -108,7 +108,10 @@ public class Push: NSObject {
         }
     }
     
-    private var initializeToken: dispatch_once_t = 0
+    fileprivate var initializeToken: Int = 0
+    
+    private static let lock = NSLock()
+    private static var appDelegateMethodsNeedsToRun = true
     
     /**
      Register for remote notifications.
@@ -120,20 +123,24 @@ public class Push: NSObject {
      }
      ```
      */
-    public func registerForPush(forTypes types: UIUserNotificationType = [.Alert, .Badge, .Sound], categories: Set<UIUserNotificationCategory>? = nil, completionHandler: BoolCompletionHandler? = nil) {
-        dispatch_once(&self.initializeToken) {
-            if NSThread.isMainThread() {
+    open func registerForPush(forTypes types: UIUserNotificationType = [.alert, .badge, .sound], categories: Set<UIUserNotificationCategory>? = nil, completionHandler: BoolCompletionHandler? = nil) {
+    
+        Push.lock.lock()
+        if Push.appDelegateMethodsNeedsToRun {
+            if Thread.isMainThread {
                 self.replaceAppDelegateMethods(completionHandler)
             } else {
-                dispatch_sync(dispatch_get_main_queue()) {
+                DispatchQueue.main.sync {
                     self.replaceAppDelegateMethods(completionHandler)
                 }
             }
+            Push.appDelegateMethodsNeedsToRun = false
         }
+        Push.lock.unlock()
         
-        let app = UIApplication.sharedApplication()
+        let app = UIApplication.shared
         let userNotificationSettings = UIUserNotificationSettings(
-            forTypes: types,
+            types: types,
             categories: categories
         )
         app.registerUserNotificationSettings(userNotificationSettings)
@@ -142,7 +149,7 @@ public class Push: NSObject {
 #endif
     
     /// Unregister the current device to receive push notifications.
-    public func unRegisterDeviceToken(completionHandler: BoolCompletionHandler? = nil) {
+    open func unRegisterDeviceToken(_ completionHandler: BoolCompletionHandler? = nil) {
         guard let deviceToken = deviceToken else {
             fatalError("Device token not found")
         }
@@ -150,7 +157,7 @@ public class Push: NSObject {
         Promise<Bool> { fulfill, reject in
             let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(deviceToken)
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isOK {
+                if let response = response , response.isOK {
                     fulfill(true)
                 } else {
                     reject(buildError(data, response, error, self.client))
@@ -158,20 +165,20 @@ public class Push: NSObject {
             })
         }.then { success in
             completionHandler?(success, nil)
-        }.error { error in
+        }.catch { error in
             completionHandler?(false, error)
         }
     }
     
     /// Call this method inside your App Delegate method `application(application:didRegisterForRemoteNotificationsWithDeviceToken:completionHandler:)`.
 #if os(iOS)
-    private func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData, completionHandler: BoolCompletionHandler? = nil) {
+    fileprivate func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data, completionHandler: BoolCompletionHandler? = nil) {
         self.deviceToken = deviceToken
         let block: () -> Void = {
             Promise<Bool> { fulfill, reject in
                 let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
                 request.execute({ (data, response, error) -> Void in
-                    if let response = response where response.isOK {
+                    if let response = response , response.isOK {
                         fulfill(true)
                     } else {
                         reject(buildError(data, response, error, self.client))
@@ -179,7 +186,7 @@ public class Push: NSObject {
                 })
             }.then { success in
                 completionHandler?(success, nil)
-            }.error { error in
+            }.catch { error in
                 completionHandler?(false, error)
             }
         }
@@ -196,7 +203,7 @@ public class Push: NSObject {
     }
     
     /// Resets the badge number to zero.
-    public func resetBadgeNumber() {
+    open func resetBadgeNumber() {
         badgeNumber = 0
     }
 #endif

@@ -27,7 +27,7 @@ class LongData: Entity {
         return "longdata"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         id <- map[PersistableIdKey]

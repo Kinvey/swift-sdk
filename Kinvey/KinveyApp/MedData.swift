@@ -25,7 +25,7 @@ class MedData: Entity {
         return "meddata"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         seq <- map["seq"]

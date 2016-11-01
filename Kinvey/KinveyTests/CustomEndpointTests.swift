@@ -14,14 +14,14 @@ class CustomEndpointTests: KinveyTestCase {
     func testCustomEndpoint() {
         signUp()
         
-        let params = [
+        let params: [String : Any] = [
             "stringParam" : "Test",
             "numberParam" : 1,
             "booleanParam" : true,
             "queryParam" : Query(format: "age >= %@", 21)
         ]
         
-        weak var expectationCustomEndpoint = expectationWithDescription("Custom Endpoint")
+        weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
             XCTAssertNotNil(response)
@@ -49,7 +49,7 @@ class CustomEndpointTests: KinveyTestCase {
             expectationCustomEndpoint?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCustomEndpoint = nil
         }
     }
@@ -61,7 +61,7 @@ class CustomEndpointTests: KinveyTestCase {
             "query" : Query(format: "colors.@count == %@", 2)
         ]
         
-        weak var expectationCustomEndpoint = expectationWithDescription("Custom Endpoint")
+        weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
             XCTAssertNotNil(response)
@@ -85,7 +85,7 @@ class CustomEndpointTests: KinveyTestCase {
             expectationCustomEndpoint?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCustomEndpoint = nil
         }
     }
@@ -99,7 +99,7 @@ class CustomEndpointTests: KinveyTestCase {
             ]
         ]
         
-        weak var expectationCustomEndpoint = expectationWithDescription("Custom Endpoint")
+        weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
             XCTAssertNotNil(response)
@@ -126,7 +126,7 @@ class CustomEndpointTests: KinveyTestCase {
             expectationCustomEndpoint?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCustomEndpoint = nil
         }
     }
@@ -141,7 +141,7 @@ class CustomEndpointTests: KinveyTestCase {
             ]
         ]
         
-        weak var expectationCustomEndpoint = expectationWithDescription("Custom Endpoint")
+        weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
             XCTAssertNotNil(response)
@@ -176,7 +176,7 @@ class CustomEndpointTests: KinveyTestCase {
             expectationCustomEndpoint?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCustomEndpoint = nil
         }
     }

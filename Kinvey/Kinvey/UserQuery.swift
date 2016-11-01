@@ -11,7 +11,7 @@ import Foundation
 /**
  Struct that contains all the parameters available for user lookup.
  */
-public struct UserQuery: Mappable, BuilderType {
+public final class UserQuery: Mappable, BuilderType {
     
     /// Filter by User's ID
     public var userId: String?
@@ -58,21 +58,16 @@ public struct UserQuery: Mappable, BuilderType {
     /// Filter by User's LinkedIn Last Name
     public var linkedInLastName: String?
     
-    /// Constructor to build a `UserQuery` object as desired.
-    public init(@noescape _ block: (inout UserQuery) -> Void) {
-        block(&self)
-    }
-    
     /// Default Constructor.
     public init() {
     }
     
     /// Constructor for object mapping.
-    public init?(_ map: Map) {
+    public init?(map: Map) {
     }
     
     /// Performs the object mapping.
-    public mutating func mapping(map: Map) {
+    public func mapping(map: Map) {
         userId <- map["_id"]
         username <- map["username"]
         firstName <- map["first_name"]
