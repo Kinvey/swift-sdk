@@ -14,12 +14,12 @@ class JsonTestCase: StoreTestCase {
     func testFromToJson() {
         signUp()
         
-        let storeProject = DataStore<RefProject>.collection(.Network, client: client)
+        let storeProject = DataStore<RefProject>.collection(.network, client: client)
         
         let project = RefProject()
         project.name = "Mall"
         
-        weak var expectationCreateMall = expectationWithDescription("CreateMall")
+        weak var expectationCreateMall = expectation(description: "CreateMall")
         
         storeProject.save(project) { (project, error) -> Void in
             self.assertThread()
@@ -34,14 +34,14 @@ class JsonTestCase: StoreTestCase {
             expectationCreateMall?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreateMall = nil
         }
         
         XCTAssertNotNil(project.uniqueId)
         XCTAssertNotEqual(project.uniqueId, "")
         
-        let storeDirectory = DataStore<DirectoryEntry>.collection(.Network, client: client)
+        let storeDirectory = DataStore<DirectoryEntry>.collection(.network, client: client)
         
         let directory = DirectoryEntry()
         directory.nameFirst = "Victor"
@@ -49,7 +49,7 @@ class JsonTestCase: StoreTestCase {
         directory.email = "victor@kinvey.com"
         directory.refProject = project
         
-        weak var expectationCreateDirectory = expectationWithDescription("CreateDirectory")
+        weak var expectationCreateDirectory = expectation(description: "CreateDirectory")
         
         storeDirectory.save(directory) { (directory, error) -> Void in
             self.assertThread()
@@ -64,7 +64,7 @@ class JsonTestCase: StoreTestCase {
             expectationCreateDirectory?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreateDirectory = nil
         }
     }

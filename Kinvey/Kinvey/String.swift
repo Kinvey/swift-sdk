@@ -10,12 +10,12 @@ import Foundation
 
 extension String {
     
-    func toDate() -> NSDate? {
+    func toDate() -> Date? {
         switch self.characters.count {
             case 20:
-                return NSDate2StringValueTransformer.rfc3339DateFormatter.dateFromString(self)
+                return NSDate2StringValueTransformer.rfc3339DateFormatter.date(from: self)
             case 24:
-                return NSDate2StringValueTransformer.rfc3339MilliSecondsDateFormatter.dateFromString(self)
+                return NSDate2StringValueTransformer.rfc3339MilliSecondsDateFormatter.date(from: self)
             default:
                 return nil
         }
@@ -25,7 +25,7 @@ extension String {
 
 extension NSString {
     
-    func toDate() -> NSDate? {
+    func toDate() -> Date? {
         return (self as String).toDate()
     }
     

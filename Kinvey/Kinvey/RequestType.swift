@@ -10,6 +10,6 @@ import Foundation
 
 internal enum RequestType {
     
-    case Create, Read, Update, Delete
+    case create, read, update, delete
     
 }

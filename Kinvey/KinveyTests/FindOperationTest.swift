@@ -14,7 +14,7 @@ class FindOperationTest: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
     }
     
     override func tearDown() {
@@ -25,9 +25,9 @@ class FindOperationTest: StoreTestCase {
     override func save() -> Person {
         let person = self.person
         
-        weak var expectationSave = expectationWithDescription("Save")
+        weak var expectationSave = expectation(description: "Save")
 
-        store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
+        store.save(person, writePolicy: .forceLocal) { (person, error) -> Void in
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
@@ -39,7 +39,7 @@ class FindOperationTest: StoreTestCase {
             expectationSave?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
         
@@ -51,17 +51,17 @@ class FindOperationTest: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationGet = expectationWithDescription("Get")
+            weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .ForceLocal) { (person, error) -> Void in
+            store.find(query, readPolicy: .forceLocal) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
                 expectationGet?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationGet = nil
             }
         }
@@ -72,14 +72,14 @@ class FindOperationTest: StoreTestCase {
         
         let person = save()
         
-        NSThread.sleepForTimeInterval(1)
+        Thread.sleep(forTimeInterval: 1)
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationGet = expectationWithDescription("Get")
+            weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .ForceLocal) { (persons, error) -> Void in
+            store.find(query, readPolicy: .forceLocal) { (persons, error) -> Void in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -90,7 +90,7 @@ class FindOperationTest: StoreTestCase {
                 expectationGet?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationGet = nil
             }
         }

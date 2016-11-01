@@ -15,9 +15,9 @@
 	<key>CFBundleName</key>
 	<string>PromiseKit</string>
 	<key>CFBundlePackageType</key>
-	<string>BNDL</string>
+	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.5.1</string>
+	<string>4.0.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -25,7 +25,7 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.5.1</string>
+	<string>4.0.4</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
@@ -42,8 +42,14 @@
 	<string>8B62</string>
 	<key>UIDeviceFamily</key>
 	<array>
-		<integer>1</integer>
+		<integer>3</integer>
 		<integer>2</integer>
+		<integer>1</integer>
+		<integer>4</integer>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 </dict>
 </plist>

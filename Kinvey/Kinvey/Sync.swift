@@ -17,21 +17,21 @@ internal protocol SyncType {
     
     init(persistenceId: String)
     
-    func createPendingOperation(request: NSURLRequest, objectId: String?) -> PendingOperation
-    func savePendingOperation(pendingOperation: PendingOperation
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation
+    func savePendingOperation(_ pendingOperation: PendingOperation
     )
     
     func pendingOperations() -> Results<PendingOperationIMP>
-    func pendingOperations(objectId: String?) -> Results<PendingOperationIMP>
+    func pendingOperations(_ objectId: String?) -> Results<PendingOperationIMP>
     
-    func removePendingOperation(pendingOperation: PendingOperation)
+    func removePendingOperation(_ pendingOperation: PendingOperation)
     
     func removeAllPendingOperations()
-    func removeAllPendingOperations(objectId: String?)
+    func removeAllPendingOperations(_ objectId: String?)
     
 }
 
-internal class Sync<T: Persistable where T: NSObject>: SyncType {
+internal class Sync<T: Persistable>: SyncType where T: NSObject {
     
     let collectionName: String
     let persistenceId: String
@@ -41,11 +41,11 @@ internal class Sync<T: Persistable where T: NSObject>: SyncType {
         self.persistenceId = persistenceId
     }
     
-    func createPendingOperation(request: NSURLRequest, objectId: String?) -> PendingOperationIMP {
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationIMP {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func savePendingOperation(pendingOperation: PendingOperationIMP) {
+    func savePendingOperation(_ pendingOperation: PendingOperationIMP) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
@@ -53,11 +53,11 @@ internal class Sync<T: Persistable where T: NSObject>: SyncType {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func pendingOperations(objectId: String?) -> Results<PendingOperationIMP> {
+    func pendingOperations(_ objectId: String?) -> Results<PendingOperationIMP> {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removePendingOperation(pendingOperation: PendingOperationIMP) {
+    func removePendingOperation(_ pendingOperation: PendingOperationIMP) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
@@ -65,7 +65,7 @@ internal class Sync<T: Persistable where T: NSObject>: SyncType {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeAllPendingOperations(objectId: String?) {
+    func removeAllPendingOperations(_ objectId: String?) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     

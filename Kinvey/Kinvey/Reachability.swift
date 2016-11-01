@@ -11,16 +11,16 @@
 import Foundation
 
 /// Reachability helper object. Use to test for existence of connection or changes in connectivity. Note that a `true` isReachable doesn't necessarily mean that the conncetion will succeed, just that it is possible.
-public class Reachability {
+open class Reachability {
     
     /** Use to check the reachability to the network */
-    public class func reachabilityForInternetConnection() -> Reachability {
-        return Reachability(reachability: KCSReachability.reachabilityForInternetConnection())
+    open class func reachabilityForInternetConnection() -> Reachability {
+        return Reachability(reachability: KCSReachability.forInternetConnection())
     }
     
     /** Use to check the reachability of a particular host name. */
-    public class func reachabilityWithHostName(hostName: String) -> Reachability {
-        return Reachability(reachability: KCSReachability(hostName: hostName))
+    open class func reachabilityWithHostName(_ hostName: String) -> Reachability {
+        return Reachability(reachability: KCSReachability.withHostName(hostName))
     }
     
     /**
@@ -28,7 +28,7 @@ public class Reachability {
      Always true before reachability is initialized (async).
      - Returns: Bool: `true` if a network connection is available.
      */
-    public func isReachable() -> Bool {
+    open func isReachable() -> Bool {
         return reachability.isReachable()
     }
     
@@ -36,7 +36,7 @@ public class Reachability {
      Test if the connection is cellular
      - Returns: Bool: `true` if 3G, EDGE, LTE etc
      */
-    public func isReachableViaWWAN() -> Bool {
+    open func isReachableViaWWAN() -> Bool {
         return reachability.isReachableViaWWAN()
     }
     
@@ -44,13 +44,13 @@ public class Reachability {
      Test if connection is wifi.
      - Returns: Bool: `true` if connection is wifi.
      */
-    public func isReachableViaWiFi() -> Bool {
+    open func isReachableViaWiFi() -> Bool {
         return reachability.isReachableViaWiFi()
     }
     
-    private let reachability: KCSReachability
+    fileprivate let reachability: KCSReachability
     
-    private init(reachability: KCSReachability) {
+    fileprivate init(reachability: KCSReachability) {
         self.reachability = reachability
     }
     

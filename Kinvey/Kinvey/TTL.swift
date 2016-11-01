@@ -12,31 +12,31 @@ import Foundation
 public enum TimeUnit {
     
     /// Time unit that represents seconds.
-    case Second
+    case second
     
     /// Time unit that represents minutes.
-    case Minute
+    case minute
     
     /// Time unit that represents hours.
-    case Hour
+    case hour
     
     /// Time unit that represents days.
-    case Day
+    case day
 }
 
 extension TimeUnit {
     
-    var timeInterval: NSTimeInterval {
+    var timeInterval: TimeInterval {
         switch self {
-        case .Second: return 1
-        case .Minute: return 60
-        case .Hour: return 60 * Minute.timeInterval
-        case .Day: return 24 * Hour.timeInterval
+        case .second: return 1
+        case .minute: return 60
+        case .hour: return 60 * TimeUnit.minute.timeInterval
+        case .day: return 24 * TimeUnit.hour.timeInterval
         }
     }
     
-    func toTimeInterval(value: Int) -> NSTimeInterval {
-        return NSTimeInterval(value) * timeInterval
+    func toTimeInterval(_ value: Int) -> TimeInterval {
+        return TimeInterval(value) * timeInterval
     }
     
 }
@@ -45,29 +45,29 @@ public typealias TTL = (Int, TimeUnit)
 
 extension Int {
     
-    internal var seconds: TTL { return TTL(self, .Second) }
-    internal var minutes: TTL { return TTL(self, .Minute) }
-    internal var hours: TTL { return TTL(self, .Hour) }
-    internal var days: TTL { return TTL(self, .Day) }
+    internal var seconds: TTL { return TTL(self, .second) }
+    internal var minutes: TTL { return TTL(self, .minute) }
+    internal var hours: TTL { return TTL(self, .hour) }
+    internal var days: TTL { return TTL(self, .day) }
     
-    var secondsDate : NSDate { return date(.Second) }
-    var minutesDate : NSDate { return date(.Minute) }
-    var hoursDate   : NSDate { return date(.Hour) }
-    var daysDate    : NSDate { return date(.Day) }
+    var secondsDate : Date { return date(.second) }
+    var minutesDate : Date { return date(.minute) }
+    var hoursDate   : Date { return date(.hour) }
+    var daysDate    : Date { return date(.day) }
     
-    internal func date(timeUnit: TimeUnit, calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate {
-        let dateComponents = NSDateComponents()
+    internal func date(_ timeUnit: TimeUnit, calendar: Calendar = Calendar.current) -> Date {
+        var dateComponents = DateComponents()
         switch timeUnit {
-        case .Second:
+        case .second:
             dateComponents.day = -self
-        case .Minute:
+        case .minute:
             dateComponents.minute = -self
-        case .Hour:
+        case .hour:
             dateComponents.hour = -self
-        case .Day:
+        case .day:
             dateComponents.day = -self
         }
-        let newDate = calendar.dateByAddingComponents(dateComponents, toDate: NSDate(), options: [])
+        let newDate = (calendar as NSCalendar).date(byAdding: dateComponents, to: Date(), options: [])
         return newDate!
     }
     

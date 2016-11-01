@@ -26,7 +26,7 @@ class ClassClusterTests: XCTestCase {
 		let carName = "Honda"
 		let JSON = ["name": carName, "type": "car"]
 		
-		if let vehicle = Mapper<Vehicle>().map(JSON){
+		if let vehicle = Mapper<Vehicle>().map(JSON: JSON){
 			XCTAssertNotNil(vehicle)
 			XCTAssertNotNil(vehicle as? Car)
 			XCTAssertEqual((vehicle as? Car)?.name, carName)
@@ -37,7 +37,7 @@ class ClassClusterTests: XCTestCase {
 		let carName = "Honda"
 		let JSON = "{\"name\": \"\(carName)\", \"type\": \"car\"}"
 		
-		if let vehicle = Mapper<Vehicle>().map(JSON){
+		if let vehicle = Mapper<Vehicle>().map(JSONString: JSON){
 			XCTAssertNotNil(vehicle)
 			XCTAssertNotNil(vehicle as? Car)
 			XCTAssertEqual((vehicle as? Car)?.name, carName)
@@ -48,7 +48,7 @@ class ClassClusterTests: XCTestCase {
 		let carName = "Honda"
 		let JSON = [["name": carName, "type": "car"], ["type": "bus"], ["type": "vehicle"]]
 		
-		if let vehicles = Mapper<Vehicle>().mapArray(JSON){
+		if let vehicles = Mapper<Vehicle>().mapArray(JSONArray: JSON){
 			XCTAssertNotNil(vehicles)
 			XCTAssertTrue(vehicles.count == 3)
 			XCTAssertNotNil(vehicles[0] as? Car)
@@ -63,21 +63,21 @@ class Vehicle: StaticMappable {
 	
 	var type: String?
 	
-	class func objectForMapping(map: Map) -> Mappable? {
+	class func objectForMapping(map: Map) -> BaseMappable? {
 		if let type: String = map["type"].value() {
 			switch type {
 				case "car":
-					return Car(map)
+					return Car()
 				case "bus":
-					return Bus(map)
+					return Bus()
 				default:
-					return nil
+					return Vehicle()
 			}
 		}
 		return nil
 	}
 
-	required init?(_ map: Map){
+	init(){
 		
 	}
 	
@@ -90,12 +90,12 @@ class Car: Vehicle {
 	
 	var name: String?
 	
-	override class func objectForMapping(map: Map) -> Mappable? {
+	override class func objectForMapping(map: Map) -> BaseMappable? {
 		return nil
 	}
 	
 	override func mapping(map: Map) {
-		super.mapping(map)
+		super.mapping(map: map)
 		
 		name <- map["name"]
 	}
@@ -104,6 +104,6 @@ class Car: Vehicle {
 class Bus: Vehicle {
 
 	override func mapping(map: Map) {
-		super.mapping(map)
+		super.mapping(map: map)
 	}
 }

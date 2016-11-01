@@ -13,13 +13,12 @@ protocol NSValueTransformerReverse {
     
     static func reverseTransformedValueClass() -> AnyClass
     
-    func transformedValue(value: AnyObject?) -> AnyObject?
-    func reverseTransformedValue(value: AnyObject?) -> AnyObject?
-    func transformValue<T>(value: AnyObject?, destinationType: T.Type) -> T?
+    func transformedValue(_ value: Any?) -> Any?
+    func reverseTransformedValue(_ value: Any?) -> Any?
     
 }
 
-extension NSValueTransformerReverse where Self: NSValueTransformer {
+extension NSValueTransformerReverse where Self: Foundation.ValueTransformer {
     
     func isReverse() -> Bool {
         return false
@@ -30,31 +29,31 @@ extension NSValueTransformerReverse where Self: NSValueTransformer {
     }
     
     func transformValue<T>(value: AnyObject?, destinationType: T.Type) -> T? {
-        let valueTransformer = (self as NSValueTransformer)
-        return valueTransformer.dynamicType.transformedValueClass() == destinationType ? valueTransformer.transformedValue(value) as? T : valueTransformer.reverseTransformedValue(value) as? T
+        let valueTransformer = (self as Foundation.ValueTransformer)
+        return type(of: valueTransformer).transformedValueClass() == destinationType ? valueTransformer.transformedValue(value) as? T : valueTransformer.reverseTransformedValue(value) as? T
     }
     
 }
 
-class ValueTransformer: NSValueTransformer {
+class ValueTransformer: Foundation.ValueTransformer {
     
     private static let separator = "->"
     private static var classTransformer = [String : NSValueTransformerReverse]()
     private static var reverseClassTransformer = [String : NSValueTransformerReverse]()
     
-    private class func valueTransformerName(fromClass fromClass: String, toClass: String) -> String {
+    private class func valueTransformerName(fromClass: String, toClass: String) -> String {
         return "\(fromClass)\(separator)\(toClass)"
     }
     
-    class func setValueTransformer<T: NSValueTransformer where T: NSValueTransformerReverse>(transformer: T) {
+    class func setValueTransformer<T: Foundation.ValueTransformer>(transformer: T) where T: NSValueTransformerReverse {
         let transformedValueClass = NSStringFromClass(T.transformedValueClass())
         let reverseTransformedValueClass = NSStringFromClass(T.reverseTransformedValueClass())
         self.classTransformer[valueTransformerName(fromClass: transformedValueClass, toClass: reverseTransformedValueClass)] = transformer
         self.reverseClassTransformer[valueTransformerName(fromClass: reverseTransformedValueClass, toClass: transformedValueClass)] = transformer
-        setValueTransformer(transformer, forName: NSStringFromClass(transformer.dynamicType.self))
+        setValueTransformer(transformer, forName: NSValueTransformerName(NSStringFromClass(type(of: transformer).self)))
     }
     
-    class func valueTransformer(fromClass fromClass: AnyClass, toClass: AnyClass) -> NSValueTransformerReverse? {
+    class func valueTransformer(fromClass: AnyClass, toClass: AnyClass) -> NSValueTransformerReverse? {
         var fromClass = NSStringFromClass(fromClass)
         let toClass = NSStringFromClass(toClass)
         var valueTransformer: NSValueTransformerReverse?

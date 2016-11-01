@@ -11,15 +11,15 @@ import Foundation
 @objc(__KNVSyncManager)
 internal class SyncManager: NSObject {
     
-    private let persistenceId: String
-    private let encryptionKey: NSData?
+    fileprivate let persistenceId: String
+    fileprivate let encryptionKey: Data?
     
-    init(persistenceId: String, encryptionKey: NSData? = nil) {
+    init(persistenceId: String, encryptionKey: Data? = nil) {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
     }
     
-    func sync<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Sync<T> {
+    func sync<T: Persistable>(filePath: String? = nil, type: T.Type) -> Sync<T> where T: NSObject {
         return RealmSync<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
     }
     

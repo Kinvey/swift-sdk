@@ -11,19 +11,19 @@ import XCTest
 
 extension XCTestCase {
     
-    func waitValueForObject<V: Equatable>(obj: NSObject, keyPath: String, expectedValue: V?, timeout: NSTimeInterval = 60) -> Bool {
-        let date = NSDate()
-        let loop = NSRunLoop.currentRunLoop()
+    func waitValueForObject<V: Equatable>(_ obj: NSObject, keyPath: String, expectedValue: V?, timeout: TimeInterval = 60) -> Bool {
+        let date = Date()
+        let loop = RunLoop.current
         var result = false
         repeat {
-            let currentValue = obj.valueForKey(keyPath)
+            let currentValue = obj.value(forKey: keyPath)
             if let currentValue = currentValue as? V {
                 result = currentValue == expectedValue
             } else if currentValue == nil && expectedValue == nil {
                 result = true
             }
             if !result {
-                loop.runUntilDate(NSDate(timeIntervalSinceNow: 0.1))
+                loop.run(until: Date(timeIntervalSinceNow: 0.1))
             }
         } while !result && -date.timeIntervalSinceNow > timeout
         return result
@@ -33,11 +33,11 @@ extension XCTestCase {
 
 class KinveyTestCase: XCTestCase {
     
-    var client: Client!
+    let client = Kinvey.sharedClient
     var encrypted = false
     
-    static let defaultTimeout = NSTimeInterval(Int8.max)
-    lazy var defaultTimeout: NSTimeInterval = {
+    static let defaultTimeout = TimeInterval(Int8.max)
+    lazy var defaultTimeout: TimeInterval = {
         KinveyTestCase.defaultTimeout
     }()
     
@@ -47,16 +47,16 @@ class KinveyTestCase: XCTestCase {
     static let appInitialize = appInitializeProduction
     
     func initializeDevelopment() {
-        client = Kinvey.sharedClient.initialize(
+        Kinvey.sharedClient.initialize(
             appKey: KinveyTestCase.appInitializeDevelopment.appKey,
             appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
-            apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!,
+            apiHostName: URL(string: "https://v3yk1n-kcs.kinvey.com")!,
             encrypted: encrypted
         )
     }
     
     func initializeProduction() {
-        client = Kinvey.sharedClient.initialize(
+        Kinvey.sharedClient.initialize(
             appKey: KinveyTestCase.appInitializeProduction.appKey,
             appSecret: KinveyTestCase.appInitializeProduction.appSecret,
             encrypted: encrypted
@@ -79,18 +79,18 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
-    func signUp(username username: String? = nil, password: String? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((User?, ErrorType?) -> Void)? = nil) {
+    func signUp(username: String? = nil, password: String? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((User?, Swift.Error?) -> Void)? = nil) {
         if let user = client.activeUser {
             user.logout()
         }
         
-        weak var expectationSignUp = expectationWithDescription("Sign Up")
+        weak var expectationSignUp = expectation(description: "Sign Up")
         
-        let handler: (User?, ErrorType?) -> Void = { user, error in
+        let handler: (User?, Swift.Error?) -> Void = { user, error in
             if let completionHandler = completionHandler {
                 completionHandler(user, error)
             } else {
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
             }
@@ -104,7 +104,7 @@ class KinveyTestCase: XCTestCase {
             User.signup(completionHandler: handler)
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSignUp = nil
         }
         
@@ -113,22 +113,22 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
-    func signUp(username username: String, password: String) {
+    func signUp(username: String, password: String) {
         if let user = client.activeUser {
             user.logout()
         }
         
-        weak var expectationSignUp = expectationWithDescription("Sign Up")
+        weak var expectationSignUp = expectation(description: "Sign Up")
         
         User.signup(username: username, password: password) { user, error in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             XCTAssertNotNil(user)
             
             expectationSignUp?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSignUp = nil
         }
         
@@ -138,17 +138,17 @@ class KinveyTestCase: XCTestCase {
     override func tearDown() {
         setURLProtocol(nil)
         
-        if let user = client?.activeUser {
-            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+        if let user = client.activeUser {
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             user.destroy { (error) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 
                 expectationDestroyUser?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
             
@@ -158,14 +158,14 @@ class KinveyTestCase: XCTestCase {
         super.tearDown()
     }
     
-    func setURLProtocol(type: NSURLProtocol.Type?) {
+    func setURLProtocol(_ type: URLProtocol.Type?) {
         if let type = type {
-            let sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            let sessionConfiguration = URLSessionConfiguration.default
             sessionConfiguration.protocolClasses = [type]
-            client.urlSession = NSURLSession(configuration: sessionConfiguration)
+            client.urlSession = URLSession(configuration: sessionConfiguration)
             XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
         } else {
-            client?.urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
         }
     }
     
