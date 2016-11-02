@@ -442,11 +442,6 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         ((NSNumber*) change[NSKeyValueChangeNewKey]).boolValue)
     {
         [((__bridge NSOperation<KCSNetworkOperation>*) context) cancel];
-    } else {
-        [super observeValueForKeyPath:keyPath
-                             ofObject:object
-                               change:change
-                              context:context];
     }
 }
 
