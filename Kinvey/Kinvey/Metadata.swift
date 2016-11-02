@@ -9,6 +9,7 @@
 import Foundation
 import Realm
 import RealmSwift
+import ObjectMapper
 
 /// This class represents the metadata information for a record
 public final class Metadata: Object, Mappable, BuilderType {

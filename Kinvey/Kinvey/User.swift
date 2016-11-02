@@ -9,6 +9,7 @@
 import Foundation
 import PromiseKit
 import SafariServices
+import ObjectMapper
 
 /// Class that represents an `User`.
 @objc(__KNVUser)

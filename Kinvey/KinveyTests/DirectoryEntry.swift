@@ -8,6 +8,7 @@
 
 import Foundation
 @testable import Kinvey
+import ObjectMapper
 
 class DirectoryEntry: Entity {
     

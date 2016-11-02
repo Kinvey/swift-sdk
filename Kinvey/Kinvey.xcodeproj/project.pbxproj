@@ -87,21 +87,6 @@
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		579224F81D13304700499D0A /* ObjectMapper.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		579224F91D13308400499D0A /* RealmSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5793B85D1D219A450088B5F9 /* FromJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B84D1D219A450088B5F9 /* FromJSON.swift */; };
-		5793B85E1D219A450088B5F9 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B84E1D219A450088B5F9 /* Map.swift */; };
-		5793B85F1D219A450088B5F9 /* Mappable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B84F1D219A450088B5F9 /* Mappable.swift */; };
-		5793B8601D219A450088B5F9 /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8501D219A450088B5F9 /* Mapper.swift */; };
-		5793B8611D219A450088B5F9 /* Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8511D219A450088B5F9 /* Operators.swift */; };
-		5793B8621D219A450088B5F9 /* ToJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8521D219A450088B5F9 /* ToJSON.swift */; };
-		5793B8631D219A450088B5F9 /* CustomDateFormatTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8541D219A450088B5F9 /* CustomDateFormatTransform.swift */; };
-		5793B8641D219A450088B5F9 /* DateFormatterTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8551D219A450088B5F9 /* DateFormatterTransform.swift */; };
-		5793B8651D219A450088B5F9 /* DateTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8561D219A450088B5F9 /* DateTransform.swift */; };
-		5793B8661D219A450088B5F9 /* EnumTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8571D219A450088B5F9 /* EnumTransform.swift */; };
-		5793B8671D219A450088B5F9 /* ISO8601DateTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8581D219A450088B5F9 /* ISO8601DateTransform.swift */; };
-		5793B8681D219A450088B5F9 /* NSDecimalNumberTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B8591D219A450088B5F9 /* NSDecimalNumberTransform.swift */; };
-		5793B8691D219A450088B5F9 /* TransformOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85A1D219A450088B5F9 /* TransformOf.swift */; };
-		5793B86A1D219A450088B5F9 /* TransformType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85B1D219A450088B5F9 /* TransformType.swift */; };
-		5793B86B1D219A450088B5F9 /* URLTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85C1D219A450088B5F9 /* URLTransform.swift */; };
 		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		5793B88C1D2306A60088B5F9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		5793B88D1D2306A60088B5F9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -647,21 +632,6 @@
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
-		5793B84D1D219A450088B5F9 /* FromJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FromJSON.swift; sourceTree = "<group>"; };
-		5793B84E1D219A450088B5F9 /* Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
-		5793B84F1D219A450088B5F9 /* Mappable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mappable.swift; sourceTree = "<group>"; };
-		5793B8501D219A450088B5F9 /* Mapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
-		5793B8511D219A450088B5F9 /* Operators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operators.swift; sourceTree = "<group>"; };
-		5793B8521D219A450088B5F9 /* ToJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToJSON.swift; sourceTree = "<group>"; };
-		5793B8541D219A450088B5F9 /* CustomDateFormatTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDateFormatTransform.swift; sourceTree = "<group>"; };
-		5793B8551D219A450088B5F9 /* DateFormatterTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateFormatterTransform.swift; sourceTree = "<group>"; };
-		5793B8561D219A450088B5F9 /* DateTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTransform.swift; sourceTree = "<group>"; };
-		5793B8571D219A450088B5F9 /* EnumTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnumTransform.swift; sourceTree = "<group>"; };
-		5793B8581D219A450088B5F9 /* ISO8601DateTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ISO8601DateTransform.swift; sourceTree = "<group>"; };
-		5793B8591D219A450088B5F9 /* NSDecimalNumberTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDecimalNumberTransform.swift; sourceTree = "<group>"; };
-		5793B85A1D219A450088B5F9 /* TransformOf.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformOf.swift; sourceTree = "<group>"; };
-		5793B85B1D219A450088B5F9 /* TransformType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformType.swift; sourceTree = "<group>"; };
-		5793B85C1D219A450088B5F9 /* URLTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLTransform.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
@@ -1192,46 +1162,6 @@
 			path = KinveyApp;
 			sourceTree = "<group>";
 		};
-		5793B84B1D219A0E0088B5F9 /* ObjectMapper */ = {
-			isa = PBXGroup;
-			children = (
-				5793B84C1D219A450088B5F9 /* Core */,
-				5793B8531D219A450088B5F9 /* Transforms */,
-			);
-			name = ObjectMapper;
-			sourceTree = "<group>";
-		};
-		5793B84C1D219A450088B5F9 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				5793B84D1D219A450088B5F9 /* FromJSON.swift */,
-				5793B84E1D219A450088B5F9 /* Map.swift */,
-				5793B84F1D219A450088B5F9 /* Mappable.swift */,
-				5793B8501D219A450088B5F9 /* Mapper.swift */,
-				5793B8511D219A450088B5F9 /* Operators.swift */,
-				5793B8521D219A450088B5F9 /* ToJSON.swift */,
-			);
-			name = Core;
-			path = Carthage/Checkouts/ObjectMapper/ObjectMapper/Core;
-			sourceTree = SOURCE_ROOT;
-		};
-		5793B8531D219A450088B5F9 /* Transforms */ = {
-			isa = PBXGroup;
-			children = (
-				5793B8541D219A450088B5F9 /* CustomDateFormatTransform.swift */,
-				5793B8551D219A450088B5F9 /* DateFormatterTransform.swift */,
-				5793B8561D219A450088B5F9 /* DateTransform.swift */,
-				5793B8571D219A450088B5F9 /* EnumTransform.swift */,
-				5793B8581D219A450088B5F9 /* ISO8601DateTransform.swift */,
-				5793B8591D219A450088B5F9 /* NSDecimalNumberTransform.swift */,
-				5793B85A1D219A450088B5F9 /* TransformOf.swift */,
-				5793B85B1D219A450088B5F9 /* TransformType.swift */,
-				5793B85C1D219A450088B5F9 /* URLTransform.swift */,
-			);
-			name = Transforms;
-			path = Carthage/Checkouts/ObjectMapper/ObjectMapper/Transforms;
-			sourceTree = SOURCE_ROOT;
-		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
@@ -1264,7 +1194,6 @@
 				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
 				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
-				5793B84B1D219A0E0088B5F9 /* ObjectMapper */,
 				57B23E801C7F9414006403CC /* KinveyKit */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
@@ -2534,12 +2463,9 @@
 				57B23F6B1C7FB1E3006403CC /* KCSUser2+KinveyUserService.m in Sources */,
 				573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
-				5793B85F1D219A450088B5F9 /* Mappable.swift in Sources */,
 				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
-				5793B8661D219A450088B5F9 /* EnumTransform.swift in Sources */,
 				57B23EB71C7FA62A006403CC /* KCSClient+KinveyDataStore.m in Sources */,
-				5793B8611D219A450088B5F9 /* Operators.swift in Sources */,
 				57B23F481C7FB187006403CC /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57B23F641C7FB1C6006403CC /* KCS_FMResultSet.m in Sources */,
@@ -2560,20 +2486,15 @@
 				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
 				574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */,
 				577155BB1CA21CC200C91B4B /* Migration.swift in Sources */,
-				5793B8621D219A450088B5F9 /* ToJSON.swift in Sources */,
-				5793B8641D219A450088B5F9 /* DateFormatterTransform.swift in Sources */,
 				57B23EC51C7FA75D006403CC /* KCSFile.m in Sources */,
 				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
 				57B23E9E1C7FA2BC006403CC /* KCSHttpRequest.m in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
 				57B23F5A1C7FB1B6006403CC /* KCS_DDFileLogger.m in Sources */,
-				5793B8601D219A450088B5F9 /* Mapper.swift in Sources */,
-				5793B8691D219A450088B5F9 /* TransformOf.swift in Sources */,
 				57E4DB281C8A4B6D0017B406 /* KNVDataStore.m in Sources */,
 				577C9E781C1F89C700BF49EE /* Credential.swift in Sources */,
 				57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */,
 				57B23EA91C7FA492006403CC /* KCSClient.m in Sources */,
-				5793B8651D219A450088B5F9 /* DateTransform.swift in Sources */,
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
 				57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */,
 				57B23F701C7FB264006403CC /* KCSURLConnectionDelegateAdapter.m in Sources */,
@@ -2632,7 +2553,6 @@
 				57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */,
 				57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */,
 				5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */,
-				5793B86B1D219A450088B5F9 /* URLTransform.swift in Sources */,
 				57B23F331C7FB046006403CC /* KCSPing2.m in Sources */,
 				57B23EEA1C7FA9AC006403CC /* KCSMutipleRequest.m in Sources */,
 				57B23EBF1C7FA6C0006403CC /* KCSFileStore.m in Sources */,
@@ -2642,7 +2562,6 @@
 				57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */,
 				57B23F521C7FB187006403CC /* KCS_UIImage_NSData_NSValueTransformer.m in Sources */,
 				572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */,
-				5793B85E1D219A450088B5F9 /* Map.swift in Sources */,
 				57A2ED861C49B9D5006D26A9 /* Response.swift in Sources */,
 				57B23EC31C7FA732006403CC /* KCSErrorUtilities.m in Sources */,
 				57B23F3D1C7FB14F006403CC /* KCSSaveGraph.m in Sources */,
@@ -2663,11 +2582,9 @@
 				57B23EAB1C7FA510006403CC /* KinveyUser.m in Sources */,
 				57E4DB151C8A26880017B406 /* UserDefaults.swift in Sources */,
 				57B23F321C7FB046006403CC /* KCSClientConfiguration.m in Sources */,
-				5793B8681D219A450088B5F9 /* NSDecimalNumberTransform.swift in Sources */,
 				57B23F051C7FAF39006403CC /* NSString+KinveyAdditions.m in Sources */,
 				575792C01D412CD20065CC22 /* UserQuery.swift in Sources */,
 				57B23ECD1C7FA7D3006403CC /* KCSFileUtils.m in Sources */,
-				5793B85D1D219A450088B5F9 /* FromJSON.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57B23F4E1C7FB187006403CC /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */,
 				57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */,
@@ -2677,13 +2594,11 @@
 				57B23F461C7FB183006403CC /* KCS_CLLocation_Realm.m in Sources */,
 				57B23F0B1C7FAF84006403CC /* KCSPersistableDescription.m in Sources */,
 				57B23F351C7FB061006403CC /* KCSPlatformUtils.m in Sources */,
-				5793B86A1D219A450088B5F9 /* TransformType.swift in Sources */,
 				57379DA51C72AAA900E240E9 /* Operation.swift in Sources */,
 				57B23F551C7FB1A4006403CC /* KCS_DDASLLogger.m in Sources */,
 				57B23ED51C7FA855006403CC /* KCSLogFormatter.m in Sources */,
 				57B23E901C7F988D006403CC /* KCSKeychain.m in Sources */,
 				575181581D63B645005C8ECF /* KCSClientConfiguration+KCSInternal.m in Sources */,
-				5793B8631D219A450088B5F9 /* CustomDateFormatTransform.swift in Sources */,
 				57B23EFF1C7FAF1B006403CC /* KCSDBTools.m in Sources */,
 				57470FA11C76834B0096B15F /* ReadOperation.swift in Sources */,
 				57B23F581C7FB1B6006403CC /* KCS_DDAbstractDatabaseLogger.m in Sources */,
@@ -2707,7 +2622,6 @@
 				5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
 				57B23F3B1C7FB133006403CC /* KCSRequest.m in Sources */,
-				5793B8671D219A450088B5F9 /* ISO8601DateTransform.swift in Sources */,
 				57B23E941C7F993F006403CC /* KCSMICLoginViewController.m in Sources */,
 				57B23ED31C7FA833006403CC /* KCSImageUtils.m in Sources */,
 				57B23EB51C7FA608006403CC /* KCSCachedStore.m in Sources */,

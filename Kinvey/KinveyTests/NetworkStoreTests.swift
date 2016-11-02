@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Foundation
 @testable import Kinvey
 
 class NetworkStoreTests: StoreTestCase {
@@ -122,6 +123,8 @@ class NetworkStoreTests: StoreTestCase {
                 
                 static var delay: TimeInterval?
                 
+                let urlSession = URLSession()
+                
                 override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
@@ -135,7 +138,7 @@ class NetworkStoreTests: StoreTestCase {
                         Thread.sleep(forTimeInterval: delay)
                     }
                     
-                    NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue()) { (response, data, error) in
+                    let dataTask = urlSession.dataTask(with: request) { data, response, error in
                         self.client?.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
                         self.client?.urlProtocol(self, didLoad: data!)
                         if let delay = DelayURLProtocol.delay {
@@ -143,6 +146,7 @@ class NetworkStoreTests: StoreTestCase {
                         }
                         self.client?.urlProtocolDidFinishLoading(self)
                     }
+                    dataTask.resume()
                 }
                 
                 override func stopLoading() {
@@ -193,7 +197,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveAddress() {
-        var person = Person()
+        let person = Person()
         person.name = "Victor Barros"
         
         let address = Address()
@@ -297,7 +301,7 @@ class NetworkStoreTests: StoreTestCase {
         var i = 0
         
         measure {
-            var person = Person {
+            let person = Person {
                 $0.name = "Person \(i)"
             }
             

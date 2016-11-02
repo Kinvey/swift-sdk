@@ -9,6 +9,7 @@
 import Foundation
 import Realm
 import RealmSwift
+import ObjectMapper
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
@@ -39,11 +40,6 @@ open class Entity: Object, Persistable {
     
     /// The `_acl` property mapped in the Kinvey backend.
     public dynamic var acl: Acl?
-    
-    /// Constructor that validates if the map contains the required fields.
-    public required init?(map: Map) {
-        super.init()
-    }
     
     /// Default Constructor.
     public required init() {

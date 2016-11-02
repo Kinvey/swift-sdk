@@ -32,6 +32,7 @@
 #import "RLMQueryUtil.hpp"
 #import "RLMRealmUtil.hpp"
 #import "RLMSchema_Private.hpp"
+#import "RLMSyncManager_Private.hpp"
 #import "RLMUpdateChecker.hpp"
 #import "RLMUtil.hpp"
 
@@ -40,7 +41,6 @@
 #include "schema.hpp"
 #include "shared_realm.hpp"
 
-#include <realm/commit_log.hpp>
 #include <realm/disable_sync_to_disk.hpp>
 #include <realm/version.hpp>
 

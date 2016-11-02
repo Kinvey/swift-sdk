@@ -7,6 +7,7 @@
 //
 
 import Kinvey
+import ObjectMapper
 
 /// Event.swift - an entity in the 'Events' collection
 class Event : Entity {

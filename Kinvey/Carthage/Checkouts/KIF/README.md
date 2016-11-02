@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/kif-framework/KIF.svg?branch=master)](https://travis-ci.org/kif-framework/KIF) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![CocoaPod Version](https://img.shields.io/cocoapods/v/KIF.svg?style=flat)](https://cocoapods.org)
 
-**IMPORTANT! Even though KIF is used to test your UI, you need to add it to your Unit Test target, _not_ your UI Test target. The magic of KIF is that it allows you to drive your UI from your unit tests and reap all the advantages of testing in-process.**
-
 KIF iOS Integration Testing Framework
 =====================================
 
@@ -247,6 +245,8 @@ If you want to write your test cases in Swift, you'll need to keep two things in
 2. The `tester` and `system` keywords are C preprocessor macros which aren't available in Swift. You can easily write a small extension to `XCTestCase` or any other class to access them:
 
 ```swift
+import KIF
+ 
 extension XCTestCase {
     func tester(file : String = #file, _ line : Int = #line) -> KIFUITestActor {
         return KIFUITestActor(inFile: file, atLine: line, delegate: self)

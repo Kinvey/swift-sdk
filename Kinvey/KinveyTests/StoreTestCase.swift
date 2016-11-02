@@ -24,6 +24,7 @@ class StoreTestCase: KinveyTestCase {
         XCTAssertTrue(Thread.isMainThread)
     }
     
+    @discardableResult
     func save<T: Persistable>(_ persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) where T: NSObject {
         weak var expectationCreate = expectation(description: "Create")
         
@@ -50,6 +51,7 @@ class StoreTestCase: KinveyTestCase {
         return (originalPersistable: persistable, savedPersistable: savedPersistable)
     }
     
+    @discardableResult
     func save(_ person: Person) -> Person {
         let age = person.age
         

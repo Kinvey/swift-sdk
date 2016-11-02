@@ -17,15 +17,19 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "catch.hpp"
+
+#include "util/event_loop.hpp"
 #include "util/test_file.hpp"
 
+#include "binding_context.hpp"
 #include "object_schema.hpp"
 #include "object_store.hpp"
 #include "property.hpp"
 #include "schema.hpp"
 
 #include <realm/group.hpp>
-#include <realm/util/file.hpp>
+
+#include <unistd.h>
 
 using namespace realm;
 
@@ -167,5 +171,49 @@ TEST_CASE("SharedRealm: get_shared_realm()") {
         util::try_make_dir(config.path + ".note");
         REQUIRE_THROWS(Realm::get_shared_realm(config));
         util::remove_dir(config.path + ".note");
+    }
+}
+
+TEST_CASE("SharedRealm: notifications") {
+    if (!util::EventLoop::has_implementation())
+        return;
+
+    TestFile config;
+    config.cache = false;
+    config.schema_version = 0;
+    config.schema = Schema{
+        {"object", {
+            {"value", PropertyType::Int, "", "", false, false, false}
+        }},
+    };
+
+    struct Context : BindingContext {
+        size_t* change_count;
+        Context(size_t* out) : change_count(out) { }
+
+        void did_change(std::vector<ObserverState> const&, std::vector<void*> const&) override
+        {
+            ++*change_count;
+        }
+    };
+
+    size_t change_count = 0;
+    auto realm = Realm::get_shared_realm(config);
+    realm->m_binding_context.reset(new Context{&change_count});
+
+    SECTION("local notifications are sent synchronously") {
+        realm->begin_transaction();
+        REQUIRE(change_count == 0);
+        realm->commit_transaction();
+        REQUIRE(change_count == 1);
+    }
+
+    SECTION("remote notifications are sent asynchronously") {
+        auto r2 = Realm::get_shared_realm(config);
+        r2->begin_transaction();
+        r2->commit_transaction();
+        REQUIRE(change_count == 0);
+        util::EventLoop::main().run_until([&]{ return change_count > 0; });
+        REQUIRE(change_count == 1);
     }
 }

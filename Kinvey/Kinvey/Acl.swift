@@ -9,6 +9,7 @@
 import Foundation
 import Realm
 import RealmSwift
+import ObjectMapper
 
 class AclTransformType: TransformType {
     

@@ -83,9 +83,4 @@ typedef void(^KNVUserVoidHandler)(NSError* _Nullable);
 
 -(void)logout;
 
--(id<KNVRequest> _Nonnull)save:(KNVUserUserHandler _Nullable)completionHandler;
-
--(id<KNVRequest> _Nonnull)saveWithClient:(KNVClient* _Nonnull)client
-                       completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
 @end
