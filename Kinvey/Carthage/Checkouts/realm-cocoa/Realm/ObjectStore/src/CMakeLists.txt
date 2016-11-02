@@ -34,6 +34,7 @@ set(HEADERS
 
     impl/android/external_commit_helper.hpp
     impl/apple/external_commit_helper.hpp
+    impl/apple/keychain_helper.hpp
     impl/generic/external_commit_helper.hpp
 
     impl/collection_change_builder.hpp
@@ -60,27 +61,34 @@ set(HEADERS
     util/format.hpp)
 
 if(APPLE)
-    list(APPEND SOURCES impl/apple/external_commit_helper.cpp)
+    list(APPEND SOURCES impl/apple/external_commit_helper.cpp impl/apple/keychain_helper.cpp)
 elseif(REALM_PLATFORM STREQUAL "Android")
     list(APPEND SOURCES impl/android/external_commit_helper.cpp)
 else()
     list(APPEND SOURCES impl/generic/external_commit_helper.cpp)
 endif()
 
-set(INCLUDE_DIRS ${REALM_CORE_INCLUDE_DIR} ${PEGTL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+set(INCLUDE_DIRS
+    ${REALM_CORE_INCLUDE_DIR}
+    ${PEGTL_INCLUDE_DIR}
+    ${UV_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR})
 
-# An object library to group together the compilation of the source files.
-add_library(realm-object-store-objects OBJECT ${SOURCES} ${HEADERS})
-add_dependencies(realm-object-store-objects realm)
-set_target_properties(realm-object-store-objects PROPERTIES POSITION_INDEPENDENT_CODE 1)
-target_include_directories(realm-object-store-objects PUBLIC ${INCLUDE_DIRS})
+if(REALM_ENABLE_SYNC)
+    # Add the sync files separately to reduce merge conflicts.
+    list(APPEND HEADERS sync_config.hpp sync_manager.hpp sync_metadata.hpp sync_session.hpp impl/sync_client.hpp)
+    list(APPEND SOURCES sync_manager.cpp sync_metadata.cpp sync_session.cpp)
+    find_package(ZLIB REQUIRED)
+    list(APPEND INCLUDE_DIRS ${REALM_SYNC_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS})
+endif()
 
-# A static library, aggregating the prebuilt object files.
-add_library(realm-object-store-static STATIC $<TARGET_OBJECTS:realm-object-store-objects>)
-target_include_directories(realm-object-store-static PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(realm-object-store-static PUBLIC realm ${PLATFORM_LIBRARIES})
-
-# A dynamic library, linking together the prebuilt object files.
-add_library(realm-object-store SHARED $<TARGET_OBJECTS:realm-object-store-objects> placeholder.cpp)
+add_library(realm-object-store STATIC ${SOURCES} ${HEADERS})
+set_target_properties(realm-object-store PROPERTIES POSITION_INDEPENDENT_CODE 1)
+target_compile_definitions(realm-object-store PRIVATE ${PLATFORM_DEFINES})
 target_include_directories(realm-object-store PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(realm-object-store PRIVATE realm ${PLATFORM_LIBRARIES})
+target_link_libraries(realm-object-store PUBLIC realm ${PLATFORM_LIBRARIES})
+
+if(REALM_ENABLE_SYNC)
+    # Add the sync libraries separately to reduce merge conflicts.
+    target_link_libraries(realm-object-store PUBLIC realm-sync ${ZLIB_LIBRARIES})
+endif()

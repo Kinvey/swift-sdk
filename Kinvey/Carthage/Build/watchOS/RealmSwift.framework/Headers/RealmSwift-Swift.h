@@ -492,4 +492,12 @@ SWIFT_CLASS_NAMED("ObjectUtil")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface RLMSyncCredential (SWIFT_EXTENSION(RealmSwift))
+@end
+
+
+@interface RLMSyncUser (SWIFT_EXTENSION(RealmSwift))
+@end
+
 #pragma clang diagnostic pop

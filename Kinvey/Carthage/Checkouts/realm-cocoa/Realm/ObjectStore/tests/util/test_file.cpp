@@ -19,8 +19,15 @@
 #include "util/test_file.hpp"
 
 #include "impl/realm_coordinator.hpp"
+#include "util/format.hpp"
+
+#if REALM_ENABLE_SYNC
+#include "sync_config.hpp"
+#include "sync_manager.hpp"
+#endif
 
 #include <realm/disable_sync_to_disk.hpp>
+#include <realm/history.hpp>
 #include <realm/string_data.hpp>
 
 #include <cstdlib>
@@ -33,10 +40,12 @@
 #include <map>
 #endif
 
+using namespace realm;
+
 TestFile::TestFile()
 {
     static std::string tmpdir = [] {
-        realm::disable_sync_to_disk();
+        disable_sync_to_disk();
 
         const char* dir = getenv("TMPDIR");
         if (dir && *dir)
@@ -57,6 +66,65 @@ InMemoryTestFile::InMemoryTestFile()
 {
     in_memory = true;
 }
+
+#if REALM_ENABLE_SYNC
+
+SyncTestFile::SyncTestFile(const SyncConfig& sync_config)
+{
+    this->sync_config = std::make_shared<SyncConfig>(sync_config);
+    schema_mode = SchemaMode::Additive;
+}
+
+sync::Server::Config TestLogger::server_config() {
+    sync::Server::Config config;
+#if TEST_ENABLE_SYNC_LOGGING
+    auto logger = new util::StderrLogger;
+    logger->set_level_threshold(util::Logger::Level::all);
+    config.logger = logger;
+#else
+    config.logger = new TestLogger;
+#endif
+    return config;
+}
+
+SyncServer::SyncServer()
+: m_server(util::make_temp_dir(), util::none, TestLogger::server_config())
+{
+#if TEST_ENABLE_SYNC_LOGGING
+    SyncManager::shared().set_log_level(util::Logger::Level::all);
+#else
+    SyncManager::shared().set_log_level(util::Logger::Level::off);
+#endif
+
+    uint64_t port;
+    while (true) {
+        // Try to pick a random available port, or loop forever if other
+        // problems occur because there's no specific error for "port in use"
+        try {
+            port = fastrand(65536 - 1000) + 1000;
+            m_server.start("127.0.0.1", util::to_string(port));
+            break;
+        }
+        catch (std::runtime_error) {
+            continue;
+        }
+    }
+    m_url = util::format("realm://127.0.0.1:%1", port);
+    m_thread = std::thread([this]{ m_server.run(); });
+}
+
+SyncServer::~SyncServer()
+{
+    m_server.stop();
+    m_thread.join();
+}
+
+std::string SyncServer::url_for_realm(StringData realm_name) const
+{
+    return util::format("%1/%2", m_url, realm_name);
+}
+
+#endif // REALM_ENABLE_SYNC
 
 #if defined(__has_feature) && __has_feature(thread_sanitizer)
 // A helper which synchronously runs on_change() on a fixed background thread
@@ -85,7 +153,7 @@ public:
                 m_signal.load();
             }
 
-            auto c = reinterpret_cast<realm::_impl::RealmCoordinator *>(value);
+            auto c = reinterpret_cast<_impl::RealmCoordinator *>(value);
             c->on_change();
             m_signal.store(1, std::memory_order_relaxed);
         }
@@ -97,7 +165,7 @@ public:
         m_thread.join();
     }
 
-    void on_change(const std::shared_ptr<realm::_impl::RealmCoordinator>& c)
+    void on_change(const std::shared_ptr<_impl::RealmCoordinator>& c)
     {
         auto& it = m_published_coordinators[c.get()];
         if (it.lock()) {
@@ -114,20 +182,20 @@ public:
 private:
     std::atomic<uintptr_t> m_signal{0};
     std::thread m_thread;
-    std::map<realm::_impl::RealmCoordinator*, std::weak_ptr<realm::_impl::RealmCoordinator>> m_published_coordinators;
+    std::map<_impl::RealmCoordinator*, std::weak_ptr<_impl::RealmCoordinator>> m_published_coordinators;
 } s_worker;
 
-void advance_and_notify(realm::Realm& realm)
+void advance_and_notify(Realm& realm)
 {
-    s_worker.on_change(realm::_impl::RealmCoordinator::get_existing_coordinator(realm.config().path));
+    s_worker.on_change(_impl::RealmCoordinator::get_existing_coordinator(realm.config().path));
     realm.notify();
 }
 
 #else // __has_feature(thread_sanitizer)
 
-void advance_and_notify(realm::Realm& realm)
+void advance_and_notify(Realm& realm)
 {
-    realm::_impl::RealmCoordinator::get_existing_coordinator(realm.config().path)->on_change();
+    _impl::RealmCoordinator::get_existing_coordinator(realm.config().path)->on_change();
     realm.notify();
 }
 #endif

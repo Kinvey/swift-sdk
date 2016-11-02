@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 internal class Operation<T: Persistable>: NSObject where T: NSObject {
     

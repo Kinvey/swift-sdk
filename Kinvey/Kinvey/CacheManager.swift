@@ -16,26 +16,10 @@ internal class CacheManager: NSObject {
     fileprivate let encryptionKey: Data?
     fileprivate let schemaVersion: UInt64
     
-    init(persistenceId: String, encryptionKey: Data? = nil, schemaVersion: UInt64 = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    init(persistenceId: String, encryptionKey: Data? = nil, schemaVersion: UInt64 = 0) {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
-        
-        var realmConfiguration = Realm.Configuration()
-        if let encryptionKey = encryptionKey {
-            realmConfiguration.encryptionKey = encryptionKey
-        }
-        realmConfiguration.schemaVersion = schemaVersion
-        realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
-            let migration = Migration(realmMigration: migration)
-            migrationHandler?(migration, oldSchemaVersion)
-        }
-        do {
-            _ = try Realm(configuration: realmConfiguration)
-        } catch {
-            realmConfiguration.deleteRealmIfMigrationNeeded = true
-            _ = try! Realm(configuration: realmConfiguration)
-        }
     }
     
     func cache<T: Persistable>(filePath: String? = nil, type: T.Type) -> Cache<T>? where T: NSObject {

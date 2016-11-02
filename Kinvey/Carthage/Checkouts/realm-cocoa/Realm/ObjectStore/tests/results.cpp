@@ -27,7 +27,6 @@
 #include "results.hpp"
 #include "schema.hpp"
 
-#include <realm/commit_log.hpp>
 #include <realm/group_shared.hpp>
 #include <realm/link_view.hpp>
 #include <realm/query_engine.hpp>
@@ -200,12 +199,57 @@ TEST_CASE("results: notifications") {
             REQUIRE(notification_calls == 1);
         }
 
+        SECTION("swapping adjacent matching and non-matching rows does not send notifications") {
+            write([&] {
+                table->swap_rows(0, 1);
+            });
+            REQUIRE(notification_calls == 1);
+        }
+
+        SECTION("swapping non-adjacent matching and non-matching rows send a single insert/delete pair") {
+            write([&] {
+                table->swap_rows(0, 2);
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_INDICES(change.deletions, 1);
+            REQUIRE_INDICES(change.insertions, 0);
+        }
+
+        SECTION("swapping matching rows sends insert/delete pairs") {
+            write([&] {
+                table->swap_rows(1, 4);
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_INDICES(change.deletions, 0, 3);
+            REQUIRE_INDICES(change.insertions, 0, 3);
+
+            write([&] {
+                table->swap_rows(1, 2);
+                table->swap_rows(2, 3);
+                table->swap_rows(3, 4);
+            });
+            REQUIRE(notification_calls == 3);
+            REQUIRE_INDICES(change.deletions, 1, 2, 3);
+            REQUIRE_INDICES(change.insertions, 0, 1, 2);
+        }
+
+        SECTION("swap does not inhibit move collapsing after removals") {
+            write([&] {
+                table->swap_rows(2, 3);
+                table->set_int(0, 3, 100);
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_INDICES(change.deletions, 1);
+            REQUIRE(change.insertions.empty());
+        }
+
         SECTION("modifying a matching row and leaving it matching marks that row as modified") {
             write([&] {
                 table->set_int(0, 1, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.modifications, 0);
+            REQUIRE_INDICES(change.modifications_new, 0);
         }
 
         SECTION("modifying a matching row to no longer match marks that row as deleted") {
@@ -223,6 +267,7 @@ TEST_CASE("results: notifications") {
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 4);
             REQUIRE(change.modifications.empty());
+            REQUIRE(change.modifications_new.empty());
         }
 
         SECTION("deleting a matching row marks that row as deleted") {
@@ -234,6 +279,15 @@ TEST_CASE("results: notifications") {
         }
 
         SECTION("moving a matching row via deletion marks that row as moved") {
+            write([&] {
+                table->where().greater_equal(0, 10).find_all().clear(RemoveMode::unordered);
+                table->move_last_over(0);
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_MOVES(change, {3, 0});
+        }
+
+        SECTION("moving a matching row via subsumption marks that row as modified") {
             write([&] {
                 table->where().greater_equal(0, 10).find_all().clear(RemoveMode::unordered);
                 table->move_last_over(0);
@@ -276,6 +330,7 @@ TEST_CASE("results: notifications") {
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 4);
             REQUIRE(change.modifications.empty());
+            REQUIRE(change.modifications_new.empty());
         }
 
         SECTION("modification indices are pre-insert/delete") {
@@ -288,6 +343,7 @@ TEST_CASE("results: notifications") {
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 1);
             REQUIRE_INDICES(change.modifications, 2);
+            REQUIRE_INDICES(change.modifications_new, 1);
         }
 
         SECTION("notifications are not delivered when collapsing transactions results in no net change") {
@@ -319,6 +375,84 @@ TEST_CASE("results: notifications") {
         }
     }
 
+    SECTION("before/after change callback") {
+        struct Callback {
+            size_t before_calls = 0;
+            size_t after_calls = 0;
+            CollectionChangeSet before_change;
+            CollectionChangeSet after_change;
+            std::function<void(void)> on_before = []{};
+            std::function<void(void)> on_after = []{};
+
+            void before(CollectionChangeSet c) {
+                before_change = c;
+                ++before_calls;
+                on_before();
+            }
+            void after(CollectionChangeSet c) {
+                after_change = c;
+                ++after_calls;
+                on_after();
+            }
+            void error(std::exception_ptr) {
+                FAIL("error() should not be called");
+            }
+        } callback;
+        auto token = results.add_notification_callback(&callback);
+        advance_and_notify(*r);
+
+        SECTION("only after() is called for initial results") {
+            REQUIRE(callback.before_calls == 0);
+            REQUIRE(callback.after_calls == 1);
+            REQUIRE(callback.after_change.empty());
+        }
+
+        auto write = [&](auto&& func) {
+            auto r2 = Realm::get_shared_realm(config);
+            r2->begin_transaction();
+            func(*r2->read_group().get_table("class_object"));
+            r2->commit_transaction();
+            advance_and_notify(*r);
+        };
+
+        SECTION("both are called after a write") {
+            write([&](auto&& t) {
+                t.set_int(0, t.add_empty_row(), 5);
+            });
+            REQUIRE(callback.before_calls == 1);
+            REQUIRE(callback.after_calls == 2);
+            REQUIRE_INDICES(callback.before_change.insertions, 4);
+            REQUIRE_INDICES(callback.after_change.insertions, 4);
+        }
+
+        SECTION("deleted objects are usable in before()") {
+            callback.on_before = [&] {
+                REQUIRE(results.size() == 4);
+                REQUIRE_INDICES(callback.before_change.deletions, 0);
+                REQUIRE(results.get(0).is_attached());
+                REQUIRE(results.get(0).get_int(0) == 2);
+            };
+            write([&](auto&& t) {
+                t.move_last_over(results.get(0).get_index());
+            });
+            REQUIRE(callback.before_calls == 1);
+            REQUIRE(callback.after_calls == 2);
+        }
+
+        SECTION("inserted objects are usable in after()") {
+            callback.on_after = [&] {
+                REQUIRE(results.size() == 5);
+                REQUIRE_INDICES(callback.after_change.insertions, 4);
+                REQUIRE(results.last()->get_int(0) == 5);
+            };
+            write([&](auto&& t) {
+                t.set_int(0, t.add_empty_row(), 5);
+            });
+            REQUIRE(callback.before_calls == 1);
+            REQUIRE(callback.after_calls == 2);
+        }
+    }
+
     // Sort in descending order
     results = results.sort({*table, {{0}}, {false}});
 
@@ -339,6 +473,13 @@ TEST_CASE("results: notifications") {
             r->commit_transaction();
             advance_and_notify(*r);
         };
+
+        SECTION("swapping rows does not send notifications") {
+            write([&] {
+                table->swap_rows(2, 3);
+            });
+            REQUIRE(notification_calls == 1);
+        }
 
         SECTION("modifications that leave a non-matching row non-matching do not send notifications") {
             write([&] {
@@ -361,6 +502,25 @@ TEST_CASE("results: notifications") {
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.modifications, 3);
+            REQUIRE_INDICES(change.modifications_new, 3);
+        }
+
+        SECTION("swapping leaves modified rows marked as modified") {
+            write([&] {
+                table->set_int(0, 1, 3);
+                table->swap_rows(1, 2);
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_INDICES(change.modifications, 3);
+            REQUIRE_INDICES(change.modifications_new, 3);
+
+            write([&] {
+                table->swap_rows(3, 1);
+                table->set_int(0, 1, 7);
+            });
+            REQUIRE(notification_calls == 3);
+            REQUIRE_INDICES(change.modifications, 1);
+            REQUIRE_INDICES(change.modifications_new, 1);
         }
 
         SECTION("modifying a matching row to no longer match marks that row as deleted") {

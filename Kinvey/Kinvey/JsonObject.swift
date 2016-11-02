@@ -62,8 +62,9 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
         if let query = value as? Query, let predicate = query.predicate, let value = try? MongoDBPredicateAdaptor.queryDict(from: predicate) {
             return value
         } else if let dictionary = value as? JsonDictionary {
-            let translated: JsonDictionary = dictionary.map { (key, value) -> (String, Any) in
-                return (key, translateValue(value))
+            var translated = JsonDictionary()
+            for (key, value) in dictionary {
+                translated[key] = translateValue(value)
             }
             return translated
         } else if let array = value as? Array<Any> {

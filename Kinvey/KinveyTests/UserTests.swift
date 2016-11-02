@@ -10,6 +10,7 @@ import XCTest
 import WebKit
 import KinveyApp
 @testable import Kinvey
+import ObjectMapper
 
 class UserTests: KinveyTestCase {
 
@@ -1324,7 +1325,7 @@ class UserTests: KinveyTestCase {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .uiWebView) { (user, error) -> Void in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNotNil(error as? Kinvey.Error)

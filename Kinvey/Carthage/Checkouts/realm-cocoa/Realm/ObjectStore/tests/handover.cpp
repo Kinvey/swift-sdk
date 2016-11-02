@@ -27,7 +27,7 @@
 #include "schema.hpp"
 #include "thread_confined.hpp"
 
-#include <realm/commit_log.hpp>
+#include <realm/history.hpp>
 #include <realm/util/optional.hpp>
 
 #include <thread>
@@ -84,10 +84,10 @@ TEST_CASE("handover") {
     }
 
     SECTION("cleanup properly unpins version") {
-        auto history = realm::make_client_history(config.path, config.encryption_key.data());
-        SharedGroup shared_group(*history, SharedGroup::durability_MemOnly);
+        auto history = make_in_realm_history(config.path);
+        SharedGroup shared_group(*history, config.options());
 
-        auto get_current_version = [&]() -> SharedGroup::VersionID {
+        auto get_current_version = [&]() -> VersionID {
             shared_group.begin_read();
             auto version = shared_group.get_version_of_current_transaction();
             shared_group.end_read();

@@ -11,6 +11,7 @@ import XCTest
 
 extension XCTestCase {
     
+    @discardableResult
     func waitValueForObject<V: Equatable>(_ obj: NSObject, keyPath: String, expectedValue: V?, timeout: TimeInterval = 60) -> Bool {
         let date = Date()
         let loop = RunLoop.current

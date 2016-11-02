@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 private let lockEncryptionKey = NSLock()
 
@@ -196,7 +197,10 @@ open class Client: NSObject, NSCoding, Credential {
         precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
-        cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        
+        Migration.performMigration(encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        
+        cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?)
         
         var apiHostName = apiHostName
