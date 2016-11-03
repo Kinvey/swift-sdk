@@ -98,6 +98,7 @@ class RetryOpTests: KinveyTestCase {
                             "state" : "MA"
                         ],
                         "name" : "Tejas",
+                        "likesSwift" : NSNull(),
                         "_acl" : [
                             "creator" : "578fbd91ea3df6b0360cb362"
                         ],
@@ -113,7 +114,8 @@ class RetryOpTests: KinveyTestCase {
                             "city" : "Vancouver",
                             "state" : "BC"
                         ],
-                        "name" : "Victor Barros",
+                        "name" : "Victor",
+                        "likesSwift" : true,
                         "_acl" : [
                             "creator" : "578fbd91ea3df6b0360cb362"
                         ],
@@ -130,6 +132,7 @@ class RetryOpTests: KinveyTestCase {
                             "state" : "FL"
                         ],
                         "name" : "Thomas",
+                        "likesSwift" : false,
                         "_acl" : [
                             "creator" : "578fbd91ea3df6b0360cb362"
                         ],
@@ -149,6 +152,20 @@ class RetryOpTests: KinveyTestCase {
             
         }
         
+        class Person: NSObject {
+            
+            dynamic var name: String?
+            dynamic var likesSwift: NSNumber?
+            
+            private override func hostToKinveyPropertyMapping() -> [NSObject : AnyObject]! {
+                return [
+                    "name" : "name",
+                    "likesSwift" : "likesSwift"
+                ]
+            }
+            
+        }
+        
         KCSURLProtocol.registerClass(MockURLProtocol.self)
         defer {
             KCSURLProtocol.unregisterClass(MockURLProtocol.self)
@@ -156,7 +173,7 @@ class RetryOpTests: KinveyTestCase {
         
         let logbookStore = KCSLinkedAppdataStore.storeWithOptions([
             KCSStoreKeyCollectionName : "MyCollection",
-            KCSStoreKeyCollectionTemplateClass : NSMutableDictionary.self,
+            KCSStoreKeyCollectionTemplateClass : Person.self,
             KCSStoreKeyCachePolicy : KCSCachePolicy.None.rawValue,
             KCSStoreKeyOfflineUpdateEnabled : true
         ])
@@ -167,8 +184,19 @@ class RetryOpTests: KinveyTestCase {
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
-            if let results = results {
-                print("Results: \(results)")
+            if let persons = results as? [Person] {
+                for person in persons {
+                    XCTAssertNotNil(person.name)
+                    if let name = person.name {
+                        switch name {
+                            case "Tejas": XCTAssertNil(person.likesSwift)
+                            case "Victor": XCTAssertEqual(person.likesSwift, true)
+                            case "Thomas": XCTAssertEqual(person.likesSwift, false)
+                            default: XCTFail()
+                        }
+                    }
+                    print("Name: \(person.name)\nLikes Swift: \(person.likesSwift)")
+                }
             }
             
             expectationQuery?.fulfill()
