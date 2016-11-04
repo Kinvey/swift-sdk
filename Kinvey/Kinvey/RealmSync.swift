@@ -18,13 +18,13 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
     
     lazy var entityType = T.self as! Entity.Type
     
-    required init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil) {
+    required init(persistenceId: String, fileURL: NSURL? = nil, encryptionKey: NSData? = nil) {
         if !(T.self is Entity.Type) {
             preconditionFailure("\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
-        if let filePath = filePath {
-            configuration.fileURL = NSURL(fileURLWithPath: filePath)
+        if let fileURL = fileURL {
+            configuration.fileURL = fileURL
         }
         configuration.encryptionKey = encryptionKey
         realm = try! Realm(configuration: configuration)

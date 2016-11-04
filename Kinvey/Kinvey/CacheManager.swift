@@ -20,30 +20,14 @@ internal class CacheManager: NSObject {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
-        
-        var realmConfiguration = Realm.Configuration()
-        if let encryptionKey = encryptionKey {
-            realmConfiguration.encryptionKey = encryptionKey
-        }
-        realmConfiguration.schemaVersion = schemaVersion
-        realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
-            let migration = Migration(realmMigration: migration)
-            migrationHandler?(migration: migration, schemaVersion: oldSchemaVersion)
-        }
-        do {
-            _ = try Realm(configuration: realmConfiguration)
-        } catch {
-            realmConfiguration.deleteRealmIfMigrationNeeded = true
-            _ = try! Realm(configuration: realmConfiguration)
-        }
     }
     
-    func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
-        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    func cache<T: Persistable where T: NSObject>(fileURL fileURL: NSURL? = nil, type: T.Type) -> Cache<T>? {
+        return RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
-    func fileCache(filePath filePath: String? = nil) -> FileCache? {
-        return RealmFileCache(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    func fileCache(fileURL fileURL: NSURL? = nil) -> FileCache? {
+        return RealmFileCache(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
     func clearFiles() {
