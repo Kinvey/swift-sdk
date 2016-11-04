@@ -22,12 +22,12 @@ internal class CacheManager: NSObject {
         self.schemaVersion = schemaVersion
     }
     
-    func cache<T: Persistable>(filePath: String? = nil, type: T.Type) -> Cache<T>? where T: NSObject {
-        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    func cache<T: Persistable>(fileURL: URL? = nil, type: T.Type) -> Cache<T>? where T: NSObject {
+        return RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
-    func fileCache(filePath: String? = nil) -> FileCache? {
-        return RealmFileCache(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    func fileCache(fileURL: URL? = nil) -> FileCache? {
+        return RealmFileCache(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
     func clearFiles() {

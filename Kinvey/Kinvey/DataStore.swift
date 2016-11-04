@@ -65,7 +65,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// DataStoreType defines how the DataStore will behave.
     open let type: StoreType
     
-    fileprivate let filePath: String?
+    fileprivate let fileURL: URL?
     
     internal let cache: Cache<T>?
     internal let sync: Sync<T>?
@@ -102,26 +102,26 @@ open class DataStore<T: Persistable> where T: NSObject {
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
-            let filePath = client.filePath(tag)
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
+            let fileURL = client.fileURL(tag)
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
     }
     
     open func collection<NewType: Persistable>(newType: NewType.Type) -> DataStore<NewType> where NewType: NSObject {
-        return DataStore<NewType>(type: type, deltaSet: deltaSet, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
+        return DataStore<NewType>(type: type, deltaSet: deltaSet, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
     }
     
-    fileprivate init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: Data?) {
+    fileprivate init(type: StoreType, deltaSet: Bool, client: Client, fileURL: URL?, encryptionKey: Data?) {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
-        self.filePath = filePath
+        self.fileURL = fileURL
         collectionName = T.collectionName()
         if type != .network, let _ = T.self as? Entity.Type {
-            cache = client.cacheManager.cache(filePath: filePath, type: T.self)
-            sync = client.syncManager.sync(filePath: filePath, type: T.self)
+            cache = client.cacheManager.cache(fileURL: fileURL, type: T.self)
+            sync = client.syncManager.sync(fileURL: fileURL, type: T.self)
         } else {
             cache = nil
             sync = nil

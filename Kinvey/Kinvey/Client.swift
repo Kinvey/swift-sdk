@@ -198,10 +198,10 @@ open class Client: NSObject, NSCoding, Credential {
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
         
-        Migration.performMigration(encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
         
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
-        syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?)
+        syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String? , apiHostNameString.characters.last == "/" {
@@ -247,21 +247,24 @@ open class Client: NSObject, NSCoding, Credential {
         return self.appKey != nil && self.appSecret != nil
     }
     
-    internal func filePath(_ tag: String = defaultTag) -> String {
+    internal class func fileURL(appKey: String, tag: String = defaultTag) -> URL {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let path = paths.first! as NSString
-        var filePath = path.appendingPathComponent(self.appKey!)
+        var filePath = URL(fileURLWithPath: path.appendingPathComponent(appKey))
         
         let fileManager = FileManager.default
         do {
-            let filePath = filePath as String
-            if !fileManager.fileExists(atPath: filePath) {
-                try! fileManager.createDirectory(atPath: filePath, withIntermediateDirectories: true, attributes: nil)
+            if !fileManager.fileExists(atPath: filePath.path) {
+                try! fileManager.createDirectory(at: filePath, withIntermediateDirectories: true, attributes: nil)
             }
         }
         
-        filePath = (filePath as NSString).appendingPathComponent("\(tag).realm")
+        filePath = filePath.appendingPathComponent("\(tag).realm")
         return filePath
+    }
+    
+    internal func fileURL(_ tag: String = defaultTag) -> URL {
+        return Client.fileURL(appKey: self.appKey!, tag: tag)
     }
     
     public convenience required init?(coder aDecoder: NSCoder) {
