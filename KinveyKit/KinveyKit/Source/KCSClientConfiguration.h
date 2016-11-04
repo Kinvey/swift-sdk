@@ -151,6 +151,15 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 /*! Representing in-seconds for connection timeouts */
 @property (nonatomic) NSTimeInterval connectionTimeout;
 
+/*! Protocol used to connect to the backend server. Default value: "https". Valid values: "https" or "http" */
+@property (nonatomic, copy) NSString* hostProtocol;
+
+/*! Domain host used to connect to the backend server. Default value: "kinvey.com". Sample values: "mydomain.com" */
+@property (nonatomic, copy) NSString* hostDomain;
+
+/*! Port used to connect to the backend server Default value: "" (empty string). Sample values: "8080" or ":8080". */
+@property (nonatomic, copy) NSString* hostPort;
+
 /** Basic configuration with an app key and secret, no options. Uses the default options.
  
  Usage:

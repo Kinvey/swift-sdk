@@ -26,19 +26,8 @@ KCS_CONSTANT KCS_LOG_ADDITIONAL_LOGGERS;
 
 @interface KCSClientConfiguration (KCSInternal)
 
-- (NSString*) baseURL;
-
 - (int) loglevel;
 - (void) setLoglevel:(int)level;
 - (void) applyConfiguration;
-
-/*! Protocol used to connect to the backend server. Default value: "https". Valid values: "https" or "http" */
-@property (nonatomic, copy) NSString* hostProtocol;
-
-/*! Domain host used to connect to the backend server. Default value: "kinvey.com". Sample values: "mydomain.com" */
-@property (nonatomic, copy) NSString* hostDomain;
-
-/*! Port used to connect to the backend server Default value: "" (empty string). Sample values: "8080" or ":8080". */
-@property (nonatomic, copy) NSString* hostPort;
 
 @end
