@@ -125,9 +125,9 @@
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     NSError* error = nil;
-    NSMutableDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
-                                                                        options:NSJSONReadingMutableContainers
-                                                                          error:&error];
+    id jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
+                                                      options:NSJSONReadingMutableContainers
+                                                        error:&error];
     NSObject* jsonObj = nil;
     if (!([jsonResponse isKindOfClass:[NSDictionary class]] || [jsonResponse isKindOfClass:[NSArray class]])) {
         if (anError) {
