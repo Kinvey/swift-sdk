@@ -125,11 +125,11 @@
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     NSError* error = nil;
-    NSMutableDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
-                                                                        options:NSJSONReadingMutableContainers
-                                                                          error:&error];
+    id jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
+                                                      options:NSJSONReadingMutableContainers
+                                                        error:&error];
     NSObject* jsonObj = nil;
-    if (![jsonResponse isKindOfClass:[NSDictionary class]]) {
+    if (!([jsonResponse isKindOfClass:[NSDictionary class]] || [jsonResponse isKindOfClass:[NSArray class]])) {
         if (anError) {
             *anError = [NSError createKCSErrorWithReason:@"Kinvey requires a JSON Object as response body"];
         }
@@ -139,7 +139,9 @@
             *anError = error;
         }
     } else {
-        jsonObj = jsonResponse[kResultsKey];
+        if ([jsonResponse isKindOfClass:[NSDictionary class]]) {
+            jsonObj = jsonResponse[kResultsKey];
+        }
         jsonObj = jsonObj ? jsonObj : jsonResponse;
     }
     
