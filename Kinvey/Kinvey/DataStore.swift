@@ -100,21 +100,21 @@ public class DataStore<T: Persistable where T: NSObject> {
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
-            let filePath = client.filePath(tag)
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
+            let fileURL = client.fileURL(tag)
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
     }
     
-    private init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
+    private init(type: StoreType, deltaSet: Bool, client: Client, fileURL: NSURL?, encryptionKey: NSData?) {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
         collectionName = T.collectionName()
         if type != .Network, let _ = T.self as? Entity.Type {
-            cache = client.cacheManager.cache(filePath: filePath, type: T.self)
-            sync = client.syncManager.sync(filePath: filePath, type: T.self)
+            cache = client.cacheManager.cache(fileURL: fileURL, type: T.self)
+            sync = client.syncManager.sync(fileURL: fileURL, type: T.self)
         } else {
             cache = nil
             sync = nil
