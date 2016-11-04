@@ -91,6 +91,8 @@ class NetworkStoreTests: StoreTestCase {
                 
                 static var delay: NSTimeInterval?
                 
+                let urlSession = NSURLSession()
+                
                 override class func canInitWithRequest(request: NSURLRequest) -> Bool {
                     return true
                 }
@@ -104,7 +106,7 @@ class NetworkStoreTests: StoreTestCase {
                         NSThread.sleepForTimeInterval(delay)
                     }
                     
-                    NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response, data, error) in
+                    let dataTask = urlSession.dataTaskWithRequest(request) { data, response, error in
                         self.client?.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .NotAllowed)
                         self.client?.URLProtocol(self, didLoadData: data!)
                         if let delay = DelayURLProtocol.delay {
@@ -112,6 +114,7 @@ class NetworkStoreTests: StoreTestCase {
                         }
                         self.client?.URLProtocolDidFinishLoading(self)
                     }
+                    dataTask.resume()
                 }
                 
                 override func stopLoading() {

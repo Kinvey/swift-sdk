@@ -1324,7 +1324,7 @@ class UserTests: KinveyTestCase {
         weak var expectationLogin = expectationWithDescription("Login")
         
         let redirectURI = NSURL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .WKWebView) { (user, error) -> Void in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNotNil(error)
             XCTAssertNotNil(error as? Kinvey.Error)
