@@ -62,7 +62,7 @@
             }
             value = results;
         }
-        return value;
+        return value != [NSNull null] ? value : nil;
     }
 
 @end

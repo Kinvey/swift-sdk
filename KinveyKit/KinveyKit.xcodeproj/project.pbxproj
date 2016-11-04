@@ -550,6 +550,8 @@
 		571F0A6E1D939B3C00F6D372 /* KCSValueConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 571F0A681D939B3C00F6D372 /* KCSValueConverter.m */; };
 		571F0A6F1D939B3C00F6D372 /* KCSValueConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 571F0A681D939B3C00F6D372 /* KCSValueConverter.m */; };
 		571F0A701D939B3C00F6D372 /* KCSValueConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 571F0A681D939B3C00F6D372 /* KCSValueConverter.m */; };
+		5721C9F51DCA94E9009ABA8D /* RetryOpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5721C9F41DCA94E9009ABA8D /* RetryOpTests.swift */; };
+		5721C9F71DCA9A70009ABA8D /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5721C9F61DCA9A70009ABA8D /* KinveyTestCase.swift */; };
 		5725E6EA1AD6E29F00B506BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5725E6E91AD6E29F00B506BB /* AppDelegate.swift */; };
 		5725E6F11AD6E29F00B506BB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5725E6EF1AD6E29F00B506BB /* Main.storyboard */; };
 		5725E6F31AD6E29F00B506BB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5725E6F21AD6E29F00B506BB /* Images.xcassets */; };
@@ -1893,6 +1895,8 @@
 		571F0A671D939B3C00F6D372 /* KCSValueConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSValueConverter.h; sourceTree = "<group>"; };
 		571F0A681D939B3C00F6D372 /* KCSValueConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSValueConverter.m; sourceTree = "<group>"; };
 		5720DDF01B86956A00306F57 /* KCSFileStoreMemoryTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSFileStoreMemoryTestsSwift.swift; sourceTree = "<group>"; };
+		5721C9F41DCA94E9009ABA8D /* RetryOpTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RetryOpTests.swift; sourceTree = "<group>"; };
+		5721C9F61DCA9A70009ABA8D /* KinveyTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KinveyTestCase.swift; sourceTree = "<group>"; };
 		5725E6E51AD6E29F00B506BB /* KinveyPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5725E6E81AD6E29F00B506BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5725E6E91AD6E29F00B506BB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -3063,6 +3067,8 @@
 				57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */,
 				57056BB91CB5853300A214BE /* JsonTests.swift */,
 				576A2F891CB71689008207D9 /* KCSJsonTests.m */,
+				5721C9F41DCA94E9009ABA8D /* RetryOpTests.swift */,
+				5721C9F61DCA9A70009ABA8D /* KinveyTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5784,6 +5790,7 @@
 				5788343F1AB8D25500078CC5 /* KinveyKitNSDateTests.m in Sources */,
 				5788342B1AB8D25500078CC5 /* KinveyAppdataStoreTests.m in Sources */,
 				5788343A1AB8D25500078CC5 /* KCSMetadataTests.m in Sources */,
+				5721C9F51DCA94E9009ABA8D /* RetryOpTests.swift in Sources */,
 				575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */,
 				5718273B1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift in Sources */,
 				5788342F1AB8D25500078CC5 /* KCSOfflineStoreTests.m in Sources */,
@@ -5822,6 +5829,7 @@
 				578834391AB8D25500078CC5 /* KinveyKitEntityTests.m in Sources */,
 				578834341AB8D25500078CC5 /* KinveyUserDiscoveryTests.m in Sources */,
 				578834541AB8D25500078CC5 /* DataModelTests.m in Sources */,
+				5721C9F71DCA9A70009ABA8D /* KinveyTestCase.swift in Sources */,
 				575675051AF2E70400A7C0DB /* MLIBZ_256_Tests.swift in Sources */,
 				578834521AB8D25500078CC5 /* EntityCacheTests.m in Sources */,
 				57F556881AFD6044008CB244 /* MLIBZ_290_Tests.swift in Sources */,
