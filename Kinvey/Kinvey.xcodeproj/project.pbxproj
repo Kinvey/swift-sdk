@@ -115,6 +115,7 @@
 		5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		5795AB041DD13C38001FC808 /* NoCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB031DD13C38001FC808 /* NoCacheTestCase.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -660,6 +661,7 @@
 		5793B85B1D219A450088B5F9 /* TransformType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformType.swift; sourceTree = "<group>"; };
 		5793B85C1D219A450088B5F9 /* URLTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLTransform.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5795AB031DD13C38001FC808 /* NoCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoCacheTestCase.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1369,6 +1371,7 @@
 				5781D1351CE3D0BA00369F40 /* FileTestCase.swift */,
 				5771F9FE1D301F6300903777 /* Event.swift */,
 				57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */,
+				5795AB031DD13C38001FC808 /* NoCacheTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -2726,6 +2729,7 @@
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */,
 				57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */,
+				5795AB041DD13C38001FC808 /* NoCacheTestCase.swift in Sources */,
 				57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */,
 				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
 				573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */,
