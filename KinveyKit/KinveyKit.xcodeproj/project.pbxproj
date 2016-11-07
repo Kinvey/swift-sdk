@@ -847,6 +847,7 @@
 		579524161B869C9E000D1C46 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		5795241E1B869CD5000D1C46 /* KCSLogTestsAllEnabled.m in Sources */ = {isa = PBXBuildFile; fileRef = 57C6FD621B869AE6001AAAFE /* KCSLogTestsAllEnabled.m */; };
 		5795241F1B869DA6000D1C46 /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
+		5795AB061DD14066001FC808 /* KCSBooleanTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB051DD14066001FC808 /* KCSBooleanTestCase.m */; };
 		579BE41B1B79112F00938988 /* KCSCachedStoreSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */; };
 		579BE41D1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */; };
 		579CC48E1B8ED5CD00064718 /* KCSMICRequest2.h in Headers */ = {isa = PBXBuildFile; fileRef = 579CC48C1B8ED5CD00064718 /* KCSMICRequest2.h */; };
@@ -1952,6 +1953,7 @@
 		578076751AF7FCD500C220C4 /* KCSMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMemory.h; sourceTree = "<group>"; };
 		578076761AF7FCD500C220C4 /* KCSMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMemory.m; sourceTree = "<group>"; };
 		5795241C1B869C9E000D1C46 /* KCSLogTestsAllEnabled.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSLogTestsAllEnabled.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5795AB051DD14066001FC808 /* KCSBooleanTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBooleanTestCase.m; sourceTree = "<group>"; };
 		579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCachedStoreSwiftTests.swift; sourceTree = "<group>"; };
 		579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSLinkedAppdataStoreSwiftTests.swift; sourceTree = "<group>"; };
 		579BE41E1B7950A000938988 /* KCSUserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSUserTests.swift; sourceTree = "<group>"; };
@@ -3016,6 +3018,7 @@
 				57F867071B9562B800380745 /* KCSAssert.h */,
 				5718C8521B7E6EE2008CFE49 /* KCSTestCase.h */,
 				5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */,
+				5721C9F61DCA9A70009ABA8D /* KinveyTestCase.swift */,
 				571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */,
 				576203581B87E37D001E2B92 /* RequestConfigurationTests */,
 				575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */,
@@ -3068,7 +3071,7 @@
 				57056BB91CB5853300A214BE /* JsonTests.swift */,
 				576A2F891CB71689008207D9 /* KCSJsonTests.m */,
 				5721C9F41DCA94E9009ABA8D /* RetryOpTests.swift */,
-				5721C9F61DCA9A70009ABA8D /* KinveyTestCase.swift */,
+				5795AB051DD14066001FC808 /* KCSBooleanTestCase.m */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5808,6 +5811,7 @@
 				571BFF731AF1948C00E91732 /* MLIBZ_260_Tests.swift in Sources */,
 				578834511AB8D25500078CC5 /* DataStoreTests.m in Sources */,
 				57F5568A1AFD62C3008CB244 /* City.swift in Sources */,
+				5795AB061DD14066001FC808 /* KCSBooleanTestCase.m in Sources */,
 				57155E581BB6120E00A13B97 /* KCSBaasAPI.swift in Sources */,
 				5718C8541B7E6EE2008CFE49 /* KCSTestCase.m in Sources */,
 				5788344B1AB8D25500078CC5 /* LogTests.m in Sources */,

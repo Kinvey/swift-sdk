@@ -30,18 +30,20 @@
         if ([value isKindOfClass:[NSString class]]) {
             NSString* string = (NSString*) value;
             const NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"(ISODate\\(\")?(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?Z)(\"\\))?"
-                                                                                         options:nil
+                                                                                         options:0
                                                                                            error:nil];
             NSArray<NSTextCheckingResult*>* matches = [regex matchesInString:string
-                                                                     options:nil
+                                                                     options:0
                                                                        range:NSMakeRange(0, string.length)];
             if (matches.count > 0) {
                 value = [KCSDateBuilder objectForJSONObject:string];
             }
-        } else if ([mutableTypes containsObject:valueType] &&
-                   [value isKindOfClass:[NSObject class]] &&
-                   [value respondsToSelector:@selector(mutableCopy)])
-        {
+        } else if (
+            [mutableTypes containsObject:valueType] &&
+            [value isKindOfClass:[NSObject class]] &&
+            [value respondsToSelector:@selector(mutableCopy)] &&
+            [value conformsToProtocol:@protocol(NSMutableCopying)]
+        ) {
             value = ((NSObject*) value).mutableCopy;
         }
         
