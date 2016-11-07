@@ -23,6 +23,15 @@ internal class CacheManager: NSObject {
     }
     
     func cache<T: Persistable where T: NSObject>(fileURL fileURL: NSURL? = nil, type: T.Type) -> Cache<T>? {
+        let fileManager = NSFileManager.defaultManager()
+        if let fileURL = fileURL {
+            do {
+                if let baseURL = fileURL.URLByDeletingLastPathComponent where !fileManager.fileExistsAtPath(baseURL.path!) {
+                    try! fileManager.createDirectoryAtURL(baseURL, withIntermediateDirectories: true, attributes: nil)
+                }
+            }
+        }
+        
         return RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
