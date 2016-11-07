@@ -251,15 +251,7 @@ open class Client: NSObject, NSCoding, Credential {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let path = paths.first! as NSString
         var filePath = URL(fileURLWithPath: path.appendingPathComponent(appKey))
-        
-        let fileManager = FileManager.default
-        do {
-            if !fileManager.fileExists(atPath: filePath.path) {
-                try! fileManager.createDirectory(at: filePath, withIntermediateDirectories: true, attributes: nil)
-            }
-        }
-        
-        filePath = filePath.appendingPathComponent("\(tag).realm")
+        filePath.appendPathComponent("\(tag).realm")
         return filePath
     }
     
