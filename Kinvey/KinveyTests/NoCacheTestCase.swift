@@ -25,12 +25,11 @@ class NoCacheTestCase: XCTestCase {
                     try! fileManager.removeItem(at: fileURL)
                 }
             }
+            
+            if let fileURLs = try? fileManager.contentsOfDirectory(at: baseURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) {
+                XCTAssertEqual(fileURLs.count, 0)
+            }
         }
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
     }
     
     func testNoCache() {
