@@ -23,22 +23,30 @@ open class Migration: NSObject {
         self.realmMigration = realmMigration
     }
     
-    internal class func performMigration(encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-        var realmConfiguration = Realm.Configuration()
+    internal class func performMigration(persistenceId: String, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+        var realmBaseConfiguration = Realm.Configuration()
         if let encryptionKey = encryptionKey {
-            realmConfiguration.encryptionKey = encryptionKey
+            realmBaseConfiguration.encryptionKey = encryptionKey
         }
-        realmConfiguration.schemaVersion = schemaVersion
-        realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
+        realmBaseConfiguration.schemaVersion = schemaVersion
+        realmBaseConfiguration.migrationBlock = { migration, oldSchemaVersion in
             let migration = Migration(realmMigration: migration)
             migrationHandler?(migration, oldSchemaVersion)
         }
-        do {
-            try Realm.performMigration(for: realmConfiguration)
-        } catch {
-            print("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
-            realmConfiguration.deleteRealmIfMigrationNeeded = true
-            try! Realm.performMigration(for: realmConfiguration)
+        let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
+        let fileManager = FileManager.default
+        if let allFilesURL = try? fileManager.contentsOfDirectory(at: baseFolderURL, includingPropertiesForKeys: nil, options: []) {
+            for realmFileURL in allFilesURL.filter({ $0.lastPathComponent.hasSuffix(".realm") }) {
+                var realmConfiguration = realmBaseConfiguration //copy
+                realmConfiguration.fileURL = realmFileURL
+                do {
+                    try Realm.performMigration(for: realmConfiguration)
+                } catch {
+                    print("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
+                    realmConfiguration.deleteRealmIfMigrationNeeded = true
+                    try! Realm.performMigration(for: realmConfiguration)
+                }
+            }
         }
     }
     
