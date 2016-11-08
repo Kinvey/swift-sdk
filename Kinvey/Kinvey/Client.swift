@@ -194,6 +194,9 @@ public class Client: NSObject, Credential {
         precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
+        
+        Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey)
         
@@ -242,20 +245,16 @@ public class Client: NSObject, Credential {
         return self.appKey != nil && self.appSecret != nil
     }
     
-    internal func filePath(tag: String = defaultTag) -> String {
+    internal class func fileURL(appKey appKey:String, tag: String = defaultTag) -> NSURL {
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
         let path = paths.first! as NSString
-        var filePath = path.stringByAppendingPathComponent(self.appKey!) as NSString
-        
-        let fileManager = NSFileManager.defaultManager()
-        do {
-            let filePath = filePath as String
-            if !fileManager.fileExistsAtPath(filePath) {
-                try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
-            }
-        }
-        
-        filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
-        return filePath as String
+        var filePath = NSURL(fileURLWithPath: path.stringByAppendingPathComponent(appKey))
+        filePath = filePath.URLByAppendingPathComponent("\(tag).realm")!
+        return filePath
     }
+    
+    internal func fileURL(tag: String = defaultTag) -> NSURL {
+        return Client.fileURL(appKey: self.appKey!, tag: tag)
+    }
+    
 }

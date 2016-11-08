@@ -19,8 +19,8 @@ internal class SyncManager: NSObject {
         self.encryptionKey = encryptionKey
     }
     
-    func sync<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Sync<T> {
-        return RealmSync<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
+    func sync<T: Persistable where T: NSObject>(fileURL fileURL: NSURL? = nil, type: T.Type) -> Sync<T> {
+        return RealmSync<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey)
     }
     
 }
