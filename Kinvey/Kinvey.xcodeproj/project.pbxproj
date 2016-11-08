@@ -100,6 +100,7 @@
 		5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		5795AB021DD136B8001FC808 /* NoCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -633,6 +634,7 @@
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoCacheTestCase.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -667,7 +669,6 @@
 		57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = KinveyTests.xcconfig; sourceTree = "<group>"; };
 		57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
 		57B0C1D21CDCE88900492D6C /* KIF.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KIF.framework; sourceTree = "<group>"; };
-		57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
 		57B0C1D81CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
 		57B0C1DA1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
@@ -1286,6 +1287,7 @@
 				576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */,
 				57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */,
 				5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */,
+				5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
@@ -1328,7 +1330,6 @@
 				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
-				57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1D81CDCE88900492D6C /* PromiseKit.framework */,
 				57B0C1DA1CDCE88900492D6C /* Realm.framework */,
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
@@ -2646,6 +2647,7 @@
 				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
 				573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */,
 				57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */,
+				5795AB021DD136B8001FC808 /* NoCacheTestCase.swift in Sources */,
 				57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */,
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
