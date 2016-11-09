@@ -23,30 +23,22 @@ open class Client: NSObject, NSCoding, Credential {
     /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
     open internal(set) var activeUser: User? {
         willSet (newActiveUser) {
-            let userDefaults = Foundation.UserDefaults.standard
             if let activeUser = newActiveUser {
-                var json = activeUser.toJSON()
-                if var kmd = json[PersistableMetadataKey] as? [String : Any] {
-                    kmd.removeValue(forKey: Metadata.AuthTokenKey)
-                    json[PersistableMetadataKey] = kmd
-                }
-                userDefaults.set(json, forKey: appKey!)
-                userDefaults.synchronize()
-                
-                if let authtoken = activeUser.metadata?.authtoken {
-                    keychain.authtoken = authtoken
+                keychain.user = activeUser
+                if let sharedKeychain = sharedKeychain, let socialIdentity = activeUser.socialIdentity, let kinveyAuth = socialIdentity.kinvey {
+                    sharedKeychain.kinveyAuth = kinveyAuth
                 }
             } else if let appKey = appKey {
-                userDefaults.removeObject(forKey: appKey)
-                userDefaults.synchronize()
-                
                 CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?).clearAll()
-                do {
-                    try Keychain(appKey: appKey).removeAll()
-                } catch {
-                    //do nothing
+                try! Keychain(appKey: appKey, client: self).removeAll()
+                if let sharedKeychain = sharedKeychain {
+                    try! sharedKeychain.removeAll()
                 }
                 dataStoreInstances.removeAll()
+            } else {
+                if let sharedKeychain = sharedKeychain {
+                    try! sharedKeychain.removeAll()
+                }
             }
         }
         didSet {
@@ -54,10 +46,17 @@ open class Client: NSObject, NSCoding, Credential {
         }
     }
     
-    fileprivate var keychain: Keychain {
-        get {
-            return Keychain(appKey: appKey!)
+    private var accessGroup: String?
+    
+    private var keychain: Keychain {
+        return Keychain(appKey: appKey!, client: self)
+    }
+    
+    private var sharedKeychain: Keychain? {
+        if let accessGroup = accessGroup {
+            return Keychain(accessGroup: accessGroup, client: self)
         }
+        return nil
     }
     
     internal static let urlSessionConfiguration = URLSessionConfiguration.default
@@ -139,9 +138,10 @@ open class Client: NSObject, NSCoding, Credential {
     }
     
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
-    public convenience init(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName) {
+    public convenience init(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName) {
         self.init()
-        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
+        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName) { activerUser, error in
+        }
     }
     
     private func validateInitialize(appKey: String, appSecret: String) {
@@ -153,14 +153,21 @@ open class Client: NSObject, NSCoding, Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
-    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    @available(*, deprecated: 3.3.3, message: "Please use initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:)")
+    open func initialize(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encrypted: encrypted, schema: Schema(schemaVersion, migrationHandler: migrationHandler)) { activeUser, error in
+        }
+    }
+    
+    /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: User.UserHandler<U>) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
 
         var encryptionKey: Data? = nil
         if encrypted {
             lockEncryptionKey.lock()
             
-            let keychain = Keychain(appKey: appKey)
+            let keychain = Keychain(appKey: appKey, client: self)
             if let key = keychain.defaultEncryptionKey {
                 encryptionKey = key as Data
             } else {
@@ -177,17 +184,24 @@ open class Client: NSObject, NSCoding, Credential {
             lockEncryptionKey.unlock()
         }
         
-        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler)) { activeUser, error in
+        }
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    @available(*, deprecated: 3.3.3, message: "Please use initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:)")
+    open func initialize(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schemaVersion, migrationHandler: migrationHandler)) { activeUser, error in
+        }
+    }
+    
+    /// Initialize a `Client` instance with all the needed parameters.
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
-        
         self.encryptionKey = encryptionKey
-        self.schemaVersion = schemaVersion
+        self.schemaVersion = schema?.version ?? 0
         
-        Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: schema?.migrationHandler)
         
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
@@ -204,14 +218,16 @@ open class Client: NSObject, NSCoding, Credential {
         self.authHostName = authHostName
         self.appKey = appKey
         self.appSecret = appSecret
+        self.accessGroup = accessGroup
         
-        if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
-            let user = userType.init(JSON: json)
-            if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
-                user.client = self
-                metadata.authtoken = authtoken
-                activeUser = user
-            }
+        if let user = keychain.user {
+            user.client = self
+            activeUser = user
+            completionHandler((user as! U), nil)
+        } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
+            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self, completionHandler: completionHandler)
+        } else {
+            completionHandler(nil, nil)
         }
     }
     
