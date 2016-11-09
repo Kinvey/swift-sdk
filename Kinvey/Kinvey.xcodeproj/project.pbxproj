@@ -69,6 +69,15 @@
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
 		5771F9FF1D301F6300903777 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771F9FE1D301F6300903777 /* Event.swift */; };
 		5776EEC01E31740B003B9DF0 /* MIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776EEBF1E31740B003B9DF0 /* MIC.swift */; };
+		5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 577751381DF8B8EA006C98F1 /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 577751381DF8B8EA006C98F1 /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5776EE9C1E300658003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		5776EE9D1E300731003B9DF0 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		5776EE9E1E300786003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		5776EE9F1E3007AC003B9DF0 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		5776EEA01E300898003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		577751441DF8E8EC006C98F1 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		577751451DF8E901006C98F1 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		577E6FA41D18B33900B5DA36 /* Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA31D18B33900B5DA36 /* Results.swift */; };
 		577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA51D18E1F900B5DA36 /* RealmSync.swift */; };
@@ -93,6 +102,42 @@
 		57873E1A1DFFD983002C87BF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E1B1DFFD983002C87BF /* CwlPreconditionTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E221DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */; };
+		578870931DD52EC80087FE78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870921DD52EC80087FE78 /* AppDelegate.swift */; };
+		578870951DD52EC80087FE78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870941DD52EC80087FE78 /* ViewController.swift */; };
+		578870981DD52EC80087FE78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 578870961DD52EC80087FE78 /* Main.storyboard */; };
+		5788709A1DD52EC80087FE78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 578870991DD52EC80087FE78 /* Assets.xcassets */; };
+		5788709D1DD52EC80087FE78 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5788709B1DD52EC80087FE78 /* LaunchScreen.storyboard */; };
+		578870A81DD52EC80087FE78 /* SSOApp1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870A71DD52EC80087FE78 /* SSOApp1Tests.swift */; };
+		578870B71DD52ECF0087FE78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870B61DD52ECF0087FE78 /* AppDelegate.swift */; };
+		578870B91DD52ECF0087FE78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870B81DD52ECF0087FE78 /* ViewController.swift */; };
+		578870BC1DD52ECF0087FE78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 578870BA1DD52ECF0087FE78 /* Main.storyboard */; };
+		578870BE1DD52ECF0087FE78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 578870BD1DD52ECF0087FE78 /* Assets.xcassets */; };
+		578870C11DD52ECF0087FE78 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 578870BF1DD52ECF0087FE78 /* LaunchScreen.storyboard */; };
+		578870CC1DD52ECF0087FE78 /* SSOApp2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870CB1DD52ECF0087FE78 /* SSOApp2Tests.swift */; };
+		578870D41DD52FE00087FE78 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		578870D51DD52FE00087FE78 /* Kinvey.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870D91DD52FE80087FE78 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; };
+		578870DA1DD52FE80087FE78 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870DB1DD530070087FE78 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; };
+		578870DC1DD530070087FE78 /* KeychainAccess.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870DD1DD530210087FE78 /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; };
+		578870DE1DD530210087FE78 /* ObjectMapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870DF1DD530350087FE78 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; };
+		578870E01DD530350087FE78 /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870E11DD530460087FE78 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		578870E21DD530460087FE78 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870E31DD530540087FE78 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		578870E41DD530540087FE78 /* Kinvey.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870E71DD530540087FE78 /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; };
+		578870E81DD530540087FE78 /* ObjectMapper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870E91DD530540087FE78 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; };
+		578870EA1DD530540087FE78 /* KeychainAccess.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870EB1DD530540087FE78 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; };
+		578870EC1DD530540087FE78 /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870ED1DD530540087FE78 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; };
+		578870EE1DD530540087FE78 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		578870EF1DD530540087FE78 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		578870F01DD530540087FE78 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
@@ -108,6 +153,12 @@
 		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		5796B3E71DEE8EC900209C9F /* CacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */; };
+		579D30891DDA646B0055C8CF /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		579D308A1DDA646C0055C8CF /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		579D308C1DDA68950055C8CF /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; };
+		579D308D1DDA68950055C8CF /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; };
+		579D30921DDA6FF30055C8CF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		579D30931DDA6FF80055C8CF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -121,6 +172,13 @@
 		57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */; };
 		57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */; };
 		57A2ED961C4D5F74006D26A9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
+		57A3BF981C8912A900DCD439 /* KNVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57A3BF961C8912A900DCD439 /* KNVClient.m */; };
+		57A3BF991C8946D200DCD439 /* KNVClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A3BF951C8912A900DCD439 /* KNVClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57A3EBB51DDA81AA00983D2F /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		57A3EBB61DDA81B200983D2F /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57A3EBB71DDA88AA00983D2F /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		57A3EBB91DDA88AB00983D2F /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		57A3EBBC1DDAC87B00983D2F /* auth.html in Resources */ = {isa = PBXBuildFile; fileRef = 57A3EBBA1DDA8BB900983D2F /* auth.html */; };
 		57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */; };
 		57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */; };
 		57A4658C1CC02ADB009E7384 /* PerformanceTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */; };
@@ -193,6 +251,10 @@
 		57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
 		57E7C7B51C51981400848748 /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B41C51981400848748 /* RequestType.swift */; };
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
+		57F5621B1E006A1B00E1AC8E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		57F5621C1E006A5400E1AC8E /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
+		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
 		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
 		57F91C291D6E2C020012850A /* CountOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C281D6E2C020012850A /* CountOperation.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
@@ -217,6 +279,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
 			remoteInfo = KinveyApp;
+		};
+		578870A41DD52EC80087FE78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5788708F1DD52EC70087FE78;
+			remoteInfo = SSOApp1;
+		};
+		578870C81DD52ECF0087FE78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 578870B31DD52ECF0087FE78;
+			remoteInfo = SSOApp2;
+		};
+		578870D61DD52FE00087FE78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A27C801C178F17000DF951;
+			remoteInfo = Kinvey;
+		};
+		578870E51DD530540087FE78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A27C801C178F17000DF951;
+			remoteInfo = Kinvey;
 		};
 		5793B86E1D2306A60088B5F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -330,6 +420,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		578870D81DD52FE00087FE78 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				578870DC1DD530070087FE78 /* KeychainAccess.framework in Embed Frameworks */,
+				578870DA1DD52FE80087FE78 /* Realm.framework in Embed Frameworks */,
+				578870E21DD530460087FE78 /* RealmSwift.framework in Embed Frameworks */,
+				578870E01DD530350087FE78 /* PromiseKit.framework in Embed Frameworks */,
+				578870DE1DD530210087FE78 /* ObjectMapper.framework in Embed Frameworks */,
+				578870D51DD52FE00087FE78 /* Kinvey.framework in Embed Frameworks */,
+				5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870F11DD530540087FE78 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				578870EA1DD530540087FE78 /* KeychainAccess.framework in Embed Frameworks */,
+				578870E81DD530540087FE78 /* ObjectMapper.framework in Embed Frameworks */,
+				578870F01DD530540087FE78 /* RealmSwift.framework in Embed Frameworks */,
+				578870E41DD530540087FE78 /* Kinvey.framework in Embed Frameworks */,
+				578870EC1DD530540087FE78 /* PromiseKit.framework in Embed Frameworks */,
+				578870EE1DD530540087FE78 /* Realm.framework in Embed Frameworks */,
+				5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5793B8931D2306A60088B5F9 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -337,6 +461,27 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5793B8941D2306A60088B5F9 /* Kinvey.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		579D308E1DDA68CB0055C8CF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				579D30921DDA6FF30055C8CF /* KIF.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		579D30901DDA68E00055C8CF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				57A3EBB61DDA81B200983D2F /* Kinvey.framework in CopyFiles */,
+				579D30931DDA6FF80055C8CF /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +609,28 @@
 		57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwlPreconditionTesting.framework; sourceTree = "<group>"; };
 		57873E1F1DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Forget To Call Super PropertyMapping.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetToCallSuperPropertyMapping.swift; sourceTree = "<group>"; };
+		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		578870921DD52EC80087FE78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		578870941DD52EC80087FE78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Sources/ViewController.swift; sourceTree = "<group>"; };
+		578870971DD52EC80087FE78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		578870991DD52EC80087FE78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5788709C1DD52EC80087FE78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5788709E1DD52EC80087FE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		578870A31DD52EC80087FE78 /* SSOApp1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SSOApp1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		578870A71DD52EC80087FE78 /* SSOApp1Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSOApp1Tests.swift; sourceTree = "<group>"; };
+		578870A91DD52EC80087FE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		578870B41DD52ECF0087FE78 /* SSOApp2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		578870B61DD52ECF0087FE78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		578870B81DD52ECF0087FE78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Sources/ViewController.swift; sourceTree = "<group>"; };
+		578870BB1DD52ECF0087FE78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		578870BD1DD52ECF0087FE78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		578870C01DD52ECF0087FE78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		578870C21DD52ECF0087FE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		578870C71DD52ECF0087FE78 /* SSOApp2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SSOApp2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		578870CB1DD52ECF0087FE78 /* SSOApp2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSOApp2Tests.swift; sourceTree = "<group>"; };
+		578870CD1DD52ECF0087FE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		578870F21DD531D20087FE78 /* SSOApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SSOApp.entitlements; path = ../Sources/SSOApp.entitlements; sourceTree = "<group>"; };
+		578870F31DD536CB0087FE78 /* SSOApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SSOApp.entitlements; path = SSOApp/Sources/SSOApp.entitlements; sourceTree = SOURCE_ROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -486,6 +653,9 @@
 		57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		57A2ED951C4D5F74006D26A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		57A3BF951C8912A900DCD439 /* KNVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVClient.h; sourceTree = "<group>"; };
+		57A3BF961C8912A900DCD439 /* KNVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVClient.m; sourceTree = "<group>"; };
+		57A3EBBA1DDA8BB900983D2F /* auth.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auth.html; sourceTree = "<group>"; };
 		57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableTestCase.swift; sourceTree = "<group>"; };
 		57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestCase.swift; sourceTree = "<group>"; };
 		57A465821CC02A59009E7384 /* KinveyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -583,6 +753,51 @@
 				57873E121DFFD983002C87BF /* CoreGraphics.framework in Frameworks */,
 				57873E131DFFD983002C87BF /* Kinvey.framework in Frameworks */,
 				57873E141DFFD983002C87BF /* RealmSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5788708D1DD52EC70087FE78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578870DB1DD530070087FE78 /* KeychainAccess.framework in Frameworks */,
+				578870D91DD52FE80087FE78 /* Realm.framework in Frameworks */,
+				578870E11DD530460087FE78 /* RealmSwift.framework in Frameworks */,
+				578870DF1DD530350087FE78 /* PromiseKit.framework in Frameworks */,
+				578870DD1DD530210087FE78 /* ObjectMapper.framework in Frameworks */,
+				578870D41DD52FE00087FE78 /* Kinvey.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870A01DD52EC80087FE78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				579D308C1DDA68950055C8CF /* KIF.framework in Frameworks */,
+				5776EE9D1E300731003B9DF0 /* RealmSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870B11DD52ECF0087FE78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578870E91DD530540087FE78 /* KeychainAccess.framework in Frameworks */,
+				578870E71DD530540087FE78 /* ObjectMapper.framework in Frameworks */,
+				578870EF1DD530540087FE78 /* RealmSwift.framework in Frameworks */,
+				578870E31DD530540087FE78 /* Kinvey.framework in Frameworks */,
+				578870EB1DD530540087FE78 /* PromiseKit.framework in Frameworks */,
+				578870ED1DD530540087FE78 /* Realm.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870C41DD52ECF0087FE78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57A3EBB51DDA81AA00983D2F /* Kinvey.framework in Frameworks */,
+				579D308D1DDA68950055C8CF /* KIF.framework in Frameworks */,
+				5776EE9F1E3007AC003B9DF0 /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,6 +928,57 @@
 			path = KinveyApp;
 			sourceTree = "<group>";
 		};
+		578870911DD52EC80087FE78 /* SSOApp1 */ = {
+			isa = PBXGroup;
+			children = (
+				578870F21DD531D20087FE78 /* SSOApp.entitlements */,
+				578870921DD52EC80087FE78 /* AppDelegate.swift */,
+				578870941DD52EC80087FE78 /* ViewController.swift */,
+				578870961DD52EC80087FE78 /* Main.storyboard */,
+				578870991DD52EC80087FE78 /* Assets.xcassets */,
+				5788709B1DD52EC80087FE78 /* LaunchScreen.storyboard */,
+				5788709E1DD52EC80087FE78 /* Info.plist */,
+			);
+			name = SSOApp1;
+			path = SSOApp/SSOApp1;
+			sourceTree = "<group>";
+		};
+		578870A61DD52EC80087FE78 /* SSOApp1Tests */ = {
+			isa = PBXGroup;
+			children = (
+				578870A71DD52EC80087FE78 /* SSOApp1Tests.swift */,
+				578870A91DD52EC80087FE78 /* Info.plist */,
+				57A3EBBA1DDA8BB900983D2F /* auth.html */,
+			);
+			name = SSOApp1Tests;
+			path = SSOApp/SSOApp1Tests;
+			sourceTree = "<group>";
+		};
+		578870B51DD52ECF0087FE78 /* SSOApp2 */ = {
+			isa = PBXGroup;
+			children = (
+				578870F31DD536CB0087FE78 /* SSOApp.entitlements */,
+				578870B61DD52ECF0087FE78 /* AppDelegate.swift */,
+				578870B81DD52ECF0087FE78 /* ViewController.swift */,
+				578870BA1DD52ECF0087FE78 /* Main.storyboard */,
+				578870BD1DD52ECF0087FE78 /* Assets.xcassets */,
+				578870BF1DD52ECF0087FE78 /* LaunchScreen.storyboard */,
+				578870C21DD52ECF0087FE78 /* Info.plist */,
+			);
+			name = SSOApp2;
+			path = SSOApp/SSOApp2;
+			sourceTree = "<group>";
+		};
+		578870CA1DD52ECF0087FE78 /* SSOApp2Tests */ = {
+			isa = PBXGroup;
+			children = (
+				578870CB1DD52ECF0087FE78 /* SSOApp2Tests.swift */,
+				578870CD1DD52ECF0087FE78 /* Info.plist */,
+			);
+			name = SSOApp2Tests;
+			path = SSOApp/SSOApp2Tests;
+			sourceTree = "<group>";
+		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
@@ -720,6 +986,10 @@
 				57A27C8F1C178F18000DF951 /* KinveyTests */,
 				5765B8451C9771BC00080FFA /* KinveyApp */,
 				57A465831CC02A59009E7384 /* KinveyAppTests */,
+				578870911DD52EC80087FE78 /* SSOApp1 */,
+				578870A61DD52EC80087FE78 /* SSOApp1Tests */,
+				578870B51DD52ECF0087FE78 /* SSOApp2 */,
+				578870CA1DD52ECF0087FE78 /* SSOApp2Tests */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
@@ -737,6 +1007,10 @@
 				5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */,
 				57E448041DF62DC7003D1AFA /* KinveyTests No Cache.xctest */,
 				57873E1F1DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping.xctest */,
+				578870901DD52EC70087FE78 /* SSOApp1.app */,
+				578870A31DD52EC80087FE78 /* SSOApp1Tests.xctest */,
+				578870B41DD52ECF0087FE78 /* SSOApp2.app */,
+				578870C71DD52ECF0087FE78 /* SSOApp2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1025,6 +1299,82 @@
 			productReference = 57873E1F1DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		5788708F1DD52EC70087FE78 /* SSOApp1 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 578870AA1DD52EC80087FE78 /* Build configuration list for PBXNativeTarget "SSOApp1" */;
+			buildPhases = (
+				5788708C1DD52EC70087FE78 /* Sources */,
+				5788708D1DD52EC70087FE78 /* Frameworks */,
+				5788708E1DD52EC70087FE78 /* Resources */,
+				578870D81DD52FE00087FE78 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				578870D71DD52FE00087FE78 /* PBXTargetDependency */,
+			);
+			name = SSOApp1;
+			productName = SSOApp1;
+			productReference = 578870901DD52EC70087FE78 /* SSOApp1.app */;
+			productType = "com.apple.product-type.application";
+		};
+		578870A21DD52EC80087FE78 /* SSOApp1Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 578870AD1DD52EC80087FE78 /* Build configuration list for PBXNativeTarget "SSOApp1Tests" */;
+			buildPhases = (
+				5788709F1DD52EC80087FE78 /* Sources */,
+				578870A01DD52EC80087FE78 /* Frameworks */,
+				578870A11DD52EC80087FE78 /* Resources */,
+				579D308E1DDA68CB0055C8CF /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				578870A51DD52EC80087FE78 /* PBXTargetDependency */,
+			);
+			name = SSOApp1Tests;
+			productName = SSOApp1Tests;
+			productReference = 578870A31DD52EC80087FE78 /* SSOApp1Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		578870B31DD52ECF0087FE78 /* SSOApp2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 578870CE1DD52ECF0087FE78 /* Build configuration list for PBXNativeTarget "SSOApp2" */;
+			buildPhases = (
+				578870B01DD52ECF0087FE78 /* Sources */,
+				578870B11DD52ECF0087FE78 /* Frameworks */,
+				578870B21DD52ECF0087FE78 /* Resources */,
+				578870F11DD530540087FE78 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				578870E61DD530540087FE78 /* PBXTargetDependency */,
+			);
+			name = SSOApp2;
+			productName = SSOApp2;
+			productReference = 578870B41DD52ECF0087FE78 /* SSOApp2.app */;
+			productType = "com.apple.product-type.application";
+		};
+		578870C61DD52ECF0087FE78 /* SSOApp2Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 578870D11DD52ECF0087FE78 /* Build configuration list for PBXNativeTarget "SSOApp2Tests" */;
+			buildPhases = (
+				578870C31DD52ECF0087FE78 /* Sources */,
+				578870C41DD52ECF0087FE78 /* Frameworks */,
+				578870C51DD52ECF0087FE78 /* Resources */,
+				579D30901DDA68E00055C8CF /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				578870C91DD52ECF0087FE78 /* PBXTargetDependency */,
+			);
+			name = SSOApp2Tests;
+			productName = SSOApp2Tests;
+			productReference = 578870C71DD52ECF0087FE78 /* SSOApp2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5793B8961D2306A60088B5F9 /* Build configuration list for PBXNativeTarget "KinveyTests Encrypted" */;
@@ -1173,8 +1523,8 @@
 		57A27C781C178F17000DF951 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0800;
+				LastSwiftUpdateCheck = 0810;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
 					5765B8431C9771BC00080FFA = {
@@ -1194,6 +1544,38 @@
 					57873DF01DFFD983002C87BF = {
 						DevelopmentTeam = 5W7CYNR7UE;
 					};
+					5788708F1DD52EC70087FE78 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					578870A21DD52EC80087FE78 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5788708F1DD52EC70087FE78;
+					};
+					578870B31DD52ECF0087FE78 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					578870C61DD52ECF0087FE78 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 578870B31DD52ECF0087FE78;
+					};
 					5793B86C1D2306A60088B5F9 = {
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
@@ -1208,7 +1590,7 @@
 					57A27C8A1C178F18000DF951 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0810;
 						ProvisioningStyle = Automatic;
 					};
 					57A465811CC02A59009E7384 = {
@@ -1254,6 +1636,10 @@
 				57873DF01DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping */,
 				5765B8431C9771BC00080FFA /* KinveyApp */,
 				57A465811CC02A59009E7384 /* KinveyAppTests */,
+				5788708F1DD52EC70087FE78 /* SSOApp1 */,
+				578870A21DD52EC80087FE78 /* SSOApp1Tests */,
+				578870B31DD52ECF0087FE78 /* SSOApp2 */,
+				578870C61DD52ECF0087FE78 /* SSOApp2Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1275,6 +1661,41 @@
 			files = (
 				57873E161DFFD983002C87BF /* Caminandes 3 - TRAILER.mp4 in Resources */,
 				57873E171DFFD983002C87BF /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5788708E1DD52EC70087FE78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5788709D1DD52EC80087FE78 /* LaunchScreen.storyboard in Resources */,
+				5788709A1DD52EC80087FE78 /* Assets.xcassets in Resources */,
+				578870981DD52EC80087FE78 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870A11DD52EC80087FE78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57A3EBBC1DDAC87B00983D2F /* auth.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870B21DD52ECF0087FE78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578870C11DD52ECF0087FE78 /* LaunchScreen.storyboard in Resources */,
+				578870BE1DD52ECF0087FE78 /* Assets.xcassets in Resources */,
+				578870BC1DD52ECF0087FE78 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870C51DD52ECF0087FE78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1458,8 +1879,53 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5776EEA01E300898003B9DF0 /* Person.swift in Sources */,
 				57873E071DFFD983002C87BF /* KIF.swift in Sources */,
 				57873E221DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift in Sources */,
+				57F5621C1E006A5400E1AC8E /* MockKinveyBackend.swift in Sources */,
+				57F5621B1E006A1B00E1AC8E /* KinveyTestCase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5788708C1DD52EC70087FE78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578870951DD52EC80087FE78 /* ViewController.swift in Sources */,
+				578870931DD52EC80087FE78 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5788709F1DD52EC80087FE78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5776EE9C1E300658003B9DF0 /* Person.swift in Sources */,
+				579D30891DDA646B0055C8CF /* KIF.swift in Sources */,
+				578870A81DD52EC80087FE78 /* SSOApp1Tests.swift in Sources */,
+				577751451DF8E901006C98F1 /* MockKinveyBackend.swift in Sources */,
+				57A3EBB71DDA88AA00983D2F /* KinveyTestCase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870B01DD52ECF0087FE78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578870B91DD52ECF0087FE78 /* ViewController.swift in Sources */,
+				578870B71DD52ECF0087FE78 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578870C31DD52ECF0087FE78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5776EE9E1E300786003B9DF0 /* Person.swift in Sources */,
+				579D308A1DDA646C0055C8CF /* KIF.swift in Sources */,
+				578870CC1DD52ECF0087FE78 /* SSOApp2Tests.swift in Sources */,
+				577751441DF8E8EC006C98F1 /* MockKinveyBackend.swift in Sources */,
+				57A3EBB91DDA88AB00983D2F /* KinveyTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1653,6 +2119,26 @@
 			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
 			targetProxy = 57873DF41DFFD983002C87BF /* PBXContainerItemProxy */;
 		};
+		578870A51DD52EC80087FE78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5788708F1DD52EC70087FE78 /* SSOApp1 */;
+			targetProxy = 578870A41DD52EC80087FE78 /* PBXContainerItemProxy */;
+		};
+		578870C91DD52ECF0087FE78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 578870B31DD52ECF0087FE78 /* SSOApp2 */;
+			targetProxy = 578870C81DD52ECF0087FE78 /* PBXContainerItemProxy */;
+		};
+		578870D71DD52FE00087FE78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A27C801C178F17000DF951 /* Kinvey */;
+			targetProxy = 578870D61DD52FE00087FE78 /* PBXContainerItemProxy */;
+		};
+		578870E61DD530540087FE78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A27C801C178F17000DF951 /* Kinvey */;
+			targetProxy = 578870E51DD530540087FE78 /* PBXContainerItemProxy */;
+		};
 		5793B86D1D2306A60088B5F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -1725,6 +2211,42 @@
 				5765B8501C9771BC00080FFA /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		578870961DD52EC80087FE78 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				578870971DD52EC80087FE78 /* Base */,
+			);
+			name = Main.storyboard;
+			path = ../Sources;
+			sourceTree = "<group>";
+		};
+		5788709B1DD52EC80087FE78 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5788709C1DD52EC80087FE78 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			path = ../Sources;
+			sourceTree = "<group>";
+		};
+		578870BA1DD52ECF0087FE78 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				578870BB1DD52ECF0087FE78 /* Base */,
+			);
+			name = Main.storyboard;
+			path = ../Sources;
+			sourceTree = "<group>";
+		};
+		578870BF1DD52ECF0087FE78 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				578870C01DD52ECF0087FE78 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			path = ../Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1804,6 +2326,202 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		578870AB1DD52EC80087FE78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_ENTITLEMENTS = SSOApp/Sources/SSOApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp1/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		578870AC1DD52EC80087FE78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_ENTITLEMENTS = SSOApp/Sources/SSOApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp1/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		578870AE1DD52EC80087FE78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp1Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp1.app/SSOApp1";
+			};
+			name = Debug;
+		};
+		578870AF1DD52EC80087FE78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp1Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp1.app/SSOApp1";
+			};
+			name = Release;
+		};
+		578870CF1DD52ECF0087FE78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_ENTITLEMENTS = SSOApp/Sources/SSOApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		578870D01DD52ECF0087FE78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_ENTITLEMENTS = SSOApp/Sources/SSOApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		578870D21DD52ECF0087FE78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp2Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp2.app/SSOApp2";
+			};
+			name = Debug;
+		};
+		578870D31DD52ECF0087FE78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SSOApp/SSOApp2Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp2.app/SSOApp2";
 			};
 			name = Release;
 		};
@@ -1945,6 +2663,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -1973,6 +2692,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
@@ -2216,6 +2936,42 @@
 			buildConfigurations = (
 				57873E1D1DFFD983002C87BF /* Debug */,
 				57873E1E1DFFD983002C87BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		578870AA1DD52EC80087FE78 /* Build configuration list for PBXNativeTarget "SSOApp1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				578870AB1DD52EC80087FE78 /* Debug */,
+				578870AC1DD52EC80087FE78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		578870AD1DD52EC80087FE78 /* Build configuration list for PBXNativeTarget "SSOApp1Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				578870AE1DD52EC80087FE78 /* Debug */,
+				578870AF1DD52EC80087FE78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		578870CE1DD52ECF0087FE78 /* Build configuration list for PBXNativeTarget "SSOApp2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				578870CF1DD52ECF0087FE78 /* Debug */,
+				578870D01DD52ECF0087FE78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		578870D11DD52ECF0087FE78 /* Build configuration list for PBXNativeTarget "SSOApp2Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				578870D21DD52ECF0087FE78 /* Debug */,
+				578870D31DD52ECF0087FE78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

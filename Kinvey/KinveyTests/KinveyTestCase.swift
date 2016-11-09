@@ -129,15 +129,30 @@ extension URLRequest {
     
 }
 
+var protocolClasses = [URLProtocol.Type]() {
+    willSet {
+        for protocolClass in protocolClasses {
+            URLProtocol.unregisterClass(protocolClass)
+        }
+    }
+    didSet {
+        for protocolClass in protocolClasses {
+            URLProtocol.registerClass(protocolClass)
+        }
+    }
+}
+
 extension XCTestCase {
     
     func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
         if let type = type {
             let sessionConfiguration = URLSessionConfiguration.default
-            sessionConfiguration.protocolClasses = [type]
+            protocolClasses = [type]
+            sessionConfiguration.protocolClasses = protocolClasses
             client.urlSession = URLSession(configuration: sessionConfiguration, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
             XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
         } else {
+            protocolClasses = []
             client.urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
         }
     }
