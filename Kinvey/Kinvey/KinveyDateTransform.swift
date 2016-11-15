@@ -15,14 +15,24 @@ class KinveyDateTransform : TransformType {
     public typealias Object = Date
     public typealias JSON = String
     
-    let dateFormatter: DateFormatter
+    let dateReadFormatter: DateFormatter
+    let dateWriteFormatter: DateFormatter
     
     public init() {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        //read formatter that accounts for the timezone
+        let rFormatter = DateFormatter()
+        rFormatter.locale = Locale(identifier: "en_US_POSIX")
+        rFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         
-        self.dateFormatter = formatter
+        self.dateReadFormatter = rFormatter
+        
+        //write formatter for UTC
+        let wFormatter = DateFormatter()
+        wFormatter.locale = Locale(identifier: "en_US_POSIX")
+        wFormatter.timeZone = TimeZone(identifier: "UTC")
+        wFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        
+        self.dateWriteFormatter = wFormatter
     }
     
     open func transformFromJSON(_ value: Any?) -> Date? {
@@ -35,7 +45,7 @@ class KinveyDateTransform : TransformType {
             
             let match = matches(for: "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?(([+-]\\d{4})|Z)", in: dateString)
             if match.count > 0 {
-                let matchedDate = dateFormatter.date(from: match[0])
+                let matchedDate = dateReadFormatter.date(from: match[0])
                 return matchedDate
             }
         }
@@ -44,7 +54,7 @@ class KinveyDateTransform : TransformType {
     
     open func transformToJSON(_ value: Date?) -> String? {
         if let date = value {
-            return dateFormatter.string(from: date)
+            return dateWriteFormatter.string(from: date)
         }
         return nil
     }
