@@ -125,8 +125,8 @@ public final class UserMetadata: Metadata {
 public final class EmailVerification: Object, Mappable {
     
     open internal(set) var status: String?
-    open internal(set) var lastStateChangeAt:String?
-    open internal(set) var lastConfirmedAt:String?
+    open internal(set) var lastStateChangeAt:Date?
+    open internal(set) var lastConfirmedAt:Date?
     open internal(set) var emailAddress:String?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -150,15 +150,15 @@ public final class EmailVerification: Object, Mappable {
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
         status <- map["status"]
-        lastStateChangeAt <- map["lastStateChangeAt"]
-        lastConfirmedAt <- map["lastConfirmedAt"]
+        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
+        lastConfirmedAt <- (map["lastConfirmedAt"], KinveyDateTransform())
         emailAddress <- map["emailAddress"]
     }
 }
 
 public final class PasswordReset: Object, Mappable {
     open internal(set) var status: String?
-    open internal(set) var lastStateChangeAt: String?
+    open internal(set) var lastStateChangeAt: Date?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
     public required init?(map: Map) {
@@ -181,13 +181,13 @@ public final class PasswordReset: Object, Mappable {
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
         status <- map["status"]
-        lastStateChangeAt <- map["lastStateChangeAt"]
+        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
     }
 }
 
 public final class UserStatus: Object, Mappable {
     open internal(set) var value: String?
-    open internal(set) var lastChange: String?
+    open internal(set) var lastChange: Date?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
     public required init?(map: Map) {
@@ -210,7 +210,7 @@ public final class UserStatus: Object, Mappable {
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
         value <- map["val"]
-        lastChange <- map["lastChange"]
+        lastChange <- (map["lastChange"], KinveyDateTransform())
     }
 
 }
