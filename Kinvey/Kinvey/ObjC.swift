@@ -12,7 +12,6 @@ import Foundation
 internal class KinveyError: NSObject {
     
     internal static let ObjectIdMissing = Error.objectIdMissing.error
-    internal static let InvalidResponse = Error.invalidResponse.error
     internal static let NoActiveUser = Error.noActiveUser.error
     internal static let RequestCancelled = Error.requestCancelled.error
     internal static let InvalidDataStoreType = Error.invalidDataStoreType.error
@@ -20,12 +19,16 @@ internal class KinveyError: NSObject {
     fileprivate override init() {
     }
     
-    internal static func buildUnknownError(_ error: String) -> NSError {
-        return Error.buildUnknownError(error).error
+    internal static func buildUnknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String) -> NSError {
+        return Error.buildUnknownError(httpResponse: httpResponse, data: data, error: error).error
     }
     
-    internal static func buildUnknownJsonError(_ json: [String : Any]) -> NSError {
-        return Error.buildUnknownJsonError(json).error
+    internal static func buildUnknownJsonError(httpResponse: HTTPURLResponse?, data: Data?, json: [String : Any]) -> NSError {
+        return Error.buildUnknownJsonError(httpResponse: httpResponse, data: data, json: json).error
+    }
+    
+    internal static func buildInvalidResponse(httpResponse: HTTPURLResponse?, data: Data?) -> NSError {
+        return Error.invalidResponse(httpResponse: httpResponse, data: data).error
     }
     
 }
