@@ -416,6 +416,7 @@
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
 		57FF4F6F1CD02FF7002947FF /* OperationQueueRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */; };
+		966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966B1D621DD6528000995A42 /* KinveyDateTransform.swift */; };
 		E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
 /* End PBXBuildFile section */
 
@@ -1014,6 +1015,7 @@
 		57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncOperation.swift; sourceTree = "<group>"; };
 		57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
 		57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationQueueRequest.swift; sourceTree = "<group>"; };
+		966B1D621DD6528000995A42 /* KinveyDateTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KinveyDateTransform.swift; sourceTree = "<group>"; };
 		E9073D001C986D9600475E16 /* CustomEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1097,6 +1099,7 @@
 			children = (
 				572C458F1C86AC7C00A41935 /* ValueTransformer.swift */,
 				572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */,
+				966B1D621DD6528000995A42 /* KinveyDateTransform.swift */,
 			);
 			name = "Value Transformers";
 			sourceTree = "<group>";
@@ -2539,6 +2542,7 @@
 				57B23EB11C7FA59C006403CC /* DataStoreOperation.m in Sources */,
 				57B23EEF1C7FAA0C006403CC /* KCSNSURLSessionFileOperation.m in Sources */,
 				57B23F5C1C7FB1B6006403CC /* KCS_DDLog.m in Sources */,
+				966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */,
 				57B23F621C7FB1C6006403CC /* KCS_FMDatabaseAdditions.m in Sources */,
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
 				57B23EDB1C7FA8A9006403CC /* KCSObjcRuntime.m in Sources */,
