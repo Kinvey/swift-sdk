@@ -448,7 +448,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .dataLinkEntityNotFound(let debug, let description):
+                case .dataLinkEntityNotFound(_, _, let debug, let description):
                     XCTAssertEqual(debug, "Error: Not Found")
                     XCTAssertEqual(description, "The data link could not find this entity")
                 default:
@@ -482,7 +482,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .methodNotAllowed(let debug, let description):
+                case .methodNotAllowed(_, _, let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -513,7 +513,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .methodNotAllowed(let debug, let description):
+                case .methodNotAllowed(_, _, let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -544,7 +544,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .methodNotAllowed(let debug, let description):
+                case .methodNotAllowed(_, _, let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -575,7 +575,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .methodNotAllowed(let debug, let description):
+                case .methodNotAllowed(_, _, let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -606,7 +606,7 @@ class NetworkStoreTests: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .methodNotAllowed(let debug, let description):
+                case .methodNotAllowed(_, _, let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:

@@ -67,3 +67,11 @@ struct HttpResponse: Response {
     }
 
 }
+
+extension Response {
+    
+    var httpResponse: HTTPURLResponse? {
+        return (self as? HttpResponse)?.response
+    }
+    
+}

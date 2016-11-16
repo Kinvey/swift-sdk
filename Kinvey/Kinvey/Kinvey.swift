@@ -39,14 +39,14 @@ func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ c
     } else if let response = response , response.isUnauthorized,
         let json = client.responseParser.parse(data) as? [String : String]
     {
-        return Error.buildUnauthorized(json)
+        return Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
     } else if let response = response , response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "MethodNotAllowed" {
-        return Error.buildMethodNotAllowed(json)
+        return Error.buildMethodNotAllowed(httpResponse: response.httpResponse, data: data, json: json)
     } else if let response = response , response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "DataLinkEntityNotFound" {
-        return Error.buildDataLinkEntityNotFound(json)
-    } else if let _ = response, let json = client.responseParser.parse(data) {
-        return Error.buildUnknownJsonError(json)
+        return Error.buildDataLinkEntityNotFound(httpResponse: response.httpResponse, data: data, json: json)
+    } else if let response = response, let json = client.responseParser.parse(data) {
+        return Error.buildUnknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
     } else {
-        return KinveyError.InvalidResponse
+        return Error.invalidResponse(httpResponse: response?.httpResponse, data: data)
     }
 }
