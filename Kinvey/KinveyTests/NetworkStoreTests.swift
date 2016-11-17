@@ -614,4 +614,54 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testClientAppVersion() {
+        class ClientAppVersionURLProtocol: URLProtocol {
+            
+            override class func canInit(with request: URLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
+                
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: "[]".data(using: .utf8)!)
+                client!.urlProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(ClientAppVersionURLProtocol.self)
+        client.clientAppVersion = "1.0.0"
+        defer {
+            setURLProtocol(nil)
+            client.clientAppVersion = nil
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 0)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
