@@ -75,6 +75,19 @@ class DataTypeTestCase: StoreTestCase {
         }
     }
     
+    func testDateFormats() {
+        let transform = KinveyDateTransform()
+        XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55.787Z\")"), NSDate(timeIntervalSince1970: 1479117955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787Z"), NSDate(timeIntervalSince1970: 1479117955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787-0500"), NSDate(timeIntervalSince1970: 1479135955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787+0100"), NSDate(timeIntervalSince1970: 1479114355.787))
+        
+        XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55Z\")"), NSDate(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55Z"), NSDate(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55-0500"), NSDate(timeIntervalSince1970: 1479135955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55+0100"), NSDate(timeIntervalSince1970: 1479114355))
+    }
+    
 }
 
 class UIColorTransformType : TransformType {
