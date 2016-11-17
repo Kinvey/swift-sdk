@@ -95,6 +95,11 @@ public enum Error: Swift.Error {
         }
     }
     
+    /// Response Header `X-Kinvey-Request-Id`
+    public var requestId: String? {
+        return httpResponse?.allHeaderFields[RequestIdHeaderKey] as? String
+    }
+    
     /// Response Data Body object.
     public var responseDataBody: Data? {
         switch self {
