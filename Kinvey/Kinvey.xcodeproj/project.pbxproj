@@ -17,6 +17,7 @@
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
+		5723A59C1DDE36D9004F9BE8 /* KinveyDateTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5723A59B1DDE36D9004F9BE8 /* KinveyDateTransform.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
@@ -579,6 +580,7 @@
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		5723A59B1DDE36D9004F9BE8 /* KinveyDateTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KinveyDateTransform.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
@@ -1124,6 +1126,7 @@
 			children = (
 				572C458F1C86AC7C00A41935 /* ValueTransformer.swift */,
 				572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */,
+				5723A59B1DDE36D9004F9BE8 /* KinveyDateTransform.swift */,
 			);
 			name = "Value Transformers";
 			sourceTree = "<group>";
@@ -2606,6 +2609,7 @@
 				57B23F411C7FB167006403CC /* KCSUser2.m in Sources */,
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57B23F021C7FAF39006403CC /* NSDictionary+KinveyAdditions.m in Sources */,
+				5723A59C1DDE36D9004F9BE8 /* KinveyDateTransform.swift in Sources */,
 				57B23F391C7FB0CD006403CC /* KCSQueryAdapter.m in Sources */,
 				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
 				57B23F5E1C7FB1B6006403CC /* KCS_DDTTYLogger.m in Sources */,

@@ -29,7 +29,7 @@ public class User: NSObject, Credential, Mappable {
     public private(set) var acl: Acl?
     
     /// `_kmd` property of the user.
-    public private(set) var metadata: Metadata?
+    public private(set) var metadata: UserMetadata?
     
     /// `username` property of the user.
     public var username: String?
@@ -299,7 +299,7 @@ public class User: NSObject, Credential, Mappable {
     }
     
     /// Default Constructor.
-    public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient) {
+    public init(userId: String, acl: Acl? = nil, metadata: UserMetadata? = nil, client: Client = Kinvey.sharedClient) {
         self.userId = userId
         self.acl = acl
         self.metadata = metadata
@@ -310,7 +310,7 @@ public class User: NSObject, Credential, Mappable {
     public required convenience init?(_ map: Map) {
         var userId: String?
         var acl: Acl?
-        var metadata: Metadata?
+        var metadata: UserMetadata?
         
         userId <- map[PersistableIdKey]
         guard let userIdValue = userId else {
@@ -395,7 +395,7 @@ public class User: NSObject, Credential, Mappable {
     internal convenience init(_ kcsUser: KCSUser, client: Client) {
         let authString = kcsUser.authString
         let authtoken = authString.hasPrefix(User.authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(User.authtokenPrefix.characters.count)) : authString
-        self.init(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
+        self.init(userId: kcsUser.userId, metadata: UserMetadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
         username = kcsUser.username
         email = kcsUser.email
     }
