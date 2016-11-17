@@ -10,7 +10,7 @@ import Foundation
 import ObjectMapper
 
 
-class KinveyDateTransform : TransformType {
+open class KinveyDateTransform : TransformType {
     
     public typealias Object = Date
     public typealias JSON = String
