@@ -104,3 +104,112 @@ public class Metadata: Object, Mappable, BuilderType {
     }
 
 }
+
+public final class UserMetadata: Metadata {
+    
+    internal var emailVerification: EmailVerification?
+    internal var passwordReset: PasswordReset?
+    internal var userStatus: UserStatus?
+    
+    public override func mapping(map: Map) {
+        super.mapping(map)
+        
+        emailVerification <- map["emailVerification"]
+        passwordReset <- map["passwordReset"]
+        userStatus <- map["status"]
+    }
+    
+}
+
+public final class EmailVerification: Object, Mappable {
+    
+    public internal(set) var status: String?
+    public internal(set) var lastStateChangeAt:NSDate?
+    public internal(set) var lastConfirmedAt:NSDate?
+    public internal(set) var emailAddress:String?
+    
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    public required init?(_ map: Map) {
+        super.init()
+    }
+    
+    /// Default Constructor.
+    public required init() {
+        super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        status <- map["status"]
+        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
+        lastConfirmedAt <- (map["lastConfirmedAt"], KinveyDateTransform())
+        emailAddress <- map["emailAddress"]
+    }
+}
+
+public final class PasswordReset: Object, Mappable {
+    public internal(set) var status: String?
+    public internal(set) var lastStateChangeAt: NSDate?
+    
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    public required init?(_ map: Map) {
+        super.init()
+    }
+    
+    /// Default Constructor.
+    public required init() {
+        super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        status <- map["status"]
+        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
+    }
+}
+
+public final class UserStatus: Object, Mappable {
+    public internal(set) var value: String?
+    public internal(set) var lastChange: NSDate?
+    
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    public required init?(_ map: Map) {
+        super.init()
+    }
+    
+    /// Default Constructor.
+    public required init() {
+        super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        value <- map["val"]
+        lastChange <- (map["lastChange"], KinveyDateTransform())
+    }
+    
+}

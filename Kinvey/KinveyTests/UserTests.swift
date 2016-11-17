@@ -748,6 +748,72 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testUserMetadata() {
+        signUp()
+        
+        Client.sharedClient.logNetworkEnabled = true
+        
+        class Mock200URLProtocol: NSURLProtocol {
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            private override func startLoading() {
+                let request = self.request
+                
+                let userId = request.URL?.lastPathComponent
+                
+                let cannedResponse = "{\"_id\": \"\(userId!)\", \"username\": \"test\", \"_acl\": {\"creator\": \"582b81b95c84a5525e9abcc9\"},\"email\": \"tejas@kinvey.com\",\"_kmd\": {\"lmt\": \"2016-11-15T21:44:37.302Z\",\"ect\": \"2016-11-15T21:44:25.756Z\",\"status\":{\"val\":\"disabled\",\"lastChange\": \"2016-11-16T15:08:52.225Z\"},\"passwordReset\":{\"status\":\"InProgress\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\"},\"emailVerification\":{\"status\":\"confirmed\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\",\"lastConfirmedAt\":\"2012-10-10T19:56:03.282Z\",\"emailAddress\":\"johndoe@kinvey.com\"}}}"
+                
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: [:])!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                client!.URLProtocol(self, didLoadData: cannedResponse.dataUsingEncoding(NSUTF8StringEncoding)!)
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            private override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(Mock200URLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationUserMetadata = expectationWithDescription("Email Confirmation Status")
+        let user = Client.sharedClient.activeUser
+        
+        User.get(userId: (user?.userId)!) { newUser, error in
+            XCTAssertNotNil(newUser)
+            
+            XCTAssertNotNil(newUser?.metadata)
+            
+            XCTAssertEqual(newUser?.metadata?.userStatus?.value, "disabled")
+            XCTAssertNotNil(newUser?.metadata?.userStatus?.lastChange)
+            
+            XCTAssertEqual(newUser?.metadata?.passwordReset?.status, "InProgress")
+            XCTAssertNotNil(newUser?.metadata?.passwordReset?.lastStateChangeAt)
+            
+            XCTAssertEqual(newUser?.metadata?.emailVerification?.status, "confirmed")
+            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastStateChangeAt)
+            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastConfirmedAt)
+            XCTAssertEqual(newUser?.metadata?.emailVerification?.emailAddress, "johndoe@kinvey.com")
+            
+            expectationUserMetadata?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationUserMetadata = nil
+        }
+        
+    }
+    
     func testResetPasswordByEmail() {
         signUp()
         
