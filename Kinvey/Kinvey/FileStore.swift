@@ -174,7 +174,7 @@ public class FileStore {
                         if let endRange = Int(endRangeString) {
                             fulfill((file: file, skip: endRange))
                         } else {
-                            reject(Error.InvalidResponse)
+                            reject(Error.InvalidResponse(httpResponse: response, data: data))
                         }
                     } else {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
@@ -225,7 +225,7 @@ public class FileStore {
                     requests += (NSURLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
                     uploadTask.resume()
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(Error.InvalidResponse(httpResponse: nil, data: nil))
                 }
             }
         }.then { file in //fetching download url
@@ -296,7 +296,7 @@ public class FileStore {
                                     reject(error)
                                 }
                             } else {
-                                reject(Error.InvalidResponse)
+                                reject(Error.InvalidResponse(httpResponse: response.httpResponse, data: nil))
                             }
                         }
                     } else {
@@ -383,7 +383,7 @@ public class FileStore {
                     if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
-                        completionHandler?(file, nil, Error.InvalidResponse)
+                        completionHandler?(file, nil, Error.InvalidResponse(httpResponse: nil, data: nil))
                     }
                 }).error { error in
                     completionHandler?(file, nil, error)
@@ -421,7 +421,7 @@ public class FileStore {
                     if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
-                        completionHandler?(file, nil, Error.InvalidResponse)
+                        completionHandler?(file, nil, Error.InvalidResponse(httpResponse: nil, data: nil))
                     }
                 }
             }.error { error in
