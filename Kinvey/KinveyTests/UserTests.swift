@@ -434,8 +434,8 @@ class UserTests: KinveyTestCase {
                 XCTAssertNotNil(user)
                 XCTAssertTrue(user is MyUser)
                 
-                XCTAssertNotNil(client.activerUser)
-                XCTAssertTrue(client.activerUser is MyUser)
+                XCTAssertNotNil(self.client.activeUser)
+                XCTAssertTrue(self.client.activeUser is MyUser)
                 
                 if let myUser = user as? MyUser {
                     XCTAssertEqual(myUser.foo, "bar")
