@@ -87,6 +87,8 @@ enum HttpHeader {
     case authorization(credential: Credential?)
     case apiVersion(version: Int)
     case requestId(requestId: String)
+    case userAgent
+    case deviceInfo
     
     var name: String {
         get {
@@ -97,6 +99,10 @@ enum HttpHeader {
                 return "X-Kinvey-API-Version"
             case .requestId:
                 return Header.requestId.rawValue
+            case .userAgent:
+                return "User-Agent"
+            case .deviceInfo:
+                return "X-Kinvey-Device-Information"
             }
         }
     }
@@ -110,6 +116,10 @@ enum HttpHeader {
                 return String(version)
             case .requestId(let requestId):
                 return requestId
+            case .userAgent:
+                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!)"
+            case .deviceInfo:
+                return "\(UIDevice.current.model) \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
             }
         }
     }
@@ -187,7 +197,9 @@ internal class HttpRequest: TaskProgressRequest, Request {
     let httpMethod: HttpMethod
     let endpoint: Endpoint
     let defaultHeaders: [HttpHeader] = [
-        HttpHeader.apiVersion(version: restApiVersion)
+        HttpHeader.apiVersion(version: restApiVersion),
+        HttpHeader.userAgent,
+        HttpHeader.deviceInfo
     ]
     
     var headers: [HttpHeader] = []
