@@ -27,6 +27,12 @@ internal func StringFromClass(cls: AnyClass) -> String {
 /// Base class for entity classes that are mapped to a collection in Kinvey.
 open class Entity: Object, Persistable {
     
+    /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
+    public required init?(map: Map) {
+        super.init()
+    }
+
+    
     /// Override this method and return the name of the collection for Kinvey.
     open class func collectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")

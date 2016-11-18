@@ -10,30 +10,35 @@ import Foundation
 import ObjectMapper
 
 
-class KinveyDateTransform : TransformType {
+open class KinveyDateTransform : TransformType {
     
     public typealias Object = Date
     public typealias JSON = String
     
-    let dateReadFormatter: DateFormatter
-    let dateWriteFormatter: DateFormatter
-    
-    public init() {
-        //read formatter that accounts for the timezone
+    //read formatter that accounts for the timezone
+    lazy var dateReadFormatter: DateFormatter = {
         let rFormatter = DateFormatter()
         rFormatter.locale = Locale(identifier: "en_US_POSIX")
         rFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        
-        self.dateReadFormatter = rFormatter
-        
-        //write formatter for UTC
+        return rFormatter
+    }()
+    
+    //read formatter that accounts for the timezone
+    lazy var dateReadFormatterWithoutMilliseconds: DateFormatter = {
+        let rFormatter = DateFormatter()
+        rFormatter.locale = Locale(identifier: "en_US_POSIX")
+        rFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        return rFormatter
+    }()
+    
+    //write formatter for UTC
+    lazy var dateWriteFormatter: DateFormatter = {
         let wFormatter = DateFormatter()
         wFormatter.locale = Locale(identifier: "en_US_POSIX")
         wFormatter.timeZone = TimeZone(identifier: "UTC")
         wFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        
-        self.dateWriteFormatter = wFormatter
-    }
+        return wFormatter
+    }()
     
     open func transformFromJSON(_ value: Any?) -> Date? {
         if let dateString = value as? String {
@@ -43,10 +48,13 @@ class KinveyDateTransform : TransformType {
             //yyyy-MM-dd'T'HH:mm:ss.SSS+ZZZZ -> date with time offset (e.g. +0400, -0500)
             //ISODate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") -> backward compatible with Kinvey 1.x
             
-            let match = matches(for: "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?(([+-]\\d{4})|Z)", in: dateString)
-            if match.count > 0 {
-                let matchedDate = dateReadFormatter.date(from: match[0])
-                return matchedDate
+            let matches = self.matches(for: "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?([+-]\\d{4}|Z)", in: dateString)
+            if let match = matches.first {
+                if match.milliseconds != nil {
+                    return dateReadFormatter.date(from: match.match)
+                } else {
+                    return dateReadFormatterWithoutMilliseconds.date(from: match.match)
+                }
             }
         }
         return nil
@@ -59,13 +67,21 @@ class KinveyDateTransform : TransformType {
         return nil
     }
     
-    fileprivate func matches(for regex: String, in text: String) -> [String] {
+    typealias TextCheckingResultTuple = (match: String, milliseconds: String?, timezone: String)
+    
+    fileprivate func matches(for regex: String, in text: String) -> [TextCheckingResultTuple] {
         
         do {
             let regex = try NSRegularExpression(pattern: regex)
             let nsString = text as NSString
             let results = regex.matches(in: text, range: NSRange(location: 0, length: nsString.length))
-            return results.map { nsString.substring(with: $0.range)}
+            return results.map {
+                TextCheckingResultTuple(
+                    match: nsString.substring(with: $0.range),
+                    milliseconds: $0.rangeAt(1).location != NSNotFound ? nsString.substring(with: $0.rangeAt(1)) : nil,
+                    timezone: nsString.substring(with: $0.rangeAt(2))
+                )
+            }
         } catch let error {
             print("invalid regex: \(error.localizedDescription)")
             return []
