@@ -228,7 +228,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
     init(request: NSURLRequest, collectionName: String, objectId: String?) {
         date = NSDate()
-        requestId = request.valueForHTTPHeaderField(RequestIdHeaderKey)!
+        requestId = request.valueForHTTPHeaderField(.RequestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.HTTPMethod ?? "GET"
