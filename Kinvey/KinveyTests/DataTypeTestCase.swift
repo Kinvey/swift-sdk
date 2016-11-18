@@ -117,12 +117,24 @@ class DataTypeTestCase: StoreTestCase {
 
     }
     
-    func testDateFormats() {
+    func testDateReadFormats() {
         let transform = KinveyDateTransform()
         XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55.787Z\")"), Date(timeIntervalSince1970: 1479117955.787))
         XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787Z"), Date(timeIntervalSince1970: 1479117955.787))
         XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787-0500"), Date(timeIntervalSince1970: 1479135955.787))
         XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787+0100"), Date(timeIntervalSince1970: 1479114355.787))
+        
+        XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55Z\")"), Date(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55Z"), Date(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55-0500"), Date(timeIntervalSince1970: 1479135955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55+0100"), Date(timeIntervalSince1970: 1479114355))
+    }
+    
+    func testDateWriteFormats() {
+        let transform = KinveyDateTransform()
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479117955.787)), "2016-11-14T10:05:55.787Z")
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479135955.787)), "2016-11-14T15:05:55.787Z")
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479114355.787)), "2016-11-14T09:05:55.787Z")
     }
     
 }
