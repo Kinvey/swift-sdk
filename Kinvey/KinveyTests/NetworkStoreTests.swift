@@ -582,4 +582,54 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testClientAppVersion() {
+        class ClientAppVersionURLProtocol: NSURLProtocol {
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
+                
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                client!.URLProtocol(self, didLoadData: "[]".dataUsingEncoding(NSUTF8StringEncoding)!)
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(ClientAppVersionURLProtocol.self)
+        client.clientAppVersion = "1.0.0"
+        defer {
+            setURLProtocol(nil)
+            client.clientAppVersion = nil
+        }
+        
+        weak var expectationFind = expectationWithDescription("Find")
+        
+        store.find(readPolicy: .ForceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 0)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
