@@ -48,20 +48,25 @@ class KinveyTestCase: XCTestCase {
     static let appInitialize = appInitializeProduction
     
     func initializeDevelopment() {
-        Kinvey.sharedClient.initialize(
-            appKey: KinveyTestCase.appInitializeDevelopment.appKey,
-            appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
-            apiHostName: URL(string: "https://v3yk1n-kcs.kinvey.com")!,
-            encrypted: encrypted
-        )
+        if !Kinvey.sharedClient.isInitialized() {
+            Kinvey.sharedClient.initialize(
+                appKey: KinveyTestCase.appInitializeDevelopment.appKey,
+                appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
+                apiHostName: URL(string: "https://v3yk1n-kcs.kinvey.com")!,
+                encrypted: encrypted
+            )
+        }
     }
     
     func initializeProduction() {
-        Kinvey.sharedClient.initialize(
-            appKey: KinveyTestCase.appInitializeProduction.appKey,
-            appSecret: KinveyTestCase.appInitializeProduction.appSecret,
-            encrypted: encrypted
-        )
+        if !Kinvey.sharedClient.isInitialized() {
+            Kinvey.sharedClient.initialize(
+                appKey: KinveyTestCase.appInitializeProduction.appKey,
+                appSecret: KinveyTestCase.appInitializeProduction.appSecret,
+                encrypted: encrypted
+            )
+        }
+        
     }
     
     override func setUp() {

@@ -324,13 +324,16 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let lmt = Date()
+        
+        
+        let md = Metadata()
+        md.lastModifiedTime = Date()
         
         MockKinveyBackend.appdata = [
             "Person" : [
-                Person { $0.personId = "Victor"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON(),
-                Person { $0.personId = "Hugo"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON(),
-                Person { $0.personId = "Barros"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+                Person { $0.personId = "Victor"; $0.metadata = md }.toJSON(),
+                Person { $0.personId = "Hugo"; $0.metadata = md }.toJSON(),
+                Person { $0.personId = "Barros"; $0.metadata = md }.toJSON()
             ]
         ]
         
@@ -413,7 +416,7 @@ class SyncStoreTests: StoreTestCase {
         
         MockKinveyBackend.appdata = [
             "Person" : [
-                Person { $0.personId = "Hugo"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+                Person { $0.personId = "Hugo"; $0.metadata = md }.toJSON()
             ]
         ]
         
@@ -463,7 +466,7 @@ class SyncStoreTests: StoreTestCase {
         
         MockKinveyBackend.appdata = [
             "Person" : [
-                Person { $0.personId = "Victor"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+                Person { $0.personId = "Victor"; $0.metadata = md }.toJSON()
             ]
         ]
         
