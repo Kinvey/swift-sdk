@@ -230,7 +230,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
     init(request: URLRequest, collectionName: String, objectId: String?) {
         date = Date()
-        requestId = request.value(forHTTPHeaderField: RequestIdHeaderKey)!
+        requestId = request.value(forHTTPHeaderField: .requestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.httpMethod ?? "GET"

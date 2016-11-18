@@ -8,6 +8,25 @@
 
 import Foundation
 
+enum Header: String {
+    
+    case requestId = "X-Kinvey-Request-Id"
+    case clientAppVersion = "X-Kinvey-Client-App-Version"
+    
+}
+
+extension URLRequest {
+    
+    mutating func setValue(_ value: String?, forHTTPHeaderField field: Header) {
+        setValue(value, forHTTPHeaderField: field.rawValue)
+    }
+    
+    func value(forHTTPHeaderField field: Header) -> String? {
+        return value(forHTTPHeaderField: field.rawValue)
+    }
+    
+}
+
 enum HttpMethod {
     
     case get, post, put, delete
@@ -77,7 +96,7 @@ enum HttpHeader {
             case .apiVersion:
                 return "X-Kinvey-API-Version"
             case .requestId:
-                return RequestIdHeaderKey
+                return Header.requestId.rawValue
             }
         }
     }
@@ -203,7 +222,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
     
     init(httpMethod: HttpMethod = .get, endpoint: Endpoint, credential: Credential? = nil, timeout: TimeInterval? = nil, client: Client = sharedClient) {
@@ -218,7 +237,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
     
     func prepareRequest() {
@@ -231,6 +250,9 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
+        }
+        if let clientAppVersion = client.clientAppVersion {
+            request.setValue(clientAppVersion, forHTTPHeaderField: .clientAppVersion)
         }
     }
     
