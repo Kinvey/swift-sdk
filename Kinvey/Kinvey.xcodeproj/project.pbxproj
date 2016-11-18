@@ -139,7 +139,6 @@
 		57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */; };
 		57A4658C1CC02ADB009E7384 /* PerformanceTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */; };
 		57A4658D1CC02AE3009E7384 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
-		57A4658E1CC02AE6009E7384 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57A4658F1CC02AEF009E7384 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		57A465921CC030AF009E7384 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */; };
@@ -2770,7 +2769,6 @@
 				57A4658C1CC02ADB009E7384 /* PerformanceTestCase.swift in Sources */,
 				57A4658D1CC02AE3009E7384 /* StoreTestCase.swift in Sources */,
 				57A4658F1CC02AEF009E7384 /* Person.swift in Sources */,
-				57A4658E1CC02AE6009E7384 /* KinveyTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3165,6 +3163,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 			};
 			name = Debug;
@@ -3185,6 +3184,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 			};
 			name = Release;
