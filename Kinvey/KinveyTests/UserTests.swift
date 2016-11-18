@@ -430,8 +430,13 @@ class UserTests: KinveyTestCase {
             user.save { (user, error) -> Void in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
+                
                 XCTAssertNotNil(user)
                 XCTAssertTrue(user is MyUser)
+                
+                XCTAssertNotNil(client.activerUser)
+                XCTAssertTrue(client.activerUser is MyUser)
+                
                 if let myUser = user as? MyUser {
                     XCTAssertEqual(myUser.foo, "bar")
                 }
