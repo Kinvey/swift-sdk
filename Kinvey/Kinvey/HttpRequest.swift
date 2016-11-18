@@ -8,6 +8,29 @@
 
 import Foundation
 
+enum Header: String {
+    
+    case RequestId = "X-Kinvey-Request-Id"
+    case ClientAppVersion = "X-Kinvey-Client-App-Version"
+    
+}
+
+extension NSMutableURLRequest {
+    
+    func setValue(value: String?, forHTTPHeaderField field: Header) {
+        setValue(value, forHTTPHeaderField: field.rawValue)
+    }
+    
+}
+
+extension NSURLRequest {
+    
+    func valueForHTTPHeaderField(field: Header) -> String? {
+        return valueForHTTPHeaderField(field.rawValue)
+    }
+    
+}
+
 enum HttpMethod {
     
     case Get, Post, Put, Delete
@@ -77,7 +100,7 @@ enum HttpHeader {
             case .APIVersion:
                 return "X-Kinvey-API-Version"
             case .RequestId:
-                return RequestIdHeaderKey
+                return Header.RequestId.rawValue
             }
         }
     }
@@ -203,7 +226,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
-        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: .RequestId)
     }
     
     init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, timeout: NSTimeInterval? = nil, client: Client = sharedClient) {
@@ -218,7 +241,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
-        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: .RequestId)
     }
     
     func prepareRequest() {
@@ -231,6 +254,9 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
+        }
+        if let clientAppVersion = client.clientAppVersion {
+            request.setValue(clientAppVersion, forHTTPHeaderField: .ClientAppVersion)
         }
     }
     
