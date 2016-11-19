@@ -18,7 +18,7 @@ class HttpRequestFactory: RequestFactory {
     
     typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
     
-    func buildUserSignUp(username username: String? = nil, password: String? = nil) -> HttpRequest {
+    func buildUserSignUp(username username: String? = nil, password: String? = nil, user: User? = nil) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -29,6 +29,9 @@ class HttpRequestFactory: RequestFactory {
         }
         if let password = password {
             bodyObject["password"] = password
+        }
+        if let user = user {
+            bodyObject += user.toJSON()
         }
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request

@@ -68,47 +68,6 @@
     }];
 }
 
-+(id<KNVRequest>)signup:(KNVUserUserHandler)completionHandler
-{
-    return [self signupWithUsername:nil
-                           password:nil
-                             client:[KNVClient sharedClient]
-                  completionHandler:completionHandler];
-}
-
-+(id<KNVRequest>)signupWithUsername:(NSString *)username
-                           password:(NSString *)password
-                  completionHandler:(KNVUserUserHandler)completionHandler
-{
-    return [self signupWithUsername:username
-                           password:password
-                             client:[KNVClient sharedClient]
-                  completionHandler:completionHandler];
-}
-
-+(id<KNVRequest>)signupWithClient:(KNVClient *)client
-                completionHandler:(KNVUserUserHandler)completionHandler
-{
-    return [self signupWithUsername:nil
-                           password:nil
-                             client:client
-                  completionHandler:completionHandler];
-}
-
-+(id<KNVRequest>)signupWithUsername:(NSString *)username
-                           password:(NSString *)password
-                             client:(KNVClient *)client
-                  completionHandler:(KNVUserUserHandler)completionHandler
-{
-    return [__KNVUser signupWithUsername:username
-                                password:password
-                                  client:client.client
-                       completionHandler:^(__KNVUser * _Nullable user, NSError * _Nullable error)
-    {
-        KNVUserDispatchCompletionHandler(completionHandler, user, error);
-    }];
-}
-
 +(id<KNVRequest>)destroyWithUserId:(NSString *)userId
                  completionHandler:(KNVUserVoidHandler)completionHandler
 {
