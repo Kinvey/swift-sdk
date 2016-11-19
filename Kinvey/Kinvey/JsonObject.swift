@@ -10,6 +10,12 @@ import Foundation
 
 public typealias JsonDictionary = [String : AnyObject]
 
+func +=(inout lhs: JsonDictionary, rhs: JsonDictionary) {
+    for (key, value) in rhs {
+        lhs[key] = value
+    }
+}
+
 /// Protocol used to serialize and deserialize JSON objects into objects.
 @objc(KNVJsonObject)
 public protocol JsonObject {

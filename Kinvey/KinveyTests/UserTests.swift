@@ -372,12 +372,19 @@ class UserTests: KinveyTestCase {
     func testSave() {
         client.userType = MyUser.self
         
-        signUp()
+        let user = User()
+        user.email = "my-email@kinvey.com"
+        signUp(user: user)
         
         XCTAssertNotNil(client.activeUser)
         XCTAssertTrue(client.activeUser is MyUser)
         
         if let user = client.activeUser as? MyUser {
+            setURLProtocol(MockKinveyBackend.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
             weak var expectationUserSave = expectationWithDescription("User Save")
             
             user.foo = "bar"
@@ -389,8 +396,50 @@ class UserTests: KinveyTestCase {
                 XCTAssertTrue(user is MyUser)
                 if let myUser = user as? MyUser {
                     XCTAssertEqual(myUser.foo, "bar")
+                    XCTAssertEqual(myUser.email, "my-email@kinvey.com")
                 }
 
+                expectationUserSave?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUserSave = nil
+            }
+        }
+    }
+    
+    func testSaveCustomUser() {
+        client.userType = MyUser.self
+        
+        let user = MyUser()
+        user.foo = "bar"
+        signUp(user: user)
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertTrue(client.activeUser is MyUser)
+        
+        if let user = client.activeUser as? MyUser {
+            setURLProtocol(MockKinveyBackend.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationUserSave = expectationWithDescription("User Save")
+            
+            user.save { (user, error) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                
+                XCTAssertNotNil(user)
+                XCTAssertTrue(user is MyUser)
+                
+                XCTAssertNotNil(self.client.activeUser)
+                XCTAssertTrue(self.client.activeUser is MyUser)
+                
+                if let myUser = user as? MyUser {
+                    XCTAssertEqual(myUser.foo, "bar")
+                }
+                
                 expectationUserSave?.fulfill()
             }
             
