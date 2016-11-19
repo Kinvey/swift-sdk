@@ -28,13 +28,6 @@ extension User {
         })
     }
     
-    /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
-    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) -> Request {
-        return signup(username: username, password: password, client: client, completionHandler: { (user, error) -> Void in
-            completionHandler?(user, error as? NSError)
-        })
-    }
-    
     /// Deletes a `User` by the `userId` property.
     public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandlerObjC? = nil) -> Request {
         return destroy(userId: userId, hard: hard, client: client, completionHandler: { (error) -> Void in
