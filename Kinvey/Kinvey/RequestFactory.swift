@@ -10,7 +10,7 @@ import Foundation
 
 protocol RequestFactory {
     
-    func buildUserSignUp(username: String?, password: String?) -> HttpRequest
+    func buildUserSignUp(username: String?, password: String?, user: User?) -> HttpRequest
     func buildUserDelete(userId: String, hard: Bool) -> HttpRequest
     func buildUserSocialLogin(_ authSource: String, authData: [String : Any]) -> HttpRequest
     func buildUserLogin(username: String, password: String) -> HttpRequest
