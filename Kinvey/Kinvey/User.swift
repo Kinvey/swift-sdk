@@ -23,7 +23,14 @@ public class User: NSObject, Credential, Mappable {
     public typealias BoolHandler = (Bool, ErrorType?) -> Void
     
     /// `_id` property of the user.
-    public private(set) var userId: String
+    public var userId: String {
+        guard let userId = _userId where !userId.isEmpty else {
+            preconditionFailure("User has an empty or null `userId` value.")
+        }
+        return userId
+    }
+    
+    private var _userId: String?
     
     /// `_acl` property of the user.
     public private(set) var acl: Acl?
@@ -40,15 +47,15 @@ public class User: NSObject, Credential, Mappable {
     internal var client: Client
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
-    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    public class func signup<UserType: User>(username username: String? = nil, password: String? = nil, user: UserType? = nil, client: Client = Kinvey.sharedClient, completionHandler: ((UserType?, ErrorType?) -> Void)? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to sign up.")
 
-        let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
-        Promise<User> { fulfill, reject in
+        let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password, user: user)
+        Promise<UserType> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK {
                     client.activeUser = client.responseParser.parseUser(data)
-                    fulfill(client.activeUser!)
+                    fulfill(client.activeUser as! UserType)
                 } else {
                     reject(buildError(data, response, error, client))
                 }
@@ -299,8 +306,8 @@ public class User: NSObject, Credential, Mappable {
     }
     
     /// Default Constructor.
-    public init(userId: String, acl: Acl? = nil, metadata: UserMetadata? = nil, client: Client = Kinvey.sharedClient) {
-        self.userId = userId
+    public init(userId: String? = nil, acl: Acl? = nil, metadata: UserMetadata? = nil, client: Client = Kinvey.sharedClient) {
+        self._userId = userId
         self.acl = acl
         self.metadata = metadata
         self.client = client
@@ -324,7 +331,7 @@ public class User: NSObject, Credential, Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
-        userId <- map[PersistableIdKey]
+        _userId <- map[PersistableIdKey]
         acl <- map[PersistableAclKey]
         metadata <- map[PersistableMetadataKey]
         username <- map["username"]
