@@ -632,4 +632,64 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testDefaultHeaders() {
+        class CheckUserAgentHeaderURLProtocol: NSURLProtocol {
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                let userAgent = request.allHTTPHeaderFields?["User-Agent"]
+                XCTAssertNotNil(userAgent)
+                if let userAgent = userAgent {
+                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)", options: [])
+                    XCTAssertEqual(regex.matchesInString(userAgent, options: [], range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
+                }
+                
+                let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
+                XCTAssertNotNil(deviceInfo)
+                if let deviceInfo = deviceInfo {
+                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)", options: [])
+                    XCTAssertEqual(regex.matchesInString(deviceInfo, options: [], range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
+                }
+                
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "1.1", headerFields: [:])!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                
+                let responseBody = [[String : AnyObject]]()
+                let responseBodyData = try! NSJSONSerialization.dataWithJSONObject(responseBody, options: [])
+                client!.URLProtocol(self, didLoadData: responseBodyData)
+                
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(CheckUserAgentHeaderURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectationWithDescription("Find")
+        
+        store.find(readPolicy: .ForceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
