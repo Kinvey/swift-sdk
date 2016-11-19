@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		5706D9981DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57089DD61D5CE80D00A36035 /* PullOperation.swift */; };
 		57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
@@ -2447,6 +2451,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
 				5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */,
 				5793B89B1D2307220088B5F9 /* StoreTestCase.swift in Sources */,
 				5793B89D1D2307360088B5F9 /* Person.swift in Sources */,
@@ -2681,6 +2686,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5706D9981DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
 				57A4658C1CC02ADB009E7384 /* PerformanceTestCase.swift in Sources */,
 				57A4658D1CC02AE3009E7384 /* StoreTestCase.swift in Sources */,
 				57A4658F1CC02AEF009E7384 /* Person.swift in Sources */,
@@ -2694,6 +2700,7 @@
 			files = (
 				57D642F61CA3268000F6D16E /* ValueTransformer.swift in Sources */,
 				57D642F91CA3268000F6D16E /* String.swift in Sources */,
+				5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
 				57D642FF1CA3268000F6D16E /* NSDate.swift in Sources */,
 				57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */,
 				57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
@@ -2708,6 +2715,7 @@
 			files = (
 				57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */,
 				57D643201CA3268600F6D16E /* String.swift in Sources */,
+				5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
 				57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */,
 				57D643261CA3268600F6D16E /* NSDate.swift in Sources */,
 				57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
