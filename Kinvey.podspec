@@ -143,5 +143,6 @@ Pod::Spec.new do |s|
   s.dependency "KeychainAccess", "~> 3.0"
   s.dependency "Realm", "~> 2.0"
   s.dependency "RealmSwift", "~> 2.0"
+  s.dependency "ObjectMapper", "~> 2.0"
 
 end
