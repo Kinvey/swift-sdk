@@ -10,6 +10,12 @@ import Foundation
 
 public typealias JsonDictionary = [String : Any]
 
+func +=(lhs: inout JsonDictionary, rhs: JsonDictionary) {
+    for (key, value) in rhs {
+        lhs[key] = value
+    }
+}
+
 /// Protocol used to serialize and deserialize JSON objects into objects.
 @objc(KNVJsonObject)
 public protocol JsonObject {
@@ -62,8 +68,9 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
         if let query = value as? Query, let predicate = query.predicate, let value = try? MongoDBPredicateAdaptor.queryDict(from: predicate) {
             return value
         } else if let dictionary = value as? JsonDictionary {
-            let translated: JsonDictionary = dictionary.map { (key, value) -> (String, Any) in
-                return (key, translateValue(value))
+            var translated = JsonDictionary()
+            for (key, value) in dictionary {
+                translated[key] = translateValue(value)
             }
             return translated
         } else if let array = value as? Array<Any> {

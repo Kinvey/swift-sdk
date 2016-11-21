@@ -9,6 +9,7 @@
 import Foundation
 import Realm
 import RealmSwift
+import ObjectMapper
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
@@ -26,6 +27,12 @@ internal func StringFromClass(cls: AnyClass) -> String {
 /// Base class for entity classes that are mapped to a collection in Kinvey.
 open class Entity: Object, Persistable {
     
+    /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
+    public required init?(map: Map) {
+        super.init()
+    }
+
+    
     /// Override this method and return the name of the collection for Kinvey.
     open class func collectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")
@@ -39,11 +46,6 @@ open class Entity: Object, Persistable {
     
     /// The `_acl` property mapped in the Kinvey backend.
     public dynamic var acl: Acl?
-    
-    /// Constructor that validates if the map contains the required fields.
-    public required init?(map: Map) {
-        super.init()
-    }
     
     /// Default Constructor.
     public required init() {

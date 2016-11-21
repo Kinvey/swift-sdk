@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 class HttpRequestFactory: RequestFactory {
     
@@ -18,7 +19,7 @@ class HttpRequestFactory: RequestFactory {
     
     typealias CompletionHandler = (Data?, URLResponse?, NSError?) -> Void
     
-    func buildUserSignUp(username: String? = nil, password: String? = nil) -> HttpRequest {
+    func buildUserSignUp(username: String? = nil, password: String? = nil, user: User? = nil) -> HttpRequest {
         let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.user(client: client), client: client)
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -29,6 +30,9 @@ class HttpRequestFactory: RequestFactory {
         }
         if let password = password {
             bodyObject["password"] = password
+        }
+        if let user = user {
+            bodyObject += user.toJSON()
         }
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
         return request

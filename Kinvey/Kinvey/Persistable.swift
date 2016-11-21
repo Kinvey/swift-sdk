@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import ObjectMapper
 
 /// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
 public protocol Persistable: Mappable {

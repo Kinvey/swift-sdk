@@ -15,11 +15,11 @@ class RealmFileCache: FileCache {
     let realm: Realm
     let executor: Executor
     
-    init(persistenceId: String, filePath: String? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
+    init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         self.persistenceId = persistenceId
         var configuration = Realm.Configuration()
-        if let filePath = filePath {
-            configuration.fileURL = URL(fileURLWithPath: filePath)
+        if let fileURL = fileURL {
+            configuration.fileURL = fileURL
         }
         configuration.encryptionKey = encryptionKey
         configuration.schemaVersion = schemaVersion

@@ -23,7 +23,7 @@ open class CustomEndpoint: NSObject {
             request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.request.httpBody = try! JSONSerialization.data(withJSONObject: params.toJson(), options: [])
         }
-        request.request.setValue(nil, forHTTPHeaderField: RequestIdHeaderKey)
+        request.request.setValue(nil, forHTTPHeaderField: Header.requestId)
         request.execute() { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json = client.responseParser.parse(data) {

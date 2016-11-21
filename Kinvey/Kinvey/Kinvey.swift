@@ -20,8 +20,6 @@ public let PersistableMetadataKey = "_kmd"
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 
-let RequestIdHeaderKey = "X-Kinvey-Request-Id"
-
 typealias PendingOperationIMP = RealmPendingOperation
 
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
