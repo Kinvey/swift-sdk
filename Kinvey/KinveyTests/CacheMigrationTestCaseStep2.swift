@@ -10,6 +10,7 @@ import XCTest
 import ObjectiveC
 import RealmSwift
 @testable import Kinvey
+import ObjectMapper
 
 class Person: Entity {
     

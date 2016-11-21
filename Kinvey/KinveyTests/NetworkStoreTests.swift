@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Foundation
 @testable import Kinvey
 
 class NetworkStoreTests: StoreTestCase {
@@ -122,6 +123,8 @@ class NetworkStoreTests: StoreTestCase {
                 
                 static var delay: TimeInterval?
                 
+                let urlSession = URLSession()
+                
                 override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
@@ -135,7 +138,7 @@ class NetworkStoreTests: StoreTestCase {
                         Thread.sleep(forTimeInterval: delay)
                     }
                     
-                    NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue()) { (response, data, error) in
+                    let dataTask = urlSession.dataTask(with: request) { data, response, error in
                         self.client?.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
                         self.client?.urlProtocol(self, didLoad: data!)
                         if let delay = DelayURLProtocol.delay {
@@ -143,6 +146,7 @@ class NetworkStoreTests: StoreTestCase {
                         }
                         self.client?.urlProtocolDidFinishLoading(self)
                     }
+                    dataTask.resume()
                 }
                 
                 override func stopLoading() {
@@ -193,7 +197,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveAddress() {
-        var person = Person()
+        let person = Person()
         person.name = "Victor Barros"
         
         let address = Address()
@@ -297,7 +301,7 @@ class NetworkStoreTests: StoreTestCase {
         var i = 0
         
         measure {
-            var person = Person {
+            let person = Person {
                 $0.name = "Person \(i)"
             }
             
@@ -607,6 +611,116 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
+        }
+    }
+    
+    func testClientAppVersion() {
+        class ClientAppVersionURLProtocol: URLProtocol {
+            
+            override class func canInit(with request: URLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
+                
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: "[]".data(using: .utf8)!)
+                client!.urlProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(ClientAppVersionURLProtocol.self)
+        client.clientAppVersion = "1.0.0"
+        defer {
+            setURLProtocol(nil)
+            client.clientAppVersion = nil
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 0)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testDefaultHeaders() {
+        class CheckUserAgentHeaderURLProtocol: URLProtocol {
+            
+            override class func canInit(with request: URLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                let userAgent = request.allHTTPHeaderFields?["User-Agent"]
+                XCTAssertNotNil(userAgent)
+                if let userAgent = userAgent {
+                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)", options: [])
+                    XCTAssertEqual(regex.matches(in: userAgent, options: [], range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
+                }
+                
+                let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
+                XCTAssertNotNil(deviceInfo)
+                if let deviceInfo = deviceInfo {
+                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)", options: [])
+                    XCTAssertEqual(regex.matches(in: deviceInfo, options: [], range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
+                }
+                
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [:])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                
+                let responseBody = [[String : Any]]()
+                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+                client!.urlProtocol(self, didLoad: responseBodyData)
+                
+                client!.urlProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(CheckUserAgentHeaderURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
         }
     }
     

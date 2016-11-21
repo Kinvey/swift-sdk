@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 /**
  Struct that contains all the parameters available for user lookup.

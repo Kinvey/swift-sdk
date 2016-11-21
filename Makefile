@@ -3,11 +3,16 @@ VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "
 
 all: build pack docs
 
-build: build-ios
+build: checkout-dependencies build-ios
 
 clean:
 	rm -Rf docs
 	rm -Rf build
+	rm -Rf Kinvey/Carthage
+	
+checkout-dependencies:
+	cd Kinvey; \
+	carthage checkout --no-use-binaries
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
@@ -15,21 +20,13 @@ build-debug:
 	
 build-ios:
 	cd Kinvey; \
-	cd Carthage/Checkouts/PromiseKit; \
-	zip -r Extensions.zip Extensions; \
-	rm -Rf Extensions; \
-	cd ../../..; \
-	cd Carthage/Checkouts/realm-cocoa; \
-	zip -r examples.zip examples; \
-	rm -Rf examples; \
-	cd ../../..; \
 	carthage build --no-skip-current --platform ios
 
 test: test-ios
 
 	
 test-ios:
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0'
+	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1'
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)

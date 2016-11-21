@@ -7,6 +7,7 @@
 //
 
 import Kinvey
+import ObjectMapper
 
 class Book: Entity {
     

@@ -7,6 +7,7 @@
 //
 
 @testable import Kinvey
+import ObjectMapper
 
 class Person: Entity {
     

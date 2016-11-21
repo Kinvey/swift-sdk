@@ -48,7 +48,7 @@ open class FileStore {
     
     fileprivate init(client: Client) {
         self.client = client
-        self.cache = client.cacheManager.fileCache(filePath: client.filePath())
+        self.cache = client.cacheManager.fileCache(fileURL: client.fileURL())
     }
 
 #if os(iOS)

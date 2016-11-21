@@ -10,6 +10,7 @@ import XCTest
 import WebKit
 import KinveyApp
 @testable import Kinvey
+import ObjectMapper
 
 class UserTests: KinveyTestCase {
 
@@ -372,12 +373,19 @@ class UserTests: KinveyTestCase {
     func testSave() {
         client.userType = MyUser.self
         
-        signUp()
+        let user = User()
+        user.email = "my-email@kinvey.com"
+        signUp(user: user)
         
         XCTAssertNotNil(client.activeUser)
         XCTAssertTrue(client.activeUser is MyUser)
         
         if let user = client.activeUser as? MyUser {
+            setURLProtocol(MockKinveyBackend.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
             weak var expectationUserSave = expectation(description: "User Save")
             
             user.foo = "bar"
@@ -389,8 +397,50 @@ class UserTests: KinveyTestCase {
                 XCTAssertTrue(user is MyUser)
                 if let myUser = user as? MyUser {
                     XCTAssertEqual(myUser.foo, "bar")
+                    XCTAssertEqual(myUser.email, "my-email@kinvey.com")
                 }
 
+                expectationUserSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationUserSave = nil
+            }
+        }
+    }
+    
+    func testSaveCustomUser() {
+        client.userType = MyUser.self
+        
+        let user = MyUser()
+        user.foo = "bar"
+        signUp(user: user)
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertTrue(client.activeUser is MyUser)
+        
+        if let user = client.activeUser as? MyUser {
+            setURLProtocol(MockKinveyBackend.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationUserSave = expectation(description: "User Save")
+            
+            user.save { (user, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                
+                XCTAssertNotNil(user)
+                XCTAssertTrue(user is MyUser)
+                
+                XCTAssertNotNil(self.client.activeUser)
+                XCTAssertTrue(self.client.activeUser is MyUser)
+                
+                if let myUser = user as? MyUser {
+                    XCTAssertEqual(myUser.foo, "bar")
+                }
+                
                 expectationUserSave?.fulfill()
             }
             
@@ -732,8 +782,10 @@ class UserTests: KinveyTestCase {
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
+            
+            Client.sharedClient.logNetworkEnabled = true
             
             user.sendEmailConfirmation { error in
                 XCTAssertTrue(Thread.isMainThread)
@@ -748,6 +800,71 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testUserMetadata() {
+        signUp()
+        
+        Client.sharedClient.logNetworkEnabled = true
+        
+        class Mock200URLProtocol: URLProtocol {
+            
+            override class func canInit(with request: URLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                return request
+            }
+            
+            fileprivate override func startLoading() {
+                let request = self.request
+                
+                let userId = request.url?.lastPathComponent
+                
+                let cannedResponse = "{\"_id\": \"\(userId!)\", \"username\": \"test\", \"_acl\": {\"creator\": \"582b81b95c84a5525e9abcc9\"},\"email\": \"tejas@kinvey.com\",\"_kmd\": {\"lmt\": \"2016-11-15T21:44:37.302Z\",\"ect\": \"2016-11-15T21:44:25.756Z\",\"status\":{\"val\":\"disabled\",\"lastChange\": \"2016-11-16T15:08:52.225Z\"},\"passwordReset\":{\"status\":\"InProgress\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\"},\"emailVerification\":{\"status\":\"confirmed\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\",\"lastConfirmedAt\":\"2012-10-10T19:56:03.282Z\",\"emailAddress\":\"johndoe@kinvey.com\"}}}"
+
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client!.urlProtocol(self, didLoad: cannedResponse.data(using: String.Encoding.utf8)!)
+                client!.urlProtocolDidFinishLoading(self)
+            }
+            
+            fileprivate override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(Mock200URLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationUserMetadata = expectation(description: "Email Confirmation Status")
+        let user = Client.sharedClient.activeUser
+        
+        User.get(userId: (user?.userId)!) { newUser, error in
+            XCTAssertNotNil(newUser)
+            
+            XCTAssertNotNil(newUser?.metadata)
+            
+            XCTAssertEqual(newUser?.metadata?.userStatus?.value, "disabled")
+            XCTAssertNotNil(newUser?.metadata?.userStatus?.lastChange)
+
+            XCTAssertEqual(newUser?.metadata?.passwordReset?.status, "InProgress")
+            XCTAssertNotNil(newUser?.metadata?.passwordReset?.lastStateChangeAt)
+
+            XCTAssertEqual(newUser?.metadata?.emailVerification?.status, "confirmed")
+            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastStateChangeAt)
+            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastConfirmedAt)
+            XCTAssertEqual(newUser?.metadata?.emailVerification?.emailAddress, "johndoe@kinvey.com")
+
+            expectationUserMetadata?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationUserMetadata = nil
+        }
+    
+    }
     func testResetPasswordByEmail() {
         signUp()
         
@@ -1324,7 +1441,7 @@ class UserTests: KinveyTestCase {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .uiWebView) { (user, error) -> Void in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNotNil(error as? Kinvey.Error)

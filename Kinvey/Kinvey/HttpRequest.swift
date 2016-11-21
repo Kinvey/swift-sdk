@@ -8,6 +8,25 @@
 
 import Foundation
 
+enum Header: String {
+    
+    case requestId = "X-Kinvey-Request-Id"
+    case clientAppVersion = "X-Kinvey-Client-App-Version"
+    
+}
+
+extension URLRequest {
+    
+    mutating func setValue(_ value: String?, forHTTPHeaderField field: Header) {
+        setValue(value, forHTTPHeaderField: field.rawValue)
+    }
+    
+    func value(forHTTPHeaderField field: Header) -> String? {
+        return value(forHTTPHeaderField: field.rawValue)
+    }
+    
+}
+
 enum HttpMethod {
     
     case get, post, put, delete
@@ -68,6 +87,8 @@ enum HttpHeader {
     case authorization(credential: Credential?)
     case apiVersion(version: Int)
     case requestId(requestId: String)
+    case userAgent
+    case deviceInfo
     
     var name: String {
         get {
@@ -77,7 +98,11 @@ enum HttpHeader {
             case .apiVersion:
                 return "X-Kinvey-API-Version"
             case .requestId:
-                return RequestIdHeaderKey
+                return Header.requestId.rawValue
+            case .userAgent:
+                return "User-Agent"
+            case .deviceInfo:
+                return "X-Kinvey-Device-Information"
             }
         }
     }
@@ -91,6 +116,10 @@ enum HttpHeader {
                 return String(version)
             case .requestId(let requestId):
                 return requestId
+            case .userAgent:
+                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!)"
+            case .deviceInfo:
+                return "\(UIDevice.current.model) \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
             }
         }
     }
@@ -168,7 +197,9 @@ internal class HttpRequest: TaskProgressRequest, Request {
     let httpMethod: HttpMethod
     let endpoint: Endpoint
     let defaultHeaders: [HttpHeader] = [
-        HttpHeader.apiVersion(version: restApiVersion)
+        HttpHeader.apiVersion(version: restApiVersion),
+        HttpHeader.userAgent,
+        HttpHeader.deviceInfo
     ]
     
     var headers: [HttpHeader] = []
@@ -203,7 +234,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
     
     init(httpMethod: HttpMethod = .get, endpoint: Endpoint, credential: Credential? = nil, timeout: TimeInterval? = nil, client: Client = sharedClient) {
@@ -218,7 +249,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: RequestIdHeaderKey)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
     
     func prepareRequest() {
@@ -231,6 +262,9 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
+        }
+        if let clientAppVersion = client.clientAppVersion {
+            request.setValue(clientAppVersion, forHTTPHeaderField: .clientAppVersion)
         }
     }
     

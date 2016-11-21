@@ -7,12 +7,32 @@
 //
 
 import Foundation
+@testable import Kinvey
 
 class MockKinveyBackend: URLProtocol {
     
     static var kid = "_kid_"
     static var baseURLBaas = URL(string: "https://baas.kinvey.com")!
+    static var user = [String : [String : Any]]()
     static var appdata = [String : [[String : Any]]]()
+    
+    var requestJsonBody: [String : Any]? {
+        if
+            let httpBody = request.httpBody,
+            let obj = try? JSONSerialization.jsonObject(with: httpBody, options: []),
+            let json = obj as? [String : Any]
+        {
+            return json
+        } else if let httpBodyStream = request.httpBodyStream {
+            httpBodyStream.open()
+            defer {
+                httpBodyStream.close()
+            }
+            return (try? JSONSerialization.jsonObject(with: httpBodyStream, options: [])) as? [String : Any]
+        } else {
+            return nil
+        }
+    }
     
     override class func canInit(with request: URLRequest) -> Bool {
         return request.url!.scheme == MockKinveyBackend.baseURLBaas.scheme && request.url!.host == MockKinveyBackend.baseURLBaas.host
@@ -23,6 +43,7 @@ class MockKinveyBackend: URLProtocol {
     }
     
     override func startLoading() {
+        let requestJsonBody = self.requestJsonBody
         if let pathComponents = request.url?.pathComponents {
             if pathComponents.count > 3 {
                 if pathComponents[1] == "appdata" && pathComponents[2] == MockKinveyBackend.kid, let collection = MockKinveyBackend.appdata[pathComponents[3]] {
@@ -63,6 +84,62 @@ class MockKinveyBackend: URLProtocol {
                     client?.urlProtocol(self, didLoad: data)
                     
                     client?.urlProtocolDidFinishLoading(self)
+                } else if pathComponents[1] == "user" && pathComponents[2] == MockKinveyBackend.kid {
+                    let userId = pathComponents[3]
+                    if let httpMethod = request.httpMethod {
+                        switch httpMethod {
+                        case "PUT":
+                            if let requestJsonBody = requestJsonBody, var user = MockKinveyBackend.user[userId] {
+                                user += requestJsonBody
+                                MockKinveyBackend.user[userId] = user
+                                
+                                response(json: user)
+                            } else {
+                                reponse404()
+                            }
+                        case "DELETE":
+                            if var _ = MockKinveyBackend.user[userId] {
+                                MockKinveyBackend.user[userId] = nil
+                                response204()
+                            } else {
+                                reponse404()
+                            }
+                        default:
+                            reponse404()
+                        }
+                    }
+                } else {
+                    reponse404()
+                }
+            } else if pathComponents.count > 2 {
+                if pathComponents[1] == "user" && pathComponents[2] == MockKinveyBackend.kid {
+                    if let httpMethod = request.httpMethod {
+                        switch httpMethod {
+                        case "POST":
+                            let userId = (requestJsonBody?["_id"] as? String) ?? UUID().uuidString
+                            if var user = requestJsonBody {
+                                user["_id"] = userId
+                                if user["username"] == nil {
+                                    user["username"] = UUID().uuidString
+                                }
+                                user["_kmd"] = [
+                                    "lmt" : "2016-10-19T21:06:17.367Z",
+                                    "ect" : "2016-10-19T21:06:17.367Z",
+                                    "authtoken" : UUID().uuidString
+                                ]
+                                user["_acl"] = [
+                                    "creator" : "masterKey-creator-id"
+                                ]
+                                MockKinveyBackend.user[userId] = user
+                                
+                                response(json: user)
+                            }
+                        default:
+                            reponse404()
+                        }
+                    } else {
+                        reponse404()
+                    }
                 } else {
                     reponse404()
                 }
@@ -77,9 +154,27 @@ class MockKinveyBackend: URLProtocol {
     override func stopLoading() {
     }
     
-    fileprivate func reponse404() {
+    //Not Found
+    private func reponse404() {
         let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    //No Content
+    private func response204() {
+        let response = HTTPURLResponse(url: request.url!, statusCode: 204, httpVersion: nil, headerFields: nil)!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    private func response(json: [String : Any]) {
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        
+        let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+        client?.urlProtocol(self, didLoad: data)
+        
         client?.urlProtocolDidFinishLoading(self)
     }
     

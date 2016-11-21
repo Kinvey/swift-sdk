@@ -11,6 +11,7 @@ import ObjectiveC
 import RealmSwift
 import KIF
 @testable import Kinvey
+import ObjectMapper
 
 class Person: Entity {
     

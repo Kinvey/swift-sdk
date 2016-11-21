@@ -35,20 +35,6 @@ typedef void(^KNVUserVoidHandler)(NSError* _Nullable);
                                      client:(KNVClient* _Nonnull)client
                           completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
 
-+(id<KNVRequest> _Nonnull)signup:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(id<KNVRequest> _Nonnull)signupWithUsername:(NSString * _Nullable)username
-                                    password:(NSString * _Nullable)password
-                           completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(id<KNVRequest> _Nonnull)signupWithClient:(KNVClient* _Nonnull)client
-                         completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
-+(id<KNVRequest> _Nonnull)signupWithUsername:(NSString * _Nullable)username
-                                    password:(NSString * _Nullable)password
-                                      client:(KNVClient* _Nonnull)client
-                           completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
-
 +(id<KNVRequest> _Nonnull)destroyWithUserId:(NSString * _Nonnull)userId
                           completionHandler:(KNVUserVoidHandler _Nullable)completionHandler;
 
@@ -82,10 +68,5 @@ typedef void(^KNVUserVoidHandler)(NSError* _Nullable);
                       completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
 
 -(void)logout;
-
--(id<KNVRequest> _Nonnull)save:(KNVUserUserHandler _Nullable)completionHandler;
-
--(id<KNVRequest> _Nonnull)saveWithClient:(KNVClient* _Nonnull)client
-                       completionHandler:(KNVUserUserHandler _Nullable)completionHandler;
 
 @end

@@ -8,16 +8,18 @@
 
 import XCTest
 @testable import Kinvey
+import ObjectMapper
 
 class DataTypeTestCase: StoreTestCase {
     
     func testSave() {
         signUp()
         
-        let store = DataStore<DataType>.collection()
+        let store = DataStore<DataType>.collection(.network)
         let dataType = DataType()
         dataType.boolValue = true
         dataType.colorValue = UIColor.orange
+        
         
         let fullName = FullName()
         fullName.firstName = "Victor"
@@ -41,7 +43,7 @@ class DataTypeTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, readPolicy: .forceNetwork) { results, error in
+        store.find(query) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -75,6 +77,80 @@ class DataTypeTestCase: StoreTestCase {
         }
     }
     
+    func testDate() {
+        signUp()
+        
+        let store = DataStore<EntityWithDate>.collection(.network)
+        
+        let dateEntity = EntityWithDate()
+        dateEntity.date = Date()
+
+        let tuple = save(dateEntity, store: store)
+        XCTAssertNotNil(tuple.savedPersistable)
+
+        if let savedPersistable = tuple.savedPersistable {
+            XCTAssertTrue((savedPersistable.date != nil))
+        }
+
+        weak var expectationFind = expectation(description: "Find")
+        
+        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        
+        store.find(query) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertGreaterThan(results.count, 0)
+                
+                if let dataType = results.first {
+                    XCTAssertNotNil(dataType.date)
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+
+    }
+    
+    func testDateReadFormats() {
+        let transform = KinveyDateTransform()
+        XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55.787Z\")"), Date(timeIntervalSince1970: 1479117955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787Z"), Date(timeIntervalSince1970: 1479117955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787-0500"), Date(timeIntervalSince1970: 1479135955.787))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55.787+0100"), Date(timeIntervalSince1970: 1479114355.787))
+        
+        XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55Z\")"), Date(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55Z"), Date(timeIntervalSince1970: 1479117955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55-0500"), Date(timeIntervalSince1970: 1479135955))
+        XCTAssertEqual(transform.transformFromJSON("2016-11-14T10:05:55+0100"), Date(timeIntervalSince1970: 1479114355))
+    }
+    
+    func testDateWriteFormats() {
+        let transform = KinveyDateTransform()
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479117955.787)), "2016-11-14T10:05:55.787Z")
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479135955.787)), "2016-11-14T15:05:55.787Z")
+        XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479114355.787)), "2016-11-14T09:05:55.787Z")
+    }
+    
+}
+
+class EntityWithDate : Entity {
+    dynamic var date:Date?
+    
+    override class func collectionName() -> String {
+        return "DataType"
+    }
+    
+    override func propertyMapping(_ map: Map) {
+        super.propertyMapping(map)
+        
+        date <- ("date", map["date"], KinveyDateTransform())
+    }
 }
 
 class UIColorTransformType : TransformType {
@@ -123,6 +199,8 @@ class DataType: Entity {
     
     dynamic var objectValue: NSObject?
     
+    //dynamic var dateValue: Date?
+    
     fileprivate dynamic var colorValueString: String?
     dynamic var colorValue: UIColor? {
         get {
@@ -158,6 +236,7 @@ class DataType: Entity {
         colorValue <- (map["colorValue"], UIColorTransformType())
         fullName <- map["fullName"]
         fullName2 <- (map["fullName2"], FullName2TransformType())
+        //dateValue <- (map["date"], KinveyDateTransform())
     }
     
     override class func ignoredProperties() -> [String] {
