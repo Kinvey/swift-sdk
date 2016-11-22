@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 
 
 public class KinveyDateTransform : TransformType {
