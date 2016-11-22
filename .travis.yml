@@ -1,4 +1,6 @@
 language: objective-c
-osx_image: xcode8.1sneakpeek
+osx_image: xcode8.1
+xcode_workspace: Kinvey.xcworkspace
+xcode_scheme: Kinvey
 after_success:
   - bash <(curl -s https://codecov.io/bash)
