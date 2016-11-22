@@ -1,6 +1,23 @@
 language: objective-c
 osx_image: xcode8.1
-xcode_workspace: Kinvey.xcworkspace
-xcode_scheme: Kinvey
+before_script:
+- security create-keychain -p travis ios-build.keychain
+- security default-keychain -s ios-build.keychain
+- security unlock-keychain -p travis ios-build.keychain
+- security set-keychain-settings -t 3600 -l ~/Library/Keychains/ios-build.keychain
+- openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/dist.cer.enc -d -a -out scripts/certs/dist.cer
+- openssl aes-256-cbc -k "$ENCRYPTION_SECRET" -in scripts/certs/dist.p12.enc -d -a -out scripts/certs/dist.p12
+- security import ./scripts/certs/dist.cer -k ~/Library/Keychains/ios-build.keychain
+  -T /usr/bin/codesign
+- security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
+  -P $KEY_PASSWORD -T /usr/bin/codesign
+script:
+- make build test
+after_script:
+- security delete-keychain ios-build.keychain
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+env:
+  global:
+  - secure: a8tGuJggBK0qyY9oOEp1Y0zeA0zTu8safu34t7RNE3IPRj116rIKf1e/y9FxYRKu5BWmc62K8KTM0mPwsPgef7fizleHqPEE6brUJ3hiysNh92gDLHjqHKq6XK3WuMCDTKmgtbdJQbIBGGfAq+xkLCrhDMkm++88p1vmNbR2k2flpvHIV8opnIBsny62pMmgt8prEtsAT5NCVelVSlyRkwiVqvWk+zR9+Wi4jRWr24cv7WBjKgGO/LcxYi/zQEaLK3Ya38TFX29Ky6thNySHpikqDOiAzUwk6byZ05z8GiQ+TJ4P1+nzpKj4ZFg75v0A1wGkssOznuzZeRjl2GOyfqSsdoFflem9mLF97W3h0jUmzI6X3rP050gYgnjklacT9yk36IfsHdr1d6VTsU1Tx/z4yg8fDXTdY5SFIGZ/GReBwmvyVpbaR3yGbyKkaVSRSU8ixW1zq7BGZGSnMj+doKT5231wf1Be8M5PBtorBh/arOynZPOhpxzAFsoRKL9GRSgxuQIzFOdE/u56PfxjDhTCzuJu0F0ynlR6fIX2PWdrhejfvDpWx/dJWr9x85BKL3rGO8JaXAXlbils+CoEY/Pyfs2UoAaV8TGJR12FJbyl70VZ1hq/qimbFJ6z8TF435LrAA1/VO7qkDLgIJeqPnVnmKiPP3qNHBCNZA1vgzY=
+  - secure: IW9jgSdH76Rgp4Hf45+7saqTYslau7K/KgnRtizVZnQwI31b/dMrimMuQj3m6R80ymetz1ZhLk5dX83g+Y5A4XAJjspk2vaAE3ZIZUo6mqdtkRxzxkomN5HZEzEAj8SdjQ4GZxLHX2skATP78SWKJrr7vBbfigPm/Pp8gt4AfKzmfVnBGiN8niU6q/qSUNq67j+F0J/bB2hhOQjIO4mbHRAPW+AygGV9/o+25k+fL4yXWpsDoKzMFTsWHp9H9NkevGFXwK7crGX/Bgo8QESOvVZT4JEnHapEKnT8tAkT3wUCNKiPp60lAo9r/eggASU2a8Oq03wSZMv1F88ORzBVKQfSlNHcV0XOylYL2JZqtzznPmTRx2biHncB8xSg/DBh4MtUKuuProsq+/KIy067pITYCudEqjqL7YjaLlDEUl+YiahOY4DJ391GaCkCklUbHv1TW3vdDpBSvjtC4Ny7anNqK5Mo/cwscPGBTgkQkFyzRf48WLf79wH1sonIVQXv5wKxJAAn08K48dUfhK7yuePjHKmXsKpSjJJbPPlcAEvOknGQnG9OQ6MWb2A/Wk01ki29CENRFbVZCWG2CcM8bPTLGxz07Dp6VH3nxQoQHgsH/J4j1hWfnL1DGacFrDzC/SFhB78v65FxheV5ZOEx+Es/eSRiPEdX8gdjZnqOb3Y=
