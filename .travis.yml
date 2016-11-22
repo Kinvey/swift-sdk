@@ -1,6 +1,8 @@
 language: objective-c
 osx_image: xcode8.1
 before_script:
+- brew update
+- brew install carthage
 - carthage version
 - security create-keychain -p travis ios-build.keychain
 - security default-keychain -s ios-build.keychain
@@ -13,7 +15,7 @@ before_script:
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
 script:
-- make build test
+- travis_wait make build test
 after_script:
 - security delete-keychain ios-build.keychain
 after_success:
