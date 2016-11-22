@@ -16,7 +16,7 @@ before_script:
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
 script:
-- travis_wait 30 make build test
+- travis_wait 40 make build test
 after_script:
 - date
 - security delete-keychain ios-build.keychain
