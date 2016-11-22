@@ -14,9 +14,11 @@ before_script:
   -T /usr/bin/codesign
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
+- date
 script:
 - travis_wait 30 make build test
 after_script:
+- date
 - security delete-keychain ios-build.keychain
 after_success:
 - bash <(curl -s https://codecov.io/bash)
