@@ -10,5 +10,5 @@ Tools/upload-to-amazon-aws-s3/node_modules
 Tools/kinvey-dump/node_modules
 Pods
 docs
-build
-Kinvey/Carthage
+Kinvey/Carthage/Checkouts
+build/Kinvey-*
