@@ -26,7 +26,7 @@ test: test-ios
 
 	
 test-ios:
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' -enableCodeCoverage YES test
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
