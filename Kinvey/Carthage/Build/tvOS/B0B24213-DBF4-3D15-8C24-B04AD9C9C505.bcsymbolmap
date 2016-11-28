@@ -81,6 +81,8 @@ __TTSg5O14KeychainAccess18AuthenticationTypeS0_s8HashableS____TFVs11AnyHashableC
 __TTSg5O14KeychainAccess13AccessibilityS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS_
 __TTSg5O14KeychainAccess18AuthenticationTypeS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS__merged
 __TTSg5O14KeychainAccess6StatusS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS_
+__TTSfq4n_n_d___TZFVs11AnyHashableoi2eefTS_S__Sb
+__TTSgq5P____TFs28_getBridgedCustomAnyHashableurFxGSqVs11AnyHashable_
 __TTSf4g_d___TTSg5V14KeychainAccess20AuthenticationPolicyS0_s10SetAlgebraS____TFEsPs10SetAlgebraCft12arrayLiteralGSawx7Element__x
 _rt_swift_retain
 ___swift_noop_void_return
@@ -284,22 +286,41 @@ __TMLGCs23_ContiguousArrayStorageTSSP___
 __TMLTSSP__
 __TMLGCs23_ContiguousArrayStorageP__
 __TMfO14KeychainAccess9ItemClass
+__TMRfO14KeychainAccess9ItemClass
 __TMfO14KeychainAccess12ProtocolType
+__TMRfO14KeychainAccess12ProtocolType
 __TMfO14KeychainAccess18AuthenticationType
+__TMRfO14KeychainAccess18AuthenticationType
 __TMfO14KeychainAccess13Accessibility
+__TMRfO14KeychainAccess13Accessibility
 __TMfV14KeychainAccess20AuthenticationPolicy
+__TMRfV14KeychainAccess20AuthenticationPolicy
 __TMfV14KeychainAccess10Attributes
+__TMRfV14KeychainAccess10Attributes
 __TWvdvC14KeychainAccess8KeychainP33_2D02A349A5107BCCDA6E697579A7BF637optionsVS_7Options
 __TWoFC14KeychainAccess8KeychainCfVS_7OptionsS0_
 __TMfC14KeychainAccess8Keychain
+__TMRfC14KeychainAccess8Keychain
 __TWVV14KeychainAccess7Options
 __TMnV14KeychainAccess7Options
 __TMfV14KeychainAccess7Options
+__TMRfV14KeychainAccess7Options
 __TMfO14KeychainAccess6Status
+__TMRfO14KeychainAccess6Status
 __swift_FORCE_LOAD_$_swiftFoundation_$_KeychainAccess
 __swift_FORCE_LOAD_$_swiftObjectiveC_$_KeychainAccess
 __swift_FORCE_LOAD_$_swiftDarwin_$_KeychainAccess
 __swift_FORCE_LOAD_$_swiftDispatch_$_KeychainAccess
+__TMRaV14KeychainAccess20AuthenticationPolicys9OptionSetS_
+__TMRaV14KeychainAccess20AuthenticationPolicys10SetAlgebraS_
+__TMRaV14KeychainAccess20AuthenticationPolicys16RawRepresentableS_
+__TMRaV14KeychainAccess20AuthenticationPolicys25ExpressibleByArrayLiteralS_
+__TMRaO14KeychainAccess9ItemClasss16RawRepresentableS_
+__TMRaO14KeychainAccess12ProtocolTypes16RawRepresentableS_
+__TMRaO14KeychainAccess18AuthenticationTypes16RawRepresentableS_
+__TMRaO14KeychainAccess13Accessibilitys16RawRepresentableS_
+__TMRaO14KeychainAccess6Statuss16RawRepresentableS_
+___swift_reflection_version
 __TMLGSqSS_
 __TMLGSQV10Foundation3URL_
 __TMLGSQO14KeychainAccess12ProtocolType_
@@ -307,8 +328,8 @@ __TMLGSqV14KeychainAccess20AuthenticationPolicy_
 __TMLGVs10DictionaryCSo8NSObjectP__
 __TMLCSo8NSObject
 __TMLGCs29_NativeDictionaryStorageOwnerVs11AnyHashableP__
-__TMLGCs28_NativeDictionaryStorageImplVs11AnyHashableP__
 __TMLPs35_HasCustomAnyHashableRepresentation_
+__TMLGCs28_NativeDictionaryStorageImplVs11AnyHashableP__
 __TMLGVs20_ConcreteHashableBoxSi_
 __TMLGCs18_HeapBufferStorageVs18_StringBufferIVarsVs6UInt16_
 __TMLGCs23_ContiguousArrayStorageTSSSS__
@@ -321,15 +342,15 @@ l_OBJC_LABEL_PROTOCOL_$__TtPs15_ShadowProtocol_
 l_OBJC_PROTOCOL_REFERENCE_$__TtPs15_ShadowProtocol_
 _objc_classes
 __TMV14KeychainAccess7Options
-Apple LLVM version 8.0.0 (clang-800.0.38)
--emit-bc "/Users/katsumi/Dropbox/Xcode Projects/KeychainAccess/Lib/KeychainAccess/Keychain.swift" -target arm64-apple-tvos9.0 -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.0.sdk -I /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Products/Release-appletvos -F /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Products/Release-appletvos -application-extension -g -import-underlying-module -module-cache-path /Users/katsumi/Library/Developer/Xcode/DerivedData/ModuleCache -serialize-debugging-options -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-generated-files.hmap -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-own-target-headers.hmap -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/all-product-headers.yaml -Xcc -iquote -Xcc /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-project-headers.hmap -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Products/Release-appletvos/include -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/DerivedSources/arm64 -Xcc -I/Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/DerivedSources -Xcc -ivfsoverlay -Xcc /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/unextended-module-overlay.yaml -Xcc "-working-directory/Users/katsumi/Dropbox/Xcode Projects/KeychainAccess/Lib" -emit-module-doc-path /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess.swiftdoc -O -parse-as-library -module-name KeychainAccess -emit-module-path /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess.swiftmodule -emit-objc-header-path /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess-Swift.h -serialize-diagnostics-path /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.dia -emit-dependencies-path /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.d -num-threads 4 -o /Users/katsumi/Library/Developer/Xcode/DerivedData/KeychainAccess-cpbwyhxerpgsefeeatqiluqhnvnu/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.bc -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift
+Apple LLVM version 8.0.0 (clang-800.0.42.1)
+-emit-bc /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/KeychainAccess/Lib/KeychainAccess/Keychain.swift -target arm64-apple-tvos9.0 -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.0.sdk -I /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Products/Release-appletvos -F /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Products/Release-appletvos -application-extension -g -import-underlying-module -module-cache-path /Users/victor/Library/Developer/Xcode/DerivedData/ModuleCache -serialize-debugging-options -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-generated-files.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-own-target-headers.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/all-product-headers.yaml -Xcc -iquote -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/KeychainAccess-project-headers.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Products/Release-appletvos/include -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/DerivedSources/arm64 -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/DerivedSources -Xcc -ivfsoverlay -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/unextended-module-overlay.yaml -Xcc -working-directory/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/KeychainAccess/Lib -emit-module-doc-path /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess.swiftdoc -O -parse-as-library -module-name KeychainAccess -emit-module-path /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess.swiftmodule -emit-objc-header-path /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/KeychainAccess-Swift.h -serialize-diagnostics-path /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.dia -emit-dependencies-path /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.d -num-threads 8 -o /Users/victor/Library/Developer/Xcode/DerivedData/KeychainAccess-cwnwfxtwxcvzjhcxvfvkzkhfrtev/Build/Intermediates/KeychainAccess.build/Release-appletvos/KeychainAccess.build/Objects-normal/arm64/Keychain.bc -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift
 <swift-imported-modules>
-/Users/katsumi/Dropbox/Xcode Projects/KeychainAccess/Lib
-Apple Swift version 3.0 (swiftlang-800.0.46.2 clang-800.0.38)
-/Users/katsumi/Dropbox/Xcode Projects/KeychainAccess/Lib/KeychainAccess/Keychain.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/KeychainAccess/Lib
+Apple Swift version 3.0.1 (swiftlang-800.0.58.6 clang-800.0.42.1)
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/KeychainAccess/Lib/KeychainAccess/Keychain.swift
 _TMaGVs20_ConcreteHashableBoxSi_
 Keychain.swift
-/Users/katsumi/Dropbox/Xcode Projects/KeychainAccess/Lib/KeychainAccess
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/KeychainAccess/Lib/KeychainAccess
 _TMaPs35_HasCustomAnyHashableRepresentation_
 _TMaO14KeychainAccess6Status
 get_field_types_Status
@@ -777,6 +798,8 @@ _TTSg5V14KeychainAccess20AuthenticationPolicy___TFVs22_ContiguousArrayBufferg5co
 _TTSg5Vs10_ArrayBody_V14KeychainAccess20AuthenticationPolicy___TFVs20ManagedBufferPointerlo6headerx
 _TTSg5Vs10_ArrayBody_V14KeychainAccess20AuthenticationPolicy___TFVs20ManagedBufferPointerg14_headerPointerGSpx_
 _TTSg5Vs10_ArrayBody_V14KeychainAccess20AuthenticationPolicy___TFVs20ManagedBufferPointerg8_addressSv
+_TTSgq5P____TFs28_getBridgedCustomAnyHashableurFxGSqVs11AnyHashable_
+_TTSfq4n_n_d___TZFVs11AnyHashableoi2eefTS_S__Sb
 _TTSg5O14KeychainAccess6StatusS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS_
 _TTSg5O14KeychainAccess18AuthenticationTypeS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS_
 _TTSg5O14KeychainAccess12ProtocolTypeS0_s8HashableS____TFVs11AnyHashableCuRxs8HashablerfxS_
@@ -969,7 +992,6 @@ globalinit_33_2D02A349A5107BCCDA6E697579A7BF63_func11
 globalinit_33_2D02A349A5107BCCDA6E697579A7BF63_func10
 globalinit_33_2D02A349A5107BCCDA6E697579A7BF63_func9
 deinit
-_TTSg5GVs10DictionarySSP_____TFSaCft12arrayLiteralGSax__GSax_
 _TF14KeychainAccessauP33_2D02A349A5107BCCDA6E697579A7BF6313MatchLimitAllCSo8CFString
 _TF14KeychainAccessauP33_2D02A349A5107BCCDA6E697579A7BF635ClassSS
 items
@@ -986,7 +1008,6 @@ _TTSg5Vs10_ArrayBody_SS___TZFVs20ManagedBufferPointerg14_elementOffsetSi
 _TTSg5GSaGVs10DictionarySSP___GSaGS_SSP___s10Collections_TSSSS____TFEsPs10Collection3mapurfzFzWx8Iterator7Element_qd__GSaqd___
 _TTSg5TSSSS____TFVs15ContiguousArray6appendfxT_
 _TTSg5TSSSS____TFVs15ContiguousArray36_reserveCapacityAssumingUniqueBufferfT8oldCountSi_T_
-_TTSg5TSSSS____TFSaCft12arrayLiteralGSax__GSax_
 _TTSg5TSSSS____TFVs15ContiguousArray37_appendElementAssumeUniqueAndCapacityfTSi10newElementx_T_
 _TTSg5TSSSS____TFSp10initializefT2tox5countSi_T_
 _TTSg5TSSSS____TFVs15ContiguousArray40_makeUniqueAndReserveCapacityIfNotUniquefT_T_
