@@ -1345,7 +1345,7 @@
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = iOS;
-			path = Carthage/Build/iOS;
+			path = ../Carthage/Build/iOS;
 			sourceTree = "<group>";
 		};
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
@@ -1359,7 +1359,7 @@
 				57B0C1E91CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = Mac;
-			path = Carthage/Build/Mac;
+			path = ../Carthage/Build/Mac;
 			sourceTree = "<group>";
 		};
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
@@ -1373,7 +1373,7 @@
 				57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = tvOS;
-			path = Carthage/Build/tvOS;
+			path = ../Carthage/Build/tvOS;
 			sourceTree = "<group>";
 		};
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
@@ -1387,7 +1387,7 @@
 				57B0C2101CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = watchOS;
-			path = Carthage/Build/watchOS;
+			path = ../Carthage/Build/watchOS;
 			sourceTree = "<group>";
 		};
 		57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */ = {
