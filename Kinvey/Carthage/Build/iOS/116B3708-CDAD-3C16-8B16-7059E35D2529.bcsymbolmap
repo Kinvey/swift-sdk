@@ -421,14 +421,14 @@ __TMLGCs28_NativeDictionaryStorageImplSSP__
 __TMLGCs28_NativeDictionaryStorageImplVs11AnyHashableP__
 __TMLGSqSi_
 Apple LLVM version 8.0.0 (clang-800.0.42.1)
--emit-bc /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Aliases.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Error.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/LinkingObjects.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/List.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Migration.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Object.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/ObjectSchema.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Optional.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Property.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Realm.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/RealmCollection.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/RealmConfiguration.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Results.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Schema.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/SortDescriptor.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/SwiftVersion.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Sync.swift /Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Util.swift -target armv7-apple-ios8.0 -enable-objc-interop -sdk /Applications/Xcode-8.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk -I /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Products/Release-iphoneos -F /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Products/Release-iphoneos -application-extension -g -module-cache-path /Users/realm/Library/Developer/Xcode/DerivedData/ModuleCache -serialize-debugging-options -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-generated-files.hmap -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-own-target-headers.hmap -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/all-product-headers.yaml -Xcc -iquote -Xcc /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-project-headers.hmap -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Products/Release-iphoneos/include -Xcc -IRealm/ObjectStore/src -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/DerivedSources/armv7 -Xcc -I/Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/DerivedSources -Xcc -DREALM_HAVE_CONFIG -Xcc -DREALM_ENABLE_SYNC -Xcc -D__ASSERTMACROS__ -Xcc -working-directory/Users/realm/workspace/create_github_release_cocoa/realm-cocoa -emit-module-doc-path /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift.swiftdoc -O -module-name RealmSwift -emit-module-path /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift.swiftmodule -emit-objc-header-path /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift-Swift.h -serialize-diagnostics-path /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.dia -emit-dependencies-path /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.d -num-threads 4 -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Error.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/LinkingObjects.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/List.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Migration.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Object.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/ObjectSchema.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Optional.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Property.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Realm.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmCollection.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmConfiguration.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Results.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Schema.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/SortDescriptor.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/SwiftVersion.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Sync.bc -o /Users/realm/Library/Developer/Xcode/DerivedData/Realm-aojtgymhnxmlkigmqqoegighpfsn/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Util.bc -resource-dir /Applications/Xcode-8.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift
+-emit-bc /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Aliases.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Error.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/LinkingObjects.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/List.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Migration.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Object.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/ObjectSchema.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Optional.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Property.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Realm.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/RealmCollection.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/RealmConfiguration.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Results.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Schema.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/SortDescriptor.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/SwiftVersion.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Sync.swift /Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Util.swift -target armv7-apple-ios8.0 -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk -I /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Products/Release-iphoneos -F /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Products/Release-iphoneos -application-extension -g -module-cache-path /Users/victor/Library/Developer/Xcode/DerivedData/ModuleCache -serialize-debugging-options -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-generated-files.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-own-target-headers.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/all-product-headers.yaml -Xcc -iquote -Xcc /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/RealmSwift-project-headers.hmap -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Products/Release-iphoneos/include -Xcc -IRealm/ObjectStore/src -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/DerivedSources/armv7 -Xcc -I/Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/DerivedSources -Xcc -DREALM_HAVE_CONFIG -Xcc -DREALM_ENABLE_SYNC -Xcc -D__ASSERTMACROS__ -Xcc -working-directory/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa -emit-module-doc-path /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift.swiftdoc -O -module-name RealmSwift -emit-module-path /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift.swiftmodule -emit-objc-header-path /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmSwift-Swift.h -serialize-diagnostics-path /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.dia -emit-dependencies-path /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.d -num-threads 8 -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Aliases.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Error.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/LinkingObjects.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/List.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Migration.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Object.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/ObjectSchema.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Optional.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Property.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Realm.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmCollection.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/RealmConfiguration.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Results.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Schema.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/SortDescriptor.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/SwiftVersion.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Sync.bc -o /Users/victor/Library/Developer/Xcode/DerivedData/Realm-ftfxvokzhrxkooegbvylpkqrmkuc/Build/Intermediates/Realm.build/Release-iphoneos/RealmSwift.build/Objects-normal/armv7/Util.bc -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift
 <swift-imported-modules>
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa
 Apple Swift version 3.0.1 (swiftlang-800.0.58.6 clang-800.0.42.1)
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Aliases.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Aliases.swift
 _TMaGSqSi_
 Aliases.swift
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift
 objectdestroy.11
 _TMaGCs28_NativeDictionaryStorageImplVs11AnyHashableP__
 _TMaGVs20_ConcreteHashableBoxSi_
@@ -886,7 +886,7 @@ __TMRaVC10RealmSwift5Realm5Error10Foundation21_BridgedStoredNSErrorS_
 __TMRaOVC10RealmSwift5Realm5Error4Code10Foundation18_ErrorCodeProtocolS_
 __TMRfCSo7NSError
 __TMRsCSo7NSError
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Error.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Error.swift
 Error.swift
 _TMaVC10RealmSwift5Realm5Error
 _TwuiOVC10RealmSwift5Realm5Error4Code
@@ -1128,7 +1128,7 @@ __TMLCSo19RLMWeakObjectHandle
 __TMLGSqCSo11RLMProperty_
 __TMLCSo11RLMProperty
 _objc_classes
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/LinkingObjects.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/LinkingObjects.swift
 _TMaCSo10RLMResults
 create_generic_metadata_LinkingObjects
 get_field_types_LinkingObjects
@@ -1383,7 +1383,7 @@ __TMRauRxC10RealmSwift6ObjectrGCS_4Listx_s8SequenceS_
 __TMRauRxC10RealmSwift6ObjectrGCS_4Listx_S_15RealmCollectionS_
 __TMRfCSo8RLMRealm
 __TMRsCSo8RLMRealm
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/List.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/List.swift
 create_generic_metadata_List
 get_field_types_List
 get_field_types_ListBase
@@ -1524,7 +1524,7 @@ __TMRfCSo12RLMMigration
 __TMRsCSo12RLMMigration
 __TMLCSo12RLMMigration
 __TMLCSo15RLMObjectSchema
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Migration.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Migration.swift
 _TMaC10RealmSwift9Migration
 get_field_types_Migration
 _TMaCSo12RLMMigration
@@ -1693,7 +1693,7 @@ l_OBJC_LABEL_PROTOCOL_$__TtPs18_NSFastEnumeration_
 l_OBJC_PROTOCOL_REFERENCE_$__TtPs18_NSFastEnumeration_
 l_OBJC_LABEL_PROTOCOL_$__TtPs15_ShadowProtocol_
 l_OBJC_PROTOCOL_REFERENCE_$__TtPs15_ShadowProtocol_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Object.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Object.swift
 _TMaGCs17_AnyCollectionBoxT5labelGSqSS_5valueP___
 Object.swift
 _TMaT5labelGSqSS_5valueP__
@@ -2086,7 +2086,7 @@ __TMRfC10RealmSwift12ObjectSchema
 __TMRfCSo15RLMObjectSchema
 __TMRsCSo15RLMObjectSchema
 __TMLGCs23_ContiguousArrayStorageC10RealmSwift8Property_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/ObjectSchema.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/ObjectSchema.swift
 _TMaC10RealmSwift12ObjectSchema
 ObjectSchema.swift
 get_field_types_ObjectSchema
@@ -2180,7 +2180,7 @@ __TToFC10RealmSwift13RealmOptionalcfT_GS0_x_
 __TMRfP10RealmSwift17RealmOptionalType_
 __TMRfC10RealmSwift13RealmOptional
 __TMRsC10RealmSwift13RealmOptional
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Optional.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Optional.swift
 create_generic_metadata_RealmOptional
 Optional.swift
 get_field_types_RealmOptional
@@ -2200,7 +2200,7 @@ __TWvdvC10RealmSwift8Property11rlmPropertyCSo11RLMProperty
 __TWoFC10RealmSwift8PropertyCfCSo11RLMPropertyS0_
 __TMfC10RealmSwift8Property
 __TMRfC10RealmSwift8Property
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Property.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Property.swift
 _TMaC10RealmSwift8Property
 Property.swift
 get_field_types_Property
@@ -2233,7 +2233,7 @@ __TMRfOC10RealmSwift5Realm12Notification
 __TMRaOC10RealmSwift5Realm12Notifications16RawRepresentableS_
 __TMLCSo8RLMRealm
 __TMLVSC15RLMNotification
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Realm.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Realm.swift
 _TwxgVSC15RLMNotification
 _TwxsVSC15RLMNotification
 _TwCcVSC15RLMNotification
@@ -2476,7 +2476,7 @@ __TMRauRxC10RealmSwift6ObjectrGCS_18AnyRealmCollectionx_s9IndexableS_
 __TMRauRxC10RealmSwift6ObjectrGCS_18AnyRealmCollectionx_s8SequenceS_
 __TMLPs5Error_
 __TMLGCs23_ContiguousArrayStorageSi_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/RealmCollection.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/RealmCollection.swift
 _TTSf4g_n___TTSg5GSaCSo8NSNumber_GSaS__s10Collections_Si___TFEsPs10Collection3mapurfzFzWx8Iterator7Element_qd__GSaqd___
 _TTSg5CSo8NSNumber___TTWurGSax_s10CollectionsFS_g9subscriptFwx5IndexWx8Iterator7Element_
 _TTSg5CSo8NSNumber___TFSag9subscriptFSix
@@ -2691,7 +2691,7 @@ __TMLCSo9RLMSchema
 __TMLMC10RealmSwift6Object
 __TMLGCs23_ContiguousArrayStorageMC10RealmSwift6Object_
 __TMLGCs23_ContiguousArrayStoragePMPs9AnyObject__
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/RealmConfiguration.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/RealmConfiguration.swift
 _TPA__TTRXFo_oC10RealmSwift9MigrationdVs6UInt64__XFo_iTS0_S1___iT__
 RealmConfiguration.swift
 _TTRXFo_oC10RealmSwift9MigrationdVs6UInt64__XFo_iTS0_S1___iT__
@@ -2977,7 +2977,7 @@ __TMRauRxC10RealmSwift6ObjectrGCS_7Resultsx_s20LazySequenceProtocolS_
 __TMRauRxC10RealmSwift6ObjectrGCS_7Resultsx_s9IndexableS_
 __TMRauRxC10RealmSwift6ObjectrGCS_7Resultsx_s8SequenceS_
 __TMRauRxC10RealmSwift6ObjectrGCS_7Resultsx_S_15RealmCollectionS_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Results.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Results.swift
 create_generic_metadata_Results
 get_field_types_Results
 _TWIuRxC10RealmSwift6ObjectrGCS_7Resultsx_S_15RealmCollectionS_
@@ -3065,7 +3065,7 @@ __TWoFC10RealmSwift6SchemaCfCSo9RLMSchemaS0_
 __TMfC10RealmSwift6Schema
 __TMRfC10RealmSwift6Schema
 __TMLGCs23_ContiguousArrayStorageC10RealmSwift12ObjectSchema_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Schema.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Schema.swift
 _TMaC10RealmSwift6Schema
 Schema.swift
 get_field_types_Schema
@@ -3142,7 +3142,7 @@ __TMRfV10RealmSwift14SortDescriptor
 __TMRaV10RealmSwift14SortDescriptors26ExpressibleByStringLiteralS_
 __TMRaV10RealmSwift14SortDescriptors43ExpressibleByExtendedGraphemeClusterLiteralS_
 __TMRaV10RealmSwift14SortDescriptors33ExpressibleByUnicodeScalarLiteralS_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/SortDescriptor.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/SortDescriptor.swift
 _TMaV10RealmSwift14SortDescriptor
 SortDescriptor.swift
 get_field_types_SortDescriptor
@@ -3168,7 +3168,7 @@ _TWaV10RealmSwift14SortDescriptors9EquatableS_
 _TWaV10RealmSwift14SortDescriptors23CustomStringConvertibleS_
 ascending.get
 reversed
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/SwiftVersion.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/SwiftVersion.swift
 __TTSg5Si___TF10RealmSwift17dynamicBridgeCasturFT14fromObjectiveCP__x
 __TToZFE10RealmSwiftCSo14RLMSyncManagerg6sharedS0_
 __TZFV10RealmSwift15SyncCredentials8facebookfT5tokenSS_S0__merged
@@ -3257,7 +3257,7 @@ __TWVOSC17RLMSyncStopPolicy
 __TMnOSC17RLMSyncStopPolicy
 __TMOSC17RLMSyncStopPolicy
 _objc_categories
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Sync.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Sync.swift
 get_field_types_RLMSyncStopPolicy
 _TwuiOSC17RLMSyncStopPolicy
 _TwupOSC17RLMSyncStopPolicy
@@ -3431,7 +3431,7 @@ __TWPurGSqx_10RealmSwift26CustomObjectiveCBridgeableS_
 __TMRfP10RealmSwift26CustomObjectiveCBridgeable_
 __TMp10RealmSwift26CustomObjectiveCBridgeable
 __TMLP10RealmSwift26CustomObjectiveCBridgeable_
-/Users/realm/workspace/create_github_release_cocoa/realm-cocoa/RealmSwift/Util.swift
+/Users/victor/Documents/ios-library/Kinvey/Carthage/Checkouts/realm-cocoa/RealmSwift/Util.swift
 Util.swift
 _TTSg5VCSo19NSRegularExpression7OptionsS0_s10SetAlgebra10Foundation___TFEsPs10SetAlgebraCft12arrayLiteralGSawx7Element__x
 _TTSg5VCSo19NSRegularExpression7OptionsS0_s10SetAlgebra10Foundation_GSaS0__GSaS0__s8Sequences___TFEsPs10SetAlgebraCuRd__s8Sequencewx7ElementzWd__8Iterator7Element_rfqd__x
