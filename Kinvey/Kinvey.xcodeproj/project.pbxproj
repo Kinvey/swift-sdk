@@ -695,8 +695,8 @@
 		57B0C20E1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C2101CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
-		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongoDBPredicateAdaptor.h; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"; sourceTree = SOURCE_ROOT; };
-		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MongoDBPredicateAdaptor.m; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.m"; sourceTree = SOURCE_ROOT; };
+		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
+		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
 		57B23D3D1C7F9414006403CC /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		57B23D3E1C7F9414006403CC /* KCS_DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
 		57B23D3F1C7F9414006403CC /* KCS_DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
@@ -1345,7 +1345,7 @@
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = iOS;
-			path = Carthage/Build/iOS;
+			path = ../Carthage/Build/iOS;
 			sourceTree = "<group>";
 		};
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
@@ -1359,7 +1359,7 @@
 				57B0C1E91CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = Mac;
-			path = Carthage/Build/Mac;
+			path = ../Carthage/Build/Mac;
 			sourceTree = "<group>";
 		};
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
@@ -1373,7 +1373,7 @@
 				57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = tvOS;
-			path = Carthage/Build/tvOS;
+			path = ../Carthage/Build/tvOS;
 			sourceTree = "<group>";
 		};
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
@@ -1387,7 +1387,7 @@
 				57B0C2101CDCE88900492D6C /* RealmSwift.framework */,
 			);
 			name = watchOS;
-			path = Carthage/Build/watchOS;
+			path = ../Carthage/Build/watchOS;
 			sourceTree = "<group>";
 		};
 		57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */ = {
@@ -1397,6 +1397,7 @@
 				57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */,
 			);
 			name = "NSPredicate-MongoDB-Adaptor";
+			path = "../../Carthage/Checkouts/NSPredicate-MongoDB-Adaptor";
 			sourceTree = "<group>";
 		};
 		57B23D4C1C7F9414006403CC /* Extensions */ = {
@@ -3125,7 +3126,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -3151,7 +3151,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -3176,7 +3175,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -3202,7 +3200,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

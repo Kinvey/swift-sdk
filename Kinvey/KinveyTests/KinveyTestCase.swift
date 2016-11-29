@@ -36,11 +36,15 @@ class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
     var encrypted = false
+    var useMockData = false
     
     static let defaultTimeout = TimeInterval(Int8.max)
     lazy var defaultTimeout: TimeInterval = {
         KinveyTestCase.defaultTimeout
     }()
+    
+    static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
+    static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
     
     typealias AppInitialize = (appKey: String, appSecret: String)
     static let appInitializeDevelopment = AppInitialize(appKey: "kid_Wy35WH6X9e", appSecret: "d85f81cad5a649baaa6fdcd99a108ab1")
@@ -61,8 +65,8 @@ class KinveyTestCase: XCTestCase {
     func initializeProduction() {
         if !Kinvey.sharedClient.isInitialized() {
             Kinvey.sharedClient.initialize(
-                appKey: KinveyTestCase.appInitializeProduction.appKey,
-                appSecret: KinveyTestCase.appInitializeProduction.appSecret,
+                appKey: KinveyTestCase.appKey ?? KinveyTestCase.appInitializeProduction.appKey,
+                appSecret: KinveyTestCase.appSecret ?? KinveyTestCase.appInitializeProduction.appSecret,
                 encrypted: encrypted
             )
         }
@@ -141,9 +145,11 @@ class KinveyTestCase: XCTestCase {
             user.logout()
         }
         
-        setURLProtocol(MockKinveyBackend.self)
-        defer {
-            setURLProtocol(nil)
+        if useMockData {
+            setURLProtocol(MockKinveyBackend.self)
+            defer {
+                setURLProtocol(nil)
+            }
         }
         
         weak var expectationSignUp = expectation(description: "Sign Up")
@@ -201,9 +207,11 @@ class KinveyTestCase: XCTestCase {
         setURLProtocol(nil)
         
         if let user = client.activeUser {
-            setURLProtocol(MockKinveyBackend.self)
-            defer {
-                setURLProtocol(nil)
+            if useMockData {
+                setURLProtocol(MockKinveyBackend.self)
+                defer {
+                    setURLProtocol(nil)
+                }
             }
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
