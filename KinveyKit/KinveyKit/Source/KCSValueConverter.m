@@ -64,7 +64,13 @@
             }
             value = results;
         }
-        return value != [NSNull null] ? value : nil;
+        if (value != [NSNull null]) {
+            return value;
+        } else if ([valueType isEqualToString:@"B"]) {
+            //if the value is a NSNull and the valueType is a BOOL, represented by 'B' according to Apple's documentation: https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+            return @NO;
+        }
+        return nil;
     }
 
 @end

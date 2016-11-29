@@ -15,6 +15,7 @@
 @property (nonatomic, copy) NSString* profileId;
 @property (nonatomic, copy) NSString* title;
 @property (nonatomic, strong) NSMutableArray* nested;
+@property (nonatomic, assign) BOOL enabled;
 
 @end
 
@@ -25,7 +26,8 @@
     return @{
         @"profileId" : KCSEntityKeyId,
         @"title" : @"title",
-        @"nested" : @"nested"
+        @"nested" : @"nested",
+        @"enabled" : @"enabled"
     };
 }
 
@@ -70,7 +72,8 @@
                     @"enabled" : @NO
                 }
             }
-        ]
+        ],
+        @"enabled" : [NSNull null]
     };
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:responseBody
@@ -121,6 +124,7 @@
             
             if (objectsOrNil) {
                 KCSBooleanTestCase_Profile* profile = objectsOrNil.firstObject;
+                XCTAssertEqual(profile.enabled, NO);
                 if (profile && [profile isKindOfClass:[KCSBooleanTestCase_Profile class]]) {
                     for (NSMutableDictionary* nested in profile.nested) {
                         XCTAssertEqualObjects(nested[@"up"][@"enabled"], @YES);
