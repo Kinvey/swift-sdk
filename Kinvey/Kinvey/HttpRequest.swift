@@ -8,6 +8,12 @@
 
 import Foundation
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#elseif os(watchOS)
+    import WatchKit
+#endif
+
 enum Header: String {
     
     case requestId = "X-Kinvey-Request-Id"
@@ -119,7 +125,16 @@ enum HttpHeader {
             case .userAgent:
                 return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!)"
             case .deviceInfo:
-                return "\(UIDevice.current.model) \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)"
+                #if os(iOS) || os(tvOS)
+                    let device = UIDevice.current
+                    return "\(device.model) \(device.systemName) \(device.systemVersion)"
+                #elseif os(OSX)
+                    let operatingSystemVersion = ProcessInfo.processInfo.operatingSystemVersion
+                    return "OSX \(operatingSystemVersion.majorVersion).\(operatingSystemVersion.minorVersion).\(operatingSystemVersion.patchVersion)"
+                #elseif os(watchOS)
+                    let device = WKInterfaceDevice.current()
+                    return "\(device.model) \(device.systemName) \(device.systemVersion)"
+                #endif
             }
         }
     }
