@@ -8,8 +8,11 @@
 
 import Foundation
 import PromiseKit
-import SafariServices
 import ObjectMapper
+
+#if os(iOS) || os(OSX)
+    import SafariServices
+#endif
 
 /// Class that represents an `User`.
 @objc(__KNVUser)
