@@ -151,7 +151,7 @@ class HttpRequestFactory: RequestFactory {
         let collectionName = T.collectionName()
         let bodyObject = Mapper<T>().toJSON(persistable)
         let objId = bodyObject[PersistableIdKey] as? String
-        let isNewObj = objId == nil
+        let isNewObj = objId == nil || objId.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? Endpoint.appData(client: client, collectionName: collectionName) : Endpoint.appDataById(client: client, collectionName: collectionName, id: objId!),
@@ -160,6 +160,10 @@ class HttpRequestFactory: RequestFactory {
         )
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if (isNewObj) {
+            bodyObject[PersistableIdKey] = nil
+        }
         
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
         return request
