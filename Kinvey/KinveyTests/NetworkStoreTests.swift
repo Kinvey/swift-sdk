@@ -123,7 +123,7 @@ class NetworkStoreTests: StoreTestCase {
                 
                 static var delay: TimeInterval?
                 
-                let urlSession = URLSession()
+                let urlSession = URLSession(configuration: URLSessionConfiguration.default)
                 
                 override class func canInit(with request: URLRequest) -> Bool {
                     return true
@@ -135,14 +135,22 @@ class NetworkStoreTests: StoreTestCase {
                 
                 override func startLoading() {
                     if let delay = DelayURLProtocol.delay {
-                        Thread.sleep(forTimeInterval: delay)
+                        RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
                     }
                     
                     let dataTask = urlSession.dataTask(with: request) { data, response, error in
                         self.client?.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
-                        self.client?.urlProtocol(self, didLoad: data!)
-                        if let delay = DelayURLProtocol.delay {
-                            Thread.sleep(forTimeInterval: delay)
+                        if let data = data {
+                            let chuckSize = Int(ceil(Double(data.count) / 10.0))
+                            var offset = 0
+                            while offset < data.count {
+                                let chunk = data.subdata(in: offset ..< offset + min(chuckSize, data.count - offset))
+                                self.client?.urlProtocol(self, didLoad: chunk)
+                                if let delay = DelayURLProtocol.delay {
+                                    RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                                }
+                                offset += chuckSize
+                            }
                         }
                         self.client?.urlProtocolDidFinishLoading(self)
                     }

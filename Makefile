@@ -16,7 +16,7 @@ checkout-dependencies:
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=9.2'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=10.1'
 	
 build-ios:
 	cd Kinvey; \
@@ -26,7 +26,7 @@ test: test-ios
 
 	
 test-ios:
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' -enableCodeCoverage YES test
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
