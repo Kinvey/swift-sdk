@@ -15,6 +15,21 @@
 @property (nonatomic, copy) NSString* profileId;
 @property (nonatomic, copy) NSString* title;
 @property (nonatomic, strong) NSMutableArray* nested;
+@property (nonatomic, assign) char charValue;
+@property (nonatomic, assign) int intValue;
+@property (nonatomic, assign) short shortValue;
+@property (nonatomic, assign) long longValue;
+@property (nonatomic, assign) long long longLongValue;
+@property (nonatomic, assign) unsigned char unsignedCharValue;
+@property (nonatomic, assign) unsigned int unsignedIntValue;
+@property (nonatomic, assign) unsigned short unsignedShortValue;
+@property (nonatomic, assign) unsigned long unsignedLongValue;
+@property (nonatomic, assign) unsigned long long unsignedLongLongValue;
+@property (nonatomic, assign) float floatValue;
+@property (nonatomic, assign) double doubleValue;
+@property (nonatomic, assign) BOOL boolValue;
+@property (nonatomic, assign) _Bool boolC99Value;
+@property (nonatomic, assign) bool boolCPPValue;
 
 @end
 
@@ -25,7 +40,22 @@
     return @{
         @"profileId" : KCSEntityKeyId,
         @"title" : @"title",
-        @"nested" : @"nested"
+        @"nested" : @"nested",
+        @"charValue" : @"charValue",
+        @"intValue" : @"intValue",
+        @"shortValue" : @"shortValue",
+        @"longValue" : @"longValue",
+        @"longLongValue" : @"longLongValue",
+        @"unsignedCharValue" : @"unsignedCharValue",
+        @"unsignedIntValue" : @"unsignedIntValue",
+        @"unsignedShortValue" : @"unsignedShortValue",
+        @"unsignedLongValue" : @"unsignedLongValue",
+        @"unsignedLongLongValue" : @"unsignedLongLongValue",
+        @"floatValue" : @"floatValue",
+        @"doubleValue" : @"doubleValue",
+        @"boolValue" : @"boolValue",
+        @"boolC99Value" : @"boolC99Value",
+        @"boolCPPValue" : @"boolCPPValue"
     };
 }
 
@@ -70,7 +100,22 @@
                     @"enabled" : @NO
                 }
             }
-        ]
+        ],
+        @"charValue" : [NSNull null],
+        @"intValue" : [NSNull null],
+        @"shortValue" : [NSNull null],
+        @"longValue" : [NSNull null],
+        @"longLongValue" : [NSNull null],
+        @"unsignedCharValue" : [NSNull null],
+        @"unsignedIntValue" : [NSNull null],
+        @"unsignedShortValue" : [NSNull null],
+        @"unsignedLongValue" : [NSNull null],
+        @"unsignedLongLongValue" : [NSNull null],
+        @"floatValue" : [NSNull null],
+        @"doubleValue" : [NSNull null],
+        @"boolValue" : [NSNull null],
+        @"boolC99Value" : [NSNull null],
+        @"boolCPPValue" : [NSNull null]
     };
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:responseBody
@@ -121,6 +166,21 @@
             
             if (objectsOrNil) {
                 KCSBooleanTestCase_Profile* profile = objectsOrNil.firstObject;
+                XCTAssertEqual(profile.charValue, '\0');
+                XCTAssertEqual(profile.intValue, (int) 0);
+                XCTAssertEqual(profile.shortValue, (short) 0);
+                XCTAssertEqual(profile.longValue, (long) 0);
+                XCTAssertEqual(profile.longLongValue, (long long) 0);
+                XCTAssertEqual(profile.unsignedCharValue, (unsigned char) 0);
+                XCTAssertEqual(profile.unsignedIntValue, (unsigned int) 0);
+                XCTAssertEqual(profile.unsignedShortValue, (unsigned short) 0);
+                XCTAssertEqual(profile.unsignedLongValue, (unsigned long) 0);
+                XCTAssertEqual(profile.unsignedLongLongValue, (unsigned long long) 0);
+                XCTAssertEqual(profile.floatValue, (float) 0);
+                XCTAssertEqual(profile.doubleValue, (double) 0);
+                XCTAssertEqual(profile.boolValue, (BOOL) NO);
+                XCTAssertEqual(profile.boolC99Value, (_Bool) false);
+                XCTAssertEqual(profile.boolCPPValue, (bool) false);
                 if (profile && [profile isKindOfClass:[KCSBooleanTestCase_Profile class]]) {
                     for (NSMutableDictionary* nested in profile.nested) {
                         XCTAssertEqualObjects(nested[@"up"][@"enabled"], @YES);

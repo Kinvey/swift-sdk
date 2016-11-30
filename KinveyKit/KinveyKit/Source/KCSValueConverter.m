@@ -64,7 +64,43 @@
             }
             value = results;
         }
-        return value != [NSNull null] ? value : nil;
+        if (value != [NSNull null]) {
+            return value;
+        } else if (valueType.length == 1) {
+            switch ([valueType characterAtIndex:0]) {
+                /*
+                 Char codes according to Apple's documentation:
+                 https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+                 */
+                case 'c':
+                    return [NSNumber numberWithChar:'\0'];
+                case 'i':
+                    return [NSNumber numberWithInt:0];
+                case 's':
+                    return [NSNumber numberWithShort:0];
+                case 'l':
+                    return [NSNumber numberWithLong:0];
+                case 'q':
+                    return [NSNumber numberWithLongLong:0];
+                case 'C':
+                    return [NSNumber numberWithUnsignedChar:0];
+                case 'I':
+                    return [NSNumber numberWithUnsignedInt:0];
+                case 'S':
+                    return [NSNumber numberWithUnsignedShort:0];
+                case 'L':
+                    return [NSNumber numberWithUnsignedLong:0];
+                case 'Q':
+                    return [NSNumber numberWithUnsignedLongLong:0];
+                case 'f':
+                    return [NSNumber numberWithFloat:0];
+                case 'd':
+                    return [NSNumber numberWithDouble:0];
+                case 'B':
+                    return [NSNumber numberWithBool:NO];
+            }
+        }
+        return nil;
     }
 
 @end
