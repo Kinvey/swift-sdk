@@ -224,14 +224,14 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password using the `username` property.
     @discardableResult
-    @available(*, deprecated: 3.3.3, message: "Use resetPassword(usernameOrEmail:) instead")
+    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password using the `email` property.
     @discardableResult
-    @available(*, deprecated: 3.3.3, message: "Use resetPassword(usernameOrEmail:) instead")
+    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
     }
