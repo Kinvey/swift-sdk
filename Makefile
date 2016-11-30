@@ -11,7 +11,6 @@ clean:
 	rm -Rf Kinvey/Carthage
 	
 checkout-dependencies:
-	cd Kinvey; \
 	carthage checkout --no-use-binaries
 
 build-debug:
