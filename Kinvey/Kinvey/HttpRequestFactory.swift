@@ -149,9 +149,9 @@ class HttpRequestFactory: RequestFactory {
     
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
-        let bodyObject = Mapper<T>().toJSON(persistable)
+        var bodyObject = Mapper<T>().toJSON(persistable)
         let objId = bodyObject[PersistableIdKey] as? String
-        let isNewObj = objId == nil || objId.hasPrefix(ObjectIdTmpPrefix)
+        let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? Endpoint.appData(client: client, collectionName: collectionName) : Endpoint.appDataById(client: client, collectionName: collectionName, id: objId!),
