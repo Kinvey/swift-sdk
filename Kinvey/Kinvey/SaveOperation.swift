@@ -48,7 +48,11 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
                         let persistable = T(JSON: json)
+                        if let objectId = self.persistable.entityId, let sync = self.sync {
+                            sync.removeAllPendingOperations(objectId, methods: ["POST", "PUT"])
+                        }
                         if let persistable = persistable, let cache = self.cache {
+                            cache.removeEntity(self.persistable)
                             cache.saveEntity(persistable)
                         }
                         self.merge(&self.persistable, json: json)
