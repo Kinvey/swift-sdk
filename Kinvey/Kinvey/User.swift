@@ -202,7 +202,8 @@ open class User: NSObject, Credential, Mappable {
         return User.sendEmailConfirmation(forUsername: username, client: client, completionHandler: completionHandler)
     }
     
-    fileprivate class func resetPassword(usernameOrEmail: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+    @discardableResult
+    open class func resetPassword(usernameOrEmail: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -222,18 +223,21 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password using the `username` property.
     @discardableResult
+    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password using the `email` property.
     @discardableResult
+    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password.
-    @discardableResult
+    @discardableResult    
+    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
     open func resetPassword(_ client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         if let email = email {
             return User.resetPassword(email: email, client: client, completionHandler: completionHandler)
