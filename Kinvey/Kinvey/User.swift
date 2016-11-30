@@ -203,6 +203,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     @discardableResult
+    /// Sends an email to the user with a link to reset the password
     open class func resetPassword(usernameOrEmail: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
         Promise<Void> { fulfill, reject in
@@ -223,26 +224,25 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password using the `username` property.
     @discardableResult
-    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
+    @available(*, deprecated: 3.3.3, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password using the `email` property.
     @discardableResult
-    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
+    @available(*, deprecated: 3.3.3, message: "Use resetPassword(usernameOrEmail:) instead")
     open class func resetPassword(email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password.
-    @discardableResult    
-    @available(*, deprecated: 3.3.2, message: "Use resetPassword(usernameOrEmail:) instead")
+    @discardableResult
     open func resetPassword(_ client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         if let email = email {
-            return User.resetPassword(email: email, client: client, completionHandler: completionHandler)
+            return User.resetPassword(usernameOrEmail: email, client: client, completionHandler: completionHandler)
         } else if let username = username  {
-            return User.resetPassword(username: username, client: client, completionHandler: completionHandler)
+            return User.resetPassword(usernameOrEmail: username, client: client, completionHandler: completionHandler)
         } else if let completionHandler = completionHandler {
             DispatchQueue.main.async(execute: { () -> Void in
                 completionHandler(Error.userWithoutEmailOrUsername)
