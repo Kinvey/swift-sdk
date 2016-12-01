@@ -17,8 +17,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    private func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
         // Override point for customization after application launch.
+        
+//        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
+//        User.signup { user, error in
+//            if user != nil {
+//                if #available(iOS 10.0, *) {
+//                    Kinvey.sharedClient.push.registerForNotifications { granted, error in
+//                        print("\(granted)")
+//                    }
+//                } else {
+//                    Kinvey.sharedClient.push.registerForPush { granted, error in
+//                        print("\(granted)")
+//                    }
+//                }
+//            }
+//        }
+        
         return true
     }
 

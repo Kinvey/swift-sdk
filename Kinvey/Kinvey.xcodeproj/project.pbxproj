@@ -97,6 +97,7 @@
 		57873E1A1DFFD983002C87BF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E1B1DFFD983002C87BF /* CwlPreconditionTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E221DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */; };
+		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		579224F81D13304700499D0A /* ObjectMapper.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -214,8 +215,6 @@
 		57B23ED21C7FA810006403CC /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA71C7F9414006403CC /* KCSGroup.h */; };
 		57B23ED31C7FA833006403CC /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DC01C7F9414006403CC /* KCSImageUtils.m */; };
 		57B23ED41C7FA836006403CC /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DBF1C7F9414006403CC /* KCSImageUtils.h */; };
-		57B23ED51C7FA855006403CC /* KCSLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E031C7F9414006403CC /* KCSLogFormatter.m */; };
-		57B23ED61C7FA85C006403CC /* KCSLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E021C7F9414006403CC /* KCSLogFormatter.h */; };
 		57B23ED71C7FA877006403CC /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DEC1C7F9414006403CC /* KCSLogManager.m */; };
 		57B23ED81C7FA884006403CC /* KCSLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DEB1C7F9414006403CC /* KCSLogManager.h */; };
 		57B23EDB1C7FA8A9006403CC /* KCSObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D721C7F9414006403CC /* KCSObjcRuntime.m */; };
@@ -352,6 +351,8 @@
 		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; };
 		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
 		57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA11C7F9414006403CC /* KCSCacheUpdatePolicy.h */; };
+		57B2FEBF1DEF9CF300B85008 /* KCSLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E031C7F9414006403CC /* KCSLogFormatter.m */; };
+		57B2FEC01DEF9CF600B85008 /* KCSLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E021C7F9414006403CC /* KCSLogFormatter.h */; };
 		57B768811D10C0C70086AA38 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B768801D10C0C70086AA38 /* Entity.swift */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
@@ -702,6 +703,7 @@
 		57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwlPreconditionTesting.framework; sourceTree = "<group>"; };
 		57873E1F1DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Forget To Call Super PropertyMapping.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetToCallSuperPropertyMapping.swift; sourceTree = "<group>"; };
+		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1402,6 +1404,7 @@
 				5771F9FE1D301F6300903777 /* Event.swift */,
 				57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */,
 				57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */,
+				57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -2187,7 +2190,6 @@
 				57B23EB81C7FA631006403CC /* KCSClient+KinveyDataStore.h in Headers */,
 				57B23F511C7FB187006403CC /* KCS_UIImage_NSData_NSValueTransformer.h in Headers */,
 				57B23F081C7FAF58006403CC /* NSMutableDictionary+KinveyAdditions.h in Headers */,
-				57B23ED61C7FA85C006403CC /* KCSLogFormatter.h in Headers */,
 				57B23F401C7FB15E006403CC /* KCSURLProtocol.h in Headers */,
 				57B23ED41C7FA836006403CC /* KCSImageUtils.h in Headers */,
 				57E4DB2B1C8A5B620017B406 /* KNVWritePolicy.h in Headers */,
@@ -2240,6 +2242,7 @@
 				57B23ED11C7FA810006403CC /* KCSReduceFunction.h in Headers */,
 				57B23F5F1C7FB1C6006403CC /* KCS_FMDatabase.h in Headers */,
 				57B23EAC1C7FA518006403CC /* KinveyUser+Private.h in Headers */,
+				57B2FEC01DEF9CF600B85008 /* KCSLogFormatter.h in Headers */,
 				57B23EE41C7FA93F006403CC /* KCSNSURLRequestOperation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2439,6 +2442,9 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};
@@ -2771,6 +2777,7 @@
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57B23F4E1C7FB187006403CC /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */,
 				57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */,
+				57B2FEBF1DEF9CF300B85008 /* KCSLogFormatter.m in Sources */,
 				57B23F501C7FB187006403CC /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */,
 				574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */,
 				57A3BF981C8912A900DCD439 /* KNVClient.m in Sources */,
@@ -2779,7 +2786,6 @@
 				57B23F351C7FB061006403CC /* KCSPlatformUtils.m in Sources */,
 				57379DA51C72AAA900E240E9 /* Operation.swift in Sources */,
 				57B23F551C7FB1A4006403CC /* KCS_DDASLLogger.m in Sources */,
-				57B23ED51C7FA855006403CC /* KCSLogFormatter.m in Sources */,
 				57B23E901C7F988D006403CC /* KCSKeychain.m in Sources */,
 				575181581D63B645005C8ECF /* KCSClientConfiguration+KCSInternal.m in Sources */,
 				57B23EFF1C7FAF1B006403CC /* KCSDBTools.m in Sources */,
@@ -2823,6 +2829,7 @@
 				573150981CBD8D910022A05C /* QueryTest.swift in Sources */,
 				5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
+				57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */,
 				576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */,
 				57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */,
 				57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */,
