@@ -64,9 +64,8 @@ public enum Error: Swift.Error {
     public var localizedDescription: String {
         let bundle = Bundle(for: Client.self)
         switch self {
-        case .unauthorized(_, _, _, let description):
-            return description
-        case .invalidOperation(let description):
+        case .unauthorized(_, _, _, let description),
+             .invalidOperation(let description):
             return description
         case .invalidResponse(_, _):
             return NSLocalizedString("Error.invalidResponse", bundle: bundle, comment: "")
@@ -78,17 +77,12 @@ public enum Error: Swift.Error {
     /// Response object contains status code, headers, etc.
     public var httpResponse: HTTPURLResponse? {
         switch self {
-        case .unknownError(let httpResponse, _, _):
-            return httpResponse
-        case .unknownJsonError(let httpResponse, _, _):
-            return httpResponse
-        case .dataLinkEntityNotFound(let httpResponse, _, _, _):
-            return httpResponse
-        case .methodNotAllowed(let httpResponse, _, _, _):
-            return httpResponse
-        case .unauthorized(let httpResponse, _, _, _):
-            return httpResponse
-        case .invalidResponse(let httpResponse, _):
+        case .unknownError(let httpResponse, _, _),
+             .unknownJsonError(let httpResponse, _, _),
+             .dataLinkEntityNotFound(let httpResponse, _, _, _),
+             .methodNotAllowed(let httpResponse, _, _, _),
+             .unauthorized(let httpResponse, _, _, _),
+             .invalidResponse(let httpResponse, _):
             return httpResponse
         default:
             return nil
@@ -97,23 +91,18 @@ public enum Error: Swift.Error {
     
     /// Response Header `X-Kinvey-Request-Id`
     public var requestId: String? {
-        return httpResponse?.allHeaderFields[RequestIdHeaderKey] as? String
+        return httpResponse?.allHeaderFields[Header.requestId] as? String
     }
     
     /// Response Data Body object.
     public var responseDataBody: Data? {
         switch self {
-        case .unknownError(_, let data, _):
-            return data
-        case .unknownJsonError(_, let data, _):
-            return data
-        case .dataLinkEntityNotFound(_, let data, _, _):
-            return data
-        case .methodNotAllowed(_, let data, _, _):
-            return data
-        case .unauthorized(_, let data, _, _):
-            return data
-        case .invalidResponse(_, let data):
+        case .unknownError(_, let data, _),
+             .unknownJsonError(_, let data, _),
+             .dataLinkEntityNotFound(_, let data, _, _),
+             .methodNotAllowed(_, let data, _, _),
+             .unauthorized(_, let data, _, _),
+             .invalidResponse(_, let data):
             return data
         default:
             return nil
