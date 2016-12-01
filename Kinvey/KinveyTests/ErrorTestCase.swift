@@ -18,31 +18,31 @@ class ErrorTestCase: KinveyTestCase {
     }
     
     func testObjectIDMissing() {
-        XCTAssertEqual(Kinvey.Error.objectIdMissing.localizedDescription, "Object ID is required and is missing")
+        XCTAssertEqual("\(Kinvey.Error.objectIdMissing)", "Object ID is required and is missing")
     }
     
     func testInvalidResponse() {
-        XCTAssertEqual(Kinvey.Error.invalidResponse(httpResponse: nil, data: nil).localizedDescription, "Invalid response from the server")
+        XCTAssertEqual("\(Kinvey.Error.invalidResponse(httpResponse: nil, data: nil))", "Invalid response from the server")
     }
     
     func testUnauthorized() {
-        XCTAssertEqual(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", description: "Description").localizedDescription, "Description")
+        XCTAssertEqual("\(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", description: "Description"))", "Description")
     }
     
     func testNoActiveUser() {
-        XCTAssertEqual(Kinvey.Error.noActiveUser.localizedDescription, "An active user is required and none was found")
+        XCTAssertEqual("\(Kinvey.Error.noActiveUser)", "An active user is required and none was found")
     }
     
     func testRequestCancelled() {
-        XCTAssertEqual(Kinvey.Error.requestCancelled.localizedDescription, "Request was cancelled")
+        XCTAssertEqual("\(Kinvey.Error.requestCancelled)", "Request was cancelled")
     }
     
     func testInvalidDataStoreType() {
-        XCTAssertEqual(Kinvey.Error.invalidDataStoreType.localizedDescription, "DataStore type does not support this operation")
+        XCTAssertEqual("\(Kinvey.Error.invalidDataStoreType)", "DataStore type does not support this operation")
     }
     
     func testUserWithoutEmailOrUsername() {
-        XCTAssertEqual(Kinvey.Error.userWithoutEmailOrUsername.localizedDescription, "User has no email or username")
+        XCTAssertEqual("\(Kinvey.Error.userWithoutEmailOrUsername)", "User has no email or username")
     }
     
     func testInvalidResponseHttpResponseData() {
