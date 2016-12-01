@@ -375,6 +375,9 @@ class NetworkStoreTests: StoreTestCase {
     
     class MethodNotAllowedError: URLProtocol {
         
+        static let debugValue = "insert' method is not allowed for this collection."
+        static let descriptionValue = "The method is not allowed for this resource."
+        
         override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
@@ -389,8 +392,8 @@ class NetworkStoreTests: StoreTestCase {
             
             let responseBody = [
                 "error": "MethodNotAllowed",
-                "debug": "insert' method is not allowed for this collection.",
-                "description": "The method is not allowed for this resource."
+                "debug": MethodNotAllowedError.debugValue,
+                "description": MethodNotAllowedError.descriptionValue
             ]
             let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
             client!.urlProtocol(self, didLoad: responseBodyData)
@@ -481,10 +484,17 @@ class NetworkStoreTests: StoreTestCase {
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
+                XCTAssertEqual(error.description, MethodNotAllowedError.descriptionValue)
+                XCTAssertEqual(error.debugDescription, MethodNotAllowedError.debugValue)
+                
+                XCTAssertEqual("\(error)", MethodNotAllowedError.descriptionValue)
+                XCTAssertEqual("\(String(describing: error))", MethodNotAllowedError.descriptionValue)
+                XCTAssertEqual("\(String(reflecting: error))", MethodNotAllowedError.debugValue)
+                
                 switch error {
                 case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                    XCTAssertEqual(description, MethodNotAllowedError.descriptionValue)
+                    XCTAssertEqual(debug, MethodNotAllowedError.debugValue)
                 default:
                     XCTFail()
                 }

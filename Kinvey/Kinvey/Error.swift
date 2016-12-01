@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: Swift.Error {
+public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -61,16 +61,41 @@ public enum Error: Swift.Error {
     }
     
     /// Error localized description.
-    public var localizedDescription: String {
+    public var description: String {
         let bundle = Bundle(for: Client.self)
         switch self {
-        case .unauthorized(_, _, _, let description),
+        case .methodNotAllowed(_, _, _, let description),
+             .dataLinkEntityNotFound(_, _, _, let description),
+             .unknownError(_, _, let description),
+             .unauthorized(_, _, _, let description),
              .invalidOperation(let description):
             return description
+        case .objectIdMissing:
+            return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
+        case .unknownJsonError:
+            return NSLocalizedString("Error.unknownJsonError", bundle: bundle, comment: "")
         case .invalidResponse(_, _):
             return NSLocalizedString("Error.invalidResponse", bundle: bundle, comment: "")
+        case .noActiveUser:
+            return NSLocalizedString("Error.noActiveUser", bundle: bundle, comment: "")
+        case .requestCancelled:
+            return NSLocalizedString("Error.requestCancelled", bundle: bundle, comment: "")
+        case .requestTimeout:
+            return NSLocalizedString("Error.requestTimeout", bundle: bundle, comment: "")
+        case .invalidDataStoreType:
+            return NSLocalizedString("Error.invalidDataStoreType", bundle: bundle, comment: "")
+        case .userWithoutEmailOrUsername:
+            return NSLocalizedString("Error.userWithoutEmailOrUsername", bundle: bundle, comment: "")
+        }
+    }
+    
+    public var debugDescription: String {
+        switch self {
+        case .methodNotAllowed(_, _, let debug, _),
+             .dataLinkEntityNotFound(_, _, let debug, _):
+            return debug
         default:
-            return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
+            return localizedDescription
         }
     }
     
