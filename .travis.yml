@@ -17,6 +17,7 @@ before_script:
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
 script:
+- carthage checkout
 - travis_retry make test
 after_script:
 - date
