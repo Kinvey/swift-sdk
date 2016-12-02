@@ -11,7 +11,7 @@ import Foundation
 extension Date {
     
     func toString() -> String {
-        return NSDate2StringValueTransformer.rfc3339MilliSecondsDateFormatter.string(from: self)
+        return KinveyDateTransform().transformToJSON(self)!
     }
     
 }
