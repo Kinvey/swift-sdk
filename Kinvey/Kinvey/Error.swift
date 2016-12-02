@@ -95,7 +95,7 @@ public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConver
              .dataLinkEntityNotFound(_, _, let debug, _):
             return debug
         default:
-            return localizedDescription
+            return description
         }
     }
     
