@@ -103,18 +103,27 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let person = Person()
         person.name = "Victor"
         
+        client.logNetworkEnabled = true
+        
         do {
-            weak var expectationSave = expectation(description: "Save")
+            weak var expectationSaveLocal = expectation(description: "Save Local")
+            weak var expectationSaveRemote = expectation(description: "Save Remote")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
-                expectationSave?.fulfill()
+                if let expectation = expectationSaveLocal {
+                    expectation.fulfill()
+                    expectationSaveLocal = nil
+                } else {
+                    expectationSaveRemote?.fulfill()
+                }
             }
             
             waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
-                expectationSave = nil
+                expectationSaveLocal = nil
+                expectationSaveRemote = nil
             }
         }
         
