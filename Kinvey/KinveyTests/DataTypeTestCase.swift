@@ -91,6 +91,27 @@ class DataTypeTestCase: StoreTestCase {
         if let savedPersistable = tuple.savedPersistable {
             XCTAssertTrue((savedPersistable.date != nil))
         }
+        
+        if useMockData {
+            setResponseBody(json: [
+                [
+                    "_id" : UUID().uuidString,
+                    "date" : Date().toString(),
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
 
         weak var expectationFind = expectation(description: "Find")
         

@@ -21,6 +21,24 @@ class CustomEndpointTests: KinveyTestCase {
             "queryParam" : Query(format: "age >= %@", 21)
         ]
         
+        if useMockData {
+            setResponseBody(json: [
+                "queryParam" : [
+                    "age" : [
+                        "$gte" : 21
+                    ]
+                ],
+                "stringParam" : "Test",
+                "numberParam" : 1,
+                "booleanParam" : true
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
@@ -61,6 +79,21 @@ class CustomEndpointTests: KinveyTestCase {
             "query" : Query(format: "colors.@count == %@", 2)
         ]
         
+        if useMockData {
+            setResponseBody(json: [
+                "query" : [
+                    "colors" : [
+                        "$size" : 2
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in
@@ -98,6 +131,23 @@ class CustomEndpointTests: KinveyTestCase {
                 "query" : Query(format: "colors.@count == %@", 2)
             ]
         ]
+        
+        if useMockData {
+            setResponseBody(json: [
+                "query" : [
+                    "query" : [
+                        "colors" : [
+                            "$size" : 2
+                        ]
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
@@ -140,6 +190,28 @@ class CustomEndpointTests: KinveyTestCase {
                 Query(format: "colors.@count == %@", 5)
             ]
         ]
+        
+        if useMockData {
+            setResponseBody(json: [
+                "queries" : [
+                    [
+                        "colors" : [
+                            "$size" : 2
+                        ]
+                    ],
+                    [
+                        "colors" : [
+                            "$size" : 5
+                        ]
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         

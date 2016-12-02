@@ -22,6 +22,19 @@ class AclTestCase: StoreTestCase {
         
         store = DataStore<Person>.collection(.network)
         
+        if useMockData {
+            setResponseBody(statusCode: 401, json: [
+                "error" : "InsufficientCredentials",
+                "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                "debug" : ""
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationRemove = expectation(description: "Remove")
         
         try! store.remove(person) { (count, error) -> Void in
@@ -59,6 +72,26 @@ class AclTestCase: StoreTestCase {
         store = DataStore<Person>.collection(.sync)
         
         do {
+            if useMockData {
+                setResponseBody(json: [
+                    "_id" : person.entityId!,
+                    "name" : "Victor",
+                    "age" : 29,
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(person.personId!, readPolicy: .forceNetwork) { person, error in
@@ -95,6 +128,19 @@ class AclTestCase: StoreTestCase {
         XCTAssertEqual(store.syncCount(), 1)
         
         do {
+            if useMockData {
+                setResponseBody(statusCode: 401, json: [
+                    "error" : "InsufficientCredentials",
+                    "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                    "debug" : ""
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationPush = expectation(description: "Push")
             
             store.push() { count, errors in
@@ -138,6 +184,27 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
+            if useMockData {
+                setResponseBody(json: [
+                    "_id" : UUID().uuidString,
+                    "name" : "Victor",
+                    "age" : 29,
+                    "_acl" : [
+                        "gr" : true,
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
@@ -174,6 +241,27 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
+            if useMockData {
+                setResponseBody(json: [
+                    "_id" : UUID().uuidString,
+                    "name" : "Victor",
+                    "age" : 29,
+                    "_acl" : [
+                        "gw" : true,
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
@@ -218,6 +306,27 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
+            if useMockData {
+                setResponseBody(json: [
+                    "_id" : personId,
+                    "name" : "Victor",
+                    "age" : 29,
+                    "_acl" : [
+                        "r" : "[\"\(user.userId)\"]",
+                        "creator" : sharedClient.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
@@ -230,6 +339,7 @@ class AclTestCase: StoreTestCase {
                         XCTAssertNotNil(acl.readers)
                         if let readers = acl.readers {
                             XCTAssertEqual(readers.count, 1)
+                            XCTAssertEqual(readers.first, user.userId)
                         }
                     }
                 }
