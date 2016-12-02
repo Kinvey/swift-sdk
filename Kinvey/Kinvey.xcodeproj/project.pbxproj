@@ -350,27 +350,18 @@
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
 		57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C2F1721D5E5A68005A214B /* BuilderType.swift */; };
-		57C563041C9CC7270011FB36 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
-		57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
-		57C563061C9CC7410011FB36 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57D1E75F1C7D21720009834A /* KNVReadPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E75D1C7D21720009834A /* KNVReadPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D642F61CA3268000F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		57D642F91CA3268000F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
-		57D642FF1CA3268000F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */; };
-		57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57D6430B1CA3268000F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		57D643201CA3268600F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
-		57D643261CA3268600F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
-		57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
@@ -2668,18 +2659,15 @@
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */,
 				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
-				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
 				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
 				5796B3E71DEE8EC900209C9F /* CacheStoreTests.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
-				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
 				57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */,
 				572005CA1D342B2800AE9AC5 /* Book.swift in Sources */,
-				57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */,
 				572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */,
 				5771F9FF1D301F6300903777 /* Event.swift in Sources */,
 			);
@@ -2702,11 +2690,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D642F61CA3268000F6D16E /* ValueTransformer.swift in Sources */,
-				57D642F91CA3268000F6D16E /* String.swift in Sources */,
 				5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
-				57D642FF1CA3268000F6D16E /* NSDate.swift in Sources */,
 				57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */,
-				57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
 				57D6433F1CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643411CA32CAF00F6D16E /* KIF.swift in Sources */,
 			);
@@ -2717,11 +2702,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */,
-				57D643201CA3268600F6D16E /* String.swift in Sources */,
 				5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
 				57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */,
-				57D643261CA3268600F6D16E /* NSDate.swift in Sources */,
-				57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
 				57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643421CA32CAF00F6D16E /* KIF.swift in Sources */,
 			);

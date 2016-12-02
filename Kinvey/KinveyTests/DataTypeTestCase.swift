@@ -41,6 +41,38 @@ class DataTypeTestCase: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         
+        setResponseBody(json: [
+            [
+                "_id" : UUID().uuidString,
+                "fullName2" : [
+                    "lastName" : "Barros",
+                    "fontDescriptor" : [
+                        "NSFontSizeAttribute" : 12,
+                        "NSFontNameAttribute" : "Arial"
+                    ],
+                    "firstName" : "Victor"
+                ],
+                "boolValue" : true,
+                "fullName" : [
+                    "lastName" : "Barros",
+                    "firstName" : "Victor"
+                ],
+                "colorValue" : [
+                    "green" : 0.5,
+                    "alpha" : 1,
+                    "red" : 1,
+                    "blue" : 0
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ]
+        ])
+        
         weak var expectationFind = expectation(description: "Find")
         
         store.find(query) { results, error in
@@ -90,6 +122,27 @@ class DataTypeTestCase: StoreTestCase {
 
         if let savedPersistable = tuple.savedPersistable {
             XCTAssertTrue((savedPersistable.date != nil))
+        }
+        
+        if useMockData {
+            setResponseBody(json: [
+                [
+                    "_id" : UUID().uuidString,
+                    "date" : Date().toString(),
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
         }
 
         weak var expectationFind = expectation(description: "Find")

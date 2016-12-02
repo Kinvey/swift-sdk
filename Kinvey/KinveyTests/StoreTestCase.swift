@@ -26,6 +26,27 @@ class StoreTestCase: KinveyTestCase {
     
     @discardableResult
     func save<T: Persistable>(_ persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) where T: NSObject {
+        if useMockData {
+            setResponseBody {
+                var json = try! JSONSerialization.jsonObject(with: $0) as! JsonDictionary
+                json["_id"] = json["_id"] ?? UUID().uuidString
+                json["date"] = Date().toString()
+                json["_acl"] = [
+                    "creator" : UUID().uuidString
+                ]
+                json["_kmd"] = [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+                return HttpResponse(json: json)
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationCreate = expectation(description: "Create")
         
         var savedPersistable: T? = nil
@@ -54,6 +75,26 @@ class StoreTestCase: KinveyTestCase {
     @discardableResult
     func save(_ person: Person) -> Person {
         let age = person.age
+        
+        if useMockData {
+            setResponseBody(json: [
+                "_id" : UUID().uuidString,
+                "name" : "Victor",
+                "age" : 29,
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
         
         weak var expectationCreate = expectation(description: "Create")
         

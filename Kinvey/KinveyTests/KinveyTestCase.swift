@@ -32,11 +32,132 @@ extension XCTestCase {
     
 }
 
+struct HttpResponse {
+    
+    let statusCode: Int?
+    let headerFields: [String : String]?
+    let data: Data?
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
+        var headerFields = headerFields ?? [:]
+        if let data = data {
+            headerFields["Content-Length"] = "\(data.count)"
+        }
+        
+        self.statusCode = statusCode
+        self.headerFields = headerFields
+        self.data = data
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        let data = try! JSONSerialization.data(withJSONObject: json)
+        self.init(statusCode: statusCode, headerFields: headerFields, data: data)
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        let data = try! JSONSerialization.data(withJSONObject: json)
+        self.init(statusCode: statusCode, headerFields: headerFields, data: data)
+    }
+    
+}
+
+extension JSONSerialization {
+    
+    class func jsonObject(with request: URLRequest, options opt: JSONSerialization.ReadingOptions = []) throws -> Any {
+        if let data = request.httpBody {
+            return try jsonObject(with: data, options: opt)
+        } else if let inputStream = request.httpBodyStream {
+            inputStream.open()
+            defer {
+                inputStream.close()
+            }
+            return try jsonObject(with: inputStream, options: opt)
+        } else {
+            preconditionFailure()
+        }
+    }
+    
+}
+
+extension XCTestCase {
+    
+    func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
+        if let type = type {
+            let sessionConfiguration = URLSessionConfiguration.default
+            sessionConfiguration.protocolClasses = [type]
+            client.urlSession = URLSession(configuration: sessionConfiguration)
+            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
+        } else {
+            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
+        }
+    }
+    
+    class MockURLProtocol: URLProtocol {
+        
+        static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
+        
+        override class func canInit(with request: URLRequest) -> Bool {
+            return true
+        }
+        
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+            return request
+        }
+        
+        override func startLoading() {
+            let responseObj = MockURLProtocol.completionHandler!(request)
+            let response = HTTPURLResponse(url: request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "1.1", headerFields: responseObj.headerFields)
+            client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+            if let data = responseObj.data {
+                client!.urlProtocol(self, didLoad: data)
+            }
+            client!.urlProtocolDidFinishLoading(self)
+        }
+        
+        override func stopLoading() {
+        }
+        
+    }
+    
+    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        setResponseBody(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+    }
+    
+    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        setResponseBody(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+    }
+    
+    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
+        var headerFields = headerFields ?? [:]
+        if let data = data {
+            headerFields["Content-Length"] = "\(data.count)"
+        }
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func setResponseBody(completionHandler: @escaping (URLRequest) -> HttpResponse) {
+        MockURLProtocol.completionHandler = completionHandler
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+}
+
 class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
     var encrypted = false
-    var useMockData = false
+    var useMockData = appKey == nil || appSecret == nil
     
     static let defaultTimeout = TimeInterval(Int8.max)
     lazy var defaultTimeout: TimeInterval = {
@@ -105,13 +226,13 @@ class KinveyTestCase: XCTestCase {
             
             var resquestBody: [String : Any]? = nil
             if let data = request.httpBody {
-                resquestBody = try! JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+                resquestBody = try! JSONSerialization.jsonObject(with: data) as? [String : Any]
             } else if let httpBodyStream = request.httpBodyStream {
                 httpBodyStream.open()
                 defer {
                     httpBodyStream.close()
                 }
-                resquestBody = try! JSONSerialization.jsonObject(with: httpBodyStream, options: []) as? [String : Any]
+                resquestBody = try! JSONSerialization.jsonObject(with: httpBodyStream) as? [String : Any]
             }
             
             var responseBody = [
@@ -129,7 +250,7 @@ class KinveyTestCase: XCTestCase {
             if let resquestBody = resquestBody {
                 responseBody += resquestBody
             }
-            let data = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let data = try! JSONSerialization.data(withJSONObject: responseBody)
             client?.urlProtocol(self, didLoad: data)
             
             client?.urlProtocolDidFinishLoading(self)
@@ -147,7 +268,9 @@ class KinveyTestCase: XCTestCase {
         
         if useMockData {
             setURLProtocol(MockKinveyBackend.self)
-            defer {
+        }
+        defer {
+            if useMockData {
                 setURLProtocol(nil)
             }
         }
@@ -209,7 +332,9 @@ class KinveyTestCase: XCTestCase {
         if let user = client.activeUser {
             if useMockData {
                 setURLProtocol(MockKinveyBackend.self)
-                defer {
+            }
+            defer {
+                if useMockData {
                     setURLProtocol(nil)
                 }
             }
@@ -231,17 +356,6 @@ class KinveyTestCase: XCTestCase {
         }
         
         super.tearDown()
-    }
-    
-    func setURLProtocol(_ type: URLProtocol.Type?) {
-        if let type = type {
-            let sessionConfiguration = URLSessionConfiguration.default
-            sessionConfiguration.protocolClasses = [type]
-            client.urlSession = URLSession(configuration: sessionConfiguration)
-            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
-        } else {
-            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
-        }
     }
     
 }

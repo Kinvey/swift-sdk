@@ -28,6 +28,29 @@ class CacheStoreTests: StoreTestCase {
         
         var runCount = 0
         
+        if useMockData {
+            setResponseBody {
+                let json = try! JSONSerialization.jsonObject(with: $0) as? JsonDictionary
+                return HttpResponse(statusCode: 201, json: [
+                    "_id" : json?["_id"] as? String ?? UUID().uuidString,
+                    "name" : "Victor Barros",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         store.save(person) { person, error in
             XCTAssertNotNil(person)
             XCTAssertNil(error)
