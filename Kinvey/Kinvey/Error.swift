@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: ErrorType {
+public enum Error: ErrorType, CustomStringConvertible, CustomDebugStringConvertible {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -61,17 +61,46 @@ public enum Error: ErrorType {
     }
     
     /// Error localized description.
-    public var localizedDescription: String {
+    public var description: String {
         let bundle = NSBundle(forClass: Client.self)
         switch self {
-        case .Unauthorized(_, _, _, let description):
+        case .MethodNotAllowed(_, _, _, let description):
             return description
+        case .DataLinkEntityNotFound(_, _, _, let description):
+            return description
+         case .UnknownError(_, _, let description):
+            return description
+         case .Unauthorized(_, _, _, let description):
+             return description
         case .InvalidOperation(let description):
             return description
+        case .ObjectIdMissing:
+            return NSLocalizedString("Error.ObjectIdMissing", bundle: bundle, comment: "")
+        case .UnknownJsonError:
+            return NSLocalizedString("Error.UnknownJsonError", bundle: bundle, comment: "")
         case .InvalidResponse(_, _):
             return NSLocalizedString("Error.InvalidResponse", bundle: bundle, comment: "")
+        case .NoActiveUser:
+            return NSLocalizedString("Error.NoActiveUser", bundle: bundle, comment: "")
+        case .RequestCancelled:
+            return NSLocalizedString("Error.RequestCancelled", bundle: bundle, comment: "")
+        case .RequestTimeout:
+            return NSLocalizedString("Error.RequestTimeout", bundle: bundle, comment: "")
+        case .InvalidDataStoreType:
+            return NSLocalizedString("Error.InvalidDataStoreType", bundle: bundle, comment: "")
+        case .UserWithoutEmailOrUsername:
+            return NSLocalizedString("Error.UserWithoutEmailOrUsername", bundle: bundle, comment: "")
+        }
+    }
+    
+    public var debugDescription: String {
+        switch self {
+        case .MethodNotAllowed(_, _, let debug, _):
+            return debug
+        case .DataLinkEntityNotFound(_, _, let debug, _):
+            return debug
         default:
-            return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
+            return description
         }
     }
     
@@ -97,7 +126,7 @@ public enum Error: ErrorType {
     
     /// Response Header `X-Kinvey-Request-Id`
     public var requestId: String? {
-        return httpResponse?.allHeaderFields[RequestIdHeaderKey] as? String
+        return httpResponse?.allHeaderFields[Header.RequestId.rawValue] as? String
     }
     
     /// Response Data Body object.
