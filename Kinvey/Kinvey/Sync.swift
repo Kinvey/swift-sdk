@@ -28,6 +28,7 @@ internal protocol SyncType {
     
     func removeAllPendingOperations()
     func removeAllPendingOperations(_ objectId: String?)
+    func removeAllPendingOperations(_ objectId: String?, methods: [String]?)
     
 }
 
@@ -66,6 +67,10 @@ internal class Sync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func removeAllPendingOperations(_ objectId: String?) {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
