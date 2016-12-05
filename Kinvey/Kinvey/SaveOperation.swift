@@ -64,7 +64,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
     
     fileprivate func checkRequirements(_ completionHandler: ObjectCompletionHandler?) -> Bool {
         guard let _ = client.activeUser else {
-            completionHandler?(nil, KinveyError.NoActiveUser)
+            completionHandler?(nil, Error.noActiveUser)
             return false
         }
         
