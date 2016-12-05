@@ -27,6 +27,7 @@ class CacheStoreTests: StoreTestCase {
         weak var expectationSaveNetwork = expectation(description: "Save Network")
         
         var runCount = 0
+        var temporaryObjectId: String? = nil
         
         if useMockData {
             setResponseBody {
@@ -61,6 +62,7 @@ class CacheStoreTests: StoreTestCase {
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
                         XCTAssertTrue(personId.hasPrefix(ObjectIdTmpPrefix))
+                        temporaryObjectId = personId
                     }
                 }
                 
@@ -84,6 +86,24 @@ class CacheStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSaveLocal = nil
             expectationSaveNetwork = nil
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        XCTAssertNotNil(temporaryObjectId)
+        if let temporaryObjectId = temporaryObjectId {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(byId: temporaryObjectId, readPolicy: .forceLocal) { (person, error) in
+                XCTAssertNil(person)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
         }
     }
     
