@@ -30,7 +30,7 @@ class CacheStoreTests: StoreTestCase {
         var temporaryObjectId: String? = nil
         
         if useMockData {
-            setResponseBody {
+            mockResponse {
                 let json = try! JSONSerialization.jsonObject(with: $0) as? JsonDictionary
                 return HttpResponse(statusCode: 201, json: [
                     "_id" : json?["_id"] as? String ?? UUID().uuidString,

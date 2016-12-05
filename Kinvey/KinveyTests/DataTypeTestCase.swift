@@ -41,7 +41,7 @@ class DataTypeTestCase: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         
-        setResponseBody(json: [
+        mockResponse(json: [
             [
                 "_id" : UUID().uuidString,
                 "fullName2" : [
@@ -125,7 +125,7 @@ class DataTypeTestCase: StoreTestCase {
         }
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 [
                     "_id" : UUID().uuidString,
                     "date" : Date().toString(),

@@ -24,6 +24,10 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveEvent() {
+        guard !useMockData else {
+            return
+        }
+        
         let store = DataStore<Event>.collection(.network)
         
         let event = Event()
@@ -205,6 +209,29 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveAddress() {
+        if useMockData {
+            mockResponse(json: [
+                "name": "Victor Barros",
+                "age": 0,
+                "address": [
+                    "city": "Vancouver"
+                ],
+                "_acl": [
+                    "creator": "58450d87c077970e38a388ba"
+                ],
+                "_kmd": [
+                    "lmt": "2016-12-05T06:47:35.711Z",
+                    "ect": "2016-12-05T06:47:35.711Z"
+                ],
+                "_id": "58450d87f29e22207c83a236"
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         let person = Person()
         person.name = "Victor Barros"
         
@@ -241,6 +268,15 @@ class NetworkStoreTests: StoreTestCase {
         var eventsCount: Int? = nil
         
         do {
+            if useMockData {
+                mockResponse(json: ["count" : 85])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationCount = expectation(description: "Count")
             
             store.count { (count, error) in
@@ -262,6 +298,25 @@ class NetworkStoreTests: StoreTestCase {
         XCTAssertNotNil(eventsCount)
         
         do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Friday Party!",
+                    "_acl": [
+                        "creator": "58450c8000a5907e7dfb37bf"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:43:12.395Z",
+                        "ect": "2016-12-05T06:43:12.395Z"
+                    ],
+                    "_id": "58450c80d5ee86507a8b4e7e"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             let event = Event()
             event.name = "Friday Party!"
             
@@ -280,6 +335,15 @@ class NetworkStoreTests: StoreTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: ["count" : 86])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationCount = expectation(description: "Count")
             
             store.count { (count, error) in
@@ -308,29 +372,83 @@ class NetworkStoreTests: StoreTestCase {
         
         var i = 0
         
-        measure {
-            let person = Person {
-                $0.name = "Person \(i)"
+        var mockData = [JsonDictionary]()
+        do {
+            if useMockData {
+                mockResponse { request in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json["_acl"] = [
+                        "creator": self.client.activeUser?.userId
+                    ]
+                    json["_kmd"] = [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                    json["_id"] = UUID().uuidString
+                    mockData.append(json)
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
             }
             
-            weak var expectationSave = self.expectation(description: "Save")
-            
-            self.store.save(person, writePolicy: .forceNetwork) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+            measure {
+                let person = Person {
+                    $0.name = "Person \(i)"
+                }
                 
-                expectationSave?.fulfill()
+                weak var expectationSave = self.expectation(description: "Save")
+                
+                self.store.save(person, writePolicy: .forceNetwork) { person, error in
+                    XCTAssertNotNil(person)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                self.waitForExpectations(timeout: self.defaultTimeout) { error in
+                    expectationSave = nil
+                }
+                
+                i += 1
             }
-            
-            self.waitForExpectations(timeout: self.defaultTimeout) { error in
-                expectationSave = nil
-            }
-            
-            i += 1
         }
         
         var skip = 0
         let limit = 2
+        
+        if useMockData {
+            mockResponse { request in
+                let regex = try! NSRegularExpression(pattern: "([^&=]*)=([^&]*)")
+                let query = request.url!.query!
+                let matches = regex.matches(in: query, range: NSRange(location: 0, length: query.characters.count))
+                var skip: Int?
+                var limit: Int?
+                for match in matches {
+                    let key = query[query.index(query.startIndex, offsetBy: match.rangeAt(1).location) ..< query.index(query.startIndex, offsetBy: match.rangeAt(1).location + match.rangeAt(1).length)]
+                    let value = query[query.index(query.startIndex, offsetBy: match.rangeAt(2).location) ..< query.index(query.startIndex, offsetBy: match.rangeAt(2).location + match.rangeAt(2).length)]
+                    switch key {
+                    case "skip":
+                        skip = Int(value)
+                    case "limit":
+                        limit = Int(value)
+                    default:
+                        break
+                    }
+                }
+                var results = mockData.sorted(by: { ($0["name"] as! String) < ($1["name"] as! String) })
+                results = [JsonDictionary](results[skip! ..< skip! + limit!])
+                return HttpResponse(statusCode: 200, json: results)
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
         
         for _ in 0 ..< 5 {
             weak var expectationFind = expectation(description: "Find")

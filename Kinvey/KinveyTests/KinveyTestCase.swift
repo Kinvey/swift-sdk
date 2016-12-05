@@ -32,21 +32,38 @@ extension XCTestCase {
     
 }
 
+struct ChunkData {
+    
+    let data: Data
+    let delay: TimeInterval?
+    
+    init(data: Data, delay: TimeInterval? = nil) {
+        self.data = data
+        self.delay = delay
+    }
+    
+}
+
 struct HttpResponse {
     
     let statusCode: Int?
     let headerFields: [String : String]?
-    let data: Data?
+    let chunks: [ChunkData]?
     
-    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]? = nil) {
         var headerFields = headerFields ?? [:]
-        if let data = data {
-            headerFields["Content-Length"] = "\(data.count)"
+        if let chunks = chunks {
+            let contentLength = chunks.reduce(0, { $0 + $1.data.count })
+            headerFields["Content-Length"] = "\(contentLength)"
         }
         
         self.statusCode = statusCode
         self.headerFields = headerFields
-        self.data = data
+        self.chunks = chunks
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
+        self.init(statusCode: statusCode, headerFields: headerFields, chunks: data != nil ? [ChunkData(data: data!)] : nil)
     }
     
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
@@ -108,14 +125,23 @@ extension XCTestCase {
             return request
         }
         
+        override class func canInit(with task: URLSessionTask) -> Bool {
+            return true
+        }
+        
         override func startLoading() {
-            let responseObj = MockURLProtocol.completionHandler!(request)
-            let response = HTTPURLResponse(url: request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "1.1", headerFields: responseObj.headerFields)
-            client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
-            if let data = responseObj.data {
-                client!.urlProtocol(self, didLoad: data)
+            let responseObj = MockURLProtocol.completionHandler!(self.request)
+            let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
+            self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+            if let chunks = responseObj.chunks {
+                for chunk in chunks {
+                    self.client!.urlProtocol(self, didLoad: chunk.data)
+                    if let delay = chunk.delay {                        
+                        RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                    }
+                }
             }
-            client!.urlProtocolDidFinishLoading(self)
+            self.client!.urlProtocolDidFinishLoading(self)
         }
         
         override func stopLoading() {
@@ -123,30 +149,40 @@ extension XCTestCase {
         
     }
     
-    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        setResponseBody(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
     }
     
-    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        setResponseBody(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
     }
     
-    func setResponseBody(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
-        var headerFields = headerFields ?? [:]
-        if let data = data {
-            headerFields["Content-Length"] = "\(data.count)"
-        }
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)
         }
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func setResponseBody(completionHandler: @escaping (URLRequest) -> HttpResponse) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: chunks)
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: data?.map { ChunkData(data: $0) })
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func mockResponse(completionHandler: @escaping (URLRequest) -> HttpResponse) {
         MockURLProtocol.completionHandler = completionHandler
         setURLProtocol(MockURLProtocol.self)
     }
@@ -353,6 +389,20 @@ class KinveyTestCase: XCTestCase {
             }
             
             XCTAssertNil(client.activeUser)
+        }
+        
+        let personStore = DataStore<Person>.collection(.sync)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        personStore.find { results, error in
+            XCTAssertEqual(results?.count, 0)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
         }
         
         super.tearDown()

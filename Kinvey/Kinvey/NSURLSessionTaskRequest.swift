@@ -58,6 +58,12 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     
     fileprivate func downloadTask(_ url: URL?, response: URLResponse?, error: Swift.Error?, fulfill: ((Data, Response)) -> Void, reject: (Swift.Error) -> Void) {
         if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = try? Data(contentsOf: url) {
+            if self.client.logNetworkEnabled {
+                do {
+                    print("\(response.description(data))")
+                }
+            }
+            
             fulfill((data, HttpResponse(response: response)))
         } else if let error = error {
             reject(error)
@@ -79,6 +85,12 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     func downloadTaskWithURL(_ file: File, completionHandler: @escaping DataResponseCompletionHandler) {
         self.file = file
         Promise<(Data, Response)> { fulfill, reject in
+            if self.client.logNetworkEnabled {
+                do {
+                    print("GET \(url)")
+                }
+            }
+            
             if let resumeData = file.resumeDownloadData {
                 task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
                     self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)

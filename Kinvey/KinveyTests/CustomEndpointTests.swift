@@ -22,7 +22,7 @@ class CustomEndpointTests: KinveyTestCase {
         ]
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 "queryParam" : [
                     "age" : [
                         "$gte" : 21
@@ -80,7 +80,7 @@ class CustomEndpointTests: KinveyTestCase {
         ]
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 "query" : [
                     "colors" : [
                         "$size" : 2
@@ -133,7 +133,7 @@ class CustomEndpointTests: KinveyTestCase {
         ]
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 "query" : [
                     "query" : [
                         "colors" : [
@@ -192,7 +192,7 @@ class CustomEndpointTests: KinveyTestCase {
         ]
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 "queries" : [
                     [
                         "colors" : [
