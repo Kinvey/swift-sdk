@@ -186,8 +186,8 @@ open class FileStore {
                     let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
                     if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300 {
                         createUpdateFileEntry()
-                    } else if let response = response as? HTTPURLResponse
-                        , response.statusCode == 308,
+                    } else if let response = response as? HTTPURLResponse,
+                        response.statusCode == 308,
                         let rangeString = response.allHeaderFields["Range"] as? String,
                         let textCheckingResult = regexRange.matches(in: rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first
                         , textCheckingResult.numberOfRanges == 3
@@ -197,7 +197,7 @@ open class FileStore {
                         if let endRange = Int(endRangeString) {
                             fulfill((file: file, skip: endRange))
                         } else {
-                            reject(Error.invalidResponse)
+                            reject(Error.invalidResponse(httpResponse: response, data: data))
                         }
                     } else {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
@@ -248,7 +248,7 @@ open class FileStore {
                     requests += (NSURLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
                     uploadTask.resume()
                 } else {
-                    reject(Error.invalidResponse)
+                    reject(Error.invalidResponse(httpResponse: nil, data: nil))
                 }
             }
         }.then { file in //fetching download url
@@ -321,7 +321,7 @@ open class FileStore {
                                     reject(error)
                                 }
                             } else {
-                                reject(Error.invalidResponse)
+                                reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
                             }
                         }
                     } else {
@@ -411,7 +411,7 @@ open class FileStore {
                     if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
-                        completionHandler?(file, nil, Error.invalidResponse)
+                        completionHandler?(file, nil, Error.invalidResponse(httpResponse: nil, data: nil))
                     }
                 }).catch { [file] error in
                     completionHandler?(file, nil, error)
@@ -451,7 +451,7 @@ open class FileStore {
                     if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
-                        completionHandler?(file, nil, Error.invalidResponse)
+                        completionHandler?(file, nil, Error.invalidResponse(httpResponse: nil, data: nil))
                     }
                 }
             }.catch { [file] error in

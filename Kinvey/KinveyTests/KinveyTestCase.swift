@@ -157,7 +157,7 @@ class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
     var encrypted = false
-    var useMockData = appKey == nil || appSecret == nil
+    var useMockData = !ProcessInfo.processInfo.arguments.contains("--integrationTests")
     
     static let defaultTimeout = TimeInterval(Int8.max)
     lazy var defaultTimeout: TimeInterval = {
