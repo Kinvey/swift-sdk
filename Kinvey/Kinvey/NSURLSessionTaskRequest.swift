@@ -62,7 +62,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         } else if let error = error {
             reject(error)
         } else {
-            reject(Error.InvalidResponse)
+            reject(Error.InvalidResponse(httpResponse: response as? NSHTTPURLResponse, data: nil))
         }
     }
     
@@ -72,7 +72,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         } else if let error = error {
             completionHandler(nil, nil, error)
         } else {
-            completionHandler(nil, nil, Error.InvalidResponse)
+            completionHandler(nil, nil, Error.InvalidResponse(httpResponse: response as? NSHTTPURLResponse, data: nil))
         }
     }
     

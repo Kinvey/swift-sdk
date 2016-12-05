@@ -32,7 +32,7 @@ class AclTestCase: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .Unauthorized(let error, _):
+                case .Unauthorized(_, _, let error, _):
                     XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
                 default:
                     XCTFail()
@@ -97,7 +97,7 @@ class AclTestCase: StoreTestCase {
                 XCTAssertNotNil(errors.first as? Kinvey.Error)
                 if let error = errors.first as? Kinvey.Error {
                     switch error {
-                    case .Unauthorized(let error, _):
+                    case .Unauthorized(_, _, let error, _):
                         XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
                     default:
                         XCTFail()
