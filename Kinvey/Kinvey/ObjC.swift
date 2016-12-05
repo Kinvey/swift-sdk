@@ -62,7 +62,6 @@ extension User {
 internal class KinveyError: NSObject {
     
     internal static let ObjectIdMissing = Error.ObjectIdMissing.error
-    internal static let InvalidResponse = Error.InvalidResponse.error
     internal static let NoActiveUser = Error.NoActiveUser.error
     internal static let RequestCancelled = Error.RequestCancelled.error
     internal static let InvalidDataStoreType = Error.InvalidDataStoreType.error
@@ -70,12 +69,16 @@ internal class KinveyError: NSObject {
     private override init() {
     }
     
-    internal static func buildUnknownError(error: String) -> NSError {
-        return Error.buildUnknownError(error).error
+    internal static func buildUnknownError(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, error: String) -> NSError {
+        return Error.buildUnknownError(httpResponse: httpResponse, data: data, error: error).error
     }
     
-    internal static func buildUnknownJsonError(json: [String : AnyObject]) -> NSError {
-        return Error.buildUnknownJsonError(json).error
+    internal static func buildUnknownJsonError(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : AnyObject]) -> NSError {
+        return Error.buildUnknownJsonError(httpResponse: httpResponse, data: data, json: json).error
+    }
+    
+    internal static func buildInvalidResponse(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?) -> NSError {
+        return Error.InvalidResponse(httpResponse: httpResponse, data: data).error
     }
     
 }

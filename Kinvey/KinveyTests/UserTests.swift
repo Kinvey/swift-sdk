@@ -1447,7 +1447,7 @@ class UserTests: KinveyTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .UnknownJsonError(let json):
+                case .UnknownJsonError(_, _, let json):
                     let responseBody = [
                         "error" : "invalid_client",
                         "error_description" : "Client authentication failed.",

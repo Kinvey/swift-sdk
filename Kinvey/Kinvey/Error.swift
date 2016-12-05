@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: ErrorType {
+public enum Error: ErrorType, CustomStringConvertible, CustomDebugStringConvertible {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -21,22 +21,22 @@ public enum Error: ErrorType {
     case ObjectIdMissing
     
     /// Error when a method is not allowed, usually when you are using a Data Link Connector (DLC).
-    case MethodNotAllowed(debug: String, description: String)
+    case MethodNotAllowed(httpResponse: NSHTTPURLResponse?, data: NSData?, debug: String, description: String)
     
     /// Error when a Data Link endpoint is not found, usually when you are using a Data Link Connector (DLC).
-    case DataLinkEntityNotFound(debug: String, description: String)
+    case DataLinkEntityNotFound(httpResponse: NSHTTPURLResponse?, data: NSData?, debug: String, description: String)
     
     /// Error when the type is unknow.
-    case UnknownError(error: String)
+    case UnknownError(httpResponse: NSHTTPURLResponse?, data: NSData?, error: String)
     
     /// Error when the type is unknow.
-    case UnknownJsonError(json: [String : AnyObject])
+    case UnknownJsonError(httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : AnyObject])
     
     /// Error when a Invalid Response coming from the backend.
-    case InvalidResponse
+    case InvalidResponse(httpResponse: NSHTTPURLResponse?, data: NSData?)
     
     /// Error when a Unauthorized Response coming from the backend.
-    case Unauthorized(error: String, description: String)
+    case Unauthorized(httpResponse: NSHTTPURLResponse?, data: NSData?, error: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case NoActiveUser
@@ -57,44 +57,124 @@ public enum Error: ErrorType {
     case UserWithoutEmailOrUsername
     
     var error: NSError {
-        get {
-            return self as NSError
-        }
+        return self as NSError
     }
     
     /// Error localized description.
-    public var localizedDescription: String {
-        get {
-            let bundle = NSBundle(forClass: Client.self)
-            switch self {
-            case .Unauthorized(_, let description):
-                return description
-            case .InvalidOperation(let description):
-                return description
-            default:
-                return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
-            }
+    public var description: String {
+        let bundle = NSBundle(forClass: Client.self)
+        switch self {
+        case .MethodNotAllowed(_, _, _, let description):
+            return description
+        case .DataLinkEntityNotFound(_, _, _, let description):
+            return description
+         case .UnknownError(_, _, let description):
+            return description
+         case .Unauthorized(_, _, _, let description):
+             return description
+        case .InvalidOperation(let description):
+            return description
+        case .ObjectIdMissing:
+            return NSLocalizedString("Error.ObjectIdMissing", bundle: bundle, comment: "")
+        case .UnknownJsonError:
+            return NSLocalizedString("Error.UnknownJsonError", bundle: bundle, comment: "")
+        case .InvalidResponse(_, _):
+            return NSLocalizedString("Error.InvalidResponse", bundle: bundle, comment: "")
+        case .NoActiveUser:
+            return NSLocalizedString("Error.NoActiveUser", bundle: bundle, comment: "")
+        case .RequestCancelled:
+            return NSLocalizedString("Error.RequestCancelled", bundle: bundle, comment: "")
+        case .RequestTimeout:
+            return NSLocalizedString("Error.RequestTimeout", bundle: bundle, comment: "")
+        case .InvalidDataStoreType:
+            return NSLocalizedString("Error.InvalidDataStoreType", bundle: bundle, comment: "")
+        case .UserWithoutEmailOrUsername:
+            return NSLocalizedString("Error.UserWithoutEmailOrUsername", bundle: bundle, comment: "")
         }
     }
     
-    static func buildUnknownError(error: String) -> Error {
-        return UnknownError(error: error)
+    public var debugDescription: String {
+        switch self {
+        case .MethodNotAllowed(_, _, let debug, _):
+            return debug
+        case .DataLinkEntityNotFound(_, _, let debug, _):
+            return debug
+        default:
+            return description
+        }
     }
     
-    static func buildUnknownJsonError(json: [String : AnyObject]) -> Error {
-        return UnknownJsonError(json: json)
+    /// Response object contains status code, headers, etc.
+    public var httpResponse: NSHTTPURLResponse? {
+        switch self {
+        case .UnknownError(let httpResponse, _, _):
+            return httpResponse
+        case .UnknownJsonError(let httpResponse, _, _):
+            return httpResponse
+        case .DataLinkEntityNotFound(let httpResponse, _, _, _):
+            return httpResponse
+        case .MethodNotAllowed(let httpResponse, _, _, _):
+            return httpResponse
+        case .Unauthorized(let httpResponse, _, _, _):
+            return httpResponse
+        case .InvalidResponse(let httpResponse, _):
+            return httpResponse
+        default:
+            return nil
+        }
     }
     
-    static func buildDataLinkEntityNotFound(json: [String : String]) -> Error {
-        return DataLinkEntityNotFound(debug: json["debug"]!, description: json["description"]!)
+    /// Response Header `X-Kinvey-Request-Id`
+    public var requestId: String? {
+        return httpResponse?.allHeaderFields[Header.RequestId.rawValue] as? String
     }
     
-    static func buildMethodNotAllowed(json: [String : String]) -> Error {
-        return MethodNotAllowed(debug: json["debug"]!, description: json["description"]!)
+    /// Response Data Body object.
+    public var responseDataBody: NSData? {
+        switch self {
+        case .UnknownError(_, let data, _):
+            return data
+        case .UnknownJsonError(_, let data, _):
+            return data
+        case .DataLinkEntityNotFound(_, let data, _, _):
+            return data
+        case .MethodNotAllowed(_, let data, _, _):
+            return data
+        case .Unauthorized(_, let data, _, _):
+            return data
+        case .InvalidResponse(_, let data):
+            return data
+        default:
+            return nil
+        }
     }
     
-    static func buildUnauthorized(json: [String : String]) -> Error {
-        return Unauthorized(error: json["error"]!, description: json["description"]!)
+    /// Response Body as a String value.
+    public var responseStringBody: String? {
+        if let data = responseDataBody, let responseStringBody = String(data: data, encoding: NSUTF8StringEncoding) {
+            return responseStringBody
+        }
+        return nil
+    }
+    
+    static func buildUnknownError(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, error: String) -> Error {
+        return UnknownError(httpResponse: httpResponse, data: data, error: error)
+    }
+    
+    static func buildUnknownJsonError(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : AnyObject]) -> Error {
+        return UnknownJsonError(httpResponse: httpResponse, data: data, json: json)
+    }
+    
+    static func buildDataLinkEntityNotFound(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : String]) -> Error {
+        return DataLinkEntityNotFound(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    }
+    
+    static func buildMethodNotAllowed(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : String]) -> Error {
+        return MethodNotAllowed(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    }
+    
+    static func buildUnauthorized(httpResponse httpResponse: NSHTTPURLResponse?, data: NSData?, json: [String : String]) -> Error {
+        return Unauthorized(httpResponse: httpResponse, data: data, error: json["error"]!, description: json["description"]!)
     }
     
 }
