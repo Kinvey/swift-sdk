@@ -15,6 +15,10 @@ import ObjectMapper
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
     }
     
@@ -61,12 +65,20 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpWithUsernameAndPassword() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
     }
     
     func testSignUpAndDestroy() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -130,6 +142,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpAndDestroyClassFunc() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -172,6 +188,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpAndDestroyClientClassFunc() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -193,6 +213,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testChangePassword() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
@@ -255,6 +279,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testGet() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -297,6 +325,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLookup() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         let email = "\(username)@kinvey.com"
@@ -324,8 +356,6 @@ class UserTests: KinveyTestCase {
             }
             
             do {
-                client.logNetworkEnabled = true
-                
                 weak var expectationUserLookup = expectation(description: "User Lookup")
                 
                 let userQuery = UserQuery {
@@ -371,6 +401,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSave() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         let user = User()
@@ -410,6 +444,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveCustomUser() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         let user = MyUser()
@@ -451,6 +489,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         signUp()
@@ -480,6 +522,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLogin() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -511,6 +557,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLoginTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -574,6 +624,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLogin200ButInvalidResponseError() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -660,6 +714,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testExists() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -735,6 +793,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSendEmailConfirmation() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -785,8 +847,6 @@ class UserTests: KinveyTestCase {
 
             weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
             
-            Client.sharedClient.logNetworkEnabled = true
-            
             user.sendEmailConfirmation { error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
@@ -801,9 +861,11 @@ class UserTests: KinveyTestCase {
     }
     
     func testUserMetadata() {
-        signUp()
+        guard !useMockData else {
+            return
+        }
         
-        Client.sharedClient.logNetworkEnabled = true
+        signUp()
         
         class Mock200URLProtocol: URLProtocol {
             
@@ -866,6 +928,10 @@ class UserTests: KinveyTestCase {
     
     }
     func testResetPasswordByEmail() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -930,6 +996,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordByUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -951,6 +1021,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordNoEmailOrUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -988,6 +1062,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -1025,6 +1103,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testForgotUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
         User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") { error in
@@ -1136,6 +1218,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginWKWebView() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1219,6 +1305,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginWKWebViewModal() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1310,6 +1400,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginUIWebView() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1366,8 +1460,6 @@ class UserTests: KinveyTestCase {
     func find() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
-        Kinvey.sharedClient.logNetworkEnabled = true
-        
         if Kinvey.sharedClient.activeUser != nil {
             let store = DataStore<Person>.collection(.network)
             
@@ -1387,6 +1479,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginUIWebViewTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1432,6 +1528,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICErrorMessage() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()

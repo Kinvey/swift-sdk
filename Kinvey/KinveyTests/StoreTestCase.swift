@@ -27,7 +27,7 @@ class StoreTestCase: KinveyTestCase {
     @discardableResult
     func save<T: Persistable>(_ persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) where T: NSObject {
         if useMockData {
-            setResponseBody {
+            mockResponse {
                 var json = try! JSONSerialization.jsonObject(with: $0) as! JsonDictionary
                 json["_id"] = json["_id"] ?? UUID().uuidString
                 json["date"] = Date().toString()
@@ -77,7 +77,7 @@ class StoreTestCase: KinveyTestCase {
         let age = person.age
         
         if useMockData {
-            setResponseBody(json: [
+            mockResponse(json: [
                 "_id" : UUID().uuidString,
                 "name" : "Victor",
                 "age" : 29,

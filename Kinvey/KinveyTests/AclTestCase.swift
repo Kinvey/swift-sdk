@@ -23,7 +23,7 @@ class AclTestCase: StoreTestCase {
         store = DataStore<Person>.collection(.network)
         
         if useMockData {
-            setResponseBody(statusCode: 401, json: [
+            mockResponse(statusCode: 401, json: [
                 "error" : "InsufficientCredentials",
                 "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
                 "debug" : ""
@@ -73,7 +73,7 @@ class AclTestCase: StoreTestCase {
         
         do {
             if useMockData {
-                setResponseBody(json: [
+                mockResponse(json: [
                     "_id" : person.entityId!,
                     "name" : "Victor",
                     "age" : 29,
@@ -129,7 +129,7 @@ class AclTestCase: StoreTestCase {
         
         do {
             if useMockData {
-                setResponseBody(statusCode: 401, json: [
+                mockResponse(statusCode: 401, json: [
                     "error" : "InsufficientCredentials",
                     "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
                     "debug" : ""
@@ -185,7 +185,7 @@ class AclTestCase: StoreTestCase {
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
             if useMockData {
-                setResponseBody(json: [
+                mockResponse(json: [
                     "_id" : UUID().uuidString,
                     "name" : "Victor",
                     "age" : 29,
@@ -242,7 +242,7 @@ class AclTestCase: StoreTestCase {
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
             if useMockData {
-                setResponseBody(json: [
+                mockResponse(json: [
                     "_id" : UUID().uuidString,
                     "name" : "Victor",
                     "age" : 29,
@@ -307,7 +307,7 @@ class AclTestCase: StoreTestCase {
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
             if useMockData {
-                setResponseBody(json: [
+                mockResponse(json: [
                     "_id" : personId,
                     "name" : "Victor",
                     "age" : 29,
@@ -372,7 +372,7 @@ class AclTestCase: StoreTestCase {
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
             if useMockData {
-                setResponseBody(json: [
+                mockResponse(json: [
                     "_id" : UUID().uuidString,
                     "name" : "Victor",
                     "age" : 29,

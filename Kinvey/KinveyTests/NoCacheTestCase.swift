@@ -33,9 +33,10 @@ class NoCacheTestCase: XCTestCase {
     }
     
     func testNoCache() {
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
+        let client = Client()
+        client.initialize(appKey: "appKey", appSecret: "appSecret")
         
-        let _ = DataStore<Person>.collection(.network)
+        let _ = DataStore<Person>.collection(.network, client: client)
         
         let realmConfiguration = Realm.Configuration.defaultConfiguration
         if var baseURL = realmConfiguration.fileURL {

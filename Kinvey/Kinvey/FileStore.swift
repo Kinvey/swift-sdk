@@ -219,7 +219,13 @@ open class FileStore {
                 }
                 
                 let handle: (Data?, URLResponse?, Swift.Error?) -> Void = { data, response, error in
-                    if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300 {
+                    if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
+                        do {
+                            print("\(response.description(data))")
+                        }
+                    }
+                    
+                    if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
                         fulfill(file)
                     } else {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
@@ -236,12 +242,24 @@ open class FileStore {
                         uploadData = data
                     }
                     
+                    if self.client.logNetworkEnabled {
+                        do {
+                            print("\(request.description)")
+                        }
+                    }
+                    
                     let uploadTask = self.client.urlSession.uploadTask(with: request, from: uploadData) { (data, response, error) -> Void in
                         handle(data, response, error)
                     }
                     requests += (NSURLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
                     uploadTask.resume()
                 } else if let fromFile = fromFile {
+                    if self.client.logNetworkEnabled {
+                        do {
+                            print("\(request.description)")
+                        }
+                    }
+                    
                     let uploadTask = self.client.urlSession.uploadTask(with: request, fromFile: fromFile) { (data, response, error) -> Void in
                         handle(data, response, error)
                     }
