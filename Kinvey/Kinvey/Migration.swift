@@ -29,9 +29,13 @@ open class Migration: NSObject {
             realmBaseConfiguration.encryptionKey = encryptionKey
         }
         realmBaseConfiguration.schemaVersion = schemaVersion
-        realmBaseConfiguration.migrationBlock = { migration, oldSchemaVersion in
-            let migration = Migration(realmMigration: migration)
-            migrationHandler?(migration, oldSchemaVersion)
+        if let migrationHandler = migrationHandler {
+            realmBaseConfiguration.migrationBlock = { migration, oldSchemaVersion in
+                let migration = Migration(realmMigration: migration)
+                migrationHandler(migration, oldSchemaVersion)
+            }
+        } else {
+            realmBaseConfiguration.deleteRealmIfMigrationNeeded = true
         }
         let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
         let fileManager = FileManager.default

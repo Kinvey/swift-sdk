@@ -33,4 +33,6 @@
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
                                client:(id)client;
 
+- (instancetype) initWithClient:(KNVClient*)client;
+
 @end

@@ -193,7 +193,7 @@ class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
     var encrypted = false
-    var useMockData = !ProcessInfo.processInfo.arguments.contains("--integrationTests")
+    var useMockData = appKey == nil || appSecret == nil
     
     static let defaultTimeout = TimeInterval(Int8.max)
     lazy var defaultTimeout: TimeInterval = {
@@ -345,6 +345,27 @@ class KinveyTestCase: XCTestCase {
             user.logout()
         }
         
+        if useMockData {
+            mockResponse(statusCode: 201, json: [
+                "username": username,
+                "password": password,
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString(),
+                    "authtoken": UUID().uuidString
+                ],
+                "_id": UUID().uuidString,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationSignUp = expectation(description: "Sign Up")
         
         User.signup(username: username, password: password) { user, error in
@@ -389,20 +410,6 @@ class KinveyTestCase: XCTestCase {
             }
             
             XCTAssertNil(client.activeUser)
-        }
-        
-        let personStore = DataStore<Person>.collection(.sync)
-        
-        weak var expectationFind = expectation(description: "Find")
-        
-        personStore.find { results, error in
-            XCTAssertEqual(results?.count, 0)
-            
-            expectationFind?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationFind = nil
         }
         
         super.tearDown()

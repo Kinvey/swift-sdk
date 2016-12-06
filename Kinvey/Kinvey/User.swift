@@ -456,7 +456,7 @@ open class User: NSObject, Credential, Mappable {
             "username" : username,
             "password" : password
         ]
-        KCSUser.login(withAuthorizationCodeAPI: redirectURI.absoluteString, options: options) { (kcsUser, error, actionResult) in
+        KCSUser.login(withAuthorizationCodeAPI: redirectURI.absoluteString, options: options, client: client) { (kcsUser, error, actionResult) in
             onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
     }

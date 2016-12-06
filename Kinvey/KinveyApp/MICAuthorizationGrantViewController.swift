@@ -19,10 +19,14 @@ class MICAuthorizationGrantViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        Kinvey.sharedClient.initialize(
-            appKey: "kid_rJVLE1Z5",
-            appSecret: "cd385840cbd94e2caaa8f824c2ff7f46"
-        )
+        if let appKey = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_KEY"],
+            let appSecret = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_SECRET"]
+        {
+            Kinvey.sharedClient.initialize(
+                appKey: appKey,
+                appSecret: appSecret
+            )
+        }
     }
     
     @IBAction func login(_ sender: UIButton) {

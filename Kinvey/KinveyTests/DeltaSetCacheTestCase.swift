@@ -1349,35 +1349,17 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         if useMockData {
             mockResponse { request in
                 urlProtocolCalled = true
-                
-                var queryParams = [String : String]()
-                let components = request.url?.query?.components(separatedBy: "&")
-                XCTAssertNotNil(components)
-                if let components = components {
-                    for component in components {
-                        let keyValuePair = component.components(separatedBy: "=")
-                        queryParams[keyValuePair[0]] = keyValuePair[1]
-                    }
-                    let fields = queryParams["fields"]
-                    XCTAssertNotNil(fields)
-                    if let fields = fields {
-                        let fieldsArray = fields.components(separatedBy: ",").sorted()
-                        XCTAssertGreaterThanOrEqual(fieldsArray.count, 2)
-                        if fieldsArray.count >= 2 {
-                            XCTAssertEqual(fieldsArray[0], "_id")
-                            XCTAssertEqual(fieldsArray[1], "_kmd.lmt")
-                        }
-                    }
-                }
-                
                 return HttpResponse(json: [
                     [
                         "_id" : mockObjectId!,
+                        "name" : "Victor",
+                        "age" : 0,
                         "_acl" : [
                             "creator" : self.client.activeUser?.userId
                         ],
                         "_kmd" : [
-                            "lmt" : mockDate?.toString()
+                            "lmt" : mockDate?.toString(),
+                            "ect" : mockDate?.toString()
                         ]
                     ]
                 ])

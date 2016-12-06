@@ -7,10 +7,15 @@
 //
 
 #import "KCSHttpRequest.h"
+#import "KNVClient.h"
 
 @interface KCSMICRequest2 : KCSHttpRequest
 
 +(instancetype)requestWithRedirectURI:(NSString *)redirectURI
+                           completion:(KCSRequestCompletionBlock)completion;
+
++(instancetype)requestWithRedirectURI:(NSString *)redirectURI
+                               client:(KNVClient*)client
                            completion:(KCSRequestCompletionBlock)completion;
 
 @end

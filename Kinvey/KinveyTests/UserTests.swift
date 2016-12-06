@@ -23,44 +23,44 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUp404StatusCode() {
-        class ErrorURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                client!.urlProtocol(self, didLoad: Data())
-                client!.urlProtocolDidFinishLoading(self)
-            }
-            
-            override func stopLoading() {
-            }
-            
+        mockResponse(statusCode: 404, data: Data())
+        defer {
+            setURLProtocol(nil)
         }
         
-        setURLProtocol(ErrorURLProtocol.self)
+        weak var expectationSignUp = expectation(description: "Sign Up")
         
-        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
+        User.signup { user, error in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
+            
+            expectationSignUp?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSignUp = nil
         }
     }
     
     func testSignUpTimeoutError() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
         
-        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
+        weak var expectationSignUp = expectation(description: "Sign Up")
+        
+        User.signup { user, error in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
+            
+            expectationSignUp?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSignUp = nil
         }
     }
     
@@ -105,6 +105,15 @@ class UserTests: KinveyTestCase {
         var userId:String = ""
         
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             userId = user.userId
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
@@ -124,6 +133,19 @@ class UserTests: KinveyTestCase {
         signUp()
 
         if let _ = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 404, json: [
+                    "error": "UserNotFound",
+                    "description": "This user does not exist for this app backend",
+                    "debug": ""
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
             User.get(userId: userId , completionHandler: { (user, error) in
@@ -136,9 +158,7 @@ class UserTests: KinveyTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFindDestroyedUser = nil
             }
-
         }
-
     }
     
     func testSignUpAndDestroyClassFunc() {
@@ -170,6 +190,15 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, hard: true, completionHandler: { (error) -> Void in
@@ -1620,7 +1649,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocolDidFinishLoading(self)
                 case 2:
                     let requestBody = String(data: request.httpBody!, encoding: String.Encoding.utf8)!
-                    XCTAssertEqual(requestBody, "client_id=kid_rJVLE1Z5&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
+                    XCTAssertEqual(requestBody, "client_id=\(MockKinveyBackend.kid)&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -1653,7 +1682,7 @@ class UserTests: KinveyTestCase {
                                 "access_token" : "a10a3743028e2e92b97037825b50a2666608b874",
                                 "refresh_token" : "627b034f5ec409899252a8017cb710566dfd2620",
                                 "id" : "custom",
-                                "audience" : "kid_rJVLE1Z5"
+                                "audience" : MockKinveyBackend.kid
                             ]
                         ],
                         "username" : "3b788b0c-cb99-4692-b3ae-a6b10b3d76f2",
@@ -1685,8 +1714,6 @@ class UserTests: KinveyTestCase {
         defer {
             KCSURLProtocol.unregisterClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
         }
-        
-        Kinvey.sharedClient.initialize(appKey: "kid_rJVLE1Z5", appSecret: "cd385840cbd94e2caaa8f824c2ff7f46")
         
         XCTAssertNil(client.activeUser)
         
