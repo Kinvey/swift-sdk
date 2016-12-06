@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import RealmSwift
 @testable import Kinvey
 
 class EncryptedDataStoreTestCase: StoreTestCase {

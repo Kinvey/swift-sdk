@@ -28,7 +28,16 @@
 +(instancetype)requestWithRedirectURI:(NSString *)redirectURI
                            completion:(KCSRequestCompletionBlock)completion
 {
-    KCSMICRequest2* request = [[KCSMICRequest2 alloc] init];
+    return [self requestWithRedirectURI:redirectURI
+                                 client:[KNVClient sharedClient]
+                             completion:completion];
+}
+
++(instancetype)requestWithRedirectURI:(NSString *)redirectURI
+                               client:(KNVClient*)client
+                           completion:(KCSRequestCompletionBlock)completion
+{
+    KCSMICRequest2* request = [[KCSMICRequest2 alloc] initWithClient:client];
     request.redirectURI = redirectURI;
     request.completionBlock = completion;
     
@@ -40,9 +49,16 @@
 
 -(NSMutableURLRequest *)urlRequest
 {
+    return [self urlRequestWithClient:[KNVClient sharedClient]];
+}
+
+-(NSMutableURLRequest *)urlRequestWithClient:(KNVClient*)client
+{
     NSURL* url = [KCSUser2 URLforLoginWithMICRedirectURI:self.redirectURI
-                                             isLoginPage:NO];
-    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
+                                             isLoginPage:NO
+                                                  client:client];
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url
+                                                          client:client];
     request.HTTPMethod = @"POST";
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
     if (!config) {
