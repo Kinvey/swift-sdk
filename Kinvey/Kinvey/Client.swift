@@ -72,13 +72,7 @@ open class Client: NSObject, NSCoding, Credential {
         }
     }
     
-    internal static let urlSessionConfiguration: URLSessionConfiguration = {
-        var urlSessionConfiguration = URLSessionConfiguration.default
-        urlSessionConfiguration.httpCookieAcceptPolicy = .never
-        urlSessionConfiguration.httpShouldSetCookies = false
-        urlSessionConfiguration.httpCookieStorage = nil
-        return urlSessionConfiguration
-    }()
+    internal static let urlSessionConfiguration = URLSessionConfiguration.default
     
     internal var urlSession = URLSession(configuration: urlSessionConfiguration) {
         willSet {
