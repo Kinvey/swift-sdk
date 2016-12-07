@@ -38,7 +38,7 @@ Or run the command line:
 `make test`
 
 ```
-Important Note: adding the environment variables KINVEY_APP_KEY and KINVEY_APP_SECRET will allow you to run the tests against a real Kinvey environment.
+Important Note: adding the environment variables KINVEY_APP_KEY, KINVEY_APP_SECRET and KINVEY_MIC_APP_KEY will allow you to run the tests against a real Kinvey environment.
 ```
 
 ## Releasing
