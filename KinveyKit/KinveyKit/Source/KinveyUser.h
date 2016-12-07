@@ -350,6 +350,11 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
                                     options:(NSDictionary*)options
                         withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
++(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString*)redirectURI
+                                    options:(NSDictionary*)options
+                                     client:(id)client
+                        withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
 /**
  Check if the URL matches with the redirectURI and contains the authorization code for MIC.
  

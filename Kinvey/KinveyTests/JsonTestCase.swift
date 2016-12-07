@@ -19,23 +19,44 @@ class JsonTestCase: StoreTestCase {
         let project = RefProject()
         project.name = "Mall"
         
-        weak var expectationCreateMall = expectation(description: "CreateMall")
-        
-        storeProject.save(project) { (project, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(project)
-            XCTAssertNil(error)
-            
-            if let project = project {
-                XCTAssertNotNil(project.uniqueId)
-                XCTAssertNotEqual(project.uniqueId, "")
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Mall",
+                    "_acl": [
+                        "creator": "58450b92c077970e38a36e04"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:39:14.797Z",
+                        "ect": "2016-12-05T06:39:14.797Z"
+                    ],
+                    "_id": "58450b9231bd8a5e0f145e97"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
             }
             
-            expectationCreateMall?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationCreateMall = nil
+            weak var expectationCreateMall = expectation(description: "CreateMall")
+            
+            storeProject.save(project) { (project, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(project)
+                XCTAssertNil(error)
+                
+                if let project = project {
+                    XCTAssertNotNil(project.uniqueId)
+                    XCTAssertNotEqual(project.uniqueId, "")
+                }
+                
+                expectationCreateMall?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCreateMall = nil
+            }
         }
         
         XCTAssertNotNil(project.uniqueId)
@@ -49,23 +70,46 @@ class JsonTestCase: StoreTestCase {
         directory.email = "victor@kinvey.com"
         directory.refProject = project
         
-        weak var expectationCreateDirectory = expectation(description: "CreateDirectory")
-        
-        storeDirectory.save(directory) { (directory, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(directory)
-            XCTAssertNil(error)
-            
-            if let directory = directory {
-                XCTAssertNotNil(directory.uniqueId)
-                XCTAssertNotEqual(directory.uniqueId, "")
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "email": "victor@kinvey.com",
+                    "nameFirst": "Victor",
+                    "nameLast": "Barros",
+                    "_acl": [
+                        "creator": "58450b92c077970e38a36e04"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:39:14.937Z",
+                        "ect": "2016-12-05T06:39:14.937Z"
+                    ],
+                    "_id": "58450b92d5ee86507a8b415d"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
             }
             
-            expectationCreateDirectory?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationCreateDirectory = nil
+            weak var expectationCreateDirectory = expectation(description: "CreateDirectory")
+            
+            storeDirectory.save(directory) { (directory, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(directory)
+                XCTAssertNil(error)
+                
+                if let directory = directory {
+                    XCTAssertNotNil(directory.uniqueId)
+                    XCTAssertNotEqual(directory.uniqueId, "")
+                }
+                
+                expectationCreateDirectory?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCreateDirectory = nil
+            }
         }
     }
     

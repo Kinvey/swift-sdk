@@ -81,6 +81,10 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
         removeAllPendingOperations(nil, methods: nil)
     }
     
+    override func removeAllPendingOperations(_ objectId: String?) {
+        removeAllPendingOperations(objectId, methods: nil)
+    }
+    
     override func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
         executor.executeAndWait {
             try! self.realm.write {

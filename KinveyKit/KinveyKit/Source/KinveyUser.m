@@ -209,9 +209,21 @@ void setActive(KCSUser* user)
                                     options:(NSDictionary *)options
                         withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
+    return [self loginWithAuthorizationCodeAPI:redirectURI
+                                       options:options
+                                        client:[KNVClient sharedClient]
+                           withCompletionBlock:completionBlock];
+}
+
++(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString*)redirectURI
+                                    options:(NSDictionary*)options
+                                     client:(KNVClient*)client
+                        withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
     SWITCH_TO_MAIN_THREAD_USER_BLOCK(completionBlock);
     return [KCSUser2 loginWithAuthorizationCodeAPI:redirectURI
                                            options:options
+                                            client:client
                                         completion:^(id<KCSUser2> user, NSError *error)
     {
         if (completionBlock) {
