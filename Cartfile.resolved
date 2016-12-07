@@ -1,3 +1,4 @@
+github "mattgallagher/CwlPreconditionTesting" "a5726f9be7a639293da1306eff518981b56e07e9"
 github "kif-framework/KIF" "v3.5.1"
 github "kishikawakatsumi/KeychainAccess" "v3.0.1"
 github "tjboneman/NSPredicate-MongoDB-Adaptor" "19e76bab788f4a96e210f4ffca196cc9e52f856a"
