@@ -37,6 +37,10 @@ Or run the command line:
 
 `make test`
 
+```
+Important Note: adding the environment variables KINVEY_APP_KEY and KINVEY_APP_SECRET will allow you to run the tests against a real Kinvey environment.
+```
+
 ## Releasing
 We use [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow for better management.
 
