@@ -294,14 +294,14 @@ internal class HttpRequest: TaskProgressRequest, Request {
         
         if client.logNetworkEnabled {
             do {
-                print("\(request.description)")
+                log.debug("\(self.request.description)")
             }
         }
         
         task = client.urlSession.dataTask(with: request) { (data, response, error) -> Void in
             if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
                 do {
-                    print("\(response.description(data))")
+                    log.debug("\(response.description(data))")
                 }
             }
             

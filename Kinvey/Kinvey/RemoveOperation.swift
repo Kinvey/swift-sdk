@@ -19,7 +19,9 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
     }
     
     func buildRequest() -> HttpRequest {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {

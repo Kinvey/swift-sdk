@@ -1,5 +1,43 @@
+2.1.1 Release notes (2016-12-02)
+=============================================================
+
+### Enhancements
+
+* Add `RealmSwift.ObjectiveCSupport.convert(object:)` methods to help write
+  code that interoperates between Realm Objective-C and Realm Swift APIs.
+* Throw exceptions when opening a Realm with an incorrect configuration, like:
+    * `readOnly` set with a sync configuration.
+    * `readOnly` set with a migration block.
+    * migration block set with a sync configuration.
+* Greatly improve performance of write transactions which make a large number of
+  changes to indexed properties, including the automatic migration when opening
+  files written by Realm 1.x.
+
+### Bugfixes
+
+* Reset sync metadata Realm in case of decryption error.
+* Fix issue preventing using synchronized Realms in Xcode Playgrounds.
+* Fix assertion failure when migrating a model property from object type to
+  `RLMLinkingObjects` type.
+* Fix a `LogicError: Bad version number` exception when using `RLMResults` with
+  no notification blocks and explicitly called `-[RLMRealm refresh]` from that
+  thread.
+* Logged-out users are no longer returned from `+[RLMSyncUser currentUser]` or
+  `+[RLMSyncUser allUsers]`.
+* Fix several issues which could occur when the 1001st object of a given type
+  was created or added to an RLMArray/List, including crashes when rerunning
+  existing queries and possibly data corruption.
+* Fix a potential crash when the application exits due to a race condition in
+  the destruction of global static variables.
+* Fix race conditions when waiting for sync uploads or downloads to complete
+  which could result in crashes or the callback being called too early.
+
 2.1.0 Release notes (2016-11-18)
 =============================================================
+
+### Sync Breaking Changes (In Beta)
+
+* None.
 
 ### API breaking changes
 
@@ -23,7 +61,7 @@
 2.0.4 Release notes (2016-11-14)
 =============================================================
 
-### API breaking changes
+### Sync Breaking Changes (In Beta)
 
 * Remove `RLMAuthenticationActions` and replace
   `+[RLMSyncCredential credentialWithUsername:password:actions:]` with
@@ -43,6 +81,10 @@
   struct rather than a named tuple.
 * `+[RLMSyncUser logInWithCredentials:]` now invokes its callback block on a
   background queue.
+
+### API breaking changes
+
+* None.
 
 ### Enhancements
 

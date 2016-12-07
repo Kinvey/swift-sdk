@@ -20,7 +20,9 @@ internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
     }
     
     func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
 }
