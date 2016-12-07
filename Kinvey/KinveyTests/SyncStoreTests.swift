@@ -29,6 +29,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testCustomTag() {
+        guard !useMockData else {
+            return
+        }
+        
         let fileManager = FileManager.default
         
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
@@ -76,6 +80,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPurge() {
+        guard !useMockData else {
+            return
+        }
+        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
@@ -140,7 +148,7 @@ class SyncStoreTests: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
-            XCTAssertNil(count)
+            XCTAssertNotNil(count)
             XCTAssertNotNil(error)
             
             expectationPurge?.fulfill()
@@ -152,6 +160,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSync() {
+        guard !useMockData else {
+            return
+        }
+        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
@@ -247,6 +259,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPush() {
+        guard !useMockData else {
+            return
+        }
+        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
@@ -318,6 +334,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPull() {
+        guard !useMockData else {
+            return
+        }
+        
         MockKinveyBackend.kid = client.appKey!
         setURLProtocol(MockKinveyBackend.self)
         defer {
@@ -568,6 +588,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testFindById() {
+        guard !useMockData else {
+            return
+        }
+        
         let person = save()
         
         XCTAssertNotNil(person.personId)
@@ -599,6 +623,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testFindByQuery() {
+        guard !useMockData else {
+            return
+        }
+        
         let person = save()
         
         XCTAssertNotNil(person.personId)
@@ -768,6 +796,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testExpiredTTL() {
+        guard !useMockData else {
+            return
+        }
+        
         store.ttl = 1.seconds
         
         let person = save()
@@ -820,6 +852,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSaveAndFind10SkipLimit() {
+        guard !useMockData else {
+            return
+        }
+        
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         guard let user = Kinvey.sharedClient.activeUser else {

@@ -11,10 +11,22 @@ import XCTest
 
 class DeltaSetCacheTestCase: KinveyTestCase {
     
+    var mockCount = 0
+    
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
             let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
+            
+            if useMockData {
+                mockResponse(json: ["count" : mockCount])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+                mockCount = 0
+            }
             
             weak var expectationRemoveAll = expectation(description: "Remove All")
             
@@ -103,9 +115,27 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let person = Person()
         person.name = "Victor"
         
-        client.logNetworkEnabled = true
-        
         do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "_id" : UUID().uuidString,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                    ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationSaveLocal = expectation(description: "Save Local")
             weak var expectationSaveRemote = expectation(description: "Save Remote")
             
@@ -132,6 +162,26 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             let person = Person()
             person.name = "Victor Barros"
+            
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "_id" : UUID().uuidString,
+                    "name" : "Victor Barros",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
             
             weak var expectationCreate = expectation(description: "Create")
             
@@ -174,6 +224,41 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Victor",
+                        "age" : 0,
+                        "_acl" : [
+                            "creator" : client.activeUser!.userId
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ],
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Victor Barros",
+                        "age" : 0,
+                        "_acl" : [
+                            "creator" : client.activeUser!.userId
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                    mockCount = 2
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(query, readPolicy: .forceNetwork) { persons, error in
@@ -213,17 +298,44 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectation(description: "Save")
+            if useMockData {
+                mockResponse(json: [
+                    "_id": UUID().uuidString,
+                    "name": "Victor",
+                    "age": 0,
+                    "_acl": [
+                        "creator": client.activeUser?.userId
+                    ],
+                    "_kmd": [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSaveLocal = expectation(description: "Save Local")
+            weak var expectationSaveRemote = expectation(description: "Save Remote")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
-                expectationSave?.fulfill()
+                if let expectation = expectationSaveLocal {
+                    expectation.fulfill()
+                    expectationSaveLocal = nil
+                } else {
+                    expectationSaveRemote?.fulfill()
+                }
             }
             
             waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
-                expectationSave = nil
+                expectationSaveLocal = nil
+                expectationSaveRemote = nil
             }
         }
         
@@ -236,6 +348,26 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.personId = personId
             person.name = "Victor Barros"
+            
+            if useMockData {
+                mockResponse(json: [
+                    "name": person.name!,
+                    "age": 0,
+                    "_id": person.personId!,
+                    "_acl": [
+                        "creator": client.activeUser?.userId
+                    ],
+                    "_kmd": [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
             
             weak var expectationUpdate = expectation(description: "Update")
             
@@ -278,6 +410,28 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id": UUID().uuidString,
+                        "name": "Victor Barros",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": Date().toString(),
+                            "ect": Date().toString()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(query, readPolicy: .forceNetwork) { persons, error in
@@ -314,17 +468,44 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectation(description: "Save")
+            if useMockData {
+                mockResponse(json: [
+                    "_id" : UUID().uuidString,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSaveLocal = expectation(description: "Save Local")
+            weak var expectationSaveRemote = expectation(description: "Save Remote")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
-                expectationSave?.fulfill()
+                if let expectation = expectationSaveLocal {
+                    expectation.fulfill()
+                    expectationSaveLocal = nil
+                } else {
+                    expectationSaveRemote?.fulfill()
+                }
             }
             
             waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
-                expectationSave = nil
+                expectationSaveLocal = nil
+                expectationSaveRemote = nil
             }
         }
         
@@ -334,6 +515,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: ["count" : 1])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationDelete = expectation(description: "Delete")
             
             let query = Query(format: "personId == %@", personId)
@@ -379,6 +569,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
             store.find(query, readPolicy: .forceNetwork) { persons, error in
@@ -410,6 +609,26 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.name = String(format: "Person %02d", i)
             
+            if self.useMockData {
+                self.mockResponse(statusCode: 201, json: [
+                    "_id" : UUID().uuidString,
+                    "name" : person.name!,
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser?.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if self.useMockData {
+                    self.setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationCreate = self.expectation(description: "Create")
             
             let createOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: self.client)
@@ -429,6 +648,26 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.name = String(format: "Person Cached %02d", i)
             let store = DataStore<Person>.collection()
+            
+            if self.useMockData {
+                self.mockResponse(statusCode: 201, json: [
+                    "_id" : UUID().uuidString,
+                    "name" : person.name!,
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser?.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            defer {
+                if self.useMockData {
+                    self.setURLProtocol(nil)
+                }
+            }
             
             weak var expectationSave = self.expectation(description: "Save")
             
@@ -481,6 +720,191 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id": "5842214ec62113437f2cd7a7",
+                        "name": "Person 01",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:10.569Z",
+                            "ect": "2016-12-03T01:35:10.569Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214e101d805b674c5bcf",
+                        "name": "Person 02",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:10.747Z",
+                            "ect": "2016-12-03T01:35:10.747Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214fd23505ed759c7791",
+                        "name": "Person 03",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:11.105Z",
+                            "ect": "2016-12-03T01:35:11.105Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214f01bde1035e5246d6",
+                        "name": "Person 04",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:11.262Z",
+                            "ect": "2016-12-03T01:35:11.262Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214f101d805b674c5bd1",
+                        "name": "Person 05",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:11.424Z",
+                            "ect": "2016-12-03T01:35:11.424Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214f0ddebc566ac6ead9",
+                        "name": "Person 06",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:11.687Z",
+                            "ect": "2016-12-03T01:35:11.687Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842214f01bde1035e5246d7",
+                        "name": "Person 07",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:11.850Z",
+                            "ect": "2016-12-03T01:35:11.850Z"
+                        ]
+                    ],
+                    [
+                        "_id": "584221500ddebc566ac6eadb",
+                        "name": "Person 08",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.010Z",
+                            "ect": "2016-12-03T01:35:12.010Z"
+                        ]
+                    ],
+                    [
+                        "_id": "58422150c62113437f2cd7aa",
+                        "name": "Person 09",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.164Z",
+                            "ect": "2016-12-03T01:35:12.164Z"
+                        ]
+                    ],
+                    [
+                        "_id": "584221500ddebc566ac6eadc",
+                        "name": "Person 10",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.312Z",
+                            "ect": "2016-12-03T01:35:12.312Z"
+                        ]
+                    ],
+                    [
+                        "_id": "58422150249f9f88615bb27d",
+                        "name": "Person Cached 01",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.426Z",
+                            "ect": "2016-12-03T01:35:12.426Z"
+                        ]
+                    ],
+                    [
+                        "_id": "58422150f29e22207c640121",
+                        "name": "Person Cached 02",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.627Z",
+                            "ect": "2016-12-03T01:35:12.627Z"
+                        ]
+                    ],
+                    [
+                        "_id": "5842215000d1899109e7d6a4",
+                        "name": "Person Cached 03",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.757Z",
+                            "ect": "2016-12-03T01:35:12.757Z"
+                        ]
+                    ],
+                    [
+                        "_id": "58422150c62113437f2cd7ac",
+                        "name": "Person Cached 04",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:12.875Z",
+                            "ect": "2016-12-03T01:35:12.875Z"
+                        ]
+                    ],
+                    [
+                        "_id": "58422151c62113437f2cd7ad",
+                        "name": "Person Cached 05",
+                        "age": 0,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-12-03T01:35:13.010Z",
+                            "ect": "2016-12-03T01:35:13.010Z"
+                        ]
+                    ]
+                ])
+            }
+            
             weak var expectationPull = expectation(description: "Pull")
             
             store.pull(query) { (persons, error) -> Void in
@@ -625,12 +1049,18 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     }
     
     func testPerformance_1_9() {
+        guard !useMockData else {
+            return
+        }
         measureMetrics(type(of: self).defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
             self.perform(countBackend: 1, countLocal: 9)
         }
     }
     
     func testPerformance_9_1() {
+        guard !useMockData else {
+            return
+        }
         measureMetrics(type(of: self).defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
             self.perform(countBackend: 9, countLocal: 1)
         }
@@ -641,6 +1071,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.collection()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        if useMockData {
+            mockResponse(json: [])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -688,6 +1127,26 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    "name": "Victor",
+                    "age": 0,
+                    "_acl": [
+                        "creator": client.activeUser?.userId
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-03T01:44:44.642Z",
+                        "ect": "2016-12-03T01:44:44.642Z"
+                    ],
+                    "_id": "5842238cd23505ed759c8887"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationPush = expectation(description: "Push")
             
             store.push() { count, error in
@@ -707,9 +1166,30 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id": UUID().uuidString,
+                        "_acl": [
+                            "creator": client.activeUser?.userId
+                        ],
+                        "_kmd": [
+                            "lmt": Date().toString()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+            
             weak var expectationPull = expectation(description: "Pull")
             
-            store.pull(deltaSet: true) { results, error in
+            store.pull(query, deltaSet: true) { results, error in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
@@ -823,90 +1303,73 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             expectationSave = nil
         }
         
-        weak var expectationPush = expectation(description: "Push")
-        
-        store.push() { (count, error) in
-            XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
+        var mockObjectId: String? = nil
+        var mockDate: Date? = nil
+        do {
+            if useMockData {
+                mockObjectId = UUID().uuidString
+                mockDate = Date()
+                mockResponse(statusCode: 201, json: [
+                    "_id" : mockObjectId!,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser?.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : mockDate?.toString(),
+                        "ect" : mockDate?.toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
             
-            expectationPush?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { (error) in
-            expectationPush = nil
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
         }
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        class OnePersonURLProtocol: URLProtocol {
-            
-            static var userId = ""
-            static var urlProtocolCalled = false
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return !urlProtocolCalled
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                OnePersonURLProtocol.urlProtocolCalled = true
-                
-                var queryParams = [String : String]()
-                let components = request.url?.query?.components(separatedBy: "&")
-                XCTAssertNotNil(components)
-                if let components = components {
-                    for component in components {
-                        let keyValuePair = component.components(separatedBy: "=")
-                        queryParams[keyValuePair[0]] = keyValuePair[1]
-                    }
-                    let fields = queryParams["fields"]
-                    XCTAssertNotNil(fields)
-                    if let fields = fields {
-                        let fieldsArray = fields.components(separatedBy: ",").sorted()
-                        XCTAssertGreaterThanOrEqual(fieldsArray.count, 2)
-                        if fieldsArray.count >= 2 {
-                            XCTAssertEqual(fieldsArray[0], "_id")
-                            XCTAssertEqual(fieldsArray[1], "_kmd.lmt")
-                        }
-                    }
-                }
-                
-                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                
-                let object = [
+        var urlProtocolCalled = false
+        if useMockData {
+            mockResponse { request in
+                urlProtocolCalled = true
+                return HttpResponse(json: [
                     [
-                        "_id": UUID().uuidString,
-                        "name": "Victor",
-                        "_acl": [
-                            "creator": OnePersonURLProtocol.userId
+                        "_id" : mockObjectId!,
+                        "name" : "Victor",
+                        "age" : 0,
+                        "_acl" : [
+                            "creator" : self.client.activeUser?.userId
                         ],
-                        "_kmd": [
-                            "lmt": "2016-03-18T17:48:14.875Z",
-                            "ect": "2016-03-18T17:48:14.875Z"
+                        "_kmd" : [
+                            "lmt" : mockDate?.toString(),
+                            "ect" : mockDate?.toString()
                         ]
                     ]
-                ]
-                let data = try! JSONSerialization.data(withJSONObject: object, options: [])
-                client!.urlProtocol(self, didLoad: data)
-                
-                client!.urlProtocolDidFinishLoading(self)
+                ])
             }
-            
-            override func stopLoading() {
-            }
-            
         }
-        
-        OnePersonURLProtocol.userId = client.activeUser!.userId
-        
-        setURLProtocol(OnePersonURLProtocol.self)
         defer {
-            setURLProtocol(nil)
+            if useMockData {
+                setURLProtocol(nil)
+                XCTAssertTrue(urlProtocolCalled)
+            }
         }
         
         weak var expectationFind = expectation(description: "Find")
@@ -929,8 +1392,6 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationFind = nil
         }
-        
-        XCTAssertTrue(OnePersonURLProtocol.urlProtocolCalled)
     }
     
 }

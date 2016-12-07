@@ -72,7 +72,9 @@ open class Client: NSObject, NSCoding, Credential {
         }
     }
     
-    internal var urlSession = URLSession(configuration: URLSessionConfiguration.default) {
+    internal static let urlSessionConfiguration = URLSessionConfiguration.default
+    
+    internal var urlSession = URLSession(configuration: urlSessionConfiguration) {
         willSet {
             urlSession.invalidateAndCancel()
         }

@@ -55,6 +55,11 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
                                     options:(NSDictionary*)optons
                                  completion:(KCSUser2CompletionBlock)completionBlock;
 
++(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString*)redirectURI
+                                    options:(NSDictionary*)optons
+                                     client:(id)client
+                                 completion:(KCSUser2CompletionBlock)completionBlock;
+
 + (NSURL*)URLforLoginWithMICRedirectURI:(NSString*)redirectURI;
 
 + (BOOL)isValidMICRedirectURI:(NSString*)redirectURI

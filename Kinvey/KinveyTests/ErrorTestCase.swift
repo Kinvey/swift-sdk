@@ -68,8 +68,6 @@ class ErrorTestCase: KinveyTestCase {
             
         }
         
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
-        
         setURLProtocol(MockURLProtocol.self)
         defer {
             setURLProtocol(nil)

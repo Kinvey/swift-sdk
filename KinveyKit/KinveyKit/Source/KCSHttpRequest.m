@@ -323,6 +323,11 @@ static NSOperationQueue* kcsRequestQueue;
 
 - (NSMutableURLRequest*)urlRequest
 {
+    return [self urlRequestWithClient:[KNVClient sharedClient]];
+}
+
+- (NSMutableURLRequest*)urlRequestWithClient:(KNVClient *)client
+{
     NSString* endpoint = [self finalURL];
     
     NSURL* url = [NSURL URLWithString:endpoint];
@@ -388,6 +393,11 @@ static NSOperationQueue* kcsRequestQueue;
 
 - (NSOperation<KCSNetworkOperation>*) start
 {
+    return [self startWithClient:[KNVClient sharedClient]];
+}
+
+- (NSOperation<KCSNetworkOperation>*) startWithClient:(KNVClient*)client
+{
     NSAssert(_route, @"should have route");
     if (!self.credentials) {
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self finalURL]}];
@@ -397,7 +407,7 @@ static NSOperationQueue* kcsRequestQueue;
     NSAssert(self.credentials, @"should have credentials");
     DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
     
-    NSMutableURLRequest* request = [self urlRequest];
+    NSMutableURLRequest* request = [self urlRequestWithClient:client];
     
     NSOperation<KCSNetworkOperation>* op = nil;
     if (_useMock) {
