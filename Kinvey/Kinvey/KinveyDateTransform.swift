@@ -83,7 +83,7 @@ open class KinveyDateTransform : TransformType {
                 )
             }
         } catch let error {
-            print("invalid regex: \(error.localizedDescription)")
+            log.error("invalid regex: \(error.localizedDescription)")
             return []
         }
     }

@@ -29,7 +29,9 @@ open class User: NSObject, Credential, Mappable {
     /// `_id` property of the user.
     open var userId: String {
         guard let userId = _userId, !userId.isEmpty else {
-            preconditionFailure("User has an empty or null `userId` value.")
+            let message = "User has an empty or nil `userId` value."
+            log.severe(message)
+            fatalError(message)
         }
         return userId
     }
@@ -50,10 +52,18 @@ open class User: NSObject, Credential, Mappable {
     
     internal var client: Client
     
+    private class func validate(client: Client) {
+        guard client.isInitialized() else {
+            let message = "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to sign up or login."
+            log.severe(message)
+            fatalError(message)
+        }
+    }
+    
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
     open class func signup<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, client: Client = Kinvey.sharedClient, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) -> Request {
-        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to sign up.")
+        validate(client: client)
 
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password, user: user)
         Promise<UserType> { fulfill, reject in
@@ -111,7 +121,7 @@ open class User: NSObject, Credential, Mappable {
      */
     @discardableResult
     open class func login(authSource: AuthSource, _ authData: [String : Any], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+        validate(client: client)
         
         let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
         Promise<User> { fulfill, reject in
@@ -134,7 +144,7 @@ open class User: NSObject, Credential, Mappable {
     /// Sign in a user and set as a current active user.
     @discardableResult
     open class func login(username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+        validate(client: client)
 
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<User> { fulfill, reject in
@@ -193,10 +203,14 @@ open class User: NSObject, Credential, Mappable {
     @discardableResult
     open func sendEmailConfirmation(_ client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         guard let username = username else {
-            preconditionFailure("Username is required to send the email confirmation")
+            let message = "Username is required to send the email confirmation"
+            log.severe(message)
+            fatalError(message)
         }
         guard let _ = email else {
-            preconditionFailure("Email is required to send the email confirmation")
+            let message = "Email is required to send the email confirmation"
+            log.severe(message)
+            fatalError(message)
         }
         
         return User.sendEmailConfirmation(forUsername: username, client: client, completionHandler: completionHandler)
@@ -496,7 +510,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, currentViewController: UIViewController? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+        validate(client: client)
         
         var micVC: UIViewController!
         if micUserInterface == .safari {

@@ -166,9 +166,17 @@ open class Client: NSObject, NSCoding, Credential {
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }
     
+    private func validateInitialize(appKey: String, appSecret: String) {
+        if appKey.isEmpty || appSecret.isEmpty {
+            let message = "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console."
+            log.severe(message)
+            fatalError(message)
+        }
+    }
+    
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
     open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-        precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
+        validateInitialize(appKey: appKey, appSecret: appSecret)
 
         var encryptionKey: Data? = nil
         if encrypted {
@@ -196,7 +204,8 @@ open class Client: NSObject, NSCoding, Credential {
     
     /// Initialize a `Client` instance with all the needed parameters.
     open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-        precondition((!appKey.isEmpty && !appSecret.isEmpty), "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
+        validateInitialize(appKey: appKey, appSecret: appSecret)
+        
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
         
