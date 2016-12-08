@@ -8,7 +8,7 @@ build: checkout-dependencies build-ios
 clean:
 	rm -Rf docs
 	rm -Rf build
-	rm -Rf Kinvey/Carthage
+	rm -Rf Carthage
 	
 checkout-dependencies:
 	carthage checkout --no-use-binaries
@@ -18,8 +18,7 @@ build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=10.1'
 	
 build-ios:
-	cd Kinvey; \
-	carthage build --no-skip-current --platform ios
+	carthage build --no-skip-current
 
 test: test-ios
 
@@ -29,8 +28,8 @@ test-ios:
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
-	cd Kinvey/Carthage/Build/iOS; \
-	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ../../../../build/Kinvey-$(VERSION)
+	cd Carthage/Build/iOS; \
+	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ObjectMapper.framework ../../../build/Kinvey-$(VERSION)
 	cd build; \
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 

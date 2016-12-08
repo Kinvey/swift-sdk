@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.3.3"
+  s.version      = "3.3.4"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,9 +91,9 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/**/*.{h,m,mm}", "KinveyKit/KinveyKit/3rdParty/**/*.{h,m,mm}", "KinveyKit/KinveyKitExtras/**/*.{h,m,mm}", "Kinvey/Carthage/Checkouts/ObjectMapper/ObjectMapper/**/*.swift", "Kinvey/Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}", "KinveyKit/KinveyKit/KinveyHeaderInfo.h"
+  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/**/*.{h,m,mm}", "KinveyKit/KinveyKit/3rdParty/**/*.{h,m,mm}", "KinveyKit/KinveyKitExtras/**/*.{h,m,mm}", "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}"
   
-  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "Kinvey/Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h"
+  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
   
   s.private_header_files = "KinveyKit/KinveyKit/Source/KCSQuery.h", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/KinveyCore.h"
   
