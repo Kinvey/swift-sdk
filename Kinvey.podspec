@@ -113,7 +113,7 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "Kinvey/**", "KinveyKit/**"
+  s.preserve_paths = "Kinvey/**", "KinveyKit/**", "Carthage/**"
   # s.prepare_command = ""
   # s.ios.vendored_frameworks = "Kinvey-#{s.version}/Kinvey.framework"
 
