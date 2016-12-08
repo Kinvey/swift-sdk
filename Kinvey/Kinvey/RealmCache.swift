@@ -167,12 +167,17 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     
     override func removeEntity(_ entity: T) -> Bool {
         var result = false
-        executor.executeAndWait {
-            try! self.realm.write {
-                let entity = self.realm.object(ofType: (type(of: entity) as! Entity.Type), forPrimaryKey: entity.entityId!)!
-                self.realm.delete(entity)
+        if let entityId = entity.entityId {
+            executor.executeAndWait {
+                var found = false
+                try! self.realm.write {
+                    if let entity = self.realm.object(ofType: (type(of: entity) as! Entity.Type), forPrimaryKey: entityId) {
+                        self.realm.delete(entity)
+                        found = true
+                    }
+                }
+                result = found
             }
-            result = true
         }
         return result
     }

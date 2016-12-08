@@ -82,6 +82,7 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
 - (NSOperation<KCSNetworkOperation>*) start;
+- (NSOperation<KCSNetworkOperation>*) startWithClient:(KNVClient*)client;
 
 BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);
 + (NSOperationQueue*) requestQueue;
@@ -90,5 +91,6 @@ BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);
 
 //for testing
 - (NSMutableURLRequest*)urlRequest;
+- (NSMutableURLRequest*)urlRequestWithClient:(KNVClient*)client;
 + (void) setRequestArray:(NSMutableArray*)requestArray;
 @end

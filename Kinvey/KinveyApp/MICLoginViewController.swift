@@ -22,10 +22,14 @@ open class MICLoginViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        Kinvey.sharedClient.initialize(
-            appKey: "kid_WyWKm0pPM-",
-            appSecret: "081bc930604446de9153292f05c1b8e9"
-        )
+        if let appKey = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_KEY"],
+            let appSecret = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_SECRET"]
+        {
+            Kinvey.sharedClient.initialize(
+                appKey: appKey,
+                appSecret: appSecret
+            )
+        }
     }
 
     open override func didReceiveMemoryWarning() {

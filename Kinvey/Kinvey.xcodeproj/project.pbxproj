@@ -103,7 +103,7 @@
 		5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
-		5795AB021DD136B8001FC808 /* NoCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */; };
+		5796B3E71DEE8EC900209C9F /* CacheStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -349,27 +349,18 @@
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
 		57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C2F1721D5E5A68005A214B /* BuilderType.swift */; };
-		57C563041C9CC7270011FB36 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
-		57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
-		57C563061C9CC7410011FB36 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57D1E75F1C7D21720009834A /* KNVReadPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E75D1C7D21720009834A /* KNVReadPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D642F61CA3268000F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		57D642F91CA3268000F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
-		57D642FF1CA3268000F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */; };
-		57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57D6430B1CA3268000F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		57D643201CA3268600F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
-		57D643261CA3268600F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
-		57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
@@ -390,6 +381,16 @@
 		57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B01C18156700578974 /* HttpRequestFactory.swift */; };
 		57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B21C1822B100578974 /* ResponseParser.swift */; };
 		57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B41C18253B00578974 /* JsonResponseParser.swift */; };
+		57E447F71DF62DC7003D1AFA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
+		57E447F81DF62DC7003D1AFA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
+		57E447F91DF62DC7003D1AFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		57E447FA1DF62DC7003D1AFA /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		57E447FC1DF62DC7003D1AFA /* Caminandes 3 - TRAILER.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */; };
+		57E447FD1DF62DC7003D1AFA /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
+		57E447FF1DF62DC7003D1AFA /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57E448001DF62DC7003D1AFA /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57E448061DF62E05003D1AFA /* NoCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */; };
+		57E448071DF62E35003D1AFA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		57E4DB041C89FE170017B406 /* KNVUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB021C89FE170017B406 /* KNVUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57E4DB051C89FE170017B406 /* KNVUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB031C89FE170017B406 /* KNVUser.m */; };
 		57E4DB0D1C8A13240017B406 /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DD71C7F9414006403CC /* KCSClient+ConfigurationTest.m */; };
@@ -487,6 +488,20 @@
 			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
 			remoteInfo = KinveyApp;
 		};
+		57E447ED1DF62DC7003D1AFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A27C801C178F17000DF951;
+			remoteInfo = Kinvey;
+		};
+		57E447EF1DF62DC7003D1AFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
+			remoteInfo = KinveyApp;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -559,6 +574,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		57E447FE1DF62DC7003D1AFA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				57E447FF1DF62DC7003D1AFA /* Kinvey.framework in CopyFiles */,
+				57E448001DF62DC7003D1AFA /* KIF.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -620,7 +646,7 @@
 		576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypeTestCase.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkStoreTests.swift; sourceTree = "<group>"; };
-		576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStoreTests.swift; sourceTree = "<group>"; };
+		576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheStoreTests.swift; sourceTree = "<group>"; };
 		577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheMigrationTestCaseStep1.swift; sourceTree = "<group>"; };
 		577155BA1CA21CC200C91B4B /* Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		5771F9FE1D301F6300903777 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -993,6 +1019,7 @@
 		57E1C3B01C18156700578974 /* HttpRequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequestFactory.swift; sourceTree = "<group>"; };
 		57E1C3B21C1822B100578974 /* ResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseParser.swift; sourceTree = "<group>"; };
 		57E1C3B41C18253B00578974 /* JsonResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonResponseParser.swift; sourceTree = "<group>"; };
+		57E448041DF62DC7003D1AFA /* KinveyTests No Cache.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests No Cache.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57E4DB021C89FE170017B406 /* KNVUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVUser.h; sourceTree = "<group>"; };
 		57E4DB031C89FE170017B406 /* KNVUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVUser.m; sourceTree = "<group>"; };
 		57E4DB0E1C8A150C0017B406 /* KNVUser+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KNVUser+Internal.h"; sourceTree = "<group>"; };
@@ -1091,6 +1118,17 @@
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
 				5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57E447F61DF62DC7003D1AFA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57E447F71DF62DC7003D1AFA /* QuartzCore.framework in Frameworks */,
+				57E447F81DF62DC7003D1AFA /* CoreGraphics.framework in Frameworks */,
+				57E447F91DF62DC7003D1AFA /* Kinvey.framework in Frameworks */,
+				57E447FA1DF62DC7003D1AFA /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1194,6 +1232,7 @@
 				57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */,
 				57A465821CC02A59009E7384 /* KinveyAppTests.xctest */,
 				5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */,
+				57E448041DF62DC7003D1AFA /* KinveyTests No Cache.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1302,7 +1341,7 @@
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
-				576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */,
+				576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
@@ -2289,6 +2328,26 @@
 			productReference = 57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		57E447EB1DF62DC7003D1AFA /* KinveyTests No Cache */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57E448011DF62DC7003D1AFA /* Build configuration list for PBXNativeTarget "KinveyTests No Cache" */;
+			buildPhases = (
+				57E447F01DF62DC7003D1AFA /* Sources */,
+				57E447F61DF62DC7003D1AFA /* Frameworks */,
+				57E447FB1DF62DC7003D1AFA /* Resources */,
+				57E447FE1DF62DC7003D1AFA /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				57E447EC1DF62DC7003D1AFA /* PBXTargetDependency */,
+				57E447EE1DF62DC7003D1AFA /* PBXTargetDependency */,
+			);
+			name = "KinveyTests No Cache";
+			productName = KinveyTests;
+			productReference = 57E448041DF62DC7003D1AFA /* KinveyTests No Cache.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2343,6 +2402,9 @@
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
+					57E447EB1DF62DC7003D1AFA = {
+						DevelopmentTeam = 5W7CYNR7UE;
+					};
 				};
 			};
 			buildConfigurationList = 57A27C7B1C178F17000DF951 /* Build configuration list for PBXProject "Kinvey" */;
@@ -2363,6 +2425,7 @@
 				5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */,
 				57D642EF1CA3268000F6D16E /* KinveyTests Migration Database Step 1 */,
 				57D643161CA3268600F6D16E /* KinveyTests Migration Database Step 2 */,
+				57E447EB1DF62DC7003D1AFA /* KinveyTests No Cache */,
 				5765B8431C9771BC00080FFA /* KinveyApp */,
 				57A465811CC02A59009E7384 /* KinveyAppTests */,
 			);
@@ -2426,6 +2489,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D643321CA3268600F6D16E /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57E447FB1DF62DC7003D1AFA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57E447FC1DF62DC7003D1AFA /* Caminandes 3 - TRAILER.mp4 in Resources */,
+				57E447FD1DF62DC7003D1AFA /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2661,23 +2733,20 @@
 				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
 				573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */,
 				57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */,
-				5795AB021DD136B8001FC808 /* NoCacheTestCase.swift in Sources */,
 				57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */,
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */,
 				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
-				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
 				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
+				5796B3E71DEE8EC900209C9F /* CacheStoreTests.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
-				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
 				57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */,
 				572005CA1D342B2800AE9AC5 /* Book.swift in Sources */,
-				57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */,
 				572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */,
 				5771F9FF1D301F6300903777 /* Event.swift in Sources */,
 			);
@@ -2700,11 +2769,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D642F61CA3268000F6D16E /* ValueTransformer.swift in Sources */,
-				57D642F91CA3268000F6D16E /* String.swift in Sources */,
 				5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
-				57D642FF1CA3268000F6D16E /* NSDate.swift in Sources */,
 				57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */,
-				57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
 				57D6433F1CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643411CA32CAF00F6D16E /* KIF.swift in Sources */,
 			);
@@ -2715,13 +2781,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */,
-				57D643201CA3268600F6D16E /* String.swift in Sources */,
 				5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
 				57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */,
-				57D643261CA3268600F6D16E /* NSDate.swift in Sources */,
-				57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */,
 				57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643421CA32CAF00F6D16E /* KIF.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57E447F01DF62DC7003D1AFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57E448071DF62E35003D1AFA /* Person.swift in Sources */,
+				57E448061DF62E05003D1AFA /* NoCacheTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2773,6 +2845,16 @@
 			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
 			targetProxy = 57D6431A1CA3268600F6D16E /* PBXContainerItemProxy */;
 		};
+		57E447EC1DF62DC7003D1AFA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A27C801C178F17000DF951 /* Kinvey */;
+			targetProxy = 57E447ED1DF62DC7003D1AFA /* PBXContainerItemProxy */;
+		};
+		57E447EE1DF62DC7003D1AFA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
+			targetProxy = 57E447EF1DF62DC7003D1AFA /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -2802,7 +2884,7 @@
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2819,7 +2901,7 @@
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2836,10 +2918,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -2861,10 +2939,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3033,10 +3107,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3059,10 +3129,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3085,7 +3151,7 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = KinveyAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -3105,7 +3171,7 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = KinveyAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -3123,10 +3189,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3148,10 +3210,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3172,10 +3230,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3197,10 +3251,47 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					IOKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		57E448021DF62DC7003D1AFA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					IOKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		57E448031DF62DC7003D1AFA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -3285,6 +3376,15 @@
 			buildConfigurations = (
 				57D643391CA3268600F6D16E /* Debug */,
 				57D6433A1CA3268600F6D16E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		57E448011DF62DC7003D1AFA /* Build configuration list for PBXNativeTarget "KinveyTests No Cache" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57E448021DF62DC7003D1AFA /* Debug */,
+				57E448031DF62DC7003D1AFA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
