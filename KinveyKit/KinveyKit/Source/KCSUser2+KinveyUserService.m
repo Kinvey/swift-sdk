@@ -272,11 +272,22 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     [[UIApplication sharedApplication] openURL:url];
 }
 
++(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString *)redirectURI
+                                    options:(NSDictionary *)options
+                                 completion:(KCSUser2CompletionBlock)completionBlock
+{
+    return [self loginWithAuthorizationCodeAPI:redirectURI
+                                       options:options
+                                        client:[KNVClient sharedClient]
+                                    completion:completionBlock];
+}
+
 /**
  MIC step 1 => get the temp_login_uri
  */
 +(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString *)redirectURI
                                     options:(NSDictionary *)options
+                                     client:(KNVClient*)client
                                  completion:(KCSUser2CompletionBlock)completionBlock
 {
     __block KCSRequest* req = nil;
@@ -290,6 +301,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     }
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
     KCSMICRequest2* request = [KCSMICRequest2 requestWithRedirectURI:redirectURI
+                                                              client:client
                                                           completion:^(KCSNetworkResponse *networkResponse, NSError *error)
     {
         if (error) {
@@ -306,6 +318,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                     [self oAuthAuthenticateWithURL:[NSURL URLWithString:jsonResponse[@"temp_login_uri"]]
                                        redirectURI:redirectURI
                                            options:options
+                                            client:client
                                         completion:completionBlock];
                 }
             } else {
@@ -321,7 +334,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
     }];
-    req = [KCSRequest requestWithNetworkOperation:[request start]];
+    req = [KCSRequest requestWithNetworkOperation:[request startWithClient:client]];
     return req;
 }
 
@@ -333,7 +346,21 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                         options:(NSDictionary *)optons
                      completion:(KCSUser2CompletionBlock)completionBlock
 {
-    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
+    [self oAuthAuthenticateWithURL:url
+                       redirectURI:redirectURI
+                           options:optons
+                            client:[KNVClient sharedClient]
+                        completion:completionBlock];
+}
+
++(void)oAuthAuthenticateWithURL:(NSURL*)url
+                    redirectURI:(NSString *)redirectURI
+                        options:(NSDictionary *)optons
+                         client:(KNVClient*)client
+                     completion:(KCSUser2CompletionBlock)completionBlock
+{
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url
+                                                          client:client];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [@{
         @"client_id" : [self clientConfiguration].appKey,
@@ -369,9 +396,11 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                     if (completionBlock) completionBlock(nil, error);
                 } else {
                     if ([self isValidMICRedirectURI:redirectURI
-                                              forURL:redirectRequest.URL]) {
+                                             forURL:redirectRequest.URL])
+                    {
                         [self parseMICRedirectURI:redirectURI
                                            forURL:redirectRequest.URL
+                                           client:client
                               withCompletionBlock:completionBlock];
                     } else {
                         if (completionBlock) completionBlock(nil, [NSError errorWithDomain:@"Invalid MIC Redirect URL"

@@ -78,15 +78,22 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     }
     
     override func removeAllPendingOperations() {
-        removeAllPendingOperations(nil)
+        removeAllPendingOperations(nil, methods: nil)
     }
     
     override func removeAllPendingOperations(_ objectId: String?) {
+        removeAllPendingOperations(objectId, methods: nil)
+    }
+    
+    override func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self)
                 if let objectId = objectId {
                     realmResults = realmResults.filter("objectId == %@", objectId)
+                }
+                if let methods = methods {
+                    realmResults = realmResults.filter("method in %@", methods)
                 }
                 self.realm.delete(realmResults)
             }

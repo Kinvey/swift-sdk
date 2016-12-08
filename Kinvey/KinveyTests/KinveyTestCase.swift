@@ -32,11 +32,168 @@ extension XCTestCase {
     
 }
 
+struct ChunkData {
+    
+    let data: Data
+    let delay: TimeInterval?
+    
+    init(data: Data, delay: TimeInterval? = nil) {
+        self.data = data
+        self.delay = delay
+    }
+    
+}
+
+struct HttpResponse {
+    
+    let statusCode: Int?
+    let headerFields: [String : String]?
+    let chunks: [ChunkData]?
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]? = nil) {
+        var headerFields = headerFields ?? [:]
+        if let chunks = chunks {
+            let contentLength = chunks.reduce(0, { $0 + $1.data.count })
+            headerFields["Content-Length"] = "\(contentLength)"
+        }
+        
+        self.statusCode = statusCode
+        self.headerFields = headerFields
+        self.chunks = chunks
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
+        self.init(statusCode: statusCode, headerFields: headerFields, chunks: data != nil ? [ChunkData(data: data!)] : nil)
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        let data = try! JSONSerialization.data(withJSONObject: json)
+        self.init(statusCode: statusCode, headerFields: headerFields, data: data)
+    }
+    
+    init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        let data = try! JSONSerialization.data(withJSONObject: json)
+        self.init(statusCode: statusCode, headerFields: headerFields, data: data)
+    }
+    
+}
+
+extension JSONSerialization {
+    
+    class func jsonObject(with request: URLRequest, options opt: JSONSerialization.ReadingOptions = []) throws -> Any {
+        if let data = request.httpBody {
+            return try jsonObject(with: data, options: opt)
+        } else if let inputStream = request.httpBodyStream {
+            inputStream.open()
+            defer {
+                inputStream.close()
+            }
+            return try jsonObject(with: inputStream, options: opt)
+        } else {
+            preconditionFailure()
+        }
+    }
+    
+}
+
+extension XCTestCase {
+    
+    func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
+        if let type = type {
+            let sessionConfiguration = URLSessionConfiguration.default
+            sessionConfiguration.protocolClasses = [type]
+            client.urlSession = URLSession(configuration: sessionConfiguration)
+            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
+        } else {
+            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
+        }
+    }
+    
+    class MockURLProtocol: URLProtocol {
+        
+        static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
+        
+        override class func canInit(with request: URLRequest) -> Bool {
+            return true
+        }
+        
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+            return request
+        }
+        
+        override class func canInit(with task: URLSessionTask) -> Bool {
+            return true
+        }
+        
+        override func startLoading() {
+            let responseObj = MockURLProtocol.completionHandler!(self.request)
+            let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
+            self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+            if let chunks = responseObj.chunks {
+                for chunk in chunks {
+                    self.client!.urlProtocol(self, didLoad: chunk.data)
+                    if let delay = chunk.delay {                        
+                        RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                    }
+                }
+            }
+            self.client!.urlProtocolDidFinishLoading(self)
+        }
+        
+        override func stopLoading() {
+        }
+        
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+        var headerFields = headerFields ?? [:]
+        headerFields["Content-Type"] = "application/json; charset=utf-8"
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: chunks)
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: data?.map { ChunkData(data: $0) })
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+    func mockResponse(completionHandler: @escaping (URLRequest) -> HttpResponse) {
+        MockURLProtocol.completionHandler = completionHandler
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
+}
+
 class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
     var encrypted = false
-    var useMockData = false
+    var useMockData = appKey == nil || appSecret == nil
     
     static let defaultTimeout = TimeInterval(Int8.max)
     lazy var defaultTimeout: TimeInterval = {
@@ -105,13 +262,13 @@ class KinveyTestCase: XCTestCase {
             
             var resquestBody: [String : Any]? = nil
             if let data = request.httpBody {
-                resquestBody = try! JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+                resquestBody = try! JSONSerialization.jsonObject(with: data) as? [String : Any]
             } else if let httpBodyStream = request.httpBodyStream {
                 httpBodyStream.open()
                 defer {
                     httpBodyStream.close()
                 }
-                resquestBody = try! JSONSerialization.jsonObject(with: httpBodyStream, options: []) as? [String : Any]
+                resquestBody = try! JSONSerialization.jsonObject(with: httpBodyStream) as? [String : Any]
             }
             
             var responseBody = [
@@ -129,7 +286,7 @@ class KinveyTestCase: XCTestCase {
             if let resquestBody = resquestBody {
                 responseBody += resquestBody
             }
-            let data = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let data = try! JSONSerialization.data(withJSONObject: responseBody)
             client?.urlProtocol(self, didLoad: data)
             
             client?.urlProtocolDidFinishLoading(self)
@@ -147,7 +304,9 @@ class KinveyTestCase: XCTestCase {
         
         if useMockData {
             setURLProtocol(MockKinveyBackend.self)
-            defer {
+        }
+        defer {
+            if useMockData {
                 setURLProtocol(nil)
             }
         }
@@ -186,6 +345,27 @@ class KinveyTestCase: XCTestCase {
             user.logout()
         }
         
+        if useMockData {
+            mockResponse(statusCode: 201, json: [
+                "username": username,
+                "password": password,
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString(),
+                    "authtoken": UUID().uuidString
+                ],
+                "_id": UUID().uuidString,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
         weak var expectationSignUp = expectation(description: "Sign Up")
         
         User.signup(username: username, password: password) { user, error in
@@ -209,7 +389,9 @@ class KinveyTestCase: XCTestCase {
         if let user = client.activeUser {
             if useMockData {
                 setURLProtocol(MockKinveyBackend.self)
-                defer {
+            }
+            defer {
+                if useMockData {
                     setURLProtocol(nil)
                 }
             }
@@ -231,17 +413,6 @@ class KinveyTestCase: XCTestCase {
         }
         
         super.tearDown()
-    }
-    
-    func setURLProtocol(_ type: URLProtocol.Type?) {
-        if let type = type {
-            let sessionConfiguration = URLSessionConfiguration.default
-            sessionConfiguration.protocolClasses = [type]
-            client.urlSession = URLSession(configuration: sessionConfiguration)
-            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
-        } else {
-            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
-        }
     }
     
 }

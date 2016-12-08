@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: Swift.Error {
+public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -21,22 +21,22 @@ public enum Error: Swift.Error {
     case objectIdMissing
     
     /// Error when a method is not allowed, usually when you are using a Data Link Connector (DLC).
-    case methodNotAllowed(debug: String, description: String)
+    case methodNotAllowed(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
     /// Error when a Data Link endpoint is not found, usually when you are using a Data Link Connector (DLC).
-    case dataLinkEntityNotFound(debug: String, description: String)
+    case dataLinkEntityNotFound(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
     /// Error when the type is unknow.
-    case unknownError(error: String)
+    case unknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String)
     
     /// Error when the type is unknow.
-    case unknownJsonError(json: [String : Any])
+    case unknownJsonError(httpResponse: HTTPURLResponse?, data: Data?, json: [String : Any])
     
     /// Error when a Invalid Response coming from the backend.
-    case invalidResponse
+    case invalidResponse(httpResponse: HTTPURLResponse?, data: Data?)
     
     /// Error when a Unauthorized Response coming from the backend.
-    case unauthorized(error: String, description: String)
+    case unauthorized(httpResponse: HTTPURLResponse?, data: Data?, error: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case noActiveUser
@@ -57,44 +57,109 @@ public enum Error: Swift.Error {
     case userWithoutEmailOrUsername
     
     var error: NSError {
-        get {
-            return self as NSError
-        }
+        return self as NSError
     }
     
     /// Error localized description.
-    public var localizedDescription: String {
-        get {
-            let bundle = Bundle(for: Client.self)
-            switch self {
-            case .unauthorized(_, let description):
-                return description
-            case .invalidOperation(let description):
-                return description
-            default:
-                return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
-            }
+    public var description: String {
+        let bundle = Bundle(for: Client.self)
+        switch self {
+        case .methodNotAllowed(_, _, _, let description),
+             .dataLinkEntityNotFound(_, _, _, let description),
+             .unknownError(_, _, let description),
+             .unauthorized(_, _, _, let description),
+             .invalidOperation(let description):
+            return description
+        case .objectIdMissing:
+            return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
+        case .unknownJsonError:
+            return NSLocalizedString("Error.unknownJsonError", bundle: bundle, comment: "")
+        case .invalidResponse(_, _):
+            return NSLocalizedString("Error.invalidResponse", bundle: bundle, comment: "")
+        case .noActiveUser:
+            return NSLocalizedString("Error.noActiveUser", bundle: bundle, comment: "")
+        case .requestCancelled:
+            return NSLocalizedString("Error.requestCancelled", bundle: bundle, comment: "")
+        case .requestTimeout:
+            return NSLocalizedString("Error.requestTimeout", bundle: bundle, comment: "")
+        case .invalidDataStoreType:
+            return NSLocalizedString("Error.invalidDataStoreType", bundle: bundle, comment: "")
+        case .userWithoutEmailOrUsername:
+            return NSLocalizedString("Error.userWithoutEmailOrUsername", bundle: bundle, comment: "")
         }
     }
     
-    static func buildUnknownError(_ error: String) -> Error {
-        return unknownError(error: error)
+    public var debugDescription: String {
+        switch self {
+        case .methodNotAllowed(_, _, let debug, _),
+             .dataLinkEntityNotFound(_, _, let debug, _):
+            return debug
+        default:
+            return description
+        }
     }
     
-    static func buildUnknownJsonError(_ json: [String : Any]) -> Error {
-        return unknownJsonError(json: json)
+    /// Response object contains status code, headers, etc.
+    public var httpResponse: HTTPURLResponse? {
+        switch self {
+        case .unknownError(let httpResponse, _, _),
+             .unknownJsonError(let httpResponse, _, _),
+             .dataLinkEntityNotFound(let httpResponse, _, _, _),
+             .methodNotAllowed(let httpResponse, _, _, _),
+             .unauthorized(let httpResponse, _, _, _),
+             .invalidResponse(let httpResponse, _):
+            return httpResponse
+        default:
+            return nil
+        }
     }
     
-    static func buildDataLinkEntityNotFound(_ json: [String : String]) -> Error {
-        return dataLinkEntityNotFound(debug: json["debug"]!, description: json["description"]!)
+    /// Response Header `X-Kinvey-Request-Id`
+    public var requestId: String? {
+        return httpResponse?.allHeaderFields[Header.requestId] as? String
     }
     
-    static func buildMethodNotAllowed(_ json: [String : String]) -> Error {
-        return methodNotAllowed(debug: json["debug"]!, description: json["description"]!)
+    /// Response Data Body object.
+    public var responseDataBody: Data? {
+        switch self {
+        case .unknownError(_, let data, _),
+             .unknownJsonError(_, let data, _),
+             .dataLinkEntityNotFound(_, let data, _, _),
+             .methodNotAllowed(_, let data, _, _),
+             .unauthorized(_, let data, _, _),
+             .invalidResponse(_, let data):
+            return data
+        default:
+            return nil
+        }
     }
     
-    static func buildUnauthorized(_ json: [String : String]) -> Error {
-        return unauthorized(error: json["error"]!, description: json["description"]!)
+    /// Response Body as a String value.
+    public var responseStringBody: String? {
+        if let data = responseDataBody, let responseStringBody = String(data: data, encoding: .utf8) {
+            return responseStringBody
+        }
+        return nil
+    }
+    
+    static func buildUnknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String) -> Error {
+        return unknownError(httpResponse: httpResponse, data: data, error: error)
+    }
+    
+    static func buildUnknownJsonError(httpResponse: HTTPURLResponse?, data: Data?, json: [String : Any]) -> Error {
+        return unknownJsonError(httpResponse: httpResponse, data: data, json: json)
+    }
+    
+    static func buildDataLinkEntityNotFound(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
+        return dataLinkEntityNotFound(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    }
+    
+    static func buildMethodNotAllowed(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
+        return methodNotAllowed(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    }
+    
+    static func buildUnauthorized(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
+        return unauthorized(httpResponse: httpResponse, data: data, error: json["error"]!, description: json["description"]!)
     }
     
 }

@@ -15,58 +15,70 @@ import ObjectMapper
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
     }
     
     func testSignUp404StatusCode() {
-        class ErrorURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: [:])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                client!.urlProtocol(self, didLoad: Data())
-                client!.urlProtocolDidFinishLoading(self)
-            }
-            
-            override func stopLoading() {
-            }
-            
+        mockResponse(statusCode: 404, data: Data())
+        defer {
+            setURLProtocol(nil)
         }
         
-        setURLProtocol(ErrorURLProtocol.self)
+        weak var expectationSignUp = expectation(description: "Sign Up")
         
-        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
+        User.signup { user, error in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
+            
+            expectationSignUp?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSignUp = nil
         }
     }
     
     func testSignUpTimeoutError() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
         
-        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
+        weak var expectationSignUp = expectation(description: "Sign Up")
+        
+        User.signup { user, error in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNil(user)
+            
+            expectationSignUp?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSignUp = nil
         }
     }
     
     func testSignUpWithUsernameAndPassword() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
     }
     
     func testSignUpAndDestroy() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -93,6 +105,15 @@ class UserTests: KinveyTestCase {
         var userId:String = ""
         
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             userId = user.userId
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
@@ -112,6 +133,19 @@ class UserTests: KinveyTestCase {
         signUp()
 
         if let _ = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 404, json: [
+                    "error": "UserNotFound",
+                    "description": "This user does not exist for this app backend",
+                    "debug": ""
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
             User.get(userId: userId , completionHandler: { (user, error) in
@@ -124,12 +158,14 @@ class UserTests: KinveyTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFindDestroyedUser = nil
             }
-
         }
-
     }
     
     func testSignUpAndDestroyClassFunc() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -154,6 +190,15 @@ class UserTests: KinveyTestCase {
         signUp()
         
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, hard: true, completionHandler: { (error) -> Void in
@@ -172,6 +217,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpAndDestroyClientClassFunc() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -193,6 +242,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testChangePassword() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
@@ -255,6 +308,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testGet() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         if let user = client.activeUser {
@@ -297,6 +354,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLookup() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         let email = "\(username)@kinvey.com"
@@ -324,8 +385,6 @@ class UserTests: KinveyTestCase {
             }
             
             do {
-                client.logNetworkEnabled = true
-                
                 weak var expectationUserLookup = expectation(description: "User Lookup")
                 
                 let userQuery = UserQuery {
@@ -371,6 +430,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSave() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         let user = User()
@@ -410,6 +473,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveCustomUser() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         let user = MyUser()
@@ -451,6 +518,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         client.userType = MyUser.self
         
         signUp()
@@ -480,6 +551,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLogin() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -511,6 +586,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLoginTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -574,6 +653,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testLogoutLogin200ButInvalidResponseError() {
+        guard !useMockData else {
+            return
+        }
+        
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
@@ -660,6 +743,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testExists() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -735,6 +822,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testSendEmailConfirmation() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -785,8 +876,6 @@ class UserTests: KinveyTestCase {
 
             weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
             
-            Client.sharedClient.logNetworkEnabled = true
-            
             user.sendEmailConfirmation { error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
@@ -801,9 +890,11 @@ class UserTests: KinveyTestCase {
     }
     
     func testUserMetadata() {
-        signUp()
+        guard !useMockData else {
+            return
+        }
         
-        Client.sharedClient.logNetworkEnabled = true
+        signUp()
         
         class Mock200URLProtocol: URLProtocol {
             
@@ -866,6 +957,10 @@ class UserTests: KinveyTestCase {
     
     }
     func testResetPasswordByEmail() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -930,6 +1025,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordByUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -951,6 +1050,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordNoEmailOrUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -988,6 +1091,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -1025,6 +1132,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testForgotUsername() {
+        guard !useMockData else {
+            return
+        }
+        
         weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
         User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") { error in
@@ -1136,6 +1247,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginWKWebView() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1219,6 +1334,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginWKWebViewModal() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1310,6 +1429,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginUIWebView() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1366,8 +1489,6 @@ class UserTests: KinveyTestCase {
     func find() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
-        Kinvey.sharedClient.logNetworkEnabled = true
-        
         if Kinvey.sharedClient.activeUser != nil {
             let store = DataStore<Person>.collection(.network)
             
@@ -1387,6 +1508,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICLoginUIWebViewTimeoutError() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1432,6 +1557,10 @@ class UserTests: KinveyTestCase {
     }
     
     func testMICErrorMessage() {
+        guard !useMockData else {
+            return
+        }
+        
         defer {
             if let user = client.activeUser {
                 user.logout()
@@ -1449,7 +1578,7 @@ class UserTests: KinveyTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .unknownJsonError(let json):
+                case .unknownJsonError(_, _, let json):
                     let responseBody = [
                         "error" : "invalid_client",
                         "error_description" : "Client authentication failed.",
@@ -1520,7 +1649,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocolDidFinishLoading(self)
                 case 2:
                     let requestBody = String(data: request.httpBody!, encoding: String.Encoding.utf8)!
-                    XCTAssertEqual(requestBody, "client_id=kid_rJVLE1Z5&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
+                    XCTAssertEqual(requestBody, "client_id=\(MockKinveyBackend.kid)&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -1553,7 +1682,7 @@ class UserTests: KinveyTestCase {
                                 "access_token" : "a10a3743028e2e92b97037825b50a2666608b874",
                                 "refresh_token" : "627b034f5ec409899252a8017cb710566dfd2620",
                                 "id" : "custom",
-                                "audience" : "kid_rJVLE1Z5"
+                                "audience" : MockKinveyBackend.kid
                             ]
                         ],
                         "username" : "3b788b0c-cb99-4692-b3ae-a6b10b3d76f2",
@@ -1585,8 +1714,6 @@ class UserTests: KinveyTestCase {
         defer {
             KCSURLProtocol.unregisterClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
         }
-        
-        Kinvey.sharedClient.initialize(appKey: "kid_rJVLE1Z5", appSecret: "cd385840cbd94e2caaa8f824c2ff7f46")
         
         XCTAssertNil(client.activeUser)
         

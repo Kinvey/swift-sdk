@@ -198,6 +198,7 @@ extension HTTPURLResponse {
         if let body = body, let bodyString = String(data: body, encoding: String.Encoding.utf8) {
             description += "\n\n\(bodyString)"
         }
+        description += "\n"
         return description
     }
     
