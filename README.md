@@ -75,6 +75,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making 
 [badge-languages]: https://img.shields.io/badge/languages-Swift%20%7C%20ObjC-orange.svg
 [badge-mit]: https://img.shields.io/badge/license-MIT-blue.svg
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg
-[badge-status]: https://travis-ci.org/Kinvey/ios-library.svg
+[badge-status]: https://travis-ci.org/Kinvey/ios-library.svg?branch=master
 [badge-coverage]: https://codecov.io/gh/Kinvey/ios-library/graph/badge.svg
 [badge-codebeat]: https://codebeat.co/badges/e1a944a5-3090-4d76-bfde-e408a6f97278
