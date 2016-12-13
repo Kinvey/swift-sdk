@@ -1,1 +1,2 @@
 github "kif-framework/KIF" ~> 3.5
+github "mattgallagher/CwlPreconditionTesting" "master"

@@ -84,6 +84,16 @@
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57873DF01DFFD983002C87BF"
+               BuildableName = "KinveyTests Forget To Call Super PropertyMapping.xctest"
+               BlueprintName = "KinveyTests Forget To Call Super PropertyMapping"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
