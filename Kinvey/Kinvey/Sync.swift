@@ -43,35 +43,51 @@ internal class Sync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationIMP {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationIMP) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func pendingOperations() -> Results<PendingOperationIMP> {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func pendingOperations(_ objectId: String?) -> Results<PendingOperationIMP> {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func removePendingOperation(_ pendingOperation: PendingOperationIMP) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func removeAllPendingOperations() {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func removeAllPendingOperations(_ objectId: String?) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
 }

@@ -94,7 +94,7 @@ extension JSONSerialization {
             }
             return try jsonObject(with: inputStream, options: opt)
         } else {
-            preconditionFailure()
+            fatalError()
         }
     }
     

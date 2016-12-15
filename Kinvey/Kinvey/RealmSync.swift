@@ -20,7 +20,9 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
-            preconditionFailure("\(T.self) needs to be a Entity")
+            let message = "\(T.self) needs to be a Entity"
+            log.severe(message)
+            fatalError(message)
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -33,12 +35,14 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
         executor = Executor()
-//        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
+        log.debug("Sync File: \(self.realm.configuration.fileURL!.path)")
     }
 
     required init(persistenceId: String) {
-        fatalError("init(persistenceId:) has not been implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     override func createPendingOperation(_ request: URLRequest, objectId: String?) -> RealmPendingOperation {
@@ -46,6 +50,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     }
     
     override func savePendingOperation(_ pendingOperation: RealmPendingOperation) {
+        log.verbose("Saving pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: true)
@@ -58,6 +63,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     }
     
     override func pendingOperations(_ objectId: String?) -> Results<RealmPendingOperation> {
+        log.verbose("Fetching pending operations by object id: \(objectId)")
         var results: Results<RealmPendingOperation>?
         executor.executeAndWait {
             var realmResults = self.realm.objects(RealmPendingOperation.self)
@@ -70,6 +76,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     }
     
     override func removePendingOperation(_ pendingOperation: RealmPendingOperation) {
+        log.verbose("Removing pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.delete(pendingOperation)
@@ -86,6 +93,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     }
     
     override func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
+        log.verbose("Removing pending operations by object id: \(objectId)")
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self)

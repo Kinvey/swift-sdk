@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   switch (lhs, rhs) {
   case let (l?, r?):
@@ -172,14 +173,14 @@ open class FileStore {
                 
                 if self.client.logNetworkEnabled {
                     do {
-                        print("\(request)")
+                        log.debug("\(request)")
                     }
                 }
                 
                 let dataTask = self.client.urlSession.dataTask(with: request) { (data, response, error) in
                     if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
                         do {
-                            print("\(response.description(data))")
+                            log.debug("\(response.description(data))")
                         }
                     }
                     
@@ -221,7 +222,7 @@ open class FileStore {
                 let handle: (Data?, URLResponse?, Swift.Error?) -> Void = { data, response, error in
                     if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
                         do {
-                            print("\(response.description(data))")
+                            log.debug("\(response.description(data))")
                         }
                     }
                     
@@ -244,7 +245,7 @@ open class FileStore {
                     
                     if self.client.logNetworkEnabled {
                         do {
-                            print("\(request.description)")
+                            log.debug("\(request.description)")
                         }
                     }
                     
@@ -256,7 +257,7 @@ open class FileStore {
                 } else if let fromFile = fromFile {
                     if self.client.logNetworkEnabled {
                         do {
-                            print("\(request.description)")
+                            log.debug("\(request.description)")
                         }
                     }
                     

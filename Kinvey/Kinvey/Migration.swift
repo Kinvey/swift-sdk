@@ -46,7 +46,7 @@ open class Migration: NSObject {
                 do {
                     try Realm.performMigration(for: realmConfiguration)
                 } catch {
-                    print("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
+                    log.error("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
                     realmConfiguration.deleteRealmIfMigrationNeeded = true
                     try! Realm.performMigration(for: realmConfiguration)
                 }
