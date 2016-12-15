@@ -454,11 +454,8 @@ public class User: NSObject, Credential, Mappable {
                 onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client) { (user: User?, error: ErrorType?) in
                     NSNotificationCenter.defaultCenter().postNotificationName(
                         MICSafariViewControllerNotificationName,
-                        object: nil,
-                        userInfo: [
-                            "user" : user ?? NSNull(),
-                            "error" : (error as? AnyObject) ?? NSNull()
-                        ]
+                        object: UserError(user: user, error: error),
+                        userInfo: nil
                     )
                 }
             })
@@ -520,7 +517,7 @@ public class User: NSObject, Credential, Mappable {
 
 }
 
-private struct UserError {
+private class UserError {
     
     let user: User?
     let error: ErrorType?
