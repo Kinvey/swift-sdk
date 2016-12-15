@@ -60,7 +60,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = try? Data(contentsOf: url) {
             if self.client.logNetworkEnabled {
                 do {
-                    print("\(response.description(data))")
+                    log.debug("\(response.description(data))")
                 }
             }
             
@@ -87,7 +87,7 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         Promise<(Data, Response)> { fulfill, reject in
             if self.client.logNetworkEnabled {
                 do {
-                    print("GET \(url)")
+                    log.debug("GET \(self.url)")
                 }
             }
             

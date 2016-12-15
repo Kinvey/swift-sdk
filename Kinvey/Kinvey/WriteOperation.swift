@@ -36,12 +36,16 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
     
     @discardableResult
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
 }

@@ -79,8 +79,6 @@
 		5781D1271CE29AA700369F40 /* ObjCRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1261CE29AA600369F40 /* ObjCRuntime.swift */; };
 		5781D1281CE2AFE800369F40 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5781D1291CE2AFEC00369F40 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5781D12A1CE2AFF600369F40 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5781D12B1CE2AFF900369F40 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */; };
 		5781D1341CE3B0FB00369F40 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5781D12E1CE3ACA000369F40 /* Localizable.strings */; };
 		5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1351CE3D0BA00369F40 /* FileTestCase.swift */; };
@@ -99,8 +97,6 @@
 		57873E221DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
-		579224F81D13304700499D0A /* ObjectMapper.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		579224F91D13308400499D0A /* RealmSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		5793B88C1D2306A60088B5F9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		5793B88D1D2306A60088B5F9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -109,7 +105,6 @@
 		5793B8911D2306A60088B5F9 /* Caminandes 3 - TRAILER.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */; };
 		5793B8921D2306A60088B5F9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		5793B8941D2306A60088B5F9 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5793B8951D2306A60088B5F9 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5793B89B1D2307220088B5F9 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
 		5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
@@ -144,10 +139,6 @@
 		57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */; };
 		57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AC52871D395F7D000887D3 /* AuthSource.swift */; };
 		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
-		57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57B0C2161CDCF25900492D6C /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B129D61DB7FB5000737775 /* KinveyVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF11C7F9414006403CC /* KinveyVersion.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		57B129D71DB7FBB400737775 /* KinveyCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF31C7F9414006403CC /* KinveyCore.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -399,7 +390,6 @@
 		57E447FC1DF62DC7003D1AFA /* Caminandes 3 - TRAILER.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */; };
 		57E447FD1DF62DC7003D1AFA /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57E447FF1DF62DC7003D1AFA /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57E448001DF62DC7003D1AFA /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57E448061DF62E05003D1AFA /* NoCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */; };
 		57E448071DF62E35003D1AFA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		57E4DB041C89FE170017B406 /* KNVUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB021C89FE170017B406 /* KNVUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -537,7 +527,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */,
-				57B0C2161CDCF25900492D6C /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -570,7 +559,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5793B8941D2306A60088B5F9 /* Kinvey.framework in CopyFiles */,
-				5793B8951D2306A60088B5F9 /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -581,11 +569,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */,
-				57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */,
-				579224F91D13308400499D0A /* RealmSwift.framework in CopyFiles */,
-				57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */,
-				57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */,
-				579224F81D13304700499D0A /* ObjectMapper.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -596,7 +579,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5781D1281CE2AFE800369F40 /* Kinvey.framework in CopyFiles */,
-				5781D12A1CE2AFF600369F40 /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,7 +589,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5781D1291CE2AFEC00369F40 /* Kinvey.framework in CopyFiles */,
-				5781D12B1CE2AFF900369F40 /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,7 +599,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57E447FF1DF62DC7003D1AFA /* Kinvey.framework in CopyFiles */,
-				57E448001DF62DC7003D1AFA /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -688,6 +668,10 @@
 		577155BA1CA21CC200C91B4B /* Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		5771F9FE1D301F6300903777 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		57757F3D1C652A5600C810E9 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		577751381DF8B8EA006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
+		577751391DF8B908006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
+		5777513A1DF8B914006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
+		5777513B1DF8B921006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
 		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
 		577E6FA31D18B33900B5DA36 /* Results.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Results.swift; sourceTree = "<group>"; };
 		577E6FA51D18E1F900B5DA36 /* RealmSync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmSync.swift; sourceTree = "<group>"; };
@@ -745,17 +729,14 @@
 		57B0C1DA1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
-		57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
 		57B0C1E51CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
 		57B0C1E71CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C1E91CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
-		57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
 		57B0C1F91CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
 		57B0C1FB1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0C2061CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
-		57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
 		57B0C20C1CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
 		57B0C20E1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C2101CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
@@ -1428,6 +1409,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D81CDCE88900492D6C /* PromiseKit.framework */,
@@ -1443,9 +1425,9 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				577751391DF8B908006C98F1 /* XCGLogger.framework */,
 				57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */,
 				57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */,
-				57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1E51CDCE88900492D6C /* PromiseKit.framework */,
 				57B0C1E71CDCE88900492D6C /* Realm.framework */,
 				57B0C1E91CDCE88900492D6C /* RealmSwift.framework */,
@@ -1457,9 +1439,9 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				5777513A1DF8B914006C98F1 /* XCGLogger.framework */,
 				57B7687E1D10C0380086AA38 /* ObjectMapper.framework */,
 				57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */,
-				57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1F91CDCE88900492D6C /* PromiseKit.framework */,
 				57B0C1FB1CDCE88900492D6C /* Realm.framework */,
 				57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */,
@@ -1471,9 +1453,9 @@
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				5777513B1DF8B921006C98F1 /* XCGLogger.framework */,
 				57B7687F1D10C0490086AA38 /* ObjectMapper.framework */,
 				57B0C2061CDCE88900492D6C /* KeychainAccess.framework */,
-				57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C20C1CDCE88900492D6C /* PromiseKit.framework */,
 				57B0C20E1CDCE88900492D6C /* Realm.framework */,
 				57B0C2101CDCE88900492D6C /* RealmSwift.framework */,
@@ -2255,6 +2237,7 @@
 				5765B8411C9771BC00080FFA /* Frameworks */,
 				5765B8421C9771BC00080FFA /* Resources */,
 				57B7391E1C9776B5000FEA7C /* CopyFiles */,
+				5777513E1DF8BDF4006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2293,6 +2276,7 @@
 				5793B88B1D2306A60088B5F9 /* Frameworks */,
 				5793B8901D2306A60088B5F9 /* Resources */,
 				5793B8931D2306A60088B5F9 /* CopyFiles */,
+				577751401DF8BFCB006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2331,6 +2315,7 @@
 				57A27C881C178F18000DF951 /* Frameworks */,
 				57A27C891C178F18000DF951 /* Resources */,
 				5747103B1C7BA2B80096B15F /* CopyFiles */,
+				5777513F1DF8BF90006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2370,6 +2355,7 @@
 				57D643031CA3268000F6D16E /* Frameworks */,
 				57D6430A1CA3268000F6D16E /* Resources */,
 				57D6430C1CA3268000F6D16E /* CopyFiles */,
+				577751411DF8BFEB006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2390,6 +2376,7 @@
 				57D6432A1CA3268600F6D16E /* Frameworks */,
 				57D643311CA3268600F6D16E /* Resources */,
 				57D643331CA3268600F6D16E /* CopyFiles */,
+				577751421DF8BFF7006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2410,6 +2397,7 @@
 				57E447F61DF62DC7003D1AFA /* Frameworks */,
 				57E447FB1DF62DC7003D1AFA /* Resources */,
 				57E447FE1DF62DC7003D1AFA /* CopyFiles */,
+				577751431DF8BFFE006C98F1 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2589,6 +2577,104 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5777513E1DF8BDF4006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KeychainAccess.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/ObjectMapper.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/PromiseKit.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/Realm.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/RealmSwift.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/XCGLogger.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		5777513F1DF8BF90006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		577751401DF8BFCB006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		577751411DF8BFEB006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		577751421DF8BFF7006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		577751431DF8BFFE006C98F1 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5765B8401C9771BC00080FFA /* Sources */ = {

@@ -98,7 +98,11 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
-        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
+        if !client.isInitialized() {
+            let message = "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore."
+            log.severe(message)
+            fatalError(message)
+        }
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
@@ -142,6 +146,14 @@ open class DataStore<T: Persistable> where T: NSObject {
         return find(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
     
+    private func validate(id: String) {
+        if id.isEmpty {
+            let message = "id cannot be an empty string"
+            log.severe(message)
+            fatalError(message)
+        }
+    }
+    
     /**
      Gets a single record using the `_id` of the record.
      
@@ -153,7 +165,8 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     @discardableResult
     open func find(_ id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> Request {
-        precondition(!id.isEmpty)
+        validate(id: id)
+        
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = GetOperation<T>(id: id, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -214,6 +227,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func remove(_ persistable: T, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) throws -> Request {
         guard let id = persistable.entityId else {
+            log.error("Object Id is missing")
             throw Error.objectIdMissing
         }
         return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
@@ -234,7 +248,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// Deletes a record using the `_id` of the record.
     @discardableResult
     open func removeById(_ id: String, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
-        precondition(!id.isEmpty)
+        validate(id: id)
 
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = RemoveByIdOperation<T>(objectId: id, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
@@ -245,7 +259,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// Deletes a list of records using the `_id` of the records.
     @discardableResult
     open func removeById(_ ids: [String], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
-        precondition(ids.count > 0)
+        if ids.isEmpty {
+            let message = "ids cannot be an empty array"
+            log.severe(message)
+            fatalError(message)
+        }
+        
         let query = Query(format: "\(T.entityIdProperty()) IN %@", ids as AnyObject)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }

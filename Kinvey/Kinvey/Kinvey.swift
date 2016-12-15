@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import XCGLogger
 
 /// Key to map the `_id` column in your Persistable implementation class.
 public let PersistableIdKey = "_id"
@@ -24,6 +25,47 @@ typealias PendingOperationIMP = RealmPendingOperation
 
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient
+
+public enum LogLevel {
+    
+    case verbose, debug, info, warning, error, severe, none
+    
+    internal var outputLevel: XCGLogger.Level {
+        switch self {
+        case .verbose: return .verbose
+        case .debug: return .debug
+        case .info: return .info
+        case .warning: return .warning
+        case .error: return .error
+        case .severe: return .severe
+        case .none: return .none
+        }
+    }
+    
+}
+
+extension XCGLogger.Level {
+    internal var logLevel: LogLevel {
+        switch self {
+        case .verbose: return .verbose
+        case .debug: return .debug
+        case .info: return .info
+        case .warning: return .warning
+        case .error: return .error
+        case .severe: return .severe
+        case .none: return .none
+        }
+    }
+}
+
+let log = XCGLogger.default
+
+/// Level of logging used to log messages inside the Kinvey library
+public var logLevel: LogLevel = .warning {
+    didSet {
+        log.outputLevel = logLevel.outputLevel
+    }
+}
 
 let defaultTag = "kinvey"
 
