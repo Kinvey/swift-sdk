@@ -14,3 +14,4 @@ docs
 Kinvey/build
 Carthage/Build/**/*.bcsymbolmap
 Carthage/Checkouts
+!Carthage/Checkouts/NSPredicate-MongoDB-Adaptor
