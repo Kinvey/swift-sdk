@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>16B2555</string>
+	<string>16C67</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>CwlPreconditionTesting</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.cocoawithlove.CwlPreconditionTesting-POSIX</string>
+	<string>com.cocoawithlove.CwlPreconditionTesting-macOS</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
