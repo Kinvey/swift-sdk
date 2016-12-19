@@ -13,9 +13,6 @@ clean:
 checkout-dependencies:
 	cd Kinvey; \
 	carthage checkout --no-use-binaries
-	echo "SWIFT_VERSION = 2.3" >> Kinvey/Carthage/Checkouts/realm-cocoa/Configuration/RealmSwift/RealmSwift.xcconfig
-	cd Kinvey/Carthage/Checkouts/realm-cocoa/examples/ios/swift-3.0/; \
-	xcproj --target PlaygroundFrameworkWrapper write-build-setting SWIFT_VERSION 2.3
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
@@ -23,7 +20,7 @@ build-debug:
 	
 build-ios:
 	cd Kinvey; \
-	carthage build --no-skip-current --platform ios
+	TOOLCHAINS=com.apple.dt.toolchain.Swift_2_3 carthage build --no-skip-current --platform ios
 
 test: test-ios
 
