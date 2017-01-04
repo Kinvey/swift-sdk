@@ -64,31 +64,27 @@ class SyncStoreTests: StoreTestCase {
             return
         }
         
-        let person = self.person
-        var savedPerson: Person?
+        save()
         
-        weak var expectationCreate = expectation(description: "Create")
+        weak var expectationFind = expectation(description: "Create")
         
-        store.save(person) { (person, error) -> Void in
+        var savedPerson:Person?
+        
+        store.find() { (persons, error) -> Void in
             self.assertThread()
-            XCTAssertNotNil(person)
+            XCTAssertNotNil(persons)
+            XCTAssertGreaterThan(persons!.count, 0)
             XCTAssertNil(error)
             
-            if let person = person {
-                XCTAssertNotNil(person.personId)
-                XCTAssertNotEqual(person.personId, "")
-                
-                XCTAssertNotNil(person.age)
-                XCTAssertEqual(person.age, 29)
+            if let person = persons?.first {
+                savedPerson = person
             }
             
-            savedPerson = person
-            
-            expectationCreate?.fulfill()
+            expectationFind?.fulfill()
         }
         
         waitForExpectations(timeout: defaultTimeout) { error in
-            expectationCreate = nil
+            expectationFind = nil
         }
 
         weak var expectationUpdate = expectation(description: "Update")
@@ -112,7 +108,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         waitForExpectations(timeout: defaultTimeout) { error in
-            expectationCreate = nil
+            expectationUpdate = nil
         }
         
     }
