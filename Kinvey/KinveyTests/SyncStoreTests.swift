@@ -28,6 +28,96 @@ class SyncStoreTests: StoreTestCase {
         store = DataStore<Person>.collection(.sync)
     }
     
+    func testCreate() {
+        guard !useMockData else {
+            return
+        }
+        
+        let person = self.person
+        
+        weak var expectationCreate = expectation(description: "Create")
+        
+        store.save(person) { (person, error) -> Void in
+            self.assertThread()
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+        
+            if let person = person {
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+        
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 29)
+            }
+        
+            expectationCreate?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCreate = nil
+        }
+        
+    }
+    
+    func testUpdate() {
+        guard !useMockData else {
+            return
+        }
+        
+        let person = self.person
+        var savedPerson: Person?
+        
+        weak var expectationCreate = expectation(description: "Create")
+        
+        store.save(person) { (person, error) -> Void in
+            self.assertThread()
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            if let person = person {
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 29)
+            }
+            
+            savedPerson = person
+            
+            expectationCreate?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCreate = nil
+        }
+
+        weak var expectationUpdate = expectation(description: "Update")
+        
+        savedPerson?.age = 30
+        
+        store.save(savedPerson!) { (person, error) -> Void in
+            self.assertThread()
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            if let person = person {
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 30)
+            }
+            
+            expectationUpdate?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCreate = nil
+        }
+        
+    }
+    
+    
     func testCustomTag() {
         guard !useMockData else {
             return
