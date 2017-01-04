@@ -78,18 +78,14 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         var json:Dictionary<String, Any>
         let obj = type(of:entity).init()
         
-//        if let props = props {
         json = entity.dictionaryWithValues(forKeys: props)
-//        } else {
-//            json = entity.dictionaryWithValues(forKeys: propertyNames)
-//        }
         
         for property in json.keys {
             let value = json[property]
                 
             if let value = value as? Object {
                 
-                let nestedClassName = NSStringFromClass(type(of:value).self).components(separatedBy: "_").last!
+                let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
                 let nestedObjectSchema = realm.schema[nestedClassName]
                 let nestedProperties = nestedObjectSchema?.properties.map {
                     return $0.name
@@ -118,8 +114,10 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         } else {
             arrayEnumerate = results
         }
-        for entity in arrayEnumerate {            
-            detachedResults.append(detach(entity as! Object, props: self.propertyNames) as! T)
+        for entity in arrayEnumerate {
+            if let entity = entity as? Object {
+                detachedResults.append(detach(entity, props: self.propertyNames) as! T)
+            }
         }
         return detachedResults
     }
@@ -154,8 +152,9 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             result = self.realm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
-                //result = self.detach(result as! Object) as? T
-                result = self.detach(result as! Object, props: self.propertyNames) as? T
+                if let resultObj = result as? Object {
+                    result = self.detach(resultObj, props: self.propertyNames) as? T
+                }
             }
         }
         return result
