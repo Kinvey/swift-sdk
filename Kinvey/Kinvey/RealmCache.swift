@@ -41,7 +41,9 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
         objectSchema = realm.schema[className]!
-        propertyNames = objectSchema.properties.map { return $0.name }
+        propertyNames = objectSchema.properties.map {
+            return $0.name
+        }
         executor = Executor()
         super.init(persistenceId: persistenceId)
         log.debug("Cache File: \(self.realm.configuration.fileURL!.path)")
@@ -66,16 +68,41 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return realmResults
     }
     
-    fileprivate func newInstance<P: Persistable>(_ type: P.Type) -> P {
+    fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
         return type.init()
     }
-    
-    override func detach(_ entity: T) -> T {
+
+    fileprivate func detach(_ entity: Object, props: [String]) -> Object {
         log.verbose("Detaching object: \(entity)")
-        let json = entity.dictionaryWithValues(forKeys: propertyNames)
-        let obj = newInstance(T.self)
+        
+        var json:Dictionary<String, Any>
+        let obj = type(of:entity).init()
+        
+//        if let props = props {
+        json = entity.dictionaryWithValues(forKeys: props)
+//        } else {
+//            json = entity.dictionaryWithValues(forKeys: propertyNames)
+//        }
+        
+        for property in json.keys {
+            let value = json[property]
+                
+            if let value = value as? Object {
+                
+                let nestedClassName = NSStringFromClass(type(of:value).self).components(separatedBy: "_").last!
+                let nestedObjectSchema = realm.schema[nestedClassName]
+                let nestedProperties = nestedObjectSchema?.properties.map {
+                    return $0.name
+                }
+                    
+                json[property] = self.detach(value, props: nestedProperties!)
+            }
+        }
+            
         obj.setValuesForKeys(json)
+            
         return obj
+
     }
     
     override func detach(_ results: [T], query: Query?) -> [T] {
@@ -91,8 +118,8 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         } else {
             arrayEnumerate = results
         }
-        for entity in arrayEnumerate {
-            detachedResults.append(detach(entity))
+        for entity in arrayEnumerate {            
+            detachedResults.append(detach(entity as! Object, props: self.propertyNames) as! T)
         }
         return detachedResults
     }
@@ -127,7 +154,8 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             result = self.realm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
-                result = self.detach(result!)
+                //result = self.detach(result as! Object) as? T
+                result = self.detach(result as! Object, props: self.propertyNames) as? T
             }
         }
         return result
