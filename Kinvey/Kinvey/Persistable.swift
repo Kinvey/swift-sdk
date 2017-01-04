@@ -106,13 +106,11 @@ extension Persistable {
         }
         guard
             results[PersistableIdKey] != nil,
-            results[PersistableAclKey] != nil,
             results[PersistableMetadataKey] != nil
         else {
             let isEntity = self is Entity.Type
             let hintMessage = isEntity ? "Please call super.propertyMapping() inside your propertyMapping() method." : "Please add properties in your Persistable model class to map the missing properties."
             precondition(results[PersistableIdKey] != nil, "Property \(PersistableIdKey) (PersistableIdKey) is missing in the propertyMapping() method. \(hintMessage)")
-            precondition(results[PersistableAclKey] != nil, "Property \(PersistableAclKey) (PersistableAclKey) is missing in the propertyMapping() method. \(hintMessage)")
             precondition(results[PersistableMetadataKey] != nil, "Property \(PersistableMetadataKey) (PersistableMetadataKey) is missing in the propertyMapping() method. \(hintMessage)")
             fatalError(hintMessage)
         }

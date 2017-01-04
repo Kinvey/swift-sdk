@@ -57,9 +57,7 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
         if persistable.entityId == nil {
             persistable.entityId = "\(ObjectIdTmpPrefix)\(UUID().uuidString)"
         }
-        if persistable.acl == nil, let activeUser = client.activeUser {
-            persistable.acl = Acl(creator: activeUser.userId)
-        }
+        
         return persistable
     }
     
