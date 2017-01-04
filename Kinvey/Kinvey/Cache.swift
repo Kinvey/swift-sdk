@@ -62,12 +62,6 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         self.ttl = ttl
     }
     
-    func detach(_ entity: T) -> T {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
-    }
-    
     func detach(_ entity: [T], query: Query) -> [T] {
         let message = "Method \(#function) must be overridden"
         log.severe(message)

@@ -131,15 +131,6 @@ class StoreTestCase: KinveyTestCase {
             self.assertThread()
             XCTAssertNotNil(person)
             XCTAssertNil(error)
-            
-            if let person = person {
-                XCTAssertNotNil(person.personId)
-                XCTAssertNotEqual(person.personId, "")
-                
-                XCTAssertNotNil(person.age)
-                XCTAssertEqual(person.age, 29)
-            }
-            
             expectationCreate?.fulfill()
         }
         
@@ -149,5 +140,6 @@ class StoreTestCase: KinveyTestCase {
         
         return person
     }
+
     
 }
