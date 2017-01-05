@@ -29,7 +29,7 @@ test-ios:
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
 	cd Carthage/Build/iOS; \
-	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ObjectMapper.framework ../../../build/Kinvey-$(VERSION)
+	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ObjectMapper.framework XCGLogger.framework ../../../build/Kinvey-$(VERSION)
 	cd build; \
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
