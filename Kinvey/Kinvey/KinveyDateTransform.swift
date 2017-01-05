@@ -15,6 +15,8 @@ open class KinveyDateTransform : TransformType {
     public typealias Object = Date
     public typealias JSON = String
     
+    public init() {}
+    
     //read formatter that accounts for the timezone
     lazy var dateReadFormatter: DateFormatter = {
         let rFormatter = DateFormatter()
