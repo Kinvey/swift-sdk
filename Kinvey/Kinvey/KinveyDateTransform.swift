@@ -14,6 +14,8 @@ public class KinveyDateTransform : TransformType {
     public typealias Object = NSDate
     public typealias JSON = String
     
+    public init() {}
+    
     //read formatter that accounts for the timezone
     lazy var dateReadFormatter: NSDateFormatter = {
         let rFormatter = NSDateFormatter()
