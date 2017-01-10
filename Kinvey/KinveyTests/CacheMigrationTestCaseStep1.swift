@@ -54,6 +54,8 @@ class CacheMigrationTestCaseStep1: XCTestCase {
                 }
             }
         }
+        
+        super.setUp()
     }
     
     func testMigration() {

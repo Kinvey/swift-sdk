@@ -39,8 +39,8 @@ open class FileStore {
     public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
     public typealias FileArrayCompletionHandler = ([File]?, Swift.Error?) -> Void
     
-    fileprivate let client: Client
-    fileprivate let cache: FileCache?
+    internal let client: Client
+    internal let cache: FileCache?
     
     /// Factory method that returns a `FileStore`.
     open class func getInstance(_ client: Client = sharedClient) -> FileStore {
