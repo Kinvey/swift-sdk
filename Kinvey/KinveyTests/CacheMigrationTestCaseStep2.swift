@@ -35,6 +35,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     let defaultTimeout = KinveyTestCase.defaultTimeout
     
     override func tearDown() {
+        Kinvey.sharedClient.cacheManager.clearAll()
+        
         let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL {
             var path = fileURL.path
@@ -51,6 +53,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 }
             }
         }
+        
+        super.tearDown()
     }
     
     func testMigration() {
