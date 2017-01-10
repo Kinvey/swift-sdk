@@ -107,9 +107,9 @@ public class Metadata: Object, Mappable, BuilderType {
 
 public final class UserMetadata: Metadata {
     
-    internal var emailVerification: EmailVerification?
-    internal var passwordReset: PasswordReset?
-    internal var userStatus: UserStatus?
+    public internal(set) var emailVerification: EmailVerification?
+    public internal(set) var passwordReset: PasswordReset?
+    public internal(set) var userStatus: UserStatus?
     
     public override func mapping(map: Map) {
         super.mapping(map)
@@ -156,6 +156,7 @@ public final class EmailVerification: Object, Mappable {
 }
 
 public final class PasswordReset: Object, Mappable {
+    
     public internal(set) var status: String?
     public internal(set) var lastStateChangeAt: NSDate?
     
@@ -185,6 +186,7 @@ public final class PasswordReset: Object, Mappable {
 }
 
 public final class UserStatus: Object, Mappable {
+    
     public internal(set) var value: String?
     public internal(set) var lastChange: NSDate?
     
