@@ -1077,4 +1077,21 @@ class FileTestCase: StoreTestCase {
         }
     }
     
+    func testGetInstance() {
+        let appKey = "file-get_instance-\(UUID().uuidString)"
+        let client = Client(appKey: appKey, appSecret: "unit-test")
+        let fileStore = FileStore.getInstance(client)
+        
+        let fileCache = fileStore.cache as? RealmFileCache
+        XCTAssertNotNil(fileCache)
+        if let fileCache = fileCache {
+            let fileURL = fileCache.realm.configuration.fileURL
+            XCTAssertNotNil(fileURL)
+            if let fileURL = fileURL {
+                let fileManager = FileManager.default
+                XCTAssertTrue(fileManager.fileExists(atPath: fileURL.path))
+            }
+        }
+    }
+    
 }

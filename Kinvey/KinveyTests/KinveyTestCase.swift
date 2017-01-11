@@ -380,6 +380,15 @@ class KinveyTestCase: XCTestCase {
         
         XCTAssertNotNil(client.activeUser)
     }
+
+    private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
+        let store = DataStore<T>.collection()
+        if let cache = store.cache as? RealmCache {
+            try! cache.realm.write {
+                cache.realm.deleteAll()
+            }
+        }
+    }
     
     override func tearDown() {
         setURLProtocol(nil)
@@ -409,6 +418,9 @@ class KinveyTestCase: XCTestCase {
             
             XCTAssertNil(client.activeUser)
         }
+        
+        client.cacheManager.clearAll()
+        removeAll(Person.self)
         
         super.tearDown()
     }
