@@ -306,20 +306,6 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 @end
 
-@protocol KNVRequest;
-
-/**
-  Class to interact with a custom endpoint in the backend.
-*/
-SWIFT_CLASS_NAMED("CustomEndpoint")
-@interface KNVCustomEndpoint : NSObject
-/**
-  Executes a custom endpoint by name and passing the expected parameters.
-*/
-+ (id <KNVRequest> _Nonnull)execute:(NSString * _Nonnull)name params:(NSDictionary<NSString *, id> * _Nullable)params client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSDictionary<NSString *, id> * _Nullable, NSError * _Nullable))completionHandler;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
 
 SWIFT_CLASS("_TtC6Kinvey17EmailVerification")
 @interface EmailVerification : RealmSwiftObject
@@ -577,6 +563,10 @@ SWIFT_CLASS_NAMED("Migration")
 @end
 
 
+@interface NSPredicate (SWIFT_EXTENSION(Kinvey))
+@end
+
+
 @interface NSString (SWIFT_EXTENSION(Kinvey))
 @end
 
@@ -619,7 +609,6 @@ SWIFT_CLASS_NAMED("ProgressStatus")
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
-@class NSPredicate;
 @class NSSortDescriptor;
 
 /**
@@ -921,9 +910,13 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
+@class UserStatus;
 
 SWIFT_CLASS("_TtC6Kinvey12UserMetadata")
 @interface UserMetadata : Metadata
+@property (nonatomic, readonly, strong) EmailVerification * _Nullable emailVerification;
+@property (nonatomic, readonly, strong) PasswordReset * _Nullable passwordReset;
+@property (nonatomic, readonly, strong) UserStatus * _Nullable userStatus;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithRealm:(RLMRealm * _Nonnull)realm schema:(RLMObjectSchema * _Nonnull)schema OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithValue:(id _Nonnull)value schema:(RLMSchema * _Nonnull)schema OBJC_DESIGNATED_INITIALIZER;
