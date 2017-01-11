@@ -35,7 +35,9 @@ open class Entity: Object, Persistable {
     
     /// Override this method and return the name of the collection for Kinvey.
     open class func collectionName() -> String {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     /// The `_id` property mapped in the Kinvey backend.

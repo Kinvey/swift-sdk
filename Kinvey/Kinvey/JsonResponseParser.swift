@@ -17,14 +17,6 @@ class JsonResponseParser: ResponseParser {
         self.client = client
     }
     
-    func parseArray(_ data: Data?) -> [JsonDictionary]? {
-        if let data = data , data.count > 0 {
-            let result = try? JSONSerialization.jsonObject(with: data, options: []) as! [JsonDictionary]
-            return result
-        }
-        return nil
-    }
-    
     func parse(_ data: Data?) -> JsonDictionary? {
         if let data = data , data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data, options: []) as? JsonDictionary,
@@ -35,7 +27,31 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    fileprivate func parseUser<U: User>(_ json: JsonDictionary, userType: U.Type) -> U? {
+    func parseArray(_ data: Data?) -> [JsonDictionary]? {
+        if let data = data , data.count > 0,
+            let result = try? JSONSerialization.jsonObject(with: data, options: []) as? [JsonDictionary],
+            let json = result
+        {
+            return json
+        }
+        return nil
+    }
+    
+    func parse<T: BaseMappable>(_ data: Data?) -> T? {
+        if let json: JsonDictionary = parse(data) {
+            return T(JSON: json)
+        }
+        return nil
+    }
+    
+    func parse<T: BaseMappable>(_ data: Data?) -> [T]? {
+        if let jsonArray = parseArray(data) {
+            return [T](JSONArray: jsonArray)
+        }
+        return nil
+    }
+    
+    fileprivate func parse<U: User>(_ json: JsonDictionary, userType: U.Type) -> U? {
         let map = Map(mappingType: .fromJSON, JSON: json)
         let user = userType.init(map: map)
         user?.mapping(map: map)
@@ -47,7 +63,7 @@ class JsonResponseParser: ResponseParser {
             let result = try? JSONSerialization.jsonObject(with: data, options: []) as? JsonDictionary,
             let json = result
         {
-            let user = parseUser(json, userType: client.userType)
+            let user = parse(json, userType: client.userType)
             return user
         }
         return nil
@@ -60,7 +76,7 @@ class JsonResponseParser: ResponseParser {
         {
             var users = [User]()
             for json in jsonArray {
-                if let user = parseUser(json, userType: client.userType) {
+                if let user = parse(json, userType: client.userType) {
                     users.append(user)
                 }
             }

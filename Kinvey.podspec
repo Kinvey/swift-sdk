@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.3.4"
+  s.version      = "3.3.6"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -144,5 +144,6 @@ Pod::Spec.new do |s|
   s.dependency "Realm", "~> 2.0"
   s.dependency "RealmSwift", "~> 2.0"
   s.dependency "ObjectMapper", "~> 2.0"
+  s.dependency "XCGLogger", "~> 4.0"
 
 end

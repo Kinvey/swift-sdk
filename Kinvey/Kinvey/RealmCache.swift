@@ -21,7 +21,9 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
-            preconditionFailure("\(T.self) needs to be a Entity")
+            let message = "\(T.self) needs to be a Entity"
+            log.severe(message)
+            fatalError(message)
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -39,13 +41,16 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
         objectSchema = realm.schema[className]!
-        propertyNames = objectSchema.properties.map { return $0.name }
+        propertyNames = objectSchema.properties.map {
+            return $0.name
+        }
         executor = Executor()
-//        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
+        log.debug("Cache File: \(self.realm.configuration.fileURL!.path)")
     }
     
     fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
+        log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
             realmResults = realmResults.filter(predicate)
@@ -63,18 +68,41 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return realmResults
     }
     
-    fileprivate func newInstance<P: Persistable>(_ type: P.Type) -> P {
+    fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
         return type.init()
     }
-    
-    override func detach(_ entity: T) -> T {
-        let json = entity.dictionaryWithValues(forKeys: propertyNames)
-        let obj = newInstance(T.self)
+
+    fileprivate func detach(_ entity: Object, props: [String]) -> Object {
+        log.verbose("Detaching object: \(entity)")
+        
+        var json:Dictionary<String, Any>
+        let obj = type(of:entity).init()
+        
+        json = entity.dictionaryWithValues(forKeys: props)
+        
+        for property in json.keys {
+            let value = json[property]
+                
+            if let value = value as? Object {
+                
+                let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
+                let nestedObjectSchema = realm.schema[nestedClassName]
+                let nestedProperties = nestedObjectSchema?.properties.map {
+                    return $0.name
+                }
+                    
+                json[property] = self.detach(value, props: nestedProperties!)
+            }
+        }
+            
         obj.setValuesForKeys(json)
+            
         return obj
+
     }
     
     override func detach(_ results: [T], query: Query?) -> [T] {
+        log.verbose("Detaching \(results.count) object(s)")
         var detachedResults = [T]()
         let skip = query?.skip ?? 0
         let limit = query?.limit ?? results.count
@@ -87,7 +115,9 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
             arrayEnumerate = results
         }
         for entity in arrayEnumerate {
-            detachedResults.append(detach(entity))
+            if let entity = entity as? Object {
+                detachedResults.append(detach(entity, props: self.propertyNames) as! T)
+            }
         }
         return detachedResults
     }
@@ -97,6 +127,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func saveEntity(_ entity: T) {
+        log.verbose("Saving object: \(entity)")
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
@@ -105,6 +136,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func saveEntities(_ entities: [T]) {
+        log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
             try! self.realm.write {
                 for entity in entities {
@@ -115,17 +147,21 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func findEntity(_ objectId: String) -> T? {
+        log.verbose("Finding object by ID: \(objectId)")
         var result: T?
         executor.executeAndWait {
             result = self.realm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
-                result = self.detach(result!)
+                if let resultObj = result as? Object {
+                    result = self.detach(resultObj, props: self.propertyNames) as? T
+                }
             }
         }
         return result
     }
     
     override func findEntityByQuery(_ query: Query) -> [T] {
+        log.verbose("Finding objects by query: \(query)")
         var results = [T]()
         executor.executeAndWait {
             results = self.detach(self.results(query), query: query)
@@ -134,6 +170,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
+        log.verbose("Finding ids and lmts by query: \(query)")
         var results = [String : String]()
         executor.executeAndWait {
             for entity in self.results(Query(predicate: query.predicate)) {
@@ -146,6 +183,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func findAll() -> [T] {
+        log.verbose("Finding All")
         var results = [T]()
         executor.executeAndWait {
             results = self.detach(self.realm.objects(self.entityType), query: nil)
@@ -154,6 +192,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func count(_ query: Query? = nil) -> Int {
+        log.verbose("Counting by query: \(query)")
         var result = 0
         executor.executeAndWait {
             if let query = query {
@@ -166,6 +205,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func removeEntity(_ entity: T) -> Bool {
+        log.verbose("Removing object: \(entity)")
         var result = false
         if let entityId = entity.entityId {
             executor.executeAndWait {
@@ -183,6 +223,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func removeEntities(_ entities: [T]) -> Bool {
+        log.verbose("Removing objects: \(entities)")
         var result = false
         executor.executeAndWait {
             try! self.realm.write {
@@ -199,6 +240,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func removeEntitiesByQuery(_ query: Query) -> Int {
+        log.verbose("Removing objects by query: \(query)")
         var result = 0
         executor.executeAndWait {
             try! self.realm.write {
@@ -211,6 +253,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func removeAllEntities() {
+        log.verbose("Removing all objects")
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.delete(self.realm.objects(self.entityType))

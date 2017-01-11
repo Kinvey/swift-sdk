@@ -19,6 +19,11 @@ class RealmFileCache: FileCache {
         self.persistenceId = persistenceId
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
+            let fileManager = FileManager.default
+            let baseURL = fileURL.deletingLastPathComponent()
+            if !fileManager.fileExists(atPath: baseURL.path) {
+                try! fileManager.createDirectory(at: baseURL, withIntermediateDirectories: true)
+            }
             configuration.fileURL = fileURL
         }
         configuration.encryptionKey = encryptionKey

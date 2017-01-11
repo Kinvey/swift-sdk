@@ -185,7 +185,7 @@ class FileTestCase: StoreTestCase {
                             "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa"
                         ])
                     default:
-                        preconditionFailure()
+                        fatalError()
                     }
                 }
             }
@@ -474,7 +474,7 @@ class FileTestCase: StoreTestCase {
                             "_downloadURL": "https://storage.googleapis.com/\(UUID().uuidString)/\(UUID().uuidString)/\(UUID().uuidString)"
                         ])
                     default:
-                        preconditionFailure()
+                        fatalError()
                     }
                 }
             }
@@ -979,7 +979,7 @@ class FileTestCase: StoreTestCase {
                             "_expiresAt": Date(timeIntervalSinceNow: 3600).toString()
                         ])
                     default:
-                        preconditionFailure()
+                        fatalError()
                     }
                 }
             }
@@ -1037,7 +1037,7 @@ class FileTestCase: StoreTestCase {
                     case 1:
                         return HttpResponse(data: data)
                     default:
-                        preconditionFailure()
+                        fatalError()
                     }
                 }
             }
@@ -1074,6 +1074,23 @@ class FileTestCase: StoreTestCase {
             
             let twentySecs = TTL(20, .second)
             XCTAssertLessThan(expiresAt.timeIntervalSince(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))
+        }
+    }
+    
+    func testGetInstance() {
+        let appKey = "file-get_instance-\(UUID().uuidString)"
+        let client = Client(appKey: appKey, appSecret: "unit-test")
+        let fileStore = FileStore.getInstance(client)
+        
+        let fileCache = fileStore.cache as? RealmFileCache
+        XCTAssertNotNil(fileCache)
+        if let fileCache = fileCache {
+            let fileURL = fileCache.realm.configuration.fileURL
+            XCTAssertNotNil(fileURL)
+            if let fileURL = fileURL {
+                let fileManager = FileManager.default
+                XCTAssertTrue(fileManager.fileExists(atPath: fileURL.path))
+            }
         }
     }
     
