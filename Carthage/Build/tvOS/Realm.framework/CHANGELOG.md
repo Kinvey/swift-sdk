@@ -1,3 +1,26 @@
+2.1.2 Release notes (2016--12-19)
+=============================================================
+
+This release adds binary versions of Swift 3.0.2 frameworks built with Xcode 8.2.
+
+### Sync Breaking Changes (In Beta)
+
+* Rename occurences of "iCloud" with "CloudKit" in APIs and comments to match
+  naming in the Realm Object Server.
+
+### API Breaking Changes
+
+* None.
+
+### Enhancements
+
+* Add support for 'LIKE' queries (wildcard matching).
+
+### Bugfixes
+
+* Fix authenticating with CloudKit.
+* Fix linker warning about "Direct access to global weak symbol".
+
 2.1.1 Release notes (2016-12-02)
 =============================================================
 
