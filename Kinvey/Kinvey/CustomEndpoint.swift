@@ -7,24 +7,93 @@
 //
 
 import Foundation
+import ObjectMapper
 
 /// Class to interact with a custom endpoint in the backend.
-@objc(KNVCustomEndpoint)
-open class CustomEndpoint: NSObject {
+open class CustomEndpoint {
+    
+    internal enum ParamsEnum {
+        
+        case json(JsonDictionary)
+        case object(BaseMappable)
+        
+    }
+    
+    open class Params {
+        
+        internal let value: ParamsEnum
+        
+        public init(_ json: JsonDictionary) {
+            value = ParamsEnum.json(json)
+        }
+        
+        public init(_ object: Mappable) {
+            value = ParamsEnum.object(object)
+        }
+        
+        public init(_ object: StaticMappable) {
+            value = ParamsEnum.object(object)
+        }
+        
+    }
     
     /// Completion handler block for execute custom endpoints.
-    public typealias CompletionHandler = (JsonDictionary?, Swift.Error?) -> Void
+    public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
     
-    /// Executes a custom endpoint by name and passing the expected parameters.
-    @discardableResult
-    open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler? = nil) -> Request {
+    private static func callEndpoint(_ name: String, params: Params? = nil, client: Client, completionHandler: DataResponseCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildCustomEndpoint(name)
         if let params = params {
             request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.request.httpBody = try! JSONSerialization.data(withJSONObject: params.toJson(), options: [])
+            switch params.value {
+            case .json(let json):
+                request.request.httpBody = try! JSONSerialization.data(withJSONObject: json.toJson(), options: [])
+            case .object(let object):
+                request.request.httpBody = try! JSONSerialization.data(withJSONObject: object.toJSON().toJson(), options: [])
+            }
         }
         request.request.setValue(nil, forHTTPHeaderField: Header.requestId)
-        request.execute() { data, response, error in
+        request.execute(completionHandler)
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
+    open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
+        let params = params != nil ? Params(params!) : nil
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
+                    completionHandler(json, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
+    open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
+        let params = params != nil ? Params(params!) : nil
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
+                    completionHandler(json, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json = client.responseParser.parse(data) {
                     completionHandler(json, nil)
@@ -36,16 +105,96 @@ open class CustomEndpoint: NSObject {
         return request
     }
     
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
+                    completionHandler(json, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    //MARK: Mappable
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: Mappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
+                    completionHandler(obj, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: Mappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
+                    completionHandler(objArray, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    //MARK: StaticMappable
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: StaticMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
+                    completionHandler(obj, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: StaticMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
+        let request = callEndpoint(name, params: params, client: client) { data, response, error in
+            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+                if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
+                    completionHandler(objArray, nil)
+                } else {
+                    completionHandler(nil, buildError(data, response, error, client))
+                }
+            }
+        }
+        return request
+    }
+    
     //MARK: Dispatch Async Main Queue
     
-    fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((JsonDictionary?, Swift.Error?) -> Void)? {
+    fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((R?, Swift.Error?) -> Void)? {
         if let completionHandler = completionHandler {
             return { (obj, error) -> Void in
                 DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj as? R, error)
+                    completionHandler(obj, error)
                 })
             }
         }
         return nil
     }
+    
 }
