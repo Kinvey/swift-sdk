@@ -81,7 +81,7 @@ internal class CacheManager: NSObject {
                     if let encryptionKey = encryptionKey {
                         realmConfiguration.encryptionKey = encryptionKey
                     }
-                    if let realm = try? Realm(configuration: realmConfiguration) , !realm.isEmpty {
+                    if let realm = try? Realm(configuration: realmConfiguration), !realm.isEmpty {
                         try! realm.write {
                             realm.deleteAll()
                         }

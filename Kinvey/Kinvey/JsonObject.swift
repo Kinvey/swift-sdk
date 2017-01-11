@@ -55,8 +55,8 @@ extension JsonObject {
     }
     
     internal func _fromJson(_ json: JsonDictionary) {
-        for keyPair in json {
-            self[keyPair.0] = keyPair.1
+        for (key, value) in json {
+            self[key] = value
         }
     }
     
@@ -65,7 +65,7 @@ extension JsonObject {
 extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
     
     fileprivate func translateValue(_ value: Any) -> Any {
-        if let query = value as? Query, let predicate = query.predicate, let value = try? MongoDBPredicateAdaptor.queryDict(from: predicate) {
+        if let query = value as? Query, let predicate = query.predicate, let value = predicate.json {
             return value
         } else if let dictionary = value as? JsonDictionary {
             var translated = JsonDictionary()
@@ -83,8 +83,8 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
     
     func toJson() -> JsonDictionary {
         var result = JsonDictionary()
-        for item in self {
-            result[item.0 as! String] = translateValue(item.1)
+        for (key, value) in self {
+            result[key as! String] = translateValue(value)
         }
         return result
     }

@@ -94,7 +94,7 @@ extension JSONSerialization {
             }
             return try jsonObject(with: inputStream, options: opt)
         } else {
-            preconditionFailure()
+            fatalError()
         }
     }
     
@@ -195,10 +195,8 @@ class KinveyTestCase: XCTestCase {
     var encrypted = false
     var useMockData = appKey == nil || appSecret == nil
     
-    static let defaultTimeout = TimeInterval(Int8.max)
-    lazy var defaultTimeout: TimeInterval = {
-        KinveyTestCase.defaultTimeout
-    }()
+    static let defaultTimeout: TimeInterval = 30
+    let defaultTimeout: TimeInterval = KinveyTestCase.defaultTimeout
     
     static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
     static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
@@ -382,6 +380,15 @@ class KinveyTestCase: XCTestCase {
         
         XCTAssertNotNil(client.activeUser)
     }
+
+    private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
+        let store = DataStore<T>.collection()
+        if let cache = store.cache as? RealmCache {
+            try! cache.realm.write {
+                cache.realm.deleteAll()
+            }
+        }
+    }
     
     override func tearDown() {
         setURLProtocol(nil)
@@ -411,6 +418,9 @@ class KinveyTestCase: XCTestCase {
             
             XCTAssertNil(client.activeUser)
         }
+        
+        client.cacheManager.clearAll()
+        removeAll(Person.self)
         
         super.tearDown()
     }

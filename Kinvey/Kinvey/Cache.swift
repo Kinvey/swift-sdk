@@ -62,60 +62,80 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         self.ttl = ttl
     }
     
-    func detach(_ entity: T) -> T {
-        preconditionFailure("Method \(#function) must be overridden")
-    }
-    
     func detach(_ entity: [T], query: Query) -> [T] {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func saveEntity(_ entity: T) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func saveEntities(_ entities: [T]) {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func findEntity(_ objectId: String) -> T? {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func findEntityByQuery(_ query: Query) -> [T] {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func findAll() -> [T] {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     func count(_ query: Query? = nil) -> Int {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func removeEntity(_ entity: T) -> Bool {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func removeEntities(_ entity: [T]) -> Bool {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func removeEntitiesByQuery(_ query: Query) -> Int {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func removeAllEntities() {
-        preconditionFailure("Method \(#function) must be overridden")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
 }

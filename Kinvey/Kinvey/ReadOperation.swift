@@ -38,12 +38,16 @@ internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
     
     @discardableResult
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
     @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        preconditionFailure("Method needs to be implemented")
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
     }
     
 }

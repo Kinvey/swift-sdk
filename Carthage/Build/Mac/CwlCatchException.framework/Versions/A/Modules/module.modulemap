@@ -1,0 +1,10 @@
+framework module CwlCatchException {
+  umbrella header "CwlCatchException.h"
+
+  export *
+  module * { export * }
+}
+
+module CwlCatchException.Swift {
+    header "CwlCatchException-Swift.h"
+}

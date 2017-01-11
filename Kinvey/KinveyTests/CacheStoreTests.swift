@@ -28,6 +28,7 @@ class CacheStoreTests: StoreTestCase {
         
         var runCount = 0
         var temporaryObjectId: String? = nil
+        var finalObjectId: String? = nil
         
         if useMockData {
             mockResponse {
@@ -72,6 +73,7 @@ class CacheStoreTests: StoreTestCase {
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
                         XCTAssertFalse(personId.hasPrefix(ObjectIdTmpPrefix))
+                        finalObjectId = personId
                     }
                 }
                 
@@ -103,6 +105,24 @@ class CacheStoreTests: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
+            }
+        }
+        
+        XCTAssertNotNil(finalObjectId)
+        if let finalObjectId = finalObjectId {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.removeById(finalObjectId, writePolicy: .forceLocal) { (count, error) in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 1)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
             }
         }
     }
