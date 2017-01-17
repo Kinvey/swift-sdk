@@ -13,6 +13,9 @@
 		4A9161A31E2EAF2100A55891 /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161921E2EAF2100A55891 /* KCS_OAuthCore.m */; };
 		4A9161A51E2EAF2100A55891 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4A9161A61E2EAF2100A55891 /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */; };
+		4A9161BC1E2EC27A00A55891 /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A9161B81E2EC27A00A55891 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4A9161BD1E2EC27A00A55891 /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161B91E2EC27A00A55891 /* KCSUser+SocialExtras.m */; };
+		4A9161C11E2EC2D900A55891 /* KCSSocialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E7C1C7F9414006403CC /* KCSSocialRequest.m */; };
 		5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
@@ -618,6 +621,8 @@
 		4A9161921E2EAF2100A55891 /* KCS_OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_OAuthCore.m; sourceTree = "<group>"; };
 		4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFacebookHelper.h; sourceTree = "<group>"; };
 		4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFacebookHelper.m; sourceTree = "<group>"; };
+		4A9161B81E2EC27A00A55891 /* KCSUser+SocialExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSUser+SocialExtras.h"; sourceTree = "<group>"; };
+		4A9161B91E2EC27A00A55891 /* KCSUser+SocialExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSUser+SocialExtras.m"; sourceTree = "<group>"; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
@@ -1187,6 +1192,8 @@
 				4A91618E1E2EAF2100A55891 /* 3rdParty */,
 				4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */,
 				4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */,
+				4A9161B81E2EC27A00A55891 /* KCSUser+SocialExtras.h */,
+				4A9161B91E2EC27A00A55891 /* KCSUser+SocialExtras.m */,
 			);
 			name = KinveyKitExtras;
 			path = ../../KinveyKit/KinveyKitExtras;
@@ -2178,6 +2185,7 @@
 				57B23ECA1C7FA7A0006403CC /* KCSFileRequest.h in Headers */,
 				57B23F091C7FAF58006403CC /* NSError+KinveyKit.h in Headers */,
 				57B23EB41C7FA5D5006403CC /* KCSBackgroundAppdataStore.h in Headers */,
+				4A9161BC1E2EC27A00A55891 /* KCSUser+SocialExtras.h in Headers */,
 				4A9161A21E2EAF2100A55891 /* KCS_OAuthCore.h in Headers */,
 				57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */,
 				57B23EC21C7FA720006403CC /* KCSDataStoreOperationRequest.h in Headers */,
@@ -2832,6 +2840,7 @@
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
 				57B23F4A1C7FB187006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */,
 				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
+				4A9161BD1E2EC27A00A55891 /* KCSUser+SocialExtras.m in Sources */,
 				57B23F661C7FB1C6006403CC /* KCS_FMDatabasePool.m in Sources */,
 				57B23ECF1C7FA7F8006403CC /* KCSGroup.m in Sources */,
 				57B23EE11C7FA930006403CC /* KCSNSURLSessionOperation.m in Sources */,
@@ -2862,6 +2871,7 @@
 				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,
 				577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */,
 				57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */,
+				4A9161C11E2EC2D900A55891 /* KCSSocialRequest.m in Sources */,
 				57B23EF41C7FAA3E006403CC /* KCSNetworkObserver.m in Sources */,
 				57B23ECB1C7FA7B8006403CC /* KCSFileRequestManager.m in Sources */,
 				57B23F2D1C7FB021006403CC /* KCSObjectMapper.m in Sources */,
