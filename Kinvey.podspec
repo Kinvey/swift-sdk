@@ -93,11 +93,11 @@ Pod::Spec.new do |s|
 
   s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/**/*.{h,m,mm}", "KinveyKit/KinveyKit/3rdParty/**/*.{h,m,mm}", "KinveyKit/KinveyKitExtras/**/*.{h,m,mm}", "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}"
   
-  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
+  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h", "KinveyKit/KinveyKitExtras/*.h"
   
   s.private_header_files = "KinveyKit/KinveyKit/Source/KCSQuery.h", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/KinveyCore.h"
   
-  s.exclude_files = "KinveyKit/KinveyKit/Source/KCSCacheManager.{h,m}", "KinveyKit/KinveyKit/Source/KCSSyncManager.{h,m}", "KinveyKit/KinveyKitExtras/KCSWebView.{h,m}", "KinveyKit/KinveyKitExtras/TestUtils.{h,m}"
+  s.exclude_files = "KinveyKit/KinveyKit/Source/KCSCacheManager.{h,m}", "KinveyKit/KinveyKit/Source/KCSSyncManager.{h,m}"
   
   s.prefix_header_file = "KinveyKit/KinveyKit/KinveyKit-Prefix.pch"
 
