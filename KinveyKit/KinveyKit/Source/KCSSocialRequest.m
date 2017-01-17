@@ -79,7 +79,7 @@
 
 - (NSMutableURLRequest*) urlRequest
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    KCSClientConfiguration* config = [KCSClient sharedClient].configuration;
     NSURL* url = [NSURL URLWithString:self.url];
     DBAssert(url, @"Should have a valid url");
     
