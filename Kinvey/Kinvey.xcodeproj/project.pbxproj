@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A9161A01E2EAF2100A55891 /* KCS_OAuth+Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A91618F1E2EAF2100A55891 /* KCS_OAuth+Additions.h */; };
+		4A9161A11E2EAF2100A55891 /* KCS_OAuth+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161901E2EAF2100A55891 /* KCS_OAuth+Additions.m */; };
+		4A9161A21E2EAF2100A55891 /* KCS_OAuthCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A9161911E2EAF2100A55891 /* KCS_OAuthCore.h */; };
+		4A9161A31E2EAF2100A55891 /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161921E2EAF2100A55891 /* KCS_OAuthCore.m */; };
+		4A9161A51E2EAF2100A55891 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4A9161A61E2EAF2100A55891 /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */; };
 		5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
@@ -84,6 +90,7 @@
 		5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1351CE3D0BA00369F40 /* FileTestCase.swift */; };
 		5781D1381CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
+		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
 		57873E071DFFD983002C87BF /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		57873E111DFFD983002C87BF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57873E121DFFD983002C87BF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -95,7 +102,6 @@
 		57873E1A1DFFD983002C87BF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E1B1DFFD983002C87BF /* CwlPreconditionTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57873E221DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */; };
-		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
@@ -606,6 +612,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4A91618F1E2EAF2100A55891 /* KCS_OAuth+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCS_OAuth+Additions.h"; sourceTree = "<group>"; };
+		4A9161901E2EAF2100A55891 /* KCS_OAuth+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCS_OAuth+Additions.m"; sourceTree = "<group>"; };
+		4A9161911E2EAF2100A55891 /* KCS_OAuthCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_OAuthCore.h; sourceTree = "<group>"; };
+		4A9161921E2EAF2100A55891 /* KCS_OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_OAuthCore.m; sourceTree = "<group>"; };
+		4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFacebookHelper.h; sourceTree = "<group>"; };
+		4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFacebookHelper.m; sourceTree = "<group>"; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
@@ -684,10 +696,10 @@
 		5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Caminandes 3 - TRAILER.mp4"; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
 		57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwlPreconditionTesting.framework; sourceTree = "<group>"; };
 		57873E1F1DFFD983002C87BF /* KinveyTests Forget To Call Super PropertyMapping.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Forget To Call Super PropertyMapping.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57873E211DFFDA1A002C87BF /* ForgetToCallSuperPropertyMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetToCallSuperPropertyMapping.swift; sourceTree = "<group>"; };
-		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1169,6 +1181,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A91618D1E2EAF2100A55891 /* KinveyKitExtras */ = {
+			isa = PBXGroup;
+			children = (
+				4A91618E1E2EAF2100A55891 /* 3rdParty */,
+				4A9161951E2EAF2100A55891 /* KCSFacebookHelper.h */,
+				4A9161961E2EAF2100A55891 /* KCSFacebookHelper.m */,
+			);
+			name = KinveyKitExtras;
+			path = ../../KinveyKit/KinveyKitExtras;
+			sourceTree = "<group>";
+		};
+		4A91618E1E2EAF2100A55891 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				4A91618F1E2EAF2100A55891 /* KCS_OAuth+Additions.h */,
+				4A9161901E2EAF2100A55891 /* KCS_OAuth+Additions.m */,
+				4A9161911E2EAF2100A55891 /* KCS_OAuthCore.h */,
+				4A9161921E2EAF2100A55891 /* KCS_OAuthCore.m */,
+			);
+			path = 3rdParty;
+			sourceTree = "<group>";
+		};
 		572C458C1C86A6C800A41935 /* Value Transformers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1279,6 +1313,7 @@
 				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57B23E801C7F9414006403CC /* KinveyKit */,
+				4A91618D1E2EAF2100A55891 /* KinveyKitExtras */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
 				572C458C1C86A6C800A41935 /* Value Transformers */,
@@ -2143,6 +2178,7 @@
 				57B23ECA1C7FA7A0006403CC /* KCSFileRequest.h in Headers */,
 				57B23F091C7FAF58006403CC /* NSError+KinveyKit.h in Headers */,
 				57B23EB41C7FA5D5006403CC /* KCSBackgroundAppdataStore.h in Headers */,
+				4A9161A21E2EAF2100A55891 /* KCS_OAuthCore.h in Headers */,
 				57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */,
 				57B23EC21C7FA720006403CC /* KCSDataStoreOperationRequest.h in Headers */,
 				57E4DB131C8A1E170017B406 /* KNVClient+Internal.h in Headers */,
@@ -2156,6 +2192,7 @@
 				57B23EE01C7FA929006403CC /* KCSMockRequestOperation.h in Headers */,
 				57B23F4D1C7FB187006403CC /* KCS_NSString_NSDate_NSValueTransformer.h in Headers */,
 				57B23EBE1C7FA6A4006403CC /* KCSDataStore.h in Headers */,
+				4A9161A51E2EAF2100A55891 /* KCSFacebookHelper.h in Headers */,
 				57B23E9F1C7FA2BF006403CC /* KCSHttpRequest.h in Headers */,
 				57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */,
 				57B23ED21C7FA810006403CC /* KCSGroup.h in Headers */,
@@ -2191,6 +2228,7 @@
 				57B23F061C7FAF58006403CC /* NSArray+KinveyAdditions.h in Headers */,
 				57B23F001C7FAF22006403CC /* KCSDBTools.h in Headers */,
 				57B23F271C7FB00F006403CC /* KCSObjectMapper.h in Headers */,
+				4A9161A01E2EAF2100A55891 /* KCS_OAuth+Additions.h in Headers */,
 				57B23F421C7FB169006403CC /* KCSUser2.h in Headers */,
 				57B23E911C7F9890006403CC /* KCSKeychain.h in Headers */,
 				57A3BF991C8946D200DCD439 /* KNVClient.h in Headers */,
@@ -2740,6 +2778,7 @@
 				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				57B23EB71C7FA62A006403CC /* KCSClient+KinveyDataStore.m in Sources */,
+				4A9161A31E2EAF2100A55891 /* KCS_OAuthCore.m in Sources */,
 				57B23F481C7FB187006403CC /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57B23F641C7FB1C6006403CC /* KCS_FMResultSet.m in Sources */,
@@ -2760,6 +2799,7 @@
 				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
 				574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */,
 				577155BB1CA21CC200C91B4B /* Migration.swift in Sources */,
+				4A9161A61E2EAF2100A55891 /* KCSFacebookHelper.m in Sources */,
 				57B23EC51C7FA75D006403CC /* KCSFile.m in Sources */,
 				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
 				57B23E9E1C7FA2BC006403CC /* KCSHttpRequest.m in Sources */,
@@ -2859,6 +2899,7 @@
 				57B23F321C7FB046006403CC /* KCSClientConfiguration.m in Sources */,
 				57B23F051C7FAF39006403CC /* NSString+KinveyAdditions.m in Sources */,
 				575792C01D412CD20065CC22 /* UserQuery.swift in Sources */,
+				4A9161A11E2EAF2100A55891 /* KCS_OAuth+Additions.m in Sources */,
 				57B23ECD1C7FA7D3006403CC /* KCSFileUtils.m in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57B23F4E1C7FB187006403CC /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */,
