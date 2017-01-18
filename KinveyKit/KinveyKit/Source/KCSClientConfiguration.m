@@ -120,7 +120,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 
 + (instancetype)configurationWithAppKey:(NSString *)appKey
                                  secret:(NSString *)appSecret
-                                options:(NSDictionary *)optionsDictionary
+                                options:(NSDictionary<NSString *, id> *)optionsDictionary
 {
     return [self configurationWithAppKey:appKey
                                   secret:appSecret
@@ -130,7 +130,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 
 + (instancetype)configurationWithAppKey:(NSString *)appKey
                                  secret:(NSString *)appSecret
-                                options:(NSDictionary *)optionsDictionary
+                                options:(NSDictionary<NSString *, id> *)optionsDictionary
                    requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
 {
     KCSClientConfiguration* config = nil;

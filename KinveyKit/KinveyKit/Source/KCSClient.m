@@ -148,7 +148,7 @@
     return self.configuration.serviceHostname;
 }
 
-- (NSDictionary *)options
+- (NSDictionary<NSString *, id> *)options
 {
     return self.configuration.options;
 }
@@ -183,7 +183,7 @@
 
 - (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey
                                     withAppSecret:(NSString *)appSecret
-                                     usingOptions:(NSDictionary *)options
+                                     usingOptions:(NSDictionary<NSString *, id> *)options
 {
     return [self initializeKinveyServiceForAppKey:appKey
                                     withAppSecret:appSecret
@@ -193,7 +193,7 @@
 
 - (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey
                                     withAppSecret:(NSString *)appSecret
-                                     usingOptions:(NSDictionary *)options
+                                     usingOptions:(NSDictionary<NSString *, id> *)options
                              requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
 {
     [self initializeWithConfiguration:[KCSClientConfiguration configurationWithAppKey:appKey

@@ -76,7 +76,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 @property (nonatomic, copy, readonly) NSString *appSecret;
 
 /*! Configuration options, set via @see initializeKinveyServiceForAppKey:withAppSecret:usingOptions */
-@property (nonatomic, strong, readonly) NSDictionary *options;
+@property (nonatomic, strong, readonly) NSDictionary<NSString *, id> *options;
 
 ///---------------------------------------------------------------------------------------
 /// @name Library Information
@@ -196,7 +196,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  */
 - (instancetype)initializeKinveyServiceForAppKey:(NSString *)appKey
                                    withAppSecret:(NSString *)appSecret
-                                    usingOptions:(NSDictionary *)options;
+                                    usingOptions:(NSDictionary<NSString *, id> *)options;
 
 /*! Initialize the singleton KCSClient with this application's key and the secret for this app, along with any needed options.
  
@@ -229,7 +229,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  */
 - (instancetype)initializeKinveyServiceForAppKey:(NSString *)appKey
                                    withAppSecret:(NSString *)appSecret
-                                    usingOptions:(NSDictionary *)options
+                                    usingOptions:(NSDictionary<NSString *, id> *)options
                             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
 /*! Initialize the singleton KCSClient with a dictionary plist containing options to run
