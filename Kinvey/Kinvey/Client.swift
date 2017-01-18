@@ -203,7 +203,7 @@ open class Client: NSObject, NSCoding, Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    open func initialize(appKey: String, appSecret: String, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, options: [String: Any]? = nil, migrationHandler: Migration.MigrationHandler? = nil) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
         
         self.encryptionKey = encryptionKey
@@ -228,7 +228,7 @@ open class Client: NSObject, NSCoding, Credential {
         self.appSecret = appSecret
         
         //legacy initilization
-        KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: nil)
+        KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: options)
         
         if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
             let user = Mapper<User>().map(JSON: json)

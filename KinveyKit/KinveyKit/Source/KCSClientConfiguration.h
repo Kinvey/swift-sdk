@@ -134,7 +134,7 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  - KCS_DATE_FORMAT -- the format used for date parsing
  
  */
-@property (nonatomic, copy) NSDictionary* options;
+@property (nonatomic, copy) NSDictionary<NSString*, id>* options;
 
 /*! Subdomain used to connect to the backend server. Default value: "baas". Sample values: "foo-baas" or "foo-baas.". */
 @property (nonatomic, copy) NSString* serviceHostname;
@@ -190,7 +190,7 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  */
 + (instancetype) configurationWithAppKey:(NSString*)appKey
                                   secret:(NSString*)appSecret
-                                 options:(NSDictionary*)options;
+                                 options:(NSDictionary<NSString*, id>*)options;
 
 /** Basic configuration with an app key and secret and options.
  
@@ -211,7 +211,7 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  */
 + (instancetype) configurationWithAppKey:(NSString*)appKey
                                   secret:(NSString*)appSecret
-                                 options:(NSDictionary*)options
+                                 options:(NSDictionary<NSString*, id>*)options
                     requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
 /** Builds the configuration from the specified plist.

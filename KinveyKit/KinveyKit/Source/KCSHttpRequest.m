@@ -103,7 +103,7 @@ static NSOperationQueue* kcsRequestQueue;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
 {
     return [self requestWithCompletion:completion
@@ -115,7 +115,7 @@ static NSOperationQueue* kcsRequestQueue;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
                                 client:(KNVClient*)client
 {
@@ -129,7 +129,7 @@ static NSOperationQueue* kcsRequestQueue;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
@@ -143,7 +143,7 @@ static NSOperationQueue* kcsRequestQueue;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                                 client:(KNVClient*)client

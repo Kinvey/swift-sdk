@@ -79,6 +79,7 @@
                           apiHostName:apiHostName
                          authHostName:authHostName
                         schemaVersion:0
+                              options:nil
                      migrationHandler:nil];
 }
 
@@ -87,6 +88,7 @@
                         apiHostName:(NSURL *)apiHostName
                        authHostName:(NSURL *)authHostName
                       schemaVersion:(unsigned long long)schemaVersion
+                            options:(NSDictionary<NSString *, id> *)options
                    migrationHandler:(KNVMigrationBlock)migrationHandler
 {
     [self.client initializeWithAppKey:appKey
@@ -95,6 +97,7 @@
                          authHostName:authHostName
                         encryptionKey:nil
                         schemaVersion:schemaVersion
+                              options:options
                      migrationHandler:migrationHandler];
     return self;
 }

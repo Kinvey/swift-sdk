@@ -66,18 +66,18 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
                                 client:(KNVClient*)client;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
                                  route:(NSString*)route
-                               options:(NSDictionary*)options
+                               options:(NSDictionary<NSString*, id>*)options
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
