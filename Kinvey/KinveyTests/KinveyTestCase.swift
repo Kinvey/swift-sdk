@@ -12,21 +12,20 @@ import XCTest
 extension XCTestCase {
     
     @discardableResult
-    func waitValueForObject<V: Equatable>(_ obj: NSObject, keyPath: String, expectedValue: V?, timeout: TimeInterval = 60) -> Bool {
-        let date = Date()
-        let loop = RunLoop.current
+    func wait(toBeTrue evaluate: @escaping @autoclosure () -> Bool, timeout: TimeInterval = 60) -> Bool {
         var result = false
-        repeat {
-            let currentValue = obj.value(forKey: keyPath)
-            if let currentValue = currentValue as? V {
-                result = currentValue == expectedValue
-            } else if currentValue == nil && expectedValue == nil {
+        
+        let observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { (observer, activity) in
+            if evaluate() {
                 result = true
+                CFRunLoopStop(CFRunLoopGetCurrent())
             }
-            if !result {
-                loop.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-        } while !result && -date.timeIntervalSinceNow > timeout
+        }
+        
+        CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+        CFRunLoopRunInMode(.defaultMode, timeout, false)
+        CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+        
         return result
     }
     

@@ -914,8 +914,8 @@ class CustomEndpointTests: KinveyTestCase {
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         let completionHandler: ((JsonDictionary?, Swift.Error?) -> Void)? = nil
-        let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler) as! NSObject
-        waitValueForObject(request, keyPath: "executing", expectedValue: false)
+        let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler)
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
         expectationCustomEndpoint?.fulfill()
         
         waitForExpectations(timeout: defaultTimeout) { error in
@@ -939,8 +939,8 @@ class CustomEndpointTests: KinveyTestCase {
         
         let params: JsonDictionary? = nil
         let completionHandler: ((JsonDictionary?, Swift.Error?) -> Void)? = nil
-        let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler) as! NSObject
-        waitValueForObject(request, keyPath: "executing", expectedValue: false)
+        let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler)
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
         expectationCustomEndpoint?.fulfill()
         
         waitForExpectations(timeout: defaultTimeout) { error in
