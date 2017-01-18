@@ -31,6 +31,8 @@ FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 #import <Kinvey/KinveyUser.h>
 #import <Kinvey/KCSCache.h>
 #import <Kinvey/KCSSync.h>
+#import <Kinvey/KCSFacebookHelper.h>
+#import <Kinvey/KCSUser+SocialExtras.h>
 
 // NSPredicate-MongoDB-Adaptor => https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor
 #import <Kinvey/MongoDBPredicateAdaptor.h>
