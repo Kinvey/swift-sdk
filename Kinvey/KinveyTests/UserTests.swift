@@ -15,11 +15,8 @@ import ObjectMapper
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
+        XCTAssertNotNil(client.activeUser)
     }
     
     func testSignUp404StatusCode() {
@@ -72,6 +69,7 @@ class UserTests: KinveyTestCase {
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
+        XCTAssertNotNil(client.activeUser)
     }
     
     func testSignUpAndDestroy() {
@@ -473,10 +471,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveCustomUser() {
-        guard !useMockData else {
-            return
-        }
-        
         client.userType = MyUser.self
         
         let user = MyUser()
@@ -487,10 +481,19 @@ class UserTests: KinveyTestCase {
         XCTAssertTrue(client.activeUser is MyUser)
         
         if let user = client.activeUser as? MyUser {
-            setURLProtocol(MockKinveyBackend.self)
-            defer {
-                setURLProtocol(nil)
+            if useMockData {
+                mockResponse(completionHandler: { (request) -> HttpResponse in
+                    let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    return HttpResponse(json: json)
+                })
             }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            Kinvey.sharedClient.logNetworkEnabled = true
             
             weak var expectationUserSave = expectation(description: "User Save")
             
@@ -1284,21 +1287,13 @@ class UserTests: KinveyTestCase {
             let webView = micViewController.value(forKey: "webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
-                var wait = true
-                while wait {
-                    weak var expectationWait = expectation(description: "Wait")
-                    
-                    webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result , !(result is NSNull) {
-                            wait = false
-                        }
-                        expectationWait?.fulfill()
-                    })
-                    
-                    waitForExpectations(timeout: defaultTimeout) { error in
-                        expectationWait = nil
+                var username: String? = nil
+                webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                    if let result = result as? String {
+                        username = result
                     }
-                }
+                })
+                XCTAssertTrue(wait(toBeTrue: username == "", timeout: 10))
                 
                 tester().waitForAnimationsToFinish()
                 tester().wait(forTimeInterval: 1)
@@ -1326,6 +1321,26 @@ class UserTests: KinveyTestCase {
                 
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationSubmitForm = nil
+                }
+                
+                XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
+                
+                do {
+                    let store = DataStore<Person>.collection(.network)
+                    
+                    weak var expectationFind = expectation(description: "Find")
+                    
+                    store.find { persons, error in
+                        XCTAssertTrue(Thread.isMainThread)
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(persons)
+                        
+                        expectationFind?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationFind = nil
+                    }
                 }
             }
         } else {
