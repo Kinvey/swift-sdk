@@ -338,10 +338,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.sync()
         
-        XCTAssertTrue(request is NSObject)
-        if let request = request as? NSObject {
-            waitValueForObject(request, keyPath: "executing", expectedValue: false)
-        }
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
     
     func testPush() {
@@ -413,10 +410,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.push()
         
-        XCTAssertTrue(request is NSObject)
-        if let request = request as? NSObject {
-            waitValueForObject(request, keyPath: "executing", expectedValue: false)
-        }
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
     
     func testPull() {
