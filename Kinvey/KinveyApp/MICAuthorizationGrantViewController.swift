@@ -31,13 +31,24 @@ class MICAuthorizationGrantViewController: UIViewController {
     
     @IBAction func login(_ sender: UIButton) {
         let redirectURI = URL(string: "micAuthGrantFlow://")!
-        User.loginWithAuthorization(
+        User.login(
             redirectURI: redirectURI,
             username: textFieldUsername.text!,
             password: textFieldPassword.text!
         ) { user, error in
             if let user = user {
                 self.labelUserID.text = user.userId
+                let store = DataStore<MedData>.collection(.network)
+                
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
+                    store.find { results, error in
+                        if let results = results {
+                            print("\(results)")
+                        } else if let error = error {
+                            print("\(error)")
+                        }
+                    }
+                }
             } else if let error = error {
                 self.labelUserID.text = "Error: \((error as NSError).localizedDescription)"
             } else {

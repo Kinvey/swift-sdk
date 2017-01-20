@@ -28,7 +28,6 @@
 
 #import "KCS_KSReachability.h"
 #import <netdb.h>
-#import "KCSLogManager.h"
 
 
 // ----------------------------------------------------------------------
@@ -140,7 +139,6 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
     {
         if(reachabilityRef == NULL)
         {
-            KCSLogError(@"KSReachability Error: %s: Could not resolve reachability destination", __PRETTY_FUNCTION__);
             goto init_failed;
         }
         else
@@ -153,7 +151,6 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
                                                  onReachabilityChanged,
                                                  &context))
             {
-                KCSLogError(@"KSReachability Error: %s: SCNetworkReachabilitySetCallback failed", __PRETTY_FUNCTION__);
                 goto init_failed;
             }
 
@@ -162,7 +159,6 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
                                                                       kCFRunLoopDefaultMode);
             if(!self.scheduled)
             {
-                KCSLogError(@"KSReachability Error: %s: SCNetworkReachabilityScheduleWithRunLoop failed", __PRETTY_FUNCTION__);
                 goto init_failed;
             }
 
@@ -174,7 +170,6 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
                 // Note: This won't block because there's no host to look up.
                 if(!SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
                 {
-                    KCSLogError(@"KSReachability Error: %s: SCNetworkReachabilityGetFlags failed", __PRETTY_FUNCTION__);
                     goto init_failed;
                 }
 

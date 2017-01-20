@@ -209,7 +209,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 10899706)
+                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
                 }
                 
                 expectationUpload?.fulfill()

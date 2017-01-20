@@ -12,7 +12,6 @@ import ObjectMapper
 private let lockEncryptionKey = NSLock()
 
 /// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
-@objc(__KNVClient)
 open class Client: NSObject, NSCoding, Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
@@ -34,23 +33,12 @@ open class Client: NSObject, NSCoding, Credential {
                 userDefaults.set(json, forKey: appKey!)
                 userDefaults.synchronize()
                 
-                KCSKeychain2.setKinveyToken(
-                    activeUser.metadata?.authtoken,
-                    user: activeUser.userId,
-                    appKey: appKey,
-                    accessible: KCSKeychain2.accessibleString(for: KCSDataProtectionLevel.completeUntilFirstLogin) //TODO: using default value for now
-                )
                 if let authtoken = activeUser.metadata?.authtoken {
                     keychain.authtoken = authtoken
                 }
             } else if let appKey = appKey {
                 userDefaults.removeObject(forKey: appKey)
                 userDefaults.synchronize()
-                
-                KCSKeychain2.deleteTokens(
-                    forUser: activeUser?.userId,
-                    appKey: appKey
-                )
                 
                 CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?).clearAll()
                 do {
@@ -87,10 +75,10 @@ open class Client: NSObject, NSCoding, Credential {
     open fileprivate(set) var appSecret: String?
     
     /// Holds the `Host` for a specific Kinvey environment. The default value is `https://baas.kinvey.com/`
-    open fileprivate(set) var apiHostName: URL
+    open private(set) var apiHostName: URL
     
     /// Holds the `Authentication Host` for a specific Kinvey environment. The default value is `https://auth.kinvey.com/`
-    open fileprivate(set) var authHostName: URL
+    open private(set) var authHostName: URL
     
     /// Cache policy for this client instance.
     open var cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy
@@ -133,20 +121,10 @@ open class Client: NSObject, NSCoding, Credential {
     var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Enables logging for any network calls.
-    open var logNetworkEnabled = false {
-        didSet {
-            KCSClient.configureLogging(
-                withNetworkEnabled: logNetworkEnabled,
-                debugEnabled: false,
-                traceEnabled: false,
-                warningEnabled: false,
-                errorEnabled: false
-            )
-        }
-    }
+    open var logNetworkEnabled = false
     
     /// Stores the MIC API Version to be used in MIC calls 
-    open var micApiVersion: String? = "v1"
+    open var micApiVersion: MICApiVersion? = .v1
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
@@ -227,11 +205,8 @@ open class Client: NSObject, NSCoding, Credential {
         self.appKey = appKey
         self.appSecret = appSecret
         
-        //legacy initilization
-        KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: nil)
-        
         if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
-            let user = Mapper<User>().map(JSON: json)
+            let user = userType.init(JSON: json)
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
                 user.client = self
                 metadata.authtoken = authtoken

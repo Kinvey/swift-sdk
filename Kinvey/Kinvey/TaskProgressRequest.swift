@@ -9,7 +9,6 @@
 import Foundation
 
 /// It holds the progress status of a request.
-@objc(KNVProgressStatus)
 open class ProgressStatus: NSObject {
     
     ///The number of bytes that the request has sent to the server in the request body. (read-only)
