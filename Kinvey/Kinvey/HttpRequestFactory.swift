@@ -48,18 +48,22 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserSocialLogin(_ authSource: String, authData: [String : Any]) -> HttpRequest {
-        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.user(client: client), client: client)
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let socialIdentity = [
-            authSource : authData
-        ]
+    func buildUserSocial(_ authSource: AuthSource, authData: [String : Any], endpoint: Endpoint) -> HttpRequest {
         let bodyObject = [
-            "_socialIdentity" : socialIdentity
+            "_socialIdentity" : [
+                authSource.rawValue : authData
+            ]
         ]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        let request = HttpRequest(httpMethod: .post, endpoint: endpoint, body: Body.json(json: bodyObject), client: client)
         return request
+    }
+    
+    func buildUserSocialLogin(_ authSource: AuthSource, authData: [String : Any]) -> HttpRequest {
+        return buildUserSocial(authSource, authData: authData, endpoint: Endpoint.userLogin(client: client))
+    }
+    
+    func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any]) -> HttpRequest {
+        return buildUserSocial(authSource, authData: authData, endpoint: Endpoint.user(client: client))
     }
     
     func buildUserLogin(username: String, password: String) -> HttpRequest {
@@ -309,6 +313,73 @@ class HttpRequestFactory: RequestFactory {
             httpMethod: .post,
             endpoint: Endpoint.sendEmailConfirmation(client: client, username: username),
             credential: client,
+            client: client
+        )
+        return request
+    }
+    
+    func buildOAuthToken(redirectURI: URL, code: String) -> HttpRequest {
+        let params = [
+            "client_id" : client.appKey!,
+            "grant_type" : "authorization_code",
+            "redirect_uri" : redirectURI.absoluteString,
+            "code" : code
+        ]
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.oauthToken(client: client),
+            credential: client,
+            body: Body.formUrlEncoded(params: params),
+            client: client
+        )
+        return request
+    }
+    
+    func buildOAuthGrantAuth(redirectURI: URL) -> HttpRequest {
+        let json = [
+            "client_id" : client.appKey!,
+            "redirect_uri" : redirectURI.absoluteString,
+            "response_type" : "code"
+        ]
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.oauthAuth(client: client, redirectURI: redirectURI, loginPage: false),
+            credential: client,
+            body: Body.json(json: json),
+            client: client
+        )
+        return request
+    }
+    
+    func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String) -> HttpRequest {
+        let params = [
+            "client_id" : client.appKey!,
+            "response_type" : "code",
+            "redirect_uri" : redirectURI.absoluteString,
+            "username" : username,
+            "password" : password
+        ]
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.url(url: tempLoginUri),
+            credential: client,
+            body: Body.formUrlEncoded(params: params),
+            client: client
+        )
+        return request
+    }
+    
+    func buildOAuthGrantRefreshToken(refreshToken: String) -> HttpRequest {
+        let params = [
+            "client_id" : client.appKey!,
+            "grant_type" : "refresh_token",
+            "refresh_token" : refreshToken
+        ]
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.oauthToken(client: client),
+            credential: client,
+            body: Body.formUrlEncoded(params: params),
             client: client
         )
         return request

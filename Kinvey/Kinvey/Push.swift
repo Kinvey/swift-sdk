@@ -12,6 +12,9 @@ import ObjectiveC
 
 #if os(OSX)
     import Cocoa
+#elseif os(iOS)
+    import UIKit
+    import UserNotifications
 #else
     import UserNotifications
 #endif

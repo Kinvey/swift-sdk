@@ -9,7 +9,6 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVNSURLSessionDownloadTaskRequest)
 class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     
     var executing: Bool {

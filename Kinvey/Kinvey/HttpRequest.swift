@@ -204,10 +204,69 @@ extension HTTPURLResponse {
     
 }
 
+extension String {
+    
+    internal func stringByAddingPercentEncodingForFormData(plusForSpace: Bool = false) -> String? {
+        var allowed = CharacterSet.alphanumerics
+        allowed.insert(charactersIn: "*-._")
+        
+        if plusForSpace {
+            allowed.insert(charactersIn: " ")
+        }
+        
+        var encoded = addingPercentEncoding(withAllowedCharacters: allowed)
+        if plusForSpace {
+            encoded = encoded?.replacingOccurrences(of: " ", with: "+")
+        }
+        return encoded
+    }
+    
+}
+
 /// REST API Version used in the REST calls.
 public let restApiVersion = 4
 
-@objc(__KNVHttpRequest)
+enum Body {
+    
+    case json(json: JsonDictionary)
+    case formUrlEncoded(params: [String : String])
+    
+    func attachTo(request: inout URLRequest) {
+        switch self {
+        case .json(let json):
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try! JSONSerialization.data(withJSONObject: json, options: [])
+        case .formUrlEncoded(let params):
+            request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            var paramsKeyValue = [String]()
+            for (key, value) in params {
+                if let key = key.stringByAddingPercentEncodingForFormData(),
+                    let value = value.stringByAddingPercentEncodingForFormData()
+                {
+                    paramsKeyValue.append("\(key)=\(value)")
+                }
+            }
+            let httpBody = paramsKeyValue.joined(separator: "&")
+            request.httpBody = httpBody.data(using: .utf8)
+        }
+    }
+    
+    static func buildFormUrlEncoded(body: String) -> Body {
+        let regex = try! NSRegularExpression(pattern: "([^&=]+)=([^&]*)")
+        var params = [String : String]()
+        let nsbody = body as NSString
+        for match in regex.matches(in: body, range: NSMakeRange(0, body.characters.count)) {
+            if match.numberOfRanges == 3 {
+                let key = nsbody.substring(with: match.rangeAt(1))
+                let value = nsbody.substring(with: match.rangeAt(2))
+                params[key] = value
+            }
+        }
+        return .formUrlEncoded(params: params)
+    }
+    
+}
+
 internal class HttpRequest: TaskProgressRequest, Request {
     
     let httpMethod: HttpMethod
@@ -221,7 +280,14 @@ internal class HttpRequest: TaskProgressRequest, Request {
     var headers: [HttpHeader] = []
     
     var request: URLRequest
-    let credential: Credential?
+    var credential: Credential? {
+        didSet {
+            if let credential = credential {
+                let header = HttpHeader.authorization(credential: credential)
+                request.setValue(header.value, forHTTPHeaderField: header.name)
+            }
+        }
+    }
     let client: Client
     
     internal var executing: Bool {
@@ -238,7 +304,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
     
     init(request: URLRequest, timeout: TimeInterval? = nil, client: Client = sharedClient) {
         self.httpMethod = HttpMethod.parse(request.httpMethod!)
-        self.endpoint = Endpoint.URL(url: request.url!)
+        self.endpoint = Endpoint.url(url: request.url!)
         self.client = client
         
         if let authorization = request.value(forHTTPHeaderField: HttpHeader.authorization(credential: nil).name) {
@@ -253,17 +319,27 @@ internal class HttpRequest: TaskProgressRequest, Request {
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
     
-    init(httpMethod: HttpMethod = .get, endpoint: Endpoint, credential: Credential? = nil, timeout: TimeInterval? = nil, client: Client = sharedClient) {
+    init(
+        httpMethod: HttpMethod = .get,
+        endpoint: Endpoint,
+        credential: Credential? = nil,
+        body: Body? = nil,
+        timeout: TimeInterval? = nil,
+        client: Client = sharedClient
+    ) {
         self.httpMethod = httpMethod
         self.endpoint = endpoint
         self.client = client
         self.credential = credential ?? client
         
-        let url = endpoint.url()
+        let url = endpoint.url
         request = URLRequest(url: url)
         request.httpMethod = httpMethod.stringValue
         if let timeout = timeout {
             request.timeoutInterval = timeout
+        }
+        if let body = body {
+            body.attachTo(request: &request)
         }
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
     }
@@ -284,7 +360,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
     }
     
-    func execute(_ completionHandler: DataResponseCompletionHandler? = nil) {
+    func execute(urlSession: URLSession? = nil, _ completionHandler: DataResponseCompletionHandler? = nil) {
         guard !cancelled else {
             completionHandler?(nil, nil, Error.requestCancelled)
             return
@@ -298,10 +374,29 @@ internal class HttpRequest: TaskProgressRequest, Request {
             }
         }
         
-        task = client.urlSession.dataTask(with: request) { (data, response, error) -> Void in
-            if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
-                do {
-                    log.debug("\(response.description(data))")
+        let urlSession = urlSession ?? client.urlSession
+        task = urlSession.dataTask(with: request) { (data, response, error) -> Void in
+            if let response = response as? HTTPURLResponse {
+                if self.client.logNetworkEnabled {
+                    do {
+                        log.debug("\(response.description(data))")
+                    }
+                }
+                if response.statusCode == 401,
+                    let user = self.credential as? User,
+                    let socialIdentity = user.socialIdentity,
+                    let kinveyAuthToken = socialIdentity.kinvey,
+                    let refreshToken = kinveyAuthToken.refreshToken
+                {
+                    MIC.login(refreshToken: refreshToken) { user, error in
+                        if let user = user {
+                            self.credential = user
+                            self.execute(urlSession: urlSession, completionHandler)
+                        } else {
+                            completionHandler?(data, HttpResponse(response: response), error)
+                        }
+                    }
+                    return
                 }
             }
             

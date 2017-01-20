@@ -21,7 +21,6 @@
 #import "KinveyHeaderInfo.h"
 #import "KCSNetworkDefs.h"
 #import "KCSRequestConfiguration.h"
-#import "KNVClient.h"
 
 KCS_CONSTANT KCSRequestOptionUseMock;
 KCS_CONSTANT KCSRequestOptionClientMethod;
