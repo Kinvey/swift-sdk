@@ -63,7 +63,7 @@ class JsonResponseParser: ResponseParser {
             let result = try? JSONSerialization.jsonObject(with: data, options: []) as? JsonDictionary,
             let json = result
         {
-            let user = parse(json, userType: client.userType)
+            let user = parse(json, userType: client._userType)
             return user
         }
         return nil
@@ -76,7 +76,7 @@ class JsonResponseParser: ResponseParser {
         {
             var users = [User]()
             for json in jsonArray {
-                if let user = parse(json, userType: client.userType) {
+                if let user = parse(json, userType: client._userType) {
                     users.append(user)
                 }
             }

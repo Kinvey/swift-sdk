@@ -432,7 +432,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        client.userType = MyUser.self
+        client.setUserType(MyUser.self)
         
         let user = User()
         user.email = "my-email@kinvey.com"
@@ -471,7 +471,7 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveCustomUser() {
-        client.userType = MyUser.self
+        client.setUserType(MyUser.self)
         
         let user = MyUser()
         user.foo = "bar"
@@ -525,7 +525,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        client.userType = MyUser.self
+        client.setUserType(MyUser.self)
         
         signUp()
         
