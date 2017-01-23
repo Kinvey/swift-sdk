@@ -123,10 +123,21 @@ open class Client: NSObject, NSCoding, Credential {
     
     /// Use this variable to handle push notifications.
     open fileprivate(set) var push: Push!
-    
+
+    /// Returns the current `User` class.
+    public var userType: User.Type {
+        return _userType
+    }
+    internal private(set) var _userType = User.self
+
     /// Set a different type if you need a custom `User` class. Extends from `User` allows you to have custom properties in your `User` instances.
-    open var userType = User.self
-    
+    public func setUserType<UserType: User>(_: UserType.Type) {
+        _userType = UserType.self
+        userMapper = AnyMapper(Mapper<UserType>())
+    }
+
+    private var userMapper = AnyMapper(Mapper<User>())
+
     ///Default Value for DataStore tag
     open static let defaultTag = Kinvey.defaultTag
     
@@ -231,7 +242,7 @@ open class Client: NSObject, NSCoding, Credential {
         KCSClient.shared().initializeKinveyService(forAppKey: appKey, withAppSecret: appSecret, usingOptions: nil)
         
         if let json = Foundation.UserDefaults.standard.object(forKey: appKey) as? [String : AnyObject] {
-            let user = Mapper<User>().map(JSON: json)
+            let user = userMapper.map(JSON: json) as! User?
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
                 user.client = self
                 metadata.authtoken = authtoken
