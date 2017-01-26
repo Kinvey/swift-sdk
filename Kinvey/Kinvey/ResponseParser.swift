@@ -15,8 +15,10 @@ internal protocol ResponseParser {
     
     func parse(_ data: Data?) -> JsonDictionary?
     func parseArray(_ data: Data?) -> [JsonDictionary]?
+    
     func parse<T: BaseMappable>(_ data: Data?) -> T?
     func parse<T: BaseMappable>(_ data: Data?) -> [T]?
+    
     func parseUser(_ data: Data?) -> User?
     func parseUsers(_ data: Data?) -> [User]?
 

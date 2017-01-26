@@ -20,8 +20,9 @@
 #ifndef KinveyKit_KCSReachability_h
 #define KinveyKit_KCSReachability_h
 
+#define KCS_CONSTANT FOUNDATION_EXPORT NSString* const
+
 @import Foundation;
-#import "KinveyHeaderInfo.h"
 
 @protocol KCSReachability <NSObject>
 

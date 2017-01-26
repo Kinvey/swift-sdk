@@ -20,9 +20,6 @@ internal enum Endpoint {
     case userResetPassword(usernameOrEmail: String, client: Client)
     case userForgotUsername(client: Client)
     
-    case oAuthAuth(client: Client, redirectURI: Foundation.URL)
-    case oAuthToken(client: Client)
-    
     case appData(client: Client, collectionName: String)
     case appDataById(client: Client, collectionName: String, id: String)
     case appDataByQuery(client: Client, collectionName: String, query: Query)
@@ -36,10 +33,13 @@ internal enum Endpoint {
     case blobDownload(client: Client, fileId: String?, query: Query?, tls: Bool, ttlInSeconds: UInt?)
     case blobByQuery(client: Client, query: Query)
     
-    case URL(url: Foundation.URL)
+    case url(url: URL)
     case customEndpooint(client: Client, name: String)
     
-    func url() -> Foundation.URL {
+    case oauthAuth(client: Client, redirectURI: URL, loginPage: Bool)
+    case oauthToken(client: Client)
+    
+    var url: URL {
         switch self {
         case .user(let client):
             return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)")
@@ -48,7 +48,7 @@ internal enum Endpoint {
         case .userDelete(let client, let userId, let hard):
             let url = client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(userId)")
             if hard {
-                return Foundation.URL(string: url.absoluteString + "?hard=true")!
+                return URL(string: url.absoluteString + "?hard=true")!
             }
             return url
         case .userLookup(let client):
@@ -63,14 +63,6 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
         case .userForgotUsername(let client):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
-        case .oAuthAuth(let client, let redirectURI):
-            var characterSet = CharacterSet.urlQueryAllowed
-            characterSet.remove(charactersIn: ":#[]@!$&'()*+,;=")
-            let redirectURIEncoded = redirectURI.absoluteString.addingPercentEncoding(withAllowedCharacters: characterSet) ?? redirectURI.absoluteString
-            let query = "?client_id=\(client.appKey!)&redirect_uri=\(redirectURIEncoded)&response_type=code"
-            return Foundation.URL(string: client.authHostName.appendingPathComponent("/oauth/auth").absoluteString + query)!
-        case .oAuthToken(let client):
-            return client.authHostName.appendingPathComponent("/oauth/token")
         case .appData(let client, let collectionName):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
         case .appDataById(let client, let collectionName, let id):
@@ -78,32 +70,32 @@ internal enum Endpoint {
         case .appDataByQuery(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
             if (query.isEmpty()){
-                return Foundation.URL(string: url)!
+                return URL(string: url)!
             }
             
             let queryParams = query.queryParams
             if queryParams.count > 0 {
-                return Foundation.URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
             }
             
-            return Foundation.URL(string: url)!
+            return URL(string: url)!
         case .appDataCount(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count").absoluteString
             if let query = query {
                 let queryParams = query.queryParams
                 if queryParams.count > 0 {
-                    return Foundation.URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                    return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
                 }
             }
-            return Foundation.URL(string: url)!
+            return URL(string: url)!
         case .pushRegisterDevice(let client):
             return client.apiHostName.appendingPathComponent("/push/\(client.appKey!)/register-device")
         case .pushUnRegisterDevice(let client):
             return client.apiHostName.appendingPathComponent("/push/\(client.appKey!)/unregister-device")
         case .blobById(let client, let fileId):
-            return Endpoint.blobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url()
+            return Endpoint.blobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url
         case .blobUpload(let client, let fileId, let tls):
-            return Endpoint.blobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
+            return Endpoint.blobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url
         case .blobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
             let url = client.apiHostName.appendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
             
@@ -124,15 +116,41 @@ internal enum Endpoint {
             }
             
             if queryParams.count > 0 {
-                return Foundation.URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
             }
-            return Foundation.URL(string: url)!
+            return URL(string: url)!
         case .blobByQuery(let client, let query):
-            return Endpoint.blobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
-        case .URL(let url):
+            return Endpoint.blobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url
+        case .url(let url):
             return url
         case .customEndpooint(let client, let name):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")
+        case .oauthAuth(let client, let redirectURI, let loginPage):
+            var url = client.authHostName
+            if let micApiVersion = client.micApiVersion {
+                url.appendPathComponent(micApiVersion.rawValue)
+            }
+            url.appendPathComponent("/oauth/auth")
+            if loginPage {
+                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+                var queryItems = [URLQueryItem]()
+                queryItems.append(URLQueryItem(name: "client_id", value: client.appKey!))
+                queryItems.append(URLQueryItem(name: "redirect_uri", value: redirectURI.absoluteString))
+                queryItems.append(URLQueryItem(name: "response_type", value: "code"))
+                if let micApiVersion = client.micApiVersion, micApiVersion == .v3 {
+                    queryItems.append(URLQueryItem(name: "scope", value: "openid"))
+                }
+                components.queryItems = queryItems
+                url = components.url!
+            }
+            return url
+        case .oauthToken(let client):
+            var url = client.authHostName
+            if let micApiVersion = client.micApiVersion {
+                url.appendPathComponent(micApiVersion.rawValue)
+            }
+            url.appendPathComponent("/oauth/token")
+            return url
         }
     }
     
