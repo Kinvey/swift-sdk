@@ -9,7 +9,6 @@
 import Foundation
 import ObjectiveC
 
-@objc(__KNVObjCRuntime)
 internal class ObjCRuntime: NSObject {
     
     fileprivate override init() {

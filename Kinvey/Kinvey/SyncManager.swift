@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc(__KNVSyncManager)
 internal class SyncManager: NSObject {
     
     fileprivate let persistenceId: String

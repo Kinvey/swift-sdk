@@ -306,4 +306,3 @@ static NSInteger referenceCount = 0; \
 }
 
 #import "KinveyHeaderInfo.h"
-#import "KinveyInternal-Swift.h"

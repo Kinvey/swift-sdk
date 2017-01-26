@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc(__KNVOperationQueueRequest)
 class OperationQueueRequest: NSObject, Request {
     
     let operationQueue: OperationQueue

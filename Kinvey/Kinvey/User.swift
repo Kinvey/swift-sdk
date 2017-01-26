@@ -15,14 +15,13 @@ import ObjectMapper
 #endif
 
 /// Class that represents an `User`.
-@objc(__KNVUser)
 open class User: NSObject, Credential, Mappable {
     
     /// Username Key.
     open static let PersistableUsernameKey = "username"
     
-    public typealias UserHandler = (User?, Swift.Error?) -> Void
-    public typealias UsersHandler = ([User]?, Swift.Error?) -> Void
+    public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
+    public typealias UsersHandler<U: User> = ([U]?, Swift.Error?) -> Void
     public typealias VoidHandler = (Swift.Error?) -> Void
     public typealias BoolHandler = (Bool, Swift.Error?) -> Void
     
@@ -44,6 +43,9 @@ open class User: NSObject, Credential, Mappable {
     /// `_kmd` property of the user.
     open fileprivate(set) var metadata: UserMetadata?
     
+    /// `_socialIdentity` property of the user.
+    open fileprivate(set) var socialIdentity: UserSocialIdentity?
+    
     /// `username` property of the user.
     open var username: String?
     
@@ -62,15 +64,15 @@ open class User: NSObject, Credential, Mappable {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
-    open class func signup<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, client: Client = Kinvey.sharedClient, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) -> Request {
+    open class func signup<U: User>(username: String? = nil, password: String? = nil, user: U? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         validate(client: client)
 
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password, user: user)
-        Promise<UserType> { fulfill, reject in
+        Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK {
-                    client.activeUser = client.responseParser.parseUser(data)
-                    fulfill(client.activeUser as! UserType)
+                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                    client.activeUser = user
+                    fulfill(user)
                 } else {
                     reject(buildError(data, response, error, client))
                 }
@@ -120,36 +122,53 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    open class func login(authSource: AuthSource, _ authData: [String : Any], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    open class func login<U: User>(authSource: AuthSource, _ authData: [String : Any], createIfNotExists: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         validate(client: client)
         
-        let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
-        Promise<User> { fulfill, reject in
+        let requests = MultiRequest()
+        Promise<U> { fulfill, reject in
+            let request = client.networkRequestFactory.buildUserSocialLogin(authSource, authData: authData)
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) {
-                    client.activeUser = user
-                    fulfill(user)
+                if let response = response {
+                    if response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                        client.activeUser = user
+                        fulfill(user)
+                    } else if response.isNotFound, createIfNotExists {
+                        let request = client.networkRequestFactory.buildUserSocialCreate(authSource, authData: authData)
+                        request.execute { (data, response, error) in
+                            if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                                client.activeUser = user
+                                fulfill(user)
+                            } else {
+                                reject(buildError(data, response, error, client))
+                            }
+                        }
+                        requests += request
+                    } else {
+                        reject(buildError(data, response, error, client))
+                    }
                 } else {
                     reject(buildError(data, response, error, client))
                 }
             }
-            }.then { user in
-                completionHandler?(client.activeUser, nil)
-            }.catch { error in
-                completionHandler?(nil, error)
+            requests += request
+        }.then { user in
+            completionHandler?(user, nil)
+        }.catch { error in
+            completionHandler?(nil, error)
         }
-        return request
+        return requests
     }
     
     /// Sign in a user and set as a current active user.
     @discardableResult
-    open class func login(username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    open class func login<U: User>(username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         validate(client: client)
 
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
-        Promise<User> { fulfill, reject in
+        Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) {
+                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     client.activeUser = user
                     fulfill(user)
                 } else {
@@ -157,7 +176,7 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(client.activeUser, nil)
+            completionHandler?(user, nil)
         }.catch { error in
             completionHandler?(nil, error)
         }
@@ -184,10 +203,10 @@ open class User: NSObject, Credential, Mappable {
                     reject(buildError(data, response, error, client))
                 }
             }
-            }.then {
-                completionHandler?(nil)
-            }.catch { error in
-                completionHandler?(error)
+        }.then {
+            completionHandler?(nil)
+        }.catch { error in
+            completionHandler?(error)
         }
         return request
     }
@@ -272,7 +291,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    open func changePassword(newPassword: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    open func changePassword<U: User>(newPassword: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         return save(newPassword: newPassword, client: client, completionHandler: completionHandler)
     }
     
@@ -323,11 +342,11 @@ open class User: NSObject, Credential, Mappable {
     
     /// Gets a `User` instance using the `userId` property.
     @discardableResult
-    open class func get(userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    open class func get<U: User>(userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
-        Promise<User> { fulfill, reject in
+        Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) {
+                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     fulfill(user)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -370,6 +389,7 @@ open class User: NSObject, Credential, Mappable {
         _userId <- map[PersistableIdKey]
         acl <- map[PersistableAclKey]
         metadata <- map[PersistableMetadataKey]
+        socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
     }
@@ -383,11 +403,11 @@ open class User: NSObject, Credential, Mappable {
     
     /// Creates or updates a `User`.
     @discardableResult
-    open func save(newPassword: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    open func save<U: User>(newPassword: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSave(user: self, newPassword: newPassword)
-        Promise<User> { fulfill, reject in
+        Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) {
+                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     client.activeUser = user
                     fulfill(user)
                 } else {
@@ -395,7 +415,7 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(client.activeUser, nil)
+            completionHandler?(user, nil)
         }.catch { error in
             completionHandler?(nil, error)
         }
@@ -406,20 +426,20 @@ open class User: NSObject, Credential, Mappable {
      This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
      */
     @discardableResult
-    open func lookup(_ userQuery: UserQuery, client: Client = Kinvey.sharedClient, completionHandler: UsersHandler? = nil) -> Request {
+    open func lookup<U: User>(_ userQuery: UserQuery, client: Client = Kinvey.sharedClient, completionHandler: UsersHandler<U>? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserLookup(user: self, userQuery: userQuery)
-        Promise<[User]> { fulfill, reject in
+        Promise<[U]> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let users = client.responseParser.parseUsers(data) {
+                if let response = response , response.isOK, let users: [U] = client.responseParser.parse(data) {
                     fulfill(users)
                 } else {
                     reject(buildError(data, response, error, client))
                 }
             }
-            }.then { users in
-                completionHandler?(users, nil)
-            }.catch { error in
-                completionHandler?(nil, error)
+        }.then { users in
+            completionHandler?(users, nil)
+        }.catch { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -437,43 +457,18 @@ open class User: NSObject, Credential, Mappable {
         }
     }
     
-    internal convenience init(_ kcsUser: KCSUser, client: Client) {
-        let authString = kcsUser.authString!
-        let authtoken = authString.hasPrefix(User.authtokenPrefix) ? authString.substring(from: User.authtokenPrefix.endIndex) : authString
-        self.init(userId: kcsUser.userId, metadata: UserMetadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
-        username = kcsUser.username
-        email = kcsUser.email
-    }
-    
-    fileprivate class func onMicLoginComplete(user kcsUser: KCSUser?, error: Swift.Error?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
-        var user: User? = nil
-        if let kcsUser = kcsUser {
-            user = User(kcsUser, client: client)
-            client.activeUser = user
-        }
-        if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
-            completionHandler?(user, Error.requestCancelled)
-        } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
-            completionHandler?(user, Error.requestTimeout)
-        } else {
-            completionHandler?(user, error)
+    /**
+     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
+     */
+    open class func login<U: User>(redirectURI: URL, username: String, password: String, client: Client = sharedClient, completionHandler: UserHandler<U>? = nil) {
+        MIC.login(redirectURI: redirectURI, username: username, password: password, client: client) { user, error in
+            DispatchQueue.main.async {
+                completionHandler?(user, error)
+            }
         }
     }
 
 #if os(iOS)
-    
-    /**
-     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
-     */
-    open class func loginWithAuthorization(redirectURI: URL, username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let options = [
-            "username" : username,
-            "password" : password
-        ]
-        KCSUser.login(withAuthorizationCodeAPI: redirectURI.absoluteString, options: options, client: client) { (kcsUser, error, actionResult) in
-            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
-        }
-    }
     
     private static let MICSafariViewControllerNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController")
     
@@ -486,17 +481,15 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Performs a login using the MIC Redirect URL that contains a temporary token.
-    open class func login(redirectURI: URL, micURL: URL, client: Client = Kinvey.sharedClient) -> Bool {
-        if KCSUser.isValidMICRedirectURI(redirectURI.absoluteString, for: micURL) {
-            KCSUser.parseMICRedirectURI(redirectURI.absoluteString, for: micURL, withCompletionBlock: { (kcsUser, error, actionResult) in
-                onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client) { user, error in
-                    let object = UserError(user: user, error: error)
-                    NotificationCenter.default.post(
-                        name: MICSafariViewControllerNotificationName,
-                        object: object
-                    )
-                }
-            })
+    open class func login(redirectURI: URL, micURL: URL, client: Client = sharedClient) -> Bool {
+        if let code = MIC.parseCode(redirectURI: redirectURI, url: micURL) {
+            MIC.login(redirectURI: redirectURI, code: code, client: client) { (user, error) in
+                let object = UserError(user: user, error: error)
+                NotificationCenter.default.post(
+                    name: MICSafariViewControllerNotificationName,
+                    object: object
+                )
+            }
             return true
         }
         return false
@@ -504,78 +497,137 @@ open class User: NSObject, Credential, Mappable {
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     @available(*, deprecated: 3.3.2, message: "Please use the method presentMICViewController(micUserInterface:) instead")
-    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, forceUIWebView: Bool, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<User>? = nil) {
         presentMICViewController(redirectURI: redirectURI, timeout: timeout, micUserInterface: forceUIWebView ? .uiWebView : .wkWebView, client: client, completionHandler: completionHandler)
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    open class func presentMICViewController(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, currentViewController: UIViewController? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+    open class func presentMICViewController<U: User>(redirectURI: URL, timeout: TimeInterval = 0, micUserInterface: MICUserInterface = .safari, currentViewController: UIViewController? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) {
         validate(client: client)
         
-        var micVC: UIViewController!
-        if micUserInterface == .safari {
-            let url = KCSUser.urLforLogin(withMICRedirectURI: redirectURI.absoluteString)!
-            micVC = SFSafariViewController(url: url)
-            micVC.modalPresentationStyle = .overCurrentContext
-            MICSafariViewControllerNotificationObserver = NotificationCenter.default.addObserver(
-                forName: MICSafariViewControllerNotificationName,
-                object: nil,
-                queue: OperationQueue.main)
-            { notification in
-                micVC.dismiss(animated: true) {
-                    MICSafariViewControllerNotificationObserver = nil
-                    
-                    let object = notification.object as? UserError
-                    completionHandler?(object?.user, object?.error)
+        Promise<U> { fulfill, reject in
+            var micVC: UIViewController!
+            
+            switch micUserInterface {
+            case .safari:
+                let url = MIC.urlForLogin(redirectURI: redirectURI)
+                micVC = SFSafariViewController(url: url)
+                micVC.modalPresentationStyle = .overCurrentContext
+                MICSafariViewControllerNotificationObserver = NotificationCenter.default.addObserver(
+                    forName: MICSafariViewControllerNotificationName,
+                    object: nil,
+                    queue: OperationQueue.main)
+                { notification in
+                    micVC.dismiss(animated: true) {
+                        MICSafariViewControllerNotificationObserver = nil
+                        
+                        if let object = notification.object as? UserError<U> {
+                            if let user = object.user {
+                                fulfill(user)
+                            } else if let error = object.error {
+                                reject(error)
+                            } else {
+                                reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                            }
+                        } else {
+                            reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                        }
+                    }
+                }
+            default:
+                let forceUIWebView = micUserInterface == .uiWebView
+                let micLoginVC = MICLoginViewController(redirectURI: redirectURI, userType: client.userType, timeout: timeout, forceUIWebView: forceUIWebView, client: client) { user, error, userActionResult in
+                    if let userActionResult = userActionResult {
+                        switch userActionResult {
+                        case .cancel:
+                            reject(Error.requestCancelled)
+                        case .timeout:
+                            reject(Error.requestTimeout)
+                        }
+                    } else {
+                        if let user = user as? U {
+                            fulfill(user)
+                        } else if let error = error {
+                            reject(error)
+                        } else {
+                            reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                        }
+                    }
+                }
+                micVC = UINavigationController(rootViewController: micLoginVC)
+            }
+            
+            var viewController = currentViewController
+            if viewController == nil {
+                viewController = UIApplication.shared.keyWindow?.rootViewController
+                if let presentedViewController =  viewController?.presentedViewController {
+                    viewController = presentedViewController
                 }
             }
-        } else {
-            let micLoginVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
-                onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
-            }
-            let forceUIWebView = micUserInterface == .uiWebView
-            if forceUIWebView {
-                micLoginVC.setValue(forceUIWebView, forKey: "forceUIWebView")
-            }
-            micLoginVC.client = client
-            micLoginVC.micApiVersion = client.micApiVersion
-            micVC = UINavigationController(rootViewController: micLoginVC)
+            viewController?.present(micVC, animated: true)
+        }.then { user in
+            completionHandler?(user, nil)
+        }.catch { error in
+            completionHandler?(nil, error)
         }
-        var viewController = currentViewController
-        if viewController == nil {
-            viewController = UIApplication.shared.keyWindow?.rootViewController
-            if let presentedViewController =  viewController?.presentedViewController {
-                viewController = presentedViewController
-            }
-        }
-        viewController?.present(micVC, animated: true)
     }
 #endif
 
 }
 
-private struct UserError {
+private struct UserError<U: User> {
     
-    let user: User?
+    let user: U?
     let error: Swift.Error?
     
-    init(user: User?, error: Swift.Error?) {
-        self.user = user
-        self.error = error
+}
+
+public struct UserAuthToken : StaticMappable {
+    
+    var accessToken: String
+    var refreshToken: String?
+    
+    public static func objectForMapping(map: Map) -> BaseMappable? {
+        guard let accessToken: String = map["access_token"].value() else {
+            return nil
+        }
+        return UserAuthToken(accessToken: accessToken, refreshToken: nil)
+    }
+    
+    public mutating func mapping(map: Map) {
+        accessToken <- map["access_token"]
+        refreshToken <- map["refresh_token"]
     }
     
 }
 
-/// Used to tell which user interface must be used during the login process using MIC.
-public enum MICUserInterface {
+public struct UserSocialIdentity : StaticMappable {
     
-    /// Uses SFSafariViewController
-    case safari
+    /// Facebook social identity
+    var facebook: UserAuthToken?
     
-    /// Uses WKWebView
-    case wkWebView
+    /// Twitter social identity
+    var twitter: UserAuthToken?
     
-    /// Uses UIWebView
-    case uiWebView
+    /// Google+ social identity
+    var googlePlus: UserAuthToken?
+    
+    /// LinkedIn social identity
+    var linkedIn: UserAuthToken?
+    
+    /// Kinvey MIC social identity
+    var kinvey: UserAuthToken?
+    
+    public static func objectForMapping(map: Map) -> BaseMappable? {
+        return UserSocialIdentity()
+    }
+    
+    public mutating func mapping(map: Map) {
+        facebook <- map[AuthSource.facebook.rawValue]
+        twitter <- map[AuthSource.twitter.rawValue]
+        googlePlus <- map[AuthSource.googlePlus.rawValue]
+        linkedIn <- map[AuthSource.linkedIn.rawValue]
+        kinvey <- map[AuthSource.kinvey.rawValue]
+    }
     
 }

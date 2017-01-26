@@ -10,7 +10,7 @@ import Foundation
 
 class HttpHeaderCredential: Credential {
     
-    var authorizationHeader: String?
+    let authorizationHeader: String?
     
     init(_ authorizationHeaderValue: String) {
         authorizationHeader = authorizationHeaderValue
