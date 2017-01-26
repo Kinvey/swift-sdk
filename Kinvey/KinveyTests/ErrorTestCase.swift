@@ -11,38 +11,38 @@ import XCTest
 
 class ErrorTestCase: KinveyTestCase {
     
-    override func setUp() {
-    }
-    
-    override func tearDown() {
-    }
-    
     func testObjectIDMissing() {
-        XCTAssertEqual("\(Kinvey.Error.objectIdMissing)", "Object ID is required and is missing")
+        let expectedDescription = "Object ID is required and is missing"
+        XCTAssertEqual("\(Kinvey.Error.objectIdMissing)", expectedDescription)
+        XCTAssertEqual(Kinvey.Error.objectIdMissing.description, expectedDescription)
+        XCTAssertEqual(Kinvey.Error.objectIdMissing.localizedDescription, expectedDescription)
+        XCTAssertEqual(Kinvey.Error.objectIdMissing.failureReason, expectedDescription)
+        XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedDescription, expectedDescription)
+        XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedFailureReason, expectedDescription)
     }
     
     func testInvalidResponse() {
-        XCTAssertEqual("\(Kinvey.Error.invalidResponse(httpResponse: nil, data: nil))", "Invalid response from the server")
+        XCTAssertEqual(Kinvey.Error.invalidResponse(httpResponse: nil, data: nil).description, "Invalid response from the server")
     }
     
     func testUnauthorized() {
-        XCTAssertEqual("\(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", description: "Description"))", "Description")
+        XCTAssertEqual(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", description: "Description").description, "Description")
     }
     
     func testNoActiveUser() {
-        XCTAssertEqual("\(Kinvey.Error.noActiveUser)", "An active user is required and none was found")
+        XCTAssertEqual(Kinvey.Error.noActiveUser.description, "An active user is required and none was found")
     }
     
     func testRequestCancelled() {
-        XCTAssertEqual("\(Kinvey.Error.requestCancelled)", "Request was cancelled")
+        XCTAssertEqual(Kinvey.Error.requestCancelled.description, "Request was cancelled")
     }
     
     func testInvalidDataStoreType() {
-        XCTAssertEqual("\(Kinvey.Error.invalidDataStoreType)", "DataStore type does not support this operation")
+        XCTAssertEqual(Kinvey.Error.invalidDataStoreType.description, "DataStore type does not support this operation")
     }
     
     func testUserWithoutEmailOrUsername() {
-        XCTAssertEqual("\(Kinvey.Error.userWithoutEmailOrUsername)", "User has no email or username")
+        XCTAssertEqual(Kinvey.Error.userWithoutEmailOrUsername.description, "User has no email or username")
     }
     
     func testInvalidResponseHttpResponseData() {
