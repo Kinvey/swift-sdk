@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
+public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomDebugStringConvertible {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -56,9 +56,6 @@ public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConver
     /// Error when a `User` doen't have an email or username.
     case userWithoutEmailOrUsername
     
-    var error: NSError {
-        return self as NSError
-    }
     
     /// Error localized description.
     public var description: String {
@@ -87,6 +84,14 @@ public enum Error: Swift.Error, CustomStringConvertible, CustomDebugStringConver
         case .userWithoutEmailOrUsername:
             return NSLocalizedString("Error.userWithoutEmailOrUsername", bundle: bundle, comment: "")
         }
+    }
+    
+    public var errorDescription: String? {
+        return description
+    }
+    
+    public var failureReason: String? {
+        return description
     }
     
     public var debugDescription: String {

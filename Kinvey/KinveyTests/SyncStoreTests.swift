@@ -209,7 +209,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNotNil(error)
             
             if let error = error as? NSError {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType.error)
+                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
             expectationPurge?.fulfill()
@@ -656,7 +656,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNotNil(error)
             
             if let error = error as? NSError {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType.error)
+                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
             expectationPull?.fulfill()
