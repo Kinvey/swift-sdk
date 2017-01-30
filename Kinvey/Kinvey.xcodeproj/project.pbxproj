@@ -54,10 +54,6 @@
 		575792C01D412CD20065CC22 /* UserQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575792BF1D412CD20065CC22 /* UserQuery.swift */; };
 		5759854E1CC833930054DF08 /* LongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854D1CC833930054DF08 /* LongData.swift */; };
 		575985501CC834FE0054DF08 /* MedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854F1CC834FE0054DF08 /* MedData.swift */; };
-		575B6C841E383B3500796C69 /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 575B6C821E383B3500796C69 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		575B6C851E383B3500796C69 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B6C831E383B3500796C69 /* KCSReachability.m */; };
-		575B6C871E383BE700796C69 /* KCS_KSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 575B6C861E383BE700796C69 /* KCS_KSReachability.h */; };
-		575B6C891E383C0B00796C69 /* KCS_KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B6C881E383C0B00796C69 /* KCS_KSReachability.m */; };
 		5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B83C1C972D7000080FFA /* URLProtocols.swift */; };
 		5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8461C9771BC00080FFA /* AppDelegate.swift */; };
 		5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8481C9771BC00080FFA /* MICLoginViewController.swift */; };
@@ -71,7 +67,6 @@
 		577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8351C92365700080FFA /* FindOperationTest.swift */; };
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
 		5771F9FF1D301F6300903777 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771F9FE1D301F6300903777 /* Event.swift */; };
-		57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
 		5776EEC01E31740B003B9DF0 /* MIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776EEBF1E31740B003B9DF0 /* MIC.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		577E6FA41D18B33900B5DA36 /* Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA31D18B33900B5DA36 /* Results.swift */; };
@@ -145,7 +140,6 @@
 		57B768811D10C0C70086AA38 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B768801D10C0C70086AA38 /* Entity.swift */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
-		57BB8EF01DED5070000D8A69 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BB8EEF1DED5070000D8A69 /* libsqlite3.tbd */; };
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
@@ -430,10 +424,6 @@
 		575792BF1D412CD20065CC22 /* UserQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserQuery.swift; sourceTree = "<group>"; };
 		5759854D1CC833930054DF08 /* LongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongData.swift; sourceTree = "<group>"; };
 		5759854F1CC834FE0054DF08 /* MedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedData.swift; sourceTree = "<group>"; };
-		575B6C821E383B3500796C69 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCSReachability.h; path = ../../KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h; sourceTree = "<group>"; };
-		575B6C831E383B3500796C69 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCSReachability.m; path = ../../KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.m; sourceTree = "<group>"; };
-		575B6C861E383BE700796C69 /* KCS_KSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCS_KSReachability.h; path = ../../KinveyKit/KinveyKit/3rdParty/Reachability/KCS_KSReachability.h; sourceTree = "<group>"; };
-		575B6C881E383C0B00796C69 /* KCS_KSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCS_KSReachability.m; path = ../../KinveyKit/KinveyKit/3rdParty/Reachability/KCS_KSReachability.m; sourceTree = "<group>"; };
 		575D628B1D899C4A00A972D8 /* KinveyApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KinveyApp.entitlements; sourceTree = "<group>"; };
 		5765B8351C92365700080FFA /* FindOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperationTest.swift; sourceTree = "<group>"; };
 		5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicStoreTestCase.swift; sourceTree = "<group>"; };
@@ -452,7 +442,6 @@
 		577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheMigrationTestCaseStep1.swift; sourceTree = "<group>"; };
 		577155BA1CA21CC200C91B4B /* Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		5771F9FE1D301F6300903777 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
-		57757F3D1C652A5600C810E9 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		5776EEBF1E31740B003B9DF0 /* MIC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIC.swift; sourceTree = "<group>"; };
 		577751381DF8B8EA006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
 		577751391DF8B908006C98F1 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCGLogger.framework; sourceTree = "<group>"; };
@@ -610,7 +599,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57BB8EF01DED5070000D8A69 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,17 +689,6 @@
 			name = Operations;
 			sourceTree = "<group>";
 		};
-		575B6C811E383B2E00796C69 /* KCSReachability */ = {
-			isa = PBXGroup;
-			children = (
-				575B6C821E383B3500796C69 /* KCSReachability.h */,
-				575B6C831E383B3500796C69 /* KCSReachability.m */,
-				575B6C861E383BE700796C69 /* KCS_KSReachability.h */,
-				575B6C881E383C0B00796C69 /* KCS_KSReachability.m */,
-			);
-			name = KCSReachability;
-			sourceTree = "<group>";
-		};
 		5765B8451C9771BC00080FFA /* KinveyApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -764,7 +741,6 @@
 		57A27C831C178F17000DF951 /* Kinvey */ = {
 			isa = PBXGroup;
 			children = (
-				575B6C811E383B2E00796C69 /* KCSReachability */,
 				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
 				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
@@ -824,7 +800,6 @@
 				5728212E1C63E10700373EC8 /* FileStore.swift */,
 				573851AB1D47C7EB00E4712A /* FileCache.swift */,
 				573851AD1D47C7F800E4712A /* RealmFileCache.swift */,
-				57757F3D1C652A5600C810E9 /* Reachability.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
@@ -1000,8 +975,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				575B6C841E383B3500796C69 /* KCSReachability.h in Headers */,
-				575B6C871E383BE700796C69 /* KCS_KSReachability.h in Headers */,
 				57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */,
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
 			);
@@ -1505,7 +1478,6 @@
 				57E1C3AF1C18153900578974 /* RequestFactory.swift in Sources */,
 				574B0FAD1C729F3300CDC48F /* RemoveByQueryOperation.swift in Sources */,
 				5728212F1C63E10700373EC8 /* FileStore.swift in Sources */,
-				57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */,
 				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
 				573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
@@ -1514,7 +1486,6 @@
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				57557FE61D185BC3001D991C /* RealmResultsArray.swift in Sources */,
-				575B6C891E383C0B00796C69 /* KCS_KSReachability.m in Sources */,
 				573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
@@ -1536,7 +1507,6 @@
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
-				575B6C851E383B3500796C69 /* KCSReachability.m in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
 				5781D1271CE29AA700369F40 /* ObjCRuntime.swift in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
@@ -1977,7 +1947,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2006,7 +1975,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
