@@ -26,6 +26,7 @@
 		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
+		57375F901E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AB1D47C7EB00E4712A /* FileCache.swift */; };
 		573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AD1D47C7F800E4712A /* RealmFileCache.swift */; };
@@ -398,6 +399,7 @@
 		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
 		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
 		573150971CBD8D910022A05C /* QueryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTest.swift; sourceTree = "<group>"; };
+		57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadAndPlayVideoViewController.swift; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */,
 				5759854D1CC833930054DF08 /* LongData.swift */,
 				5759854F1CC834FE0054DF08 /* MedData.swift */,
+				57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */,
 			);
 			path = KinveyApp;
 			sourceTree = "<group>";
@@ -1447,6 +1450,7 @@
 				5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */,
 				575181571D63943F005C8ECF /* MICAuthorizationGrantViewController.swift in Sources */,
 				5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */,
+				57375F901E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
