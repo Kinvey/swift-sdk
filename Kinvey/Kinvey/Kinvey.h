@@ -14,8 +14,5 @@ FOUNDATION_EXPORT double KinveyVersionNumber;
 //! Project version string for Kinvey.
 FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 
-// KinveyKit
-#import <Kinvey/KCSReachability.h>
-
 // NSPredicate-MongoDB-Adaptor => https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor
 #import <Kinvey/MongoDBPredicateAdaptor.h>
