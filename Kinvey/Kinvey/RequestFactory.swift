@@ -12,7 +12,10 @@ protocol RequestFactory {
     
     func buildUserSignUp(username: String?, password: String?, user: User?) -> HttpRequest
     func buildUserDelete(userId: String, hard: Bool) -> HttpRequest
-    func buildUserSocialLogin(_ authSource: String, authData: [String : Any]) -> HttpRequest
+    
+    func buildUserSocialLogin(_ authSource: AuthSource, authData: [String : Any]) -> HttpRequest
+    func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any]) -> HttpRequest
+    
     func buildUserLogin(username: String, password: String) -> HttpRequest
     func buildUserExists(username: String) -> HttpRequest
     func buildUserGet(userId: String) -> HttpRequest
@@ -39,5 +42,11 @@ protocol RequestFactory {
     func buildBlobQueryFile(_ query: Query, ttl: TTL?) -> HttpRequest
     
     func buildCustomEndpoint(_ name: String) -> HttpRequest
+    
+    func buildOAuthToken(redirectURI: URL, code: String) -> HttpRequest
+    
+    func buildOAuthGrantAuth(redirectURI: URL) -> HttpRequest
+    func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String) -> HttpRequest
+    func buildOAuthGrantRefreshToken(refreshToken: String) -> HttpRequest
     
 }

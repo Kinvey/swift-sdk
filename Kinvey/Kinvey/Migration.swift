@@ -11,7 +11,6 @@ import Realm
 import RealmSwift
 
 /// Class used to perform migrations in your local cache.
-@objc(KNVMigration)
 open class Migration: NSObject {
     
     public typealias MigrationHandler = (Migration, UInt64) -> Void

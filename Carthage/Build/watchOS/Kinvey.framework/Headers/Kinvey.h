@@ -14,23 +14,5 @@ FOUNDATION_EXPORT double KinveyVersionNumber;
 //! Project version string for Kinvey.
 FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 
-#import <Kinvey/KNVKinvey.h>
-#import <Kinvey/KNVClient.h>
-#import <Kinvey/KNVUser.h>
-#import <Kinvey/KNVDataStore.h>
-#import <Kinvey/KNVReadPolicy.h>
-#import <Kinvey/KNVWritePolicy.h>
-#import <Kinvey/KNVError.h>
-
-// KinveyKit
-#import <Kinvey/KCSURLProtocol.h>
-#import <Kinvey/KCSReachability.h>
-#import <Kinvey/KCSKeychain.h>
-#import <Kinvey/KCSMICLoginViewController.h>
-#import <Kinvey/KCSClient.h>
-#import <Kinvey/KinveyUser.h>
-#import <Kinvey/KCSCache.h>
-#import <Kinvey/KCSSync.h>
-
 // NSPredicate-MongoDB-Adaptor => https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor
 #import <Kinvey/MongoDBPredicateAdaptor.h>

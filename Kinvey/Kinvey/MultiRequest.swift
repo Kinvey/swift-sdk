@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc(__KNVMultiRequest)
 internal class MultiRequest: NSObject, Request {
     
     fileprivate var addProgresses = [Bool]()

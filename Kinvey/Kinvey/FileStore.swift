@@ -9,6 +9,10 @@
 import Foundation
 import PromiseKit
 
+#if os(iOS)
+    import UIKit
+#endif
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   switch (lhs, rhs) {
   case let (l?, r?):

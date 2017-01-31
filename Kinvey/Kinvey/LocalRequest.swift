@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc(__KNVLocalRequest)
 internal class LocalRequest: NSObject, Request {
     
     let executing = false

@@ -12,14 +12,13 @@ import KinveyApp
 @testable import Kinvey
 import ObjectMapper
 
+typealias MICLoginViewController = KinveyApp.MICLoginViewController
+
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
+        XCTAssertNotNil(client.activeUser)
     }
     
     func testSignUp404StatusCode() {
@@ -72,6 +71,7 @@ class UserTests: KinveyTestCase {
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
+        XCTAssertNotNil(client.activeUser)
     }
     
     func testSignUpAndDestroy() {
@@ -272,11 +272,6 @@ class UserTests: KinveyTestCase {
         }
         
         do {
-            client.logNetworkEnabled = true
-            defer {
-                client.logNetworkEnabled = false
-            }
-            
             weak var expectationChangePassword = expectation(description: "Change Password")
             
             user.changePassword(newPassword: "test") { user, error in
@@ -473,10 +468,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveCustomUser() {
-        guard !useMockData else {
-            return
-        }
-        
         client.userType = MyUser.self
         
         let user = MyUser()
@@ -487,9 +478,16 @@ class UserTests: KinveyTestCase {
         XCTAssertTrue(client.activeUser is MyUser)
         
         if let user = client.activeUser as? MyUser {
-            setURLProtocol(MockKinveyBackend.self)
+            if useMockData {
+                mockResponse(completionHandler: { (request) -> HttpResponse in
+                    let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    return HttpResponse(json: json)
+                })
+            }
             defer {
-                setURLProtocol(nil)
+                if useMockData {
+                    setURLProtocol(nil)
+                }
             }
             
             weak var expectationUserSave = expectation(description: "User Save")
@@ -1269,7 +1267,7 @@ class UserTests: KinveyTestCase {
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
-            let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
+            let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
@@ -1284,21 +1282,13 @@ class UserTests: KinveyTestCase {
             let webView = micViewController.value(forKey: "webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
-                var wait = true
-                while wait {
-                    weak var expectationWait = expectation(description: "Wait")
-                    
-                    webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result , !(result is NSNull) {
-                            wait = false
-                        }
-                        expectationWait?.fulfill()
-                    })
-                    
-                    waitForExpectations(timeout: defaultTimeout) { error in
-                        expectationWait = nil
+                var username: String? = nil
+                webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                    if let result = result as? String {
+                        username = result
                     }
-                }
+                })
+                XCTAssertTrue(wait(toBeTrue: username == "", timeout: 10))
                 
                 tester().waitForAnimationsToFinish()
                 tester().wait(forTimeInterval: 1)
@@ -1326,6 +1316,26 @@ class UserTests: KinveyTestCase {
                 
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationSubmitForm = nil
+                }
+                
+                XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
+                
+                do {
+                    let store = DataStore<Person>.collection(.network)
+                    
+                    weak var expectationFind = expectation(description: "Find")
+                    
+                    store.find { persons, error in
+                        XCTAssertTrue(Thread.isMainThread)
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(persons)
+                        
+                        expectationFind?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationFind = nil
+                    }
                 }
             }
         } else {
@@ -1361,7 +1371,7 @@ class UserTests: KinveyTestCase {
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.presentedViewController as? MICLoginViewController,
             let navigationController2 = micLoginViewController.presentedViewController as? UINavigationController,
-            let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
+            let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
@@ -1454,7 +1464,7 @@ class UserTests: KinveyTestCase {
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
-            let micViewController = navigationController2.topViewController as? KCSMICLoginViewController
+            let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
@@ -1648,8 +1658,17 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 2:
-                    let requestBody = String(data: request.httpBody!, encoding: String.Encoding.utf8)!
-                    XCTAssertEqual(requestBody, "client_id=\(MockKinveyBackend.kid)&code=\(code)&redirect_uri=micAuthGrantFlow%3A%2F%2F&grant_type=authorization_code")
+                    switch Body.buildFormUrlEncoded(body: request.httpBodyString) {
+                    case .formUrlEncoded(let params):
+                        XCTAssertEqual(params, [
+                            "client_id" : MockKinveyBackend.kid,
+                            "code" : code,
+                            "redirect_uri" : "micAuthGrantFlow%3A%2F%2F",
+                            "grant_type" : "authorization_code"
+                        ])
+                    default:
+                        XCTFail()
+                    }
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -1700,6 +1719,63 @@ class UserTests: KinveyTestCase {
                     let data = try! JSONSerialization.data(withJSONObject: json, options: [])
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
+                case 5:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "error" : "InvalidCredentials",
+                        "description" : "Invalid credentials. Please retry your request with correct credentials",
+                        "debug" : "Error encountered authenticating against kinveyAuth: {\"error\":\"server_error\",\"error_description\":\"Access Token not found\"}"
+                    ]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 6:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
+                        "token_type" : "bearer",
+                        "expires_in" : 3599,
+                        "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
+                        ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 7:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "_socialIdentity" : [
+                            "kinveyAuth": [
+                                "access_token" : "a10a3743028e2e92b97037825b50a2666608b874",
+                                "refresh_token" : "627b034f5ec409899252a8017cb710566dfd2620",
+                                "id" : "custom",
+                                "audience" : MockKinveyBackend.kid
+                            ]
+                        ],
+                        "username" : "3b788b0c-cb99-4692-b3ae-a6b10b3d76f2",
+                        "password" : "fa0f771f-6480-4f11-a11b-dc85cce52beb",
+                        "_kmd" : [
+                            "lmt" : "2016-09-01T01:48:01.177Z",
+                            "ect" : "2016-09-01T01:48:01.177Z",
+                            "authtoken" : "12ed2b41-a5a1-4f37-a640-3a9c62c3fefd.rUHKOlQuRb4pW4NjmCimJ64rd2BF3drXy1SjHtuVCoM="
+                        ],
+                        "_id" : "57c788d168d976c525ee4602",
+                        "_acl" : [
+                            "creator" : "57c788d168d976c525ee4602"
+                        ]
+                        ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 8:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [[:]]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
                 default:
                     XCTFail()
                 }
@@ -1710,9 +1786,9 @@ class UserTests: KinveyTestCase {
             }
         }
         
-        KCSURLProtocol.registerClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
+        setURLProtocol(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
         defer {
-            KCSURLProtocol.unregisterClass(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
+            setURLProtocol(nil)
         }
         
         XCTAssertNil(client.activeUser)
@@ -1720,7 +1796,7 @@ class UserTests: KinveyTestCase {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "micAuthGrantFlow://")!
-        User.loginWithAuthorization(
+        User.login(
             redirectURI: redirectURI,
             username: "custom",
             password: "1234"
@@ -1736,6 +1812,23 @@ class UserTests: KinveyTestCase {
         }
         
         XCTAssertNotNil(client.activeUser)
+        
+        do {
+            let store = DataStore<Person>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find { persons, error in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
     }
 
 }
