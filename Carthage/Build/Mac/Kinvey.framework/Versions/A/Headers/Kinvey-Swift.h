@@ -169,20 +169,20 @@ SWIFT_CLASS("_TtC6Kinvey3Acl")
 - (nonnull instancetype)initWithValue:(id _Nonnull)value SWIFT_UNAVAILABLE;
 @end
 
-@class __KNVUser;
-@class KNVMigration;
+@class User;
+@class Migration;
 @class NSCoder;
 
 /**
   This class provides a representation of a Kinvey environment holding App ID and App Secret. Please <em>never</em> use a Master Secret in a client application.
 */
-SWIFT_CLASS_NAMED("Client")
-@interface __KNVClient : NSObject <NSCoding>
+SWIFT_CLASS("_TtC6Kinvey6Client")
+@interface Client : NSObject <NSCoding>
 /**
   Shared client instance for simplicity. Use this instance if <em>you don’t need</em> to handle with multiple Kinvey environments.
 */
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) __KNVClient * _Nonnull sharedClient;)
-+ (__KNVClient * _Nonnull)sharedClient;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) Client * _Nonnull sharedClient;)
++ (Client * _Nonnull)sharedClient;
 /**
   It holds the \code
   User
@@ -190,7 +190,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) __KNVClient 
   nil
   \endcode means that there’s no logged user, which is necessary for some calls to in a Kinvey environment.
 */
-@property (nonatomic, readonly, strong) __KNVUser * _Nullable activeUser;
+@property (nonatomic, readonly, strong) User * _Nullable activeUser;
 /**
   Holds the App ID for a specific Kinvey environment.
 */
@@ -258,7 +258,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSURL * _Nonnu
   User
   \endcode instances.
 */
-@property (nonatomic) SWIFT_METATYPE(__KNVUser) _Nonnull userType;
+@property (nonatomic) SWIFT_METATYPE(User) _Nonnull userType;
 /**
   Default Value for DataStore tag
 */
@@ -268,10 +268,6 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
   Enables logging for any network calls.
 */
 @property (nonatomic) BOOL logNetworkEnabled;
-/**
-  Stores the MIC API Version to be used in MIC calls
-*/
-@property (nonatomic, copy) NSString * _Nullable micApiVersion;
 /**
   Default constructor. The \code
   initialize
@@ -289,13 +285,13 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
   Client
   \endcode instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
 */
-- (void)initializeWithAppKey:(NSString * _Nonnull)appKey appSecret:(NSString * _Nonnull)appSecret apiHostName:(NSURL * _Nonnull)apiHostName authHostName:(NSURL * _Nonnull)authHostName encrypted:(BOOL)encrypted schemaVersion:(unsigned long long)schemaVersion migrationHandler:(void (^ _Nullable)(KNVMigration * _Nonnull, uint64_t))migrationHandler SWIFT_METHOD_FAMILY(none);
+- (void)initializeWithAppKey:(NSString * _Nonnull)appKey appSecret:(NSString * _Nonnull)appSecret apiHostName:(NSURL * _Nonnull)apiHostName authHostName:(NSURL * _Nonnull)authHostName encrypted:(BOOL)encrypted schemaVersion:(unsigned long long)schemaVersion migrationHandler:(void (^ _Nullable)(Migration * _Nonnull, uint64_t))migrationHandler SWIFT_METHOD_FAMILY(none);
 /**
   Initialize a \code
   Client
   \endcode instance with all the needed parameters.
 */
-- (void)initializeWithAppKey:(NSString * _Nonnull)appKey appSecret:(NSString * _Nonnull)appSecret apiHostName:(NSURL * _Nonnull)apiHostName authHostName:(NSURL * _Nonnull)authHostName encryptionKey:(NSData * _Nullable)encryptionKey schemaVersion:(unsigned long long)schemaVersion migrationHandler:(void (^ _Nullable)(KNVMigration * _Nonnull, uint64_t))migrationHandler SWIFT_METHOD_FAMILY(none);
+- (void)initializeWithAppKey:(NSString * _Nonnull)appKey appSecret:(NSString * _Nonnull)appSecret apiHostName:(NSURL * _Nonnull)apiHostName authHostName:(NSURL * _Nonnull)authHostName encryptionKey:(NSData * _Nullable)encryptionKey schemaVersion:(unsigned long long)schemaVersion migrationHandler:(void (^ _Nullable)(Migration * _Nonnull, uint64_t))migrationHandler SWIFT_METHOD_FAMILY(none);
 /**
   Autorization header used for calls that don’t requires a logged \code
   User
@@ -479,23 +475,6 @@ SWIFT_CLASS("_TtC6Kinvey4File")
 
 
 /**
-  Protocol used to serialize and deserialize JSON objects into objects.
-*/
-SWIFT_PROTOCOL_NAMED("JsonObject")
-@protocol KNVJsonObject
-@optional
-/**
-  Deserialize JSON object into object.
-*/
-- (void)fromJson:(NSDictionary<NSString *, id> * _Nonnull)json;
-/**
-  Serialize object to JSON.
-*/
-- (NSDictionary<NSString *, id> * _Nonnull)toJson;
-@end
-
-
-/**
   This class represents the metadata information for a record
 */
 SWIFT_CLASS("_TtC6Kinvey8Metadata")
@@ -557,8 +536,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
 /**
   Class used to perform migrations in your local cache.
 */
-SWIFT_CLASS_NAMED("Migration")
-@interface KNVMigration : NSObject
+SWIFT_CLASS("_TtC6Kinvey9Migration")
+@interface Migration : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
@@ -588,8 +567,8 @@ SWIFT_CLASS("_TtC6Kinvey13PasswordReset")
 /**
   It holds the progress status of a request.
 */
-SWIFT_CLASS_NAMED("ProgressStatus")
-@interface KNVProgressStatus : NSObject
+SWIFT_CLASS("_TtC6Kinvey14ProgressStatus")
+@interface ProgressStatus : NSObject
 /**
   The number of bytes that the request has sent to the server in the request body. (read-only)
 */
@@ -614,8 +593,8 @@ SWIFT_CLASS_NAMED("ProgressStatus")
 /**
   Class that represents a query including filters and sorts.
 */
-SWIFT_CLASS_NAMED("Query")
-@interface KNVQuery : NSObject
+SWIFT_CLASS("_TtC6Kinvey5Query")
+@interface Query : NSObject
 /**
   Fields to be included in the results of the query.
 */
@@ -665,53 +644,11 @@ SWIFT_CLASS_NAMED("Query")
 /**
   Copy Constructor.
 */
-- (nonnull instancetype)init:(KNVQuery * _Nonnull)query;
+- (nonnull instancetype)init:(Query * _Nonnull)query;
 /**
   Copy Constructor.
 */
-- (nonnull instancetype)init:(KNVQuery * _Nonnull)query :(SWIFT_NOESCAPE void (^ _Nonnull)(KNVQuery * _Nonnull))block;
-@end
-
-/**
-  Policy that describes how a read operation should perform.
-*/
-typedef SWIFT_ENUM(NSUInteger, ReadPolicy) {
-/**
-  Doesn’t hit the network, forcing the data to be read only from the local cache.
-*/
-  ReadPolicyForceLocal = 0,
-/**
-  Doesn’t hit the local cache, forcing the data to be read only from the network (backend).
-*/
-  ReadPolicyForceNetwork = 1,
-/**
-  Read first from the local cache and then try to get data from the network (backend).
-*/
-  ReadPolicyBoth = 2,
-};
-
-
-/**
-  Protocol that represents a request made to the backend.
-*/
-SWIFT_PROTOCOL_NAMED("Request")
-@protocol KNVRequest
-/**
-  Indicates if a request still executing or not.
-*/
-@property (nonatomic, readonly) BOOL executing;
-/**
-  Indicates if a request was cancelled or not.
-*/
-@property (nonatomic, readonly) BOOL cancelled;
-/**
-  Cancels a request in progress.
-*/
-- (void)cancel;
-/**
-  Report upload progress of the request
-*/
-@property (nonatomic, copy) void (^ _Nullable progress)(KNVProgressStatus * _Nonnull);
+- (nonnull instancetype)init:(Query * _Nonnull)query :(SWIFT_NOESCAPE void (^ _Nonnull)(Query * _Nonnull))block;
 @end
 
 @class UserMetadata;
@@ -721,8 +658,8 @@ SWIFT_PROTOCOL_NAMED("Request")
   User
   \endcode.
 */
-SWIFT_CLASS_NAMED("User")
-@interface __KNVUser : NSObject
+SWIFT_CLASS("_TtC6Kinvey4User")
+@interface User : NSObject
 /**
   Username Key.
 */
@@ -759,136 +696,13 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _No
 */
 @property (nonatomic, copy) NSString * _Nullable email;
 /**
-  Deletes a \code
-  User
-  \endcode by the \code
-  userId
-  \endcode property.
-*/
-+ (id <KNVRequest> _Nonnull)destroyWithUserId:(NSString * _Nonnull)userId hard:(BOOL)hard client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Deletes the \code
-  User
-  \endcode.
-*/
-- (id <KNVRequest> _Nonnull)destroyWithHard:(BOOL)hard client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Sign in a user and set as a current active user.
-*/
-+ (id <KNVRequest> _Nonnull)loginWithUsername:(NSString * _Nonnull)username password:(NSString * _Nonnull)password client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(__KNVUser * _Nullable, NSError * _Nullable))completionHandler;
-/**
-  Sends a request to confirm email address to the specified user.
-  The user must have a valid email set in its \code
-  email
-  \endcode field, on the server, for this to work. The user will receive an email with a time-bound link to a verification web page.
-  \param username Username of the user that needs to send the email confirmation
-
-  \param client define the \code
-  Client
-  \endcode to be used for all the requests for the \code
-  DataStore
-  \endcode that will be returned. Default value: \code
-  Kinvey.sharedClient
-  \endcode
-
-  \param completionHandler Completion handler to be called once the response returns from the server
-
-*/
-+ (id <KNVRequest> _Nonnull)sendEmailConfirmationForUsername:(NSString * _Nonnull)username client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Sends a request to confirm email address to the user.
-  The user must have a valid email set in its \code
-  email
-  \endcode field, on the server, for this to work. The user will receive an email with a time-bound link to a verification web page.
-  \param client define the \code
-  Client
-  \endcode to be used for all the requests for the \code
-  DataStore
-  \endcode that will be returned. Default value: \code
-  Kinvey.sharedClient
-  \endcode
-
-  \param completionHandler Completion handler to be called once the response returns from the server
-
-*/
-- (id <KNVRequest> _Nonnull)sendEmailConfirmation:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-+ (id <KNVRequest> _Nonnull)resetPasswordWithUsernameOrEmail:(NSString * _Nonnull)usernameOrEmail client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Sends an email to the user with a link to reset the password using the \code
-  username
-  \endcode property.
-*/
-+ (id <KNVRequest> _Nonnull)resetPasswordWithUsername:(NSString * _Nonnull)username client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Sends an email to the user with a link to reset the password using the \code
-  email
-  \endcode property.
-*/
-+ (id <KNVRequest> _Nonnull)resetPasswordWithEmail:(NSString * _Nonnull)email client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Sends an email to the user with a link to reset the password.
-*/
-- (id <KNVRequest> _Nonnull)resetPassword:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Changes the password for the current user and automatically updates the session with a new valid session.
-  \param newPassword A new password for the user
-
-  \param client Define the \code
-  Client
-  \endcode to be used for all the requests for the \code
-  DataStore
-  \endcode that will be returned. Default value: \code
-  Kinvey.sharedClient
-  \endcode
-
-  \param completionHandler Completion handler to be called once the response returns from the server
-
-*/
-- (id <KNVRequest> _Nonnull)changePasswordWithNewPassword:(NSString * _Nonnull)newPassword client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(__KNVUser * _Nullable, NSError * _Nullable))completionHandler;
-/**
-  Sends an email with the username associated with the email provided.
-  \param email Email associated with the user
-
-  \param client Define the \code
-  Client
-  \endcode to be used for all the requests for the \code
-  DataStore
-  \endcode that will be returned. Default value: \code
-  Kinvey.sharedClient
-  \endcode
-
-  \param completionHandler Completion handler to be called once the response returns from the server
-
-*/
-+ (id <KNVRequest> _Nonnull)forgotUsernameWithEmail:(NSString * _Nonnull)email client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(NSError * _Nullable))completionHandler;
-/**
-  Checks if a \code
-  username
-  \endcode already exists or not.
-*/
-+ (id <KNVRequest> _Nonnull)existsWithUsername:(NSString * _Nonnull)username client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(BOOL, NSError * _Nullable))completionHandler;
-/**
-  Gets a \code
-  User
-  \endcode instance using the \code
-  userId
-  \endcode property.
-*/
-+ (id <KNVRequest> _Nonnull)getWithUserId:(NSString * _Nonnull)userId client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(__KNVUser * _Nullable, NSError * _Nullable))completionHandler;
-/**
   Default Constructor.
 */
-- (nonnull instancetype)initWithUserId:(NSString * _Nullable)userId acl:(Acl * _Nullable)acl metadata:(UserMetadata * _Nullable)metadata client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithUserId:(NSString * _Nullable)userId acl:(Acl * _Nullable)acl metadata:(UserMetadata * _Nullable)metadata client:(Client * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
 /**
   Sign out the current active user.
 */
 - (void)logout;
-/**
-  Creates or updates a \code
-  User
-  \endcode.
-*/
-- (id <KNVRequest> _Nonnull)saveWithNewPassword:(NSString * _Nullable)newPassword client:(__KNVClient * _Nonnull)client completionHandler:(void (^ _Nullable)(__KNVUser * _Nullable, NSError * _Nullable))completionHandler;
 /**
   Autorization header used for calls that requires a logged \code
   User
@@ -923,23 +737,5 @@ SWIFT_CLASS("_TtC6Kinvey10UserStatus")
 - (nonnull instancetype)initWithValue:(id _Nonnull)value schema:(RLMSchema * _Nonnull)schema OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithValue:(id _Nonnull)value SWIFT_UNAVAILABLE;
 @end
-
-/**
-  Policy that describes how a write operation should perform.
-*/
-typedef SWIFT_ENUM(NSUInteger, WritePolicy) {
-/**
-  Writes in the local cache first and then try to write trought the network (backend).
-*/
-  WritePolicyLocalThenNetwork = 0,
-/**
-  Doesn’t hit the network, forcing to write the data only in the local cache.
-*/
-  WritePolicyForceLocal = 1,
-/**
-  Doesn’t hit the local cache, forcing to write the data only trought the network (backend).
-*/
-  WritePolicyForceNetwork = 2,
-};
 
 #pragma clang diagnostic pop
