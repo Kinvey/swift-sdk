@@ -39,7 +39,6 @@ extension NSPredicate: StaticMappable {
 }
 
 /// Class that represents a query including filters and sorts.
-@objc(KNVQuery)
 public final class Query: NSObject, BuilderType, Mappable {
     
     /// Fields to be included in the results of the query.
@@ -273,15 +272,6 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: ExpressibleBy
             }
             return queryParams.joined(separator: "&")
         }
-    }
-    
-}
-
-@objc(__KNVQuery)
-internal class __KNVQuery: NSObject {
-    
-    class func query(_ query: Query, persistableType: Persistable.Type) -> Query {
-        return Query(query: query, persistableType: persistableType)
     }
     
 }

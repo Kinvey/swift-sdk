@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.3.6"
+  s.version      = "3.3.7"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -91,15 +91,15 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/**/*.{h,m,mm}", "KinveyKit/KinveyKit/3rdParty/**/*.{h,m,mm}", "KinveyKit/KinveyKitExtras/**/*.{h,m,mm}", "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}"
+  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}"
   
-  s.public_header_files = "KinveyKit/KinveyKit/KinveyHeaderInfo.h", "KinveyKit/KinveyKit/Source/KinveyUser.h", "KinveyKit/KinveyKit/Source/KinveyEntity.h", "KinveyKit/KinveyKit/Source/KCSBlockDefs.h", "KinveyKit/KinveyKit/Source/KCSUserActionResult.h", "KinveyKit/KinveyKit/Source/KCSRequest.h", "KinveyKit/KinveyKit/Source/KinveyPersistable.h", "KinveyKit/KinveyKit/Source/KCSKeychain.h", "KinveyKit/KinveyKit/Source/KCSClientConfiguration.h", "KinveyKit/KinveyKit/Source/KCSRequestConfiguration.h", "KinveyKit/KinveyKit/Source/KCSClient.h", "KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h", "KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
+  s.public_header_files = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
   
-  s.private_header_files = "KinveyKit/KinveyKit/Source/KCSQuery.h", "KinveyKit/KinveyKit/KinveyVersion.h", "KinveyKit/KinveyKit/Source/KinveyCore.h"
+  # s.private_header_files = 
   
-  s.exclude_files = "KinveyKit/KinveyKit/Source/KCSCacheManager.{h,m}", "KinveyKit/KinveyKit/Source/KCSSyncManager.{h,m}", "KinveyKit/KinveyKitExtras/KCSWebView.{h,m}", "KinveyKit/KinveyKitExtras/TestUtils.{h,m}"
+  # s.exclude_files = 
   
-  s.prefix_header_file = "KinveyKit/KinveyKit/KinveyKit-Prefix.pch"
+  # s.prefix_header_file = 
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -126,7 +126,7 @@ Pod::Spec.new do |s|
   s.frameworks = "Accounts", "CoreGraphics", "CoreLocation", "MobileCoreServices", "Security", "Social", "SystemConfiguration"
   s.weak_framework = "WebKit"
 
-  s.libraries = "sqlite3"
+  # s.libraries = 
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -137,7 +137,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  s.xcconfig = { "OTHER_LDFLAGS" => "-ObjC" }
+  # s.xcconfig = {}
 	
   s.dependency "PromiseKit", "~> 4.0"
   s.dependency "KeychainAccess", "~> 3.0"

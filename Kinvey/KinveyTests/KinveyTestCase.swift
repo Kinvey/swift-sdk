@@ -12,21 +12,20 @@ import XCTest
 extension XCTestCase {
     
     @discardableResult
-    func waitValueForObject<V: Equatable>(_ obj: NSObject, keyPath: String, expectedValue: V?, timeout: TimeInterval = 60) -> Bool {
-        let date = Date()
-        let loop = RunLoop.current
+    func wait(toBeTrue evaluate: @escaping @autoclosure () -> Bool, timeout: TimeInterval = 60) -> Bool {
         var result = false
-        repeat {
-            let currentValue = obj.value(forKey: keyPath)
-            if let currentValue = currentValue as? V {
-                result = currentValue == expectedValue
-            } else if currentValue == nil && expectedValue == nil {
+        
+        let observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { (observer, activity) in
+            if evaluate() {
                 result = true
+                CFRunLoopStop(CFRunLoopGetCurrent())
             }
-            if !result {
-                loop.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-        } while !result && -date.timeIntervalSinceNow > timeout
+        }
+        
+        CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+        CFRunLoopRunInMode(.defaultMode, timeout, false)
+        CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+        
         return result
     }
     
@@ -100,16 +99,46 @@ extension JSONSerialization {
     
 }
 
+extension URLRequest {
+    
+    var httpBodyData: Data {
+        if let data = httpBody {
+            return data
+        } else if let inputStream = httpBodyStream {
+            inputStream.open()
+            defer {
+                inputStream.close()
+            }
+            let bufferSize = 4096
+            var data = Data(capacity: bufferSize)
+            var buffer = [UInt8](repeating: 0, count: bufferSize)
+            var read = 0
+            repeat {
+                read = inputStream.read(&buffer, maxLength: buffer.count)
+                data.append(buffer, count: read)
+            } while read > 0
+            return data
+        } else {
+            fatalError()
+        }
+    }
+    
+    var httpBodyString: String {
+        return String(data: httpBodyData, encoding: .utf8)!
+    }
+    
+}
+
 extension XCTestCase {
     
     func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
         if let type = type {
             let sessionConfiguration = URLSessionConfiguration.default
             sessionConfiguration.protocolClasses = [type]
-            client.urlSession = URLSession(configuration: sessionConfiguration)
+            client.urlSession = URLSession(configuration: sessionConfiguration, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
             XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
         } else {
-            client.urlSession = URLSession(configuration: URLSessionConfiguration.default)
+            client.urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
         }
     }
     

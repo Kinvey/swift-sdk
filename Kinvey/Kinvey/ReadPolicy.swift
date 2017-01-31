@@ -9,7 +9,6 @@
 import Foundation
 
 /// Policy that describes how a read operation should perform.
-@objc
 public enum ReadPolicy: UInt {
     
     /// Doesn't hit the network, forcing the data to be read only from the local cache.

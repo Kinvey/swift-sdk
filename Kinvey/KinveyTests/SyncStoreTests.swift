@@ -209,7 +209,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNotNil(error)
             
             if let error = error as? NSError {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType.error)
+                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
             expectationPurge?.fulfill()
@@ -338,10 +338,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.sync()
         
-        XCTAssertTrue(request is NSObject)
-        if let request = request as? NSObject {
-            waitValueForObject(request, keyPath: "executing", expectedValue: false)
-        }
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
     
     func testPush() {
@@ -413,10 +410,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.push()
         
-        XCTAssertTrue(request is NSObject)
-        if let request = request as? NSObject {
-            waitValueForObject(request, keyPath: "executing", expectedValue: false)
-        }
+        XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
     
     func testPull() {
@@ -662,7 +656,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNotNil(error)
             
             if let error = error as? NSError {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType.error)
+                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
             expectationPull?.fulfill()

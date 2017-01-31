@@ -16,7 +16,7 @@ open class MICLoginViewController: UIViewController {
     @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
     @IBOutlet weak var useSafariViewControllerSwitch: UISwitch!
     
-    open var completionHandler: User.UserHandler?
+    open var completionHandler: User.UserHandler<User>?
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,9 +50,11 @@ open class MICLoginViewController: UIViewController {
                 self.completionHandler?(user, error)
             }
         } else {
-            User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) { (user, error) -> Void in
+            User.presentMICViewController(redirectURI: redirectURI, timeout: 60 * 5, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) { (user, error) -> Void in
                 if let user = user {
                     self.userIdLabel.text = user.userId
+                } else if let error = error{
+                    print("\(error)")
                 }
                 self.completionHandler?(user, error)
             }
