@@ -163,4 +163,82 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 }), "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))")
     }
     
+    func testPredicateBetween() {
+        let result = encodeQuery(Query(format: "expenses BETWEEN %@", [200, 400]))
+        let json = [
+            "$and" : [
+                ["expenses" : ["$gte" : 200]],
+                ["expenses" : ["$lte" : 400]]
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateContains() {
+        let result = encodeQuery(Query(format: "name CONTAINS[c] %@", "f"))
+        let json = [
+            "name" : [
+                "$regex" : ".*f.*"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateEndsWith() {
+        let result = encodeQuery(Query(format: "name ENDSWITH %@", "m"))
+        let json = [
+            "name" : [
+                "$regex" : ".*m"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateLike() {
+        let result = encodeQuery(Query(format: "name LIKE %@", "*m*"))
+        let json = [
+            "name" : [
+                "$regex" : "/(*m*)/"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateCount() {
+        var result = encodeQuery(Query(format: "names.@count == %@", 2))
+        let json = [
+            "names" : [
+                "$size" : 2
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+        
+        result = encodeQuery(Query(format: "%@ = names.@count", 2))
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateDate() {
+        let date = Date()
+        let result = encodeQuery(Query(format: "date == %@", date))
+        let json = [
+            "date" : date.timeIntervalSince1970
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateNil() {
+        let result = encodeQuery(Query(format: "date == %@", NSNull()))
+        let json = [
+            "date" : NSNull()
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
 }

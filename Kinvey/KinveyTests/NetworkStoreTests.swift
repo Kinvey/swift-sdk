@@ -9,6 +9,8 @@
 import XCTest
 import Foundation
 @testable import Kinvey
+import CoreLocation
+import MapKit
 
 class NetworkStoreTests: StoreTestCase {
     
@@ -857,6 +859,379 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
+        }
+    }
+    
+    func testGeolocationQuery() {
+        let person = Person()
+        person.name = "Victor Barros"
+        let latitude = 42.3133521
+        let longitude = -71.1271963
+        person.geolocation = GeoPoint(latitude: latitude, longitude: longitude)
+        
+        let json = person.toJSON()
+        
+        let geolocation = json["geolocation"] as? [Double]
+        XCTAssertNotNil(geolocation)
+        if let geolocation = geolocation {
+            XCTAssertEqual(geolocation[1], latitude)
+            XCTAssertEqual(geolocation[0], longitude)
+        }
+        
+        var mockJson: JsonDictionary?
+        do {
+            if useMockData {
+                let personId = UUID().uuidString
+                mockResponse(completionHandler: { (request) -> HttpResponse in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = personId
+                    mockJson = json
+                    return HttpResponse(json: json)
+                })
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person, writePolicy: .forceNetwork) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.geolocation)
+                    if let geolocation = person.geolocation {
+                        XCTAssertEqual(geolocation.latitude, latitude)
+                        XCTAssertEqual(geolocation.longitude, longitude)
+                    }
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            do {
+                if useMockData {
+                    mockResponse(json: mockJson!)
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
+                weak var expectationFind = expectation(description: "Find")
+                
+                store.find(byId: personId, readPolicy: .forceNetwork) { person, error in
+                    XCTAssertNotNil(person)
+                    XCTAssertNil(error)
+                    
+                    if let person = person {
+                        XCTAssertNotNil(person.geolocation)
+                        if let geolocation = person.geolocation {
+                            XCTAssertEqual(geolocation.latitude, latitude)
+                            XCTAssertEqual(geolocation.longitude, longitude)
+                        }
+                    }
+                    
+                    expectationFind?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationFind = nil
+                }
+            }
+            
+            circle(latitude: latitude, longitude: longitude, mockJson: mockJson)
+            polygon(latitude: latitude, longitude: longitude, mockJson: mockJson)
+        }
+    }
+    
+    func circle(latitude: Double, longitude: Double, mockJson: JsonDictionary?) {
+        if useMockData {
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                let queryComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let queryValue = queryComponents.queryItems!.filter { $0.name == "query" }.first!.value!
+                let queryJson = try! JSONSerialization.jsonObject(with: queryValue.data(using: .utf8)!) as! JsonDictionary
+                let geolocation = queryJson["geolocation"] as! JsonDictionary
+                let geoWithin = geolocation["$geoWithin"] as! JsonDictionary
+                let centerSphere = geoWithin["$centerSphere"] as! [Any]
+                let coordinates = centerSphere[0] as! [Double]
+                let location = CLLocation(latitude: coordinates[1], longitude: coordinates[0])
+                let radius = (centerSphere[1] as! Double) * 6371000.0
+                return HttpResponse(json: [mockJson!].filter({ (item) -> Bool in
+                    let itemGeolocation = item["geolocation"] as! [Double]
+                    let itemLocation = CLLocation(latitude: itemGeolocation[1], longitude: itemGeolocation[0])
+                    return itemLocation.distance(from: location) <= radius
+                }))
+            })
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let coordinate = CLLocationCoordinate2D(latitude: 42.3536701, longitude: -71.0607657)
+        
+        do {
+            let query = Query(format: "geolocation = %@", MKCircle(center: coordinate, radius: 8000))
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceNetwork) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNotNil(persons.first)
+                        if let person = persons.first {
+                            XCTAssertNotNil(person.geolocation)
+                            if let geolocation = person.geolocation {
+                                XCTAssertEqual(geolocation.latitude, latitude)
+                                XCTAssertEqual(geolocation.longitude, longitude)
+                            }
+                        }
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceLocal) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNotNil(persons.first)
+                        if let person = persons.first {
+                            XCTAssertNotNil(person.geolocation)
+                            if let geolocation = person.geolocation {
+                                XCTAssertEqual(geolocation.latitude, latitude)
+                                XCTAssertEqual(geolocation.longitude, longitude)
+                            }
+                        }
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+        }
+        
+        do {
+            let query = Query(format: "geolocation = %@", MKCircle(center: coordinate, radius: 7000))
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceNetwork) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNil(persons.first)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceLocal) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNil(persons.first)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+        }
+    }
+    
+    func polygon(latitude: Double, longitude: Double, mockJson: JsonDictionary?) {
+        if useMockData {
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                let queryComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let queryValue = queryComponents.queryItems!.filter { $0.name == "query" }.first!.value!
+                let queryJson = try! JSONSerialization.jsonObject(with: queryValue.data(using: .utf8)!) as! JsonDictionary
+                let geolocation = queryJson["geolocation"] as! JsonDictionary
+                let geoWithin = geolocation["$geoWithin"] as! JsonDictionary
+                let polygonCoordinates = geoWithin["$polygon"] as! [[Double]]
+                let locationCoordinates = polygonCoordinates.map {
+                    return CLLocationCoordinate2D(latitude: $0[1], longitude: $0[0])
+                }
+                XCTAssertEqual(polygonCoordinates.first!, polygonCoordinates.last!)
+                let polygon = MKPolygon(coordinates: locationCoordinates, count: locationCoordinates.count)
+                let path = UIBezierPath()
+                for (i, locationCoordinate) in locationCoordinates.dropLast().enumerated() {
+                    let point = CGPoint(x: locationCoordinate.latitude, y: locationCoordinate.longitude)
+                    if i == 0 {
+                        path.move(to: point)
+                    } else {
+                        path.addLine(to: point)
+                    }
+                }
+                path.close()
+                return HttpResponse(json: [mockJson!].filter { item in
+                    let itemGeolocation = item["geolocation"] as! [Double]
+                    let itemCoordinate = CLLocationCoordinate2D(latitude: itemGeolocation[1], longitude: itemGeolocation[0])
+                    let itemPoint = CGPoint(x: itemCoordinate.latitude, y: itemCoordinate.longitude)
+                    return path.contains(itemPoint)
+                })
+            })
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            let coordinates = [
+                CLLocationCoordinate2D(latitude: 42.30229389364817, longitude: -71.14453953484005),
+                CLLocationCoordinate2D(latitude: 42.30118020216164, longitude: -71.1079452220194),
+                CLLocationCoordinate2D(latitude: 42.32628747399235, longitude: -71.10934348908339),
+                CLLocationCoordinate2D(latitude: 42.32487077061631, longitude: -71.14195570326387),
+                CLLocationCoordinate2D(latitude: 42.30229389364817, longitude: -71.14453953484005),
+            ]
+            let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
+            let query = Query(format: "geolocation = %@", polygon)
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceNetwork) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNotNil(persons.first)
+                        if let person = persons.first {
+                            XCTAssertNotNil(person.geolocation)
+                            if let geolocation = person.geolocation {
+                                XCTAssertEqual(geolocation.latitude, latitude)
+                                XCTAssertEqual(geolocation.longitude, longitude)
+                            }
+                        }
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceLocal) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNotNil(persons.first)
+                        if let person = persons.first {
+                            XCTAssertNotNil(person.geolocation)
+                            if let geolocation = person.geolocation {
+                                XCTAssertEqual(geolocation.latitude, latitude)
+                                XCTAssertEqual(geolocation.longitude, longitude)
+                            }
+                        }
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+        }
+        
+        do {
+            let coordinates = [
+                CLLocationCoordinate2D(latitude: 42.31363114297847, longitude: -71.12454163288896),
+                CLLocationCoordinate2D(latitude: 42.31359338001615, longitude: -71.11596352589291),
+                CLLocationCoordinate2D(latitude: 42.32375212671243, longitude: -71.11492645316849),
+                CLLocationCoordinate2D(latitude: 42.32182013184487, longitude: -71.13022491168071),
+                CLLocationCoordinate2D(latitude: 42.31363114297847, longitude: -71.12454163288896),
+            ]
+            let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
+            let query = Query(format: "geolocation = %@", polygon)
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceNetwork) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNil(persons.first)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
+            
+            do {
+                weak var expectationQuery = expectation(description: "Query")
+                
+                store.find(query, readPolicy: .forceLocal) { persons, error in
+                    XCTAssertNotNil(persons)
+                    XCTAssertNil(error)
+                    
+                    if let persons = persons {
+                        XCTAssertNil(persons.first)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationQuery = nil
+                }
+            }
         }
     }
     

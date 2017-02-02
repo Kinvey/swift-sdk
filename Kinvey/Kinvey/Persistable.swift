@@ -9,6 +9,7 @@
 import Foundation
 import CoreData
 import ObjectMapper
+import CoreLocation
 
 /// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
 public protocol Persistable: Mappable {
@@ -24,9 +25,9 @@ public protocol Persistable: Mappable {
     
 }
 
-private func kinveyMappingType(left: String, right: String) {
+internal func kinveyMappingType(left: String, right: String) {
     let currentThread = Thread.current
-    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
     {
@@ -55,19 +56,19 @@ public func <- <T>(left: inout T!, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T?, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T!, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
@@ -91,6 +92,47 @@ public func <- <Transform: TransformType>(left: inout Transform.Object!, right: 
 }
 
 internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
+
+struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
+    
+    typealias Key = String
+    typealias Value = String
+    typealias Element = (Key, Value)
+    
+    private var map = [Key : Value]()
+    private var keys = [Key]()
+    private var currentIndex = 0
+    
+    init(dictionaryLiteral elements: (Key, Value)...) {
+        for (key, value) in elements {
+            self[key] = value
+        }
+    }
+    
+    subscript(key: Key) -> Value? {
+        get {
+            return map[key]
+        }
+        set {
+            map[key] = newValue
+            if !keys.contains(key) {
+                keys.append(key)
+            }
+        }
+    }
+    
+    mutating func next() -> Element? {
+        if keys.startIndex <= currentIndex && currentIndex < keys.endIndex {
+            let key = keys[currentIndex]
+            if let value = map[key] {
+                currentIndex += 1
+                return (key, value)
+            }
+        }
+        return nil
+    }
+    
+}
 
 extension Persistable {
     
@@ -117,13 +159,13 @@ extension Persistable {
         return results
     }
     
-    static func propertyMapping() -> [String : String] {
+    static func propertyMapping() -> PropertyMap {
         let currentThread = Thread.current
         let className = StringFromClass(cls: self as! AnyClass)
-        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
         let obj = self.init()
         let _ = obj.toJSON()
-        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
             let kinveyMappingClassType = kinveyMappingType[className]
         {
             return kinveyMappingClassType
