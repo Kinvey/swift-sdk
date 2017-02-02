@@ -50,6 +50,17 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         log.debug("Cache File: \(self.realm.configuration.fileURL!.path)")
     }
     
+    func translate(predicate: NSPredicate) -> NSPredicate {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            return NSPredicate(value: true)
+        }
+        return predicate
+    }
+    
     fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
         log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
