@@ -392,6 +392,7 @@ open class User: NSObject, Credential, Mappable {
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
+        socialIdentity <- map["_socialIdentity"]
     }
     
     /// Sign out the current active user.
@@ -586,17 +587,21 @@ public struct UserAuthToken : StaticMappable {
     
     var accessToken: String
     var refreshToken: String?
+    var tokenType: String?
+    var expiresIn: Int?
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
         guard let accessToken: String = map["access_token"].value() else {
             return nil
         }
-        return UserAuthToken(accessToken: accessToken, refreshToken: nil)
+        return UserAuthToken(accessToken: accessToken, refreshToken: nil, tokenType: nil, expiresIn: nil)
     }
     
     public mutating func mapping(map: Map) {
         accessToken <- map["access_token"]
         refreshToken <- map["refresh_token"]
+        tokenType <- map["token_type"]
+        expiresIn <- map["expires_in"]
     }
     
 }
