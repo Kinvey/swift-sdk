@@ -11,12 +11,23 @@ import KeychainAccess
 
 class Keychain {
     
-    let appKey: String
-    fileprivate let keychain: KeychainAccess.Keychain
+    private let appKey: String?
+    private let accessGroup: String?
+    private let keychain: KeychainAccess.Keychain
+    private let client: Client
     
-    init(appKey: String) {
+    init(appKey: String, client: Client) {
         self.appKey = appKey
+        self.accessGroup = nil
+        self.client = client
         self.keychain = KeychainAccess.Keychain(service: "com.kinvey.Kinvey.\(appKey)").accessibility(.afterFirstUnlockThisDeviceOnly)
+    }
+    
+    init(accessGroup: String, client: Client) {
+        self.accessGroup = accessGroup
+        self.appKey = nil
+        self.client = client
+        self.keychain = KeychainAccess.Keychain(service: accessGroup, accessGroup: accessGroup).accessibility(.afterFirstUnlockThisDeviceOnly)
     }
     
     fileprivate static let deviceTokenKey = "deviceToken"
@@ -29,13 +40,38 @@ class Keychain {
         }
     }
     
-    fileprivate static let authtokenKey = "authtoken"
-    var authtoken: String? {
+    fileprivate static let userKey = "user"
+    var user: User? {
         get {
-            return keychain[Keychain.authtokenKey]
+            if let json = keychain[Keychain.userKey] {
+                return client.userType.init(JSONString: json)
+            }
+            return nil
         }
         set {
-            keychain[Keychain.authtokenKey] = newValue
+            keychain[Keychain.userKey] = newValue?.toJSONString()
+        }
+    }
+    
+    fileprivate static let kinveyAuthKey = AuthSource.kinvey.rawValue
+    var kinveyAuth: UserAuthToken? {
+        get {
+            if
+                let jsonString = keychain[Keychain.kinveyAuthKey],
+                let authToken = UserAuthToken(JSONString: jsonString)
+            {
+                return authToken
+            }
+            return nil
+        }
+        set {
+            if let newValue = newValue,
+                let jsonString = newValue.toJSONString()
+            {
+                keychain[Keychain.kinveyAuthKey] = jsonString
+            } else {
+                keychain[Keychain.kinveyAuthKey] = nil
+            }
         }
     }
     

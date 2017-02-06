@@ -36,7 +36,17 @@ class ForgetToCallSuperPropertyMapping: XCTestCase {
         let exception = catchBadInstruction {
             reachedPoint1 = true
             
-            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
+            weak var expectationInitialize = expectation(description: "Initialize")
+            
+            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret") { _, _ in
+                expectationInitialize?.fulfill()
+            }
+            
+            waitForExpectations(timeout: KinveyTestCase.defaultTimeout) { error in
+                expectationInitialize = nil
+            }
+            
+            _ = DataStore<PersonForgetToCallSuperPropertyMapping>.collection()
             
             reachedPoint2 = true
         }
