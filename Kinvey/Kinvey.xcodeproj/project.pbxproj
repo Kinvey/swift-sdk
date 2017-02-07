@@ -187,6 +187,7 @@
 		57A4658F1CC02AEF009E7384 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		57A465921CC030AF009E7384 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A526531E42A07900B33A51 /* Geolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A526521E42A07900B33A51 /* Geolocation.swift */; };
+		57A526561E43ED5900B33A51 /* MongoDBPredicateAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A526541E43DEDD00B33A51 /* MongoDBPredicateAdaptor.swift */; };
 		57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */; };
 		57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609E1CC6D6A9005E52A8 /* RefProject.swift */; };
 		57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */; };
@@ -195,8 +196,6 @@
 		57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AC52871D395F7D000887D3 /* AuthSource.swift */; };
 		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
-		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
 		57B768811D10C0C70086AA38 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B768801D10C0C70086AA38 /* Entity.swift */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
@@ -662,6 +661,7 @@
 		57A465821CC02A59009E7384 /* KinveyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A465861CC02A59009E7384 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		57A526521E42A07900B33A51 /* Geolocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geolocation.swift; sourceTree = "<group>"; };
+		57A526541E43DEDD00B33A51 /* MongoDBPredicateAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MongoDBPredicateAdaptor.swift; sourceTree = "<group>"; };
 		57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectoryEntry.swift; sourceTree = "<group>"; };
 		57A9609E1CC6D6A9005E52A8 /* RefProject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefProject.swift; sourceTree = "<group>"; };
 		57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTestCase.swift; sourceTree = "<group>"; };
@@ -1216,6 +1216,7 @@
 			children = (
 				57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */,
 				57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */,
+				57A526541E43DEDD00B33A51 /* MongoDBPredicateAdaptor.swift */,
 			);
 			name = "NSPredicate-MongoDB-Adaptor";
 			path = "../../Carthage/Checkouts/NSPredicate-MongoDB-Adaptor";
@@ -1255,7 +1256,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */,
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2002,7 +2002,6 @@
 				5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */,
 				57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */,
 				57E7C7B51C51981400848748 /* RequestType.swift in Sources */,
-				57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */,
 				572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */,
 				57A2ED861C49B9D5006D26A9 /* Response.swift in Sources */,
 				57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */,
@@ -2021,6 +2020,7 @@
 				57470FA11C76834B0096B15F /* ReadOperation.swift in Sources */,
 				5776EEC01E31740B003B9DF0 /* MIC.swift in Sources */,
 				57F91C291D6E2C020012850A /* CountOperation.swift in Sources */,
+				57A526561E43ED5900B33A51 /* MongoDBPredicateAdaptor.swift in Sources */,
 				577E6FA41D18B33900B5DA36 /* Results.swift in Sources */,
 				57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */,
 				574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */,

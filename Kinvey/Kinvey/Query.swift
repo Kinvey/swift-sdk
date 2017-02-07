@@ -12,8 +12,7 @@ import ObjectMapper
 extension NSPredicate: StaticMappable {
     
     var json: JsonDictionary? {
-        let json = try? MongoDBPredicateAdaptor.queryDict(from: self)
-        return json as? JsonDictionary
+        return mongoDBQuery
     }
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
@@ -106,7 +105,7 @@ public final class Query: NSObject, BuilderType, Mappable {
         get {
             if let predicate = predicate {
                 let translatedPredicate = translatePredicate(predicate)
-                let queryObj = try! MongoDBPredicateAdaptor.queryDict(from: translatedPredicate)
+                let queryObj = translatedPredicate.mongoDBQuery!
                 
                 let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
                 var queryStr = String(data: data, encoding: String.Encoding.utf8)!
