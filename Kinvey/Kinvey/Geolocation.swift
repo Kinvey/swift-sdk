@@ -34,11 +34,7 @@ open class GeoPoint: Object, Mappable {
         self.init(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
     
-    public convenience init(location: CLLocation) {
-        self.init(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-    }
-    
-    public convenience init(_ array: [CLLocationDegrees]) {
+    convenience init(_ array: [CLLocationDegrees]) {
         self.init(latitude: array[1], longitude: array[0])
     }
     
