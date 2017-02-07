@@ -153,7 +153,7 @@ class HttpRequestFactory: RequestFactory {
     
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
-        var bodyObject = Mapper<T>().toJSON(persistable)
+        var bodyObject = persistable.toJSON()
         let objId = bodyObject[PersistableIdKey] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
