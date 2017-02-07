@@ -116,7 +116,7 @@ open class Entity: Object, Persistable {
             operationQueue.maxConcurrentOperationCount = 1
             operationQueue.addOperation {
                 let className = StringFromClass(cls: type(of: self))
-                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
                 self.propertyMapping(map)
                 originalThread.threadDictionary[KinveyMappingTypeKey] = Thread.current.threadDictionary[KinveyMappingTypeKey]
             }

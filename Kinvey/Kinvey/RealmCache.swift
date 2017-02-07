@@ -9,6 +9,7 @@
 import Foundation
 import Realm
 import RealmSwift
+import MapKit
 
 internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     
@@ -53,11 +54,11 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
-            realmResults = realmResults.filter(predicate)
+            realmResults = realmResults.filter(predicate.realmPredicate)
         }
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
-                realmResults = realmResults.sorted(byProperty: sortDescriptor.key!, ascending: sortDescriptor.ascending)
+                realmResults = realmResults.sorted(byKeyPath: sortDescriptor.key!, ascending: sortDescriptor.ascending)
             }
         }
         
@@ -87,9 +88,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
                 
                 let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
                 let nestedObjectSchema = realm.schema[nestedClassName]
-                let nestedProperties = nestedObjectSchema?.properties.map {
-                    return $0.name
-                }
+                let nestedProperties = nestedObjectSchema?.properties.map { $0.name }
                     
                 json[property] = self.detach(value, props: nestedProperties!)
             }
@@ -123,7 +122,11 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     func detach(_ results: RealmSwift.Results<Entity>, query: Query?) -> [T] {
-        return detach(results.map { $0 as! T }, query: query)
+        var results: [T] = results.map { $0 as! T }
+        if let predicate = query?.predicate {
+            results = results.filter(predicate: predicate)
+        }
+        return detach(results, query: query)
     }
     
     override func saveEntity(_ entity: T) {
@@ -259,6 +262,102 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
                 self.realm.delete(self.realm.objects(self.entityType))
             }
         }
+    }
+    
+}
+
+extension NSPredicate {
+    
+    fileprivate var realmPredicate: NSPredicate {
+        if let predicate = self as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            // geolocation queries are not handled by Realm, so ignore for now to perform the filter later
+            return NSPredicate(value: true)
+        }
+        return self
+    }
+    
+}
+
+extension NSComparisonPredicate {
+    
+    var keyPathConstantTuple: (keyPathExpression: NSExpression, constantValueExpression: NSExpression)? {
+        switch leftExpression.expressionType {
+        case .keyPath:
+            switch rightExpression.expressionType {
+            case .constantValue:
+                return (keyPathExpression: leftExpression, constantValueExpression: rightExpression)
+            default:
+                return nil
+            }
+        case .constantValue:
+            switch rightExpression.expressionType {
+            case .keyPath:
+                return (keyPathExpression: rightExpression, constantValueExpression: leftExpression)
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+}
+
+extension Array where Element: NSObject, Element: Persistable {
+    
+    fileprivate func filter(predicate: NSPredicate) -> [Array.Element] {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            if let circle = constantValue as? MKCircle {
+                let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
+                return filter({ (item) -> Bool in
+                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                        return CLLocation(geoPoint: geoPoint).distance(from: center) <= circle.radius
+                    }
+                    return false
+                })
+            } else if let polygon = constantValue as? MKPolygon {
+                let pointCount = polygon.pointCount
+                var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
+                polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
+                if let first = coordinates.first, let last = coordinates.last, first == last {
+                    coordinates.removeLast()
+                }
+                #if os(OSX)
+                    let path = NSBezierPath()
+                #else
+                    let path = UIBezierPath()
+                #endif
+                for (i, coordinate) in coordinates.enumerated() {
+                    let point = CGPoint(x: coordinate.latitude, y: coordinate.longitude)
+                    switch i {
+                    case 0:
+                        path.move(to: point)
+                    default:
+                        #if os(OSX)
+                            path.line(to: point)
+                        #else
+                            path.addLine(to: point)
+                        #endif
+                    }
+                }
+                path.close()
+                return filter({ (item) -> Bool in
+                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                        return path.contains(CGPoint(x: geoPoint.latitude, y: geoPoint.longitude))
+                    }
+                    return false
+                })
+            }
+        }
+        return self
     }
     
 }
