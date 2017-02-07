@@ -61,11 +61,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: EchoType?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<EchoType>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.string, "Test")
                 XCTAssertEqual(response.number, 1)
                 XCTAssertEqual(response.boolean, true)
@@ -80,6 +80,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -105,12 +108,14 @@ class CustomEndpointTests: KinveyTestCase {
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         let params: JsonDictionary? = nil
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
                 XCTAssertEqual(response.count, 0)
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -136,9 +141,14 @@ class CustomEndpointTests: KinveyTestCase {
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         let params: JsonDictionary? = nil
-        CustomEndpoint.execute("echo", params: params) { (response: [JsonDictionary]?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: params) { (result: Result<[JsonDictionary]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -198,11 +208,10 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: EchoType?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<EchoType>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
                 XCTAssertEqual(response.string, "Test")
                 XCTAssertEqual(response.number, 1)
                 XCTAssertEqual(response.boolean, true)
@@ -217,6 +226,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -288,11 +300,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: [JsonDictionary]?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<[JsonDictionary]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 2)
                 
                 if let response = response.first {
@@ -328,6 +340,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -399,11 +414,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: [EchoType]?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<[EchoType]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 2)
                 
                 if let response = response.first {
@@ -439,6 +454,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -511,11 +529,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: [EchoType]?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<[EchoType]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 2)
                 
                 if let response = response.first {
@@ -551,6 +569,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -585,11 +606,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 1)
                 
                 XCTAssertNotNil(response["query"] as? JsonDictionary)
@@ -602,6 +623,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -662,11 +686,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 1)
                 
                 XCTAssertNotNil(response["query"] as? JsonDictionary)
@@ -679,6 +703,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -740,11 +767,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 1)
                 
                 XCTAssertNotNil(response["query"] as? JsonDictionary)
@@ -757,6 +784,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -831,11 +861,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echoQueries", params: params) { (response: [JsonDictionary]?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echoQueries", params: params) { (result: Result<[JsonDictionary]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 2)
                 
                 XCTAssertNotNil(response.first)
@@ -848,7 +878,7 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
-            
+                
                 XCTAssertNotNil(response.last)
                 if let query = response.last {
                     XCTAssertNotNil(query["colors"] as? JsonDictionary)
@@ -859,6 +889,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -885,9 +918,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -913,7 +951,7 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        let completionHandler: ((JsonDictionary?, Swift.Error?) -> Void)? = nil
+        let completionHandler: ((Result<JsonDictionary>) -> Void)? = nil
         let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler)
         XCTAssertTrue(wait(toBeTrue: !request.executing))
         expectationCustomEndpoint?.fulfill()
@@ -938,7 +976,7 @@ class CustomEndpointTests: KinveyTestCase {
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
         let params: JsonDictionary? = nil
-        let completionHandler: ((JsonDictionary?, Swift.Error?) -> Void)? = nil
+        let completionHandler: ((Result<JsonDictionary>) -> Void)? = nil
         let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler)
         XCTAssertTrue(wait(toBeTrue: !request.executing))
         expectationCustomEndpoint?.fulfill()
@@ -977,9 +1015,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: EchoType?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<EchoType>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1018,9 +1061,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: JsonDictionary?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1059,9 +1107,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: [JsonDictionary]?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<[JsonDictionary]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1101,9 +1154,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: EchoType?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<EchoType>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1142,9 +1200,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: [EchoType]?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<[EchoType]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1184,9 +1247,14 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (response: [EchoType]?, error) in
-            XCTAssertNil(response)
-            XCTAssertNotNil(error)
+        CustomEndpoint.execute("echo", params: CustomEndpoint.Params(params)) { (result: Result<[EchoType]>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
+            }
             
             expectationCustomEndpoint?.fulfill()
         }
@@ -1224,11 +1292,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNil(response)
+                
                 XCTAssertEqual(response.count, 1)
                 
                 XCTAssertNotNil(response["query"] as? JsonDictionary)
@@ -1244,6 +1312,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1288,11 +1359,11 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
-            XCTAssertNotNil(response)
-            XCTAssertNil(error)
-            
-            if let response = response {
+        CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
+            switch result {
+            case .success(let response):
+                XCTAssertNotNil(response)
+                
                 XCTAssertEqual(response.count, 1)
                 
                 XCTAssertNotNil(response["queries"] as? [JsonDictionary])
@@ -1316,6 +1387,9 @@ class CustomEndpointTests: KinveyTestCase {
                         }
                     }
                 }
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()

@@ -38,7 +38,7 @@ open class CustomEndpoint {
     }
     
     /// Completion handler block for execute custom endpoints.
-    public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
+    public typealias CompletionHandler<T> = (Result<T>) -> Void
     
     private static func callEndpoint(_ name: String, params: Params? = nil, client: Client, completionHandler: DataResponseCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildCustomEndpoint(name)
@@ -64,9 +64,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
-                    completionHandler(json, nil)
+                    completionHandler(.success(json))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -81,9 +81,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
-                    completionHandler(json, nil)
+                    completionHandler(.success(json))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -96,9 +96,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json = client.responseParser.parse(data) {
-                    completionHandler(json, nil)
+                    completionHandler(.success(json))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -111,9 +111,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
-                    completionHandler(json, nil)
+                    completionHandler(.success(json))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -128,9 +128,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
-                    completionHandler(obj, nil)
+                    completionHandler(.success(obj))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -143,9 +143,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
-                    completionHandler(objArray, nil)
+                    completionHandler(.success(objArray))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -160,9 +160,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
-                    completionHandler(obj, nil)
+                    completionHandler(.success(obj))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -175,9 +175,9 @@ open class CustomEndpoint {
         let request = callEndpoint(name, params: params, client: client) { data, response, error in
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
-                    completionHandler(objArray, nil)
+                    completionHandler(.success(objArray))
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    completionHandler(.failure(buildError(data, response, error, client)))
                 }
             }
         }
@@ -185,6 +185,17 @@ open class CustomEndpoint {
     }
     
     //MARK: Dispatch Async Main Queue
+    
+    fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R) -> Void)? = nil) -> ((R) -> Void)? {
+        if let completionHandler = completionHandler {
+            return { (obj) -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
+                    completionHandler(obj)
+                })
+            }
+        }
+        return nil
+    }
     
     fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((R?, Swift.Error?) -> Void)? {
         if let completionHandler = completionHandler {
