@@ -29,10 +29,16 @@ class UserTests: KinveyTestCase {
         
         weak var expectationSignUp = expectation(description: "Sign Up")
         
-        User.signup { user, error in
+        User.signup {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNil(user)
+            
+            switch $0 {
+            case .success(let user):
+                XCTAssertNil(user)
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error)
+            }
             
             expectationSignUp?.fulfill()
         }
@@ -50,10 +56,16 @@ class UserTests: KinveyTestCase {
         
         weak var expectationSignUp = expectation(description: "Sign Up")
         
-        User.signup { user, error in
+        User.signup {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNil(user)
+            
+            switch $0 {
+            case .success(let user):
+                XCTAssertNil(user)
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error)
+            }
             
             expectationSignUp?.fulfill()
         }
@@ -148,11 +160,17 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
-            User.get(userId: userId , completionHandler: { (user, error) in
-                XCTAssertNil(user)
-                XCTAssertNotNil(error)
+            User.get(userId: userId) {
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
+                
                 expectationFindDestroyedUser?.fulfill()
-            })
+            }
             
             
             waitForExpectations(timeout: defaultTimeout) { error in
@@ -274,9 +292,14 @@ class UserTests: KinveyTestCase {
         do {
             weak var expectationChangePassword = expectation(description: "Change Password")
             
-            user.changePassword(newPassword: "test") { user, error in
-                XCTAssertNotNil(user)
-                XCTAssertNil(error)
+            user.changePassword(newPassword: "test") {
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationChangePassword?.fulfill()
             }
@@ -312,10 +335,16 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationUserExists = expectation(description: "User Exists")
             
-            User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
+            User.get(userId: user.userId, completionHandler: {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUserExists?.fulfill()
             })
@@ -334,10 +363,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserExists = expectation(description: "User Exists")
             
-            User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
+            User.get(userId: user.userId, completionHandler: {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
                 
                 expectationUserExists?.fulfill()
             })
@@ -366,10 +401,16 @@ class UserTests: KinveyTestCase {
                 
                 user.email = email
                 
-                user.save() { user, error in
+                user.save() {
                     XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(user)
+                    
+                    switch $0 {
+                    case .success(let user):
+                        XCTAssertNotNil(user)
+                    case .failure(let error):
+                        XCTAssertNil(error)
+                        XCTFail()
+                    }
                     
                     expectationSave?.fulfill()
                 }
@@ -386,18 +427,21 @@ class UserTests: KinveyTestCase {
                     $0.username = username
                 }
                 
-                user.lookup(userQuery) { users, error in
+                user.lookup(userQuery) {
                     XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNotNil(users)
-                    XCTAssertNil(error)
                     
-                    if let users = users {
+                    switch $0 {
+                    case .success(let users):
+                        XCTAssertNotNil(users)
+                        
                         XCTAssertEqual(users.count, 1)
                         
                         if let user = users.first {
                             XCTAssertEqual(user.username, username)
                             XCTAssertEqual(user.email, email)
                         }
+                    case .failure(let error):
+                        XCTAssertNil(error)
                     }
                     
                     expectationUserLookup?.fulfill()
@@ -446,14 +490,20 @@ class UserTests: KinveyTestCase {
             
             user.foo = "bar"
             
-            user.save { (user, error) -> Void in
+            user.save {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                XCTAssertTrue(user is MyUser)
-                if let myUser = user as? MyUser {
-                    XCTAssertEqual(myUser.foo, "bar")
-                    XCTAssertEqual(myUser.email, "my-email@kinvey.com")
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                    
+                    XCTAssertTrue(user is MyUser)
+                    if let myUser = user as? MyUser {
+                        XCTAssertEqual(myUser.foo, "bar")
+                        XCTAssertEqual(myUser.email, "my-email@kinvey.com")
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
 
                 expectationUserSave?.fulfill()
@@ -490,18 +540,22 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserSave = expectation(description: "User Save")
             
-            user.save { (user, error) -> Void in
+            user.save {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
                 
-                XCTAssertNotNil(user)
-                XCTAssertTrue(user is MyUser)
-                
-                XCTAssertNotNil(self.client.activeUser)
-                XCTAssertTrue(self.client.activeUser is MyUser)
-                
-                if let myUser = user as? MyUser {
-                    XCTAssertEqual(myUser.foo, "bar")
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                    XCTAssertTrue(user is MyUser)
+                    
+                    XCTAssertNotNil(self.client.activeUser)
+                    XCTAssertTrue(self.client.activeUser is MyUser)
+                    
+                    if let myUser = user as? MyUser {
+                        XCTAssertEqual(myUser.foo, "bar")
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
                 
                 expectationUserSave?.fulfill()
@@ -532,10 +586,16 @@ class UserTests: KinveyTestCase {
             
             user.foo = "bar"
             
-            user.save { (user, error) -> Void in
+            user.save {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
                 
                 expectationUserSave?.fulfill()
             }
@@ -567,10 +627,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserLogin = expectation(description: "User Login")
             
-            User.login(username: username, password: password) { user, error in
+            User.login(username: username, password: password) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUserLogin?.fulfill()
             }
@@ -592,10 +658,16 @@ class UserTests: KinveyTestCase {
         defer {
             weak var expectationUserLogin = expectation(description: "User Login")
             
-            User.login(username: username, password: password) { user, error in
+            User.login(username: username, password: password) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUserLogin?.fulfill()
             }
@@ -634,10 +706,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserLogin = expectation(description: "User Login")
             
-            User.login(username: username, password: password) { user, error in
+            User.login(username: username, password: password) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
                 
                 expectationUserLogin?.fulfill()
             }
@@ -659,10 +737,16 @@ class UserTests: KinveyTestCase {
         defer {
             weak var expectationUserLogin = expectation(description: "User Login")
             
-            User.login(username: username, password: password) { user, error in
+            User.login(username: username, password: password) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUserLogin?.fulfill()
             }
@@ -724,10 +808,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserLogin = expectation(description: "User Login")
             
-            User.login(username: username, password: password) { user, error in
+            User.login(username: username, password: password) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
                 
                 expectationUserLogin?.fulfill()
             }
@@ -753,10 +843,16 @@ class UserTests: KinveyTestCase {
             if let username = user.username {
                 weak var expectationUserExists = expectation(description: "User Exists")
                 
-                User.exists(username: username) { (exists, error) -> Void in
+                User.exists(username: username) {
                     XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNil(error)
-                    XCTAssertTrue(exists)
+                    
+                    switch $0 {
+                    case .success(let exists):
+                        XCTAssertTrue(exists)
+                    case .failure(let error):
+                        XCTAssertNil(error)
+                        XCTFail()
+                    }
                     
                     expectationUserExists?.fulfill()
                 }
@@ -781,10 +877,16 @@ class UserTests: KinveyTestCase {
                 
                 weak var expectationUserExists = expectation(description: "User Exists")
                 
-                User.exists(username: username) { (exists, error) -> Void in
+                User.exists(username: username) {
                     XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNotNil(error)
-                    XCTAssertFalse(exists)
+                    
+                    switch $0 {
+                    case .success(let exists):
+                        XCTAssertFalse(exists)
+                        XCTFail()
+                    case .failure(let error):
+                        XCTAssertNotNil(error)
+                    }
                     
                     expectationUserExists?.fulfill()
                 }
@@ -831,10 +933,16 @@ class UserTests: KinveyTestCase {
             
             user.email = "\(user.username!)@kinvey.com"
             
-            user.save() { user, error in
+            user.save() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -928,21 +1036,26 @@ class UserTests: KinveyTestCase {
         weak var expectationUserMetadata = expectation(description: "Email Confirmation Status")
         let user = Client.sharedClient.activeUser
         
-        User.get(userId: (user?.userId)!) { newUser, error in
-            XCTAssertNotNil(newUser)
-            
-            XCTAssertNotNil(newUser?.metadata)
-            
-            XCTAssertEqual(newUser?.metadata?.userStatus?.value, "disabled")
-            XCTAssertNotNil(newUser?.metadata?.userStatus?.lastChange)
-
-            XCTAssertEqual(newUser?.metadata?.passwordReset?.status, "InProgress")
-            XCTAssertNotNil(newUser?.metadata?.passwordReset?.lastStateChangeAt)
-
-            XCTAssertEqual(newUser?.metadata?.emailVerification?.status, "confirmed")
-            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastStateChangeAt)
-            XCTAssertNotNil(newUser?.metadata?.emailVerification?.lastConfirmedAt)
-            XCTAssertEqual(newUser?.metadata?.emailVerification?.emailAddress, "johndoe@kinvey.com")
+        User.get(userId: (user?.userId)!) {
+            switch $0 {
+            case .success(let newUser):
+                XCTAssertNotNil(newUser)
+                
+                XCTAssertNotNil(newUser.metadata)
+                
+                XCTAssertEqual(newUser.metadata?.userStatus?.value, "disabled")
+                XCTAssertNotNil(newUser.metadata?.userStatus?.lastChange)
+                
+                XCTAssertEqual(newUser.metadata?.passwordReset?.status, "InProgress")
+                XCTAssertNotNil(newUser.metadata?.passwordReset?.lastStateChangeAt)
+                
+                XCTAssertEqual(newUser.metadata?.emailVerification?.status, "confirmed")
+                XCTAssertNotNil(newUser.metadata?.emailVerification?.lastStateChangeAt)
+                XCTAssertNotNil(newUser.metadata?.emailVerification?.lastConfirmedAt)
+                XCTAssertEqual(newUser.metadata?.emailVerification?.emailAddress, "johndoe@kinvey.com")
+            case .failure:
+                XCTFail()
+            }
 
             expectationUserMetadata?.fulfill()
         }
@@ -966,10 +1079,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationSave = expectation(description: "Save")
             
-            user.save() { user, error in
+            user.save() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -1059,10 +1178,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationSave = expectation(description: "Save")
             
-            user.save() { user, error in
+            user.save() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -1098,10 +1223,16 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationSave = expectation(description: "Save")
             
-            user.save() { user, error in
+            user.save() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -1228,9 +1359,14 @@ class UserTests: KinveyTestCase {
             "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
             "expires": "5105388"
         ]
-        User.login(authSource: .facebook, fakeFacebookData) { user, error in
-            XCTAssertNotNil(user)
-            XCTAssertNil(error)
+        User.login(authSource: .facebook, fakeFacebookData) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertNotNil(user)
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
+            }
             
             expectationFacebookLogin?.fulfill()
         }
@@ -1269,10 +1405,16 @@ class UserTests: KinveyTestCase {
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
-            micLoginViewController.completionHandler = { (user, error) in
+            micLoginViewController.completionHandler = {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationLogin?.fulfill()
             }
@@ -1373,10 +1515,16 @@ class UserTests: KinveyTestCase {
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
-            micLoginViewController.completionHandler = { (user, error) in
+            micLoginViewController.completionHandler = {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationLogin?.fulfill()
             }
@@ -1466,10 +1614,16 @@ class UserTests: KinveyTestCase {
         {
             weak var expectationLogin: XCTestExpectation? = nil
             
-            micLoginViewController.completionHandler = { (user, error) in
+            micLoginViewController.completionHandler = {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationLogin?.fulfill()
             }
@@ -1546,10 +1700,16 @@ class UserTests: KinveyTestCase {
         {
             weak var expectationLogin = expectation(description: "Login")
             
-            micLoginViewController.completionHandler = { (user, error) in
+            micLoginViewController.completionHandler = {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNil(user)
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertNotNil(error)
+                }
                 
                 expectationLogin?.fulfill()
             }
@@ -1578,26 +1738,32 @@ class UserTests: KinveyTestCase {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .uiWebView) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .uiWebView) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            XCTAssertNil(user)
             
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .unknownJsonError(_, _, let json):
-                    let responseBody = [
-                        "error" : "invalid_client",
-                        "error_description" : "Client authentication failed.",
-                        "debug" : "Client Verification Failed: redirect uri not valid"
-                    ]
-                    XCTAssertEqual(json.count, responseBody.count)
-                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
-                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
-                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success(let user):
+                XCTAssertNil(user)
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error)
+                XCTAssertNotNil(error is Kinvey.Error)
+                
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .unknownJsonError(_, _, let json):
+                        let responseBody = [
+                            "error" : "invalid_client",
+                            "error_description" : "Client authentication failed.",
+                            "debug" : "Client Verification Failed: redirect uri not valid"
+                        ]
+                        XCTAssertEqual(json.count, responseBody.count)
+                        XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                        XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                        XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -1798,9 +1964,14 @@ class UserTests: KinveyTestCase {
             redirectURI: redirectURI,
             username: "custom",
             password: "1234"
-        ) { user, error in
-            XCTAssertNotNil(user)
-            XCTAssertNil(error)
+        ) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertNotNil(user)
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
+            }
             
             expectationLogin?.fulfill()
         }

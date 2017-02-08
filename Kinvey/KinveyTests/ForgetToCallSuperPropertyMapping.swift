@@ -38,7 +38,7 @@ class ForgetToCallSuperPropertyMapping: XCTestCase {
             
             weak var expectationInitialize = expectation(description: "Initialize")
             
-            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret") { _, _ in
+            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret") { _ in
                 expectationInitialize?.fulfill()
             }
             

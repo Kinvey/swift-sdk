@@ -87,11 +87,15 @@ class SSOApp2Tests: KinveyTestCase {
         
         do {
             weak var expectationDiscardLocalUser = expectation(description: "Discard Local User")
-            appDelegate.discardLocalCachedUser { user, error in
+            appDelegate.discardLocalCachedUser {
                 XCTAssertTrue(Thread.isMainThread)
                 
-                if let user = user {
-                    user.logout()
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        user.logout()
+                    }
+                case .failure: break
                 }
                 
                 expectationDiscardLocalUser?.fulfill()
@@ -108,11 +112,17 @@ class SSOApp2Tests: KinveyTestCase {
         
         weak var expectationFetchUser = expectation(description: "Fetch User")
         
-        appDelegate.completionHandler = { user, error in
+        appDelegate.completionHandler = {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNil(error)
-            XCTAssertNotNil(user)
-            XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+            
+            switch $0 {
+            case .success(let user):
+                XCTAssertNotNil(user)
+                XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
+            }
             
             expectationFetchUser?.fulfill()
         }

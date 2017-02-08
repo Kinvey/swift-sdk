@@ -39,12 +39,13 @@ class ViewController: UIViewController {
         } else {
             Kinvey.sharedClient.micApiVersion = .v3
             URLCache.shared.removeAllCachedResponses()
-            User.presentMICViewController(redirectURI: micRedirectURI, micUserInterface: micUserInterface) { user, error in
-                self.completionHandler?(user, error)
-                if let user = user {
+            User.presentMICViewController(redirectURI: micRedirectURI, micUserInterface: micUserInterface) {
+                self.completionHandler?($0)
+                switch $0 {
+                case .success(let user):
                     self.display(title: "Success", message: "User: \(user)")
-                } else {
-                    self.display(title: "Failure", message: "Error: \(error!)")
+                case .failure(let error):
+                    self.display(title: "Failure", message: "Error: \(error)")
                 }
                 self.loadUserInfo()
             }

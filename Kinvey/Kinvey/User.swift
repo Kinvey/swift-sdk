@@ -20,10 +20,10 @@ open class User: NSObject, Credential, Mappable {
     /// Username Key.
     open static let PersistableUsernameKey = "username"
     
-    public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
-    public typealias UsersHandler<U: User> = ([U]?, Swift.Error?) -> Void
+    public typealias UserHandler<U: User> = (Result<U>) -> Void
+    public typealias UsersHandler<U: User> = (Result<[U]>) -> Void
     public typealias VoidHandler = (Swift.Error?) -> Void
-    public typealias BoolHandler = (Bool, Swift.Error?) -> Void
+    public typealias BoolHandler = (Result<Bool>) -> Void
     
     /// `_id` property of the user.
     open var userId: String {
@@ -78,9 +78,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -153,9 +153,9 @@ open class User: NSObject, Credential, Mappable {
             }
             requests += request
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }
@@ -176,9 +176,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -333,9 +333,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { exists in
-            completionHandler?(exists, nil)
+            completionHandler?(.success(exists))
         }.catch { error in
-            completionHandler?(false, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -353,9 +353,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -416,9 +416,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -438,9 +438,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { users in
-            completionHandler?(users, nil)
+            completionHandler?(.success(users))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -462,9 +462,9 @@ open class User: NSObject, Credential, Mappable {
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
     open class func login<U: User>(redirectURI: URL, username: String, password: String, client: Client = sharedClient, completionHandler: UserHandler<U>? = nil) {
-        MIC.login(redirectURI: redirectURI, username: username, password: password, client: client) { user, error in
+        MIC.login(redirectURI: redirectURI, username: username, password: password, client: client) { result in
             DispatchQueue.main.async {
-                completionHandler?(user, error)
+                completionHandler?(result)
             }
         }
     }
@@ -484,11 +484,10 @@ open class User: NSObject, Credential, Mappable {
     /// Performs a login using the MIC Redirect URL that contains a temporary token.
     open class func login(redirectURI: URL, micURL: URL, client: Client = sharedClient) -> Bool {
         if let code = MIC.parseCode(redirectURI: redirectURI, url: micURL) {
-            MIC.login(redirectURI: redirectURI, code: code, client: client) { (user, error) in
-                let object = UserError(user: user, error: error)
+            MIC.login(redirectURI: redirectURI, code: code, client: client) {
                 NotificationCenter.default.post(
                     name: MICSafariViewControllerNotificationName,
-                    object: object
+                    object: $0
                 )
             }
             return true
@@ -522,13 +521,12 @@ open class User: NSObject, Credential, Mappable {
                     micVC.dismiss(animated: true) {
                         MICSafariViewControllerNotificationObserver = nil
                         
-                        if let object = notification.object as? UserError<U> {
-                            if let user = object.user {
+                        if let result = notification.object as? Result<U> {
+                            switch result {
+                            case .success(let user):
                                 fulfill(user)
-                            } else if let error = object.error {
+                            case .failure(let error):
                                 reject(error)
-                            } else {
-                                reject(Error.invalidResponse(httpResponse: nil, data: nil))
                             }
                         } else {
                             reject(Error.invalidResponse(httpResponse: nil, data: nil))
@@ -567,20 +565,13 @@ open class User: NSObject, Credential, Mappable {
             }
             viewController?.present(micVC, animated: true)
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
     }
 #endif
 
-}
-
-private struct UserError<U: User> {
-    
-    let user: U?
-    let error: Swift.Error?
-    
 }
 
 public struct UserAuthToken : StaticMappable {

@@ -155,7 +155,7 @@ open class Client: NSObject, NSCoding, Credential {
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
     @available(*, deprecated: 3.3.3, message: "Please use initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:)")
     open func initialize(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encrypted: encrypted, schema: Schema(schemaVersion, migrationHandler: migrationHandler)) { activeUser, error in
+        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encrypted: encrypted, schema: Schema(schemaVersion, migrationHandler: migrationHandler)) { result in
         }
     }
     
@@ -184,19 +184,19 @@ open class Client: NSObject, NSCoding, Credential {
             lockEncryptionKey.unlock()
         }
         
-        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler)) { activeUser, error in
+        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler)) { result in
         }
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
     @available(*, deprecated: 3.3.3, message: "Please use initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:)")
     open func initialize(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schemaVersion, migrationHandler: migrationHandler)) { activeUser, error in
+        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schemaVersion, migrationHandler: migrationHandler)) { result in
         }
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U?>) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
@@ -223,11 +223,18 @@ open class Client: NSObject, NSCoding, Credential {
         if let user = keychain.user {
             user.client = self
             activeUser = user
-            completionHandler((user as! U), nil)
+            completionHandler(.success(user as? U))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self, completionHandler: completionHandler)
+            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self) { result in
+                switch result {
+                case .success(let user):
+                    completionHandler(.success(user as? U))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
         } else {
-            completionHandler(nil, nil)
+            completionHandler(.success(nil))
         }
     }
     

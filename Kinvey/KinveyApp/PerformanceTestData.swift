@@ -61,9 +61,11 @@ class PerformanceTestData: UIViewController {
         if client.activeUser != nil {
             test()
         } else {
-            User.login(username: "test", password: "test", client: client) { user, error in
-                if let _ = user {
+            User.login(username: "test", password: "test", client: client) {
+                switch $0 {
+                case .success:
                     self.test()
+                default: break
                 }
             }
         }
