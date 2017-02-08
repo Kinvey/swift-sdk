@@ -145,9 +145,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -922,9 +922,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1019,9 +1019,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1065,9 +1065,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1111,9 +1111,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1158,9 +1158,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1204,9 +1204,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1251,9 +1251,9 @@ class CustomEndpointTests: KinveyTestCase {
             switch result {
             case .success(let response):
                 XCTAssertNil(response)
+                XCTFail()
             case .failure(let error):
                 XCTAssertNotNil(error)
-                XCTFail()
             }
             
             expectationCustomEndpoint?.fulfill()
@@ -1295,7 +1295,7 @@ class CustomEndpointTests: KinveyTestCase {
         CustomEndpoint.execute("echo", params: params) { (result: Result<JsonDictionary>) in
             switch result {
             case .success(let response):
-                XCTAssertNil(response)
+                XCTAssertNotNil(response)
                 
                 XCTAssertEqual(response.count, 1)
                 
@@ -1313,7 +1313,7 @@ class CustomEndpointTests: KinveyTestCase {
                     }
                 }
             case .failure(let error):
-                XCTAssertNotNil(error)
+                XCTAssertNil(error)
                 XCTFail()
             }
             

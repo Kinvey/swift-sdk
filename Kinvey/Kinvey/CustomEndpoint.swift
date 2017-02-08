@@ -197,15 +197,4 @@ open class CustomEndpoint {
         return nil
     }
     
-    fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((R?, Swift.Error?) -> Void)? {
-        if let completionHandler = completionHandler {
-            return { (obj, error) -> Void in
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj, error)
-                })
-            }
-        }
-        return nil
-    }
-    
 }

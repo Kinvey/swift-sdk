@@ -38,11 +38,11 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 /// Class to interact with the `Files` collection in the backend.
 open class FileStore {
     
-    public typealias FileCompletionHandler = (File?, Swift.Error?) -> Void
+    public typealias FileCompletionHandler = (Result<File>) -> Void
     public typealias FileDataCompletionHandler = (File?, Data?, Swift.Error?) -> Void
     public typealias FilePathCompletionHandler = (File?, URL?, Swift.Error?) -> Void
-    public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
-    public typealias FileArrayCompletionHandler = ([File]?, Swift.Error?) -> Void
+    public typealias UIntCompletionHandler = (Result<UInt>) -> Void
+    public typealias FileArrayCompletionHandler = (Result<[File]>) -> Void
     
     internal let client: Client
     internal let cache: FileCache?
@@ -256,9 +256,9 @@ open class FileStore {
         }.then { file in //fetching download url
             return self.getFileMetadata(file, ttl: ttl).1
         }.then { file in
-            completionHandler?(file, nil)
+            completionHandler?(.success(file))
         }.catch { error in
-            completionHandler?(file, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }
@@ -269,9 +269,9 @@ open class FileStore {
         let fileMetadata = getFileMetadata(file, ttl: ttl)
         let request = fileMetadata.0
         fileMetadata.1.then { file in
-            completionHandler?(file, nil)
+            completionHandler?(.success(file))
         }.catch { error in
-            completionHandler?(file, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -497,9 +497,9 @@ open class FileStore {
                 }
             })
         }.then { count in
-            completionHandler?(count, nil)
+            completionHandler?(.success(count))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -527,9 +527,9 @@ open class FileStore {
                 }
             })
         }.then { files in
-            completionHandler?(files, nil)
+            completionHandler?(.success(files))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
