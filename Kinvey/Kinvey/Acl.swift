@@ -36,7 +36,7 @@ class AclTransformType: TransformType {
         }
         return nil
     }
-
+    
 }
 
 /// This class represents the ACL (Access Control List) for a record.
@@ -152,11 +152,11 @@ public final class Acl: Object, Mappable, BuilderType {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        creator <- map[Acl.CreatorKey]
-        globalRead.value <- map[Acl.GlobalReadKey]
-        globalWrite.value <- map[Acl.GlobalWriteKey]
-        readers <- (map[Acl.ReadersKey], AclTransformType())
-        writers <- (map[Acl.WritersKey], AclTransformType())
+        creator <- ("creator", map[Acl.CreatorKey])
+        globalRead.value <- ("globalRead", map[Acl.GlobalReadKey])
+        globalWrite.value <- ("globalWrite", map[Acl.GlobalWriteKey])
+        readers <- ("readers", map[Acl.ReadersKey])
+        writers <- ("writers", map[Acl.WritersKey])
     }
     
     /**

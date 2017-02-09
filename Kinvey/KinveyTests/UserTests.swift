@@ -406,8 +406,6 @@ class UserTests: KinveyTestCase {
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationUserLookup = nil
                 }
-                
-                client.logNetworkEnabled = false
             }
         }
     }

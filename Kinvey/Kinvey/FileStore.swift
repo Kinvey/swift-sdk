@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import ObjectMapper
 
 #if os(iOS)
     import UIKit
@@ -85,48 +86,20 @@ open class FileStore {
         stream.close()
         return upload(file, data: data as Data, ttl: ttl, completionHandler: completionHandler)
     }
-    
-    fileprivate func fillFile(_ file: File, json: JsonDictionary) {
-        if let fileId = json["_id"] as? String {
-            file.fileId = fileId
-        }
-        if let filename = json["_filename"] as? String {
-            file.fileName = filename
-        }
-        if let publicAccessible = json["_public"] as? Bool {
-            file.publicAccessible = publicAccessible
-        }
-        if let acl = json["_acl"] as? [String : AnyObject] {
-            file.acl = Acl(JSON: acl)
-        }
-        if let kmd = json["_kmd"] as? [String : AnyObject] {
-            file.metadata = Metadata(JSON: kmd)
-        }
-        if let uploadURL = json["_uploadURL"] as? String {
-            file.uploadURL = URL(string: uploadURL)
-        }
-        if let downloadURL = json["_downloadURL"] as? String {
-            file.download = downloadURL
-        }
-        if let requiredHeaders = json["_requiredHeaders"] as? [String : String] {
-            file.uploadHeaders = requiredHeaders
-        }
-        if let expiresAt = json["_expiresAt"] as? String {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            file.expiresAt = dateFormatter.date(from: expiresAt)
-        } else {
-            file.expiresAt = nil
-        }
-    }
-    
+
     fileprivate func getFileMetadata(_ file: File, ttl: TTL? = nil) -> (Request, Promise<File>) {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(file, ttl: ttl)
         return (request, Promise<File> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response , response.isOK, let json = self.client.responseParser.parse(data) {
-                    self.fillFile(file, json: json)
-                    fulfill(file)
+                if let response = response , response.isOK,
+                    let json = self.client.responseParser.parse(data),
+                    let newFile = File(JSON: json) {
+                    newFile.path = file.path
+                    if let cache = self.cache {
+                        cache.save(newFile, beforeSave: nil)
+                    }
+                    
+                    fulfill(newFile)
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
@@ -148,9 +121,11 @@ open class FileStore {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file)
                 requests += request
                 request.execute { (data, response, error) -> Void in
-                    if let response = response , response.isOK, let json = self.client.responseParser.parse(data) {
-                        self.fillFile(file, json: json)
-                        fulfill((file: file, skip: nil))
+                    if let response = response , response.isOK,
+                        let json = self.client.responseParser.parse(data),
+                        let newFile = File(JSON: json) {
+                        
+                        fulfill((file: newFile, skip: nil))
                     } else {
                         reject(buildError(data, response, error, self.client))
                     }
@@ -194,8 +169,8 @@ open class FileStore {
                     } else if let response = response as? HTTPURLResponse,
                         response.statusCode == 308,
                         let rangeString = response.allHeaderFields["Range"] as? String,
-                        let textCheckingResult = regexRange.matches(in: rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first
-                        , textCheckingResult.numberOfRanges == 3
+                        let textCheckingResult = regexRange.matches(in: rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first,
+                        textCheckingResult.numberOfRanges == 3
                     {
                         let rangeNSString = rangeString as NSString
                         let endRangeString = rangeNSString.substring(with: textCheckingResult.rangeAt(2))
@@ -231,6 +206,10 @@ open class FileStore {
                     }
                     
                     if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
+                        if let fileURL = fromFile {
+                            file.path = fileURL.path
+                        }
+                        
                         fulfill(file)
                     } else {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
@@ -306,16 +285,16 @@ open class FileStore {
                 if let response = response , response.isOK || response.isNotModified, let url = url {
                     if storeType == .cache {
                         var pathURL: URL? = nil
-                        var fileId: String? = nil
+                        var entityId: String? = nil
                         executor.executeAndWait {
-                            fileId = file.fileId
+                            entityId = file.fileId
                             pathURL = file.pathURL
                         }
                         if let pathURL = pathURL , response.isNotModified {
                             fulfill(pathURL)
                         } else {
                             let fileManager = FileManager()
-                            if let fileId = fileId,
+                            if let entityId = entityId,
                                 let baseFolder = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
                             {
                                 do {
@@ -324,7 +303,7 @@ open class FileStore {
                                     if !fileManager.fileExists(atPath: baseFolderURL.path) {
                                         try fileManager.createDirectory(at: baseFolderURL, withIntermediateDirectories: true, attributes: nil)
                                     }
-                                    let toURL = baseFolderURL.appendingPathComponent(fileId)
+                                    let toURL = baseFolderURL.appendingPathComponent(entityId)
                                     if fileManager.fileExists(atPath: toURL.path) {
                                         do {
                                             try fileManager.removeItem(atPath: toURL.path)
@@ -382,20 +361,20 @@ open class FileStore {
     }
     
     /// Returns the cached file, if exists.
-    open func cachedFile(_ fileId: String) -> File? {
+    open func cachedFile(_ entityId: String) -> File? {
         if let cache = cache {
-            return cache.get(fileId)
+            return cache.get(entityId)
         }
         return nil
     }
     
     /// Returns the cached file, if exists.
     open func cachedFile(_ file: inout File) {
-        guard let fileId = file.fileId else {
-            fatalError("File.fileId is required")
+        guard let entityId = file.fileId else {
+            fatalError("File.entityId is required")
         }
         
-        if let cachedFile = cachedFile(fileId) {
+        if let cachedFile = cachedFile(entityId) {
             file = cachedFile
         }
     }
@@ -409,7 +388,7 @@ open class FileStore {
     
     fileprivate func requiresFileId(_ file: inout File) {
         guard let _ = file.fileId else {
-            fatalError("File.fileId is required")
+            fatalError("File.entityId is required")
         }
     }
     
@@ -418,7 +397,11 @@ open class FileStore {
     open func download(_ file: inout File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         requiresFileId(&file)
         
-        if storeType == .sync || storeType == .cache, let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
+        if storeType == .sync || storeType == .cache,
+            let entityId = file.fileId,
+            let cachedFile = cachedFile(entityId),
+            file.pathURL != nil
+        {
             file = cachedFile
             DispatchQueue.main.async { [file] in
                 completionHandler?(file, file.pathURL, nil)
@@ -458,7 +441,7 @@ open class FileStore {
     open func download(_ file: inout File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
         requiresFileId(&file)
         
-        if let fileId = file.fileId, let cachedFile = cachedFile(fileId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+        if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             file = cachedFile
             DispatchQueue.main.async { [file] in
                 completionHandler?(file, data, nil)
@@ -470,13 +453,23 @@ open class FileStore {
         } else {
             let fileMetadata = getFileMetadata(file, ttl: ttl)
             fileMetadata.1.then { file in
-                return Promise {
+                return Promise<Data> { fulfill, reject in
                     if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                        self.downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
+                        self.downloadFile(file, downloadURL: downloadURL) { (file, data: Data?, error) in
+                            if let data = data {
+                                fulfill(data)
+                            } else if let error = error {
+                                reject(error)
+                            } else {
+                                reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                            }
+                        }
                     } else {
-                        completionHandler?(file, nil, Error.invalidResponse(httpResponse: nil, data: nil))
+                        reject(Error.invalidResponse(httpResponse: nil, data: nil))
                     }
                 }
+            }.then { [file] data in
+                completionHandler?(file, data, nil)
             }.catch { [file] error in
                 completionHandler?(file, nil, error)
             }
@@ -522,9 +515,11 @@ open class FileStore {
                 {
                     var files: [File] = []
                     for json in jsonArray {
-                        let file = File()
-                        self.fillFile(file, json: json)
-                        files.append(file)
+                        //let file = File()
+                        //self.fillFile(file, json: json)
+                        if let file = Mapper<File>().map(JSON: json) {
+                            files.append(file)
+                        }
                     }
                     fulfill(files)
                 } else {
