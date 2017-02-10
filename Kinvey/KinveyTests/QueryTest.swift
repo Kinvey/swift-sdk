@@ -243,4 +243,40 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(result, expected)
     }
     
+    func testArrayContains() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames contains %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "SUBQUERY(authorNames, $item, $item.value == %@).@count > 0", "Victor"))
+    }
+    
+    func testArrayIndex() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[0] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[0].value == %@", "Victor"))
+    }
+    
+    func testArrayFirst() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[first] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[first].value == %@", "Victor"))
+    }
+    
+    func testArrayLast() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[last] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[last].value == %@", "Victor"))
+    }
+    
+    func testArraySize() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[size] == 2"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[size] == 2"))
+    }
+    
+    func testArraySubquery() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames like[c] %@).$count > 0", "Vic*"))
+        XCTAssertEqual(predicate, NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames.value like[c] %@).$count > 0", "Vic*"))
+    }
+    
 }
