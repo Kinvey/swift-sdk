@@ -27,9 +27,14 @@ class PushTestCase: KinveyTestCase {
             
             weak var expectaionRegister = expectation(description: "Register")
             
-            Kinvey.sharedClient.push.registerForNotifications { result, error in
-                XCTAssertTrue(result)
-                XCTAssertNil(error)
+            Kinvey.sharedClient.push.registerForNotifications {
+                switch $0 {
+                case .success(let granted):
+                    XCTAssertTrue(granted)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 XCTAssertNotNil(Kinvey.sharedClient.push.deviceToken)
                 
@@ -63,9 +68,14 @@ class PushTestCase: KinveyTestCase {
             
             weak var expectaionUnRegister = expectation(description: "UnRegister")
             
-            Kinvey.sharedClient.push.unRegisterDeviceToken { result, error in
-                XCTAssertTrue(result)
-                XCTAssertNil(error)
+            Kinvey.sharedClient.push.unRegisterDeviceToken {
+                switch $0 {
+                case .success(let granted):
+                    XCTAssertTrue(granted)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectaionUnRegister?.fulfill()
             }

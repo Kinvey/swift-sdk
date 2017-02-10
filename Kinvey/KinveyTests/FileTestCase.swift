@@ -25,31 +25,39 @@ class FileTestCase: StoreTestCase {
         super.setUp()
         
         if !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) {
-            weak var expectationDownload = expectation(description: "Download")
-            
-            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
-            let request = URLRequest(url: url)
-            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-                if let data = data,
-                    let responseBody = String(data: data, encoding: .utf8),
-                    let urlEncodedFmtStreamMap = URLComponents(string: "parse://?\(responseBody)")?.queryItems?.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
-                    let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
-                    let url = URL(string: urlString)
-                {
-                    let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                        if let url = url {
-                            try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
+            var retries = 5
+            while retries > 0 {
+                weak var expectationDownload = expectation(description: "Download")
+                
+                let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
+                let request = URLRequest(url: url)
+                let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+                    if let data = data,
+                        let responseBody = String(data: data, encoding: .utf8),
+                        let urlEncodedFmtStreamMap = URLComponents(string: "parse://?\(responseBody)")?.queryItems?.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
+                        let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
+                        let downloadUrl = URL(string: urlString)
+                    {
+                        let downloadTask = URLSession.shared.downloadTask(with: downloadUrl) { url, response, error in
+                            if let url = url {
+                                if try! FileManager.default.attributesOfItem(atPath: url.path)[.size] as! UInt64 > 0 {
+                                    try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
+                                    retries = 0
+                                } else {
+                                    retries -= 1
+                                }
+                            }
+                            
+                            expectationDownload?.fulfill()
                         }
-                        
-                        expectationDownload?.fulfill()
+                        downloadTask.resume()
                     }
-                    downloadTask.resume()
                 }
-            }
-            dataTask.resume()
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationDownload = nil
+                dataTask.resume()
+                
+                waitForExpectations(timeout: defaultTimeout * 4) { error in
+                    expectationDownload = nil
+                }
             }
             
             XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
@@ -69,12 +77,12 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            fileStore.remove(file) { (count, error) in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let count = count {
+            fileStore.remove(file) {
+                switch $0 {
+                case .success(let count):
                     XCTAssertEqual(count, 1)
+                case .failure(_):
+                    XCTFail()
                 }
                 
                 expectationRemove?.fulfill()
@@ -239,23 +247,25 @@ class FileTestCase: StoreTestCase {
             let memoryBefore = reportMemory()
             XCTAssertNotNil(memoryBefore)
             
-            let request = fileStore.upload(file, path: path) { (uploadedFile, error) in
+            let request = fileStore.upload(file, path: path) {
                 XCTAssertTrue(Thread.isMainThread)
                 
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
-                
-                file = uploadedFile!
-                
-                XCTAssertNotNil(file.path)
-                XCTAssertNotNil(file.download)
-                XCTAssertNotNil(file.downloadURL)
-                
-                let memoryNow = self.reportMemory()
-                XCTAssertNotNil(memoryNow)
-                if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
-                    let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                switch $0 {
+                case .success(let uploadedFile):
+                    file = uploadedFile
+                    
+                    XCTAssertNotNil(file.path)
+                    XCTAssertNotNil(file.download)
+                    XCTAssertNotNil(file.downloadURL)
+                    
+                    let memoryNow = self.reportMemory()
+                    XCTAssertNotNil(memoryNow)
+                    if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
+                        let diff = memoryNow - memoryBefore
+                        XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
                 
                 expectationUpload?.fulfill()
@@ -302,13 +312,13 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            let request = fileStore.download(file) { (file, data: Data?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(data)
-                XCTAssertNil(error)
-                
-                if let data = data {
+            let request = fileStore.download(file) { (result: Result<(File, Data)>) in
+                switch result {
+                case .success(_, let data):
                     XCTAssertEqual(data.count, 10899706)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
                 }
                 
                 expectationDownload?.fulfill()
@@ -355,8 +365,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            let request = fileStore.upload(file, path: path) { (file, error) in
-                self.file = file
+            let request = fileStore.upload(file, path: path) {
+                switch $0 {
+                case .success(let file):
+                    self.file = file
+                case .failure(_):
+                    break
+                }
+                
                 XCTFail()
             }
             
@@ -389,9 +405,15 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(self.file!, path: path) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(self.file!, path: path) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
+                
                 expectationUpload?.fulfill()
             }
             
@@ -403,13 +425,15 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(self.file!) { (file, data: Data?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(data)
-                XCTAssertNil(error)
-                
-                if let data = data {
+            fileStore.download(self.file!) { (result: Result<(File, Data)>) in
+                switch result {
+                case .success(let file, let data):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(data)
+                    
                     XCTAssertEqual(data.count, 10899706)
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
                 
                 expectationDownload?.fulfill()
@@ -532,10 +556,15 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, path: path) { (file, error) in
-                XCTAssertNotNil(file)
-                self.file = file
-                XCTAssertNil(error)
+            fileStore.upload(file, path: path) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                    self.file = file
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -550,6 +579,7 @@ class FileTestCase: StoreTestCase {
         if useMockData {
             let url = caminandes3TrailerURL
             let data = try! Data(contentsOf: url)
+            XCTAssertGreaterThan(data.count, 0)
             let chunkSize = data.count / 10
             var offset = 0
             var chunks = [ChunkData]()
@@ -572,10 +602,12 @@ class FileTestCase: StoreTestCase {
             }
         }
         
+        self.file!.path = nil
+        
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            let request = fileStore.download(self.file!) { (file, data: Data?, error) in
+            let request = fileStore.download(self.file!) { (result: Result<(File, Data)>) in
                 self.file = file
                 XCTFail()
             }
@@ -599,13 +631,16 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(self.file!) { (file, data: Data?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(data)
-                XCTAssertNil(error)
-                
-                if let data = data {
+            fileStore.download(self.file!) { (result: Result<(File, Data)>) in
+                switch result {
+                case .success(let file, let data):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(data)
+                    
                     XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
                 }
                 
                 expectationDownload?.fulfill()
@@ -633,9 +668,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, data: data) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(file, data: data) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -650,13 +690,19 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNil(error)
-                
-                if let url = url, let _data = try? Data(contentsOf: url) {
-                    XCTAssertEqual(data.count, _data.count)
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    
+                    if let _data = try? Data(contentsOf: url) {
+                        XCTAssertEqual(data.count, _data.count)
+                    } else {
+                        XCTFail()
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
                 
                 expectationDownload?.fulfill()
@@ -671,13 +717,13 @@ class FileTestCase: StoreTestCase {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNotNil(url?.path)
-                XCTAssertNil(error)
-                
-                if let url = url {
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    XCTAssertNotNil(url.path)
+                    
                     XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
                     
                     if let dataTmp = try? Data(contentsOf: url) {
@@ -685,7 +731,8 @@ class FileTestCase: StoreTestCase {
                     } else {
                         XCTFail()
                     }
-                } else {
+                case .failure(let error):
+                    XCTAssertNil(error)
                     XCTFail()
                 }
                 
@@ -708,9 +755,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, data: data2) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(file, data: data2) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -724,29 +776,39 @@ class FileTestCase: StoreTestCase {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNotNil(url?.path)
-                XCTAssertNil(error)
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    XCTAssertNotNil(url.path)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                }
                 
                 if let _ = expectationCached {
-                    if let url = url,
-                        let dataTmp = try? Data(contentsOf: url)
-                    {
-                        XCTAssertEqual(dataTmp.count, data.count)
-                    } else {
+                    switch result {
+                    case .success(_, let url):
+                        if let dataTmp = try? Data(contentsOf: url) {
+                            XCTAssertEqual(dataTmp.count, data.count)
+                        } else {
+                            XCTFail()
+                        }
+                    case .failure:
                         XCTFail()
                     }
                     
                     expectationCached?.fulfill()
                     expectationCached = nil
                 } else {
-                    if let url = url,
-                        let dataTmp = try? Data(contentsOf: url)
-                    {
-                        XCTAssertEqual(dataTmp.count, data2.count)
-                    } else {
+                    switch result {
+                    case .success(_, let url):
+                        if let dataTmp = try? Data(contentsOf: url) {
+                            XCTAssertEqual(dataTmp.count, data2.count)
+                        } else {
+                            XCTFail()
+                        }
+                    case .failure:
                         XCTFail()
                     }
                     
@@ -784,9 +846,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, path: path.path) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(file, path: path.path) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -801,13 +868,20 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNil(error)
-                
-                if let url = url, let _data = try? Data(contentsOf: url) {
-                    XCTAssertEqual(data.count, _data.count)
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    
+                    if let _data = try? Data(contentsOf: url) {
+                        XCTAssertEqual(data.count, _data.count)
+                    } else {
+                        XCTFail()
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
                 }
                 
                 expectationDownload?.fulfill()
@@ -822,18 +896,20 @@ class FileTestCase: StoreTestCase {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNotNil(url?.path)
-                XCTAssertNil(error)
-                
-                if let url = url,
-                    let dataTmp = try? Data(contentsOf: url)
-                {
-                    XCTAssertEqual(dataTmp.count, data.count)
-                } else {
-                    XCTFail()
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    XCTAssertNotNil(url.path)
+                    
+                    if let dataTmp = try? Data(contentsOf: url) {
+                        XCTAssertEqual(dataTmp.count, data.count)
+                    } else {
+                        XCTFail()
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
                 }
                 
                 if let _ = expectationCached {
@@ -860,9 +936,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, path: path.path) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(file, path: path.path) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -876,29 +957,39 @@ class FileTestCase: StoreTestCase {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, url: URL?, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNotNil(url?.path)
-                XCTAssertNil(error)
+            fileStore.download(file) { (result: Result<(File, URL)>) in
+                switch result {
+                case .success(let file, let url):
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    XCTAssertNotNil(url.path)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                }
                 
                 if let _ = expectationCached {
-                    if let url = url,
-                        let dataTmp = try? Data(contentsOf: url)
-                    {
-                        XCTAssertEqual(dataTmp.count, data.count)
-                    } else {
+                    switch result {
+                    case .success(_, let url):
+                        if let dataTmp = try? Data(contentsOf: url) {
+                            XCTAssertEqual(dataTmp.count, data.count)
+                        } else {
+                            XCTFail()
+                        }
+                    case .failure:
                         XCTFail()
                     }
                     
                     expectationCached?.fulfill()
                     expectationCached = nil
                 } else {
-                    if let url = url,
-                        let dataTmp = try? Data(contentsOf: url)
-                    {
-                        XCTAssertEqual(dataTmp.count, data2.count)
-                    } else {
+                    switch result {
+                    case .success(_, let url):
+                        if let dataTmp = try? Data(contentsOf: url) {
+                            XCTAssertEqual(dataTmp.count, data2.count)
+                        } else {
+                            XCTFail()
+                        }
+                    case .failure:
                         XCTFail()
                     }
                     
@@ -932,9 +1023,14 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, data: data, ttl: ttl) { (file, error) in
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
+            fileStore.upload(file, data: data, ttl: ttl) {
+                switch $0 {
+                case .success(let file):
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -1039,13 +1135,17 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, data: data) { (uploadedFile, error) in
+            fileStore.upload(file, data: data) {
                 XCTAssertTrue(Thread.isMainThread)
                 
-                XCTAssertNotNil(file)
-                XCTAssertNil(error)
-                
-                file = uploadedFile!
+                switch $0 {
+                case .success(let uploadedFile):
+                    file = uploadedFile
+                    
+                    XCTAssertNotNil(file)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                }
                 
                 expectationUpload?.fulfill()
             }
@@ -1100,17 +1200,22 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file, ttl: ttl) { (downloadedFile, url: URL?, error) in
+            fileStore.download(file, ttl: ttl) { (result: Result<(File, URL)>) in
                 XCTAssertTrue(Thread.isMainThread)
                 
-                XCTAssertNotNil(file)
-                XCTAssertNotNil(url)
-                XCTAssertNil(error)
-                
-                file = downloadedFile!
-                
-                if let url = url, let _data = try? Data(contentsOf: url) {
-                    XCTAssertEqual(data.count, _data.count)
+                switch result {
+                case .success(let downloadedFile, let url):
+                    file = downloadedFile
+                    
+                    XCTAssertNotNil(file)
+                    XCTAssertNotNil(url)
+                    
+                    if let _data = try? Data(contentsOf: url) {
+                        XCTAssertEqual(data.count, _data.count)
+                    }
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
                 }
                 
                 expectationDownload?.fulfill()
@@ -1280,12 +1385,13 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationUpload = expectation(description: "Upload")
                     
-                    fileStore.upload(file, data: secretMessageData) { file, error in
-                        XCTAssertNotNil(file)
-                        XCTAssertNil(error)
-                        
-                        if let file = file {
+                    fileStore.upload(file, data: secretMessageData) {
+                        switch $0 {
+                        case .success(let file):
+                            XCTAssertNotNil(file)
                             uploadedFileId = file.fileId
+                        case .failure(let error):
+                            XCTAssertNil(error)
                         }
                         
                         expectationUpload?.fulfill()
@@ -1310,8 +1416,13 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationDestroy = expectation(description: "Destroy")
                     
-                    user.destroy() { error in
-                        XCTAssertNil(error)
+                    user.destroy() {
+                        switch $0 {
+                        case .success:
+                            break
+                        case .failure:
+                            XCTFail()
+                        }
                         
                         expectationDestroy?.fulfill()
                     }
@@ -1349,9 +1460,14 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationLogin = expectation(description: "Login")
                     
-                    User.login(username: username, password: password) { user, error in
-                        XCTAssertNotNil(user)
-                        XCTAssertNil(error)
+                    User.login(username: username, password: password) {
+                        switch $0 {
+                        case .success(let user):
+                            XCTAssertNotNil(user)
+                        case .failure(let error):
+                            XCTAssertNil(error)
+                            XCTFail()
+                        }
                         
                         expectationLogin?.fulfill()
                     }
@@ -1406,14 +1522,17 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationDownload = expectation(description: "Download")
                     
-                    fileStore.download(file) { (file, data: Data?, error) in
-                        XCTAssertNotNil(file)
-                        XCTAssertNotNil(data)
-                        XCTAssertNil(error)
-                        
-                        if let data = data {
+                    fileStore.download(file) { (result: Result<(File, Data)>) in
+                        switch result {
+                        case .success(let file, let data):
+                            XCTAssertNotNil(file)
+                            XCTAssertNotNil(data)
+                            
                             let receivedMessage = String(data: data, encoding: .utf8)
                             XCTAssertEqual(receivedMessage, secretMessage)
+                        case .failure(let error):
+                            XCTAssertNil(error)
+                            XCTFail()
                         }
                         
                         expectationDownload?.fulfill()
@@ -1436,12 +1555,15 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationDelete = expectation(description: "Delete")
                     
-                    fileStore.remove(file) { (count, error) in
-                        XCTAssertNotNil(count)
-                        XCTAssertNil(error)
-                        
-                        if let count = count {
+                    fileStore.remove(file) {
+                        switch $0 {
+                        case .success(let count):
+                            XCTAssertNotNil(count)
+                            
                             XCTAssertEqual(count, 1)
+                        case .failure(let error):
+                            XCTAssertNil(error)
+                            XCTFail()
                         }
                         
                         expectationDelete?.fulfill()

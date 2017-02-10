@@ -39,8 +39,8 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 open class FileStore {
     
     public typealias FileCompletionHandler = (Result<File>) -> Void
-    public typealias FileDataCompletionHandler = (Result<(file: File, data: Data)>) -> Void
-    public typealias FilePathCompletionHandler = (Result<(file: File, url: URL)>) -> Void
+    public typealias FileDataCompletionHandler = (Result<(File, Data)>) -> Void
+    public typealias FilePathCompletionHandler = (Result<(File, URL)>) -> Void
     public typealias UIntCompletionHandler = (Result<UInt>) -> Void
     public typealias FileArrayCompletionHandler = (Result<[File]>) -> Void
     
@@ -334,7 +334,7 @@ open class FileStore {
                 }
             }
         }.then { url -> Void in
-            let result: Result = .success((file: file, url: url))
+            let result: Result = .success(file, url)
             completionHandler?(result)
         }.catch { error in
             completionHandler?(.failure(error))
@@ -354,7 +354,7 @@ open class FileStore {
                 }
             }
         }.then { data -> Void in
-            let result: Result = .success((file: file, data: data))
+            let result: Result = .success(file, data)
             completionHandler?(result)
         }.catch { error in
             completionHandler?(.failure(error))
@@ -402,11 +402,11 @@ open class FileStore {
         if storeType == .sync || storeType == .cache,
             let entityId = file.fileId,
             let cachedFile = cachedFile(entityId),
-            file.pathURL != nil
+            let pathURL = file.pathURL
         {
             file = cachedFile
             DispatchQueue.main.async { [file] in
-                completionHandler?(.success((file: file, url: pathURL)))
+                completionHandler?(.success(file, pathURL))
             }
         }
         
@@ -446,7 +446,7 @@ open class FileStore {
         if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             file = cachedFile
             DispatchQueue.main.async { [file] in
-                completionHandler?(.success((file: file, data: data)))
+                completionHandler?(.success(file, data))
             }
         }
         
@@ -457,13 +457,12 @@ open class FileStore {
             fileMetadata.1.then { file in
                 return Promise<Data> { fulfill, reject in
                     if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                        self.downloadFile(file, downloadURL: downloadURL) { (file, data: Data?, error) in
-                            if let data = data {
+                        self.downloadFile(file, downloadURL: downloadURL) { (result: Result<(File, Data)>) in
+                            switch result {
+                            case .success(_, let data):
                                 fulfill(data)
-                            } else if let error = error {
+                            case .failure(let error):
                                 reject(error)
-                            } else {
-                                reject(Error.invalidResponse(httpResponse: nil, data: nil))
                             }
                         }
                     } else {
@@ -471,9 +470,9 @@ open class FileStore {
                     }
                 }
             }.then { [file] data in
-                completionHandler?(file, data, nil)
-            }.catch { [file] error in
-                completionHandler?(file, nil, error)
+                completionHandler?(.success(file, data))
+            }.catch { error in
+                completionHandler?(.failure(error))
             }
             return fileMetadata.0
         }

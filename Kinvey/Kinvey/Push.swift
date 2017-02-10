@@ -22,7 +22,7 @@ import ObjectiveC
 /// Class used to register and unregister a device to receive push notifications.
 open class Push {
     
-    public typealias BoolCompletionHandler = (Bool, Swift.Error?) -> Void
+    public typealias BoolCompletionHandler = (Result<Bool>) -> Void
     
     fileprivate let client: Client
     
@@ -163,7 +163,11 @@ open class Push {
                 self.replaceAppDelegateMethods(completionHandler)
                 UIApplication.shared.registerForRemoteNotifications()
             } else {
-                completionHandler?(granted, error)
+                if let error = error {
+                    completionHandler?(.failure(error))
+                } else {
+                    completionHandler?(.success(granted))
+                }
             }
         }
     }
@@ -185,9 +189,9 @@ open class Push {
                 }
             })
         }.then { success in
-            completionHandler?(success, nil)
+            completionHandler?(.success(success))
         }.catch { error in
-            completionHandler?(false, error)
+            completionHandler?(.failure(error))
         }
     }
     
@@ -206,9 +210,9 @@ open class Push {
                     }
                 })
             }.then { success in
-                completionHandler?(success, nil)
+                completionHandler?(.success(success))
             }.catch { error in
-                completionHandler?(false, error)
+                completionHandler?(.failure(error))
             }
         }
         if let _ = self.client.activeUser {
