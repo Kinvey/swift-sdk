@@ -55,7 +55,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Impose a limit of records in the results of the query.
     open var limit: Int?
     
-    fileprivate func translateExpression(_ expression: NSExpression) -> NSExpression {
+    internal func translate(expression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
             var keyPath = expression.keyPath
@@ -78,11 +78,11 @@ public final class Query: NSObject, BuilderType, Mappable {
         }
     }
     
-    fileprivate func translatePredicate(_ predicate: NSPredicate) -> NSPredicate {
+    fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
-                leftExpression: translateExpression(predicate.leftExpression),
-                rightExpression: translateExpression(predicate.rightExpression),
+                leftExpression: translate(expression: predicate.leftExpression),
+                rightExpression: translate(expression: predicate.rightExpression),
                 modifier: predicate.comparisonPredicateModifier,
                 type: predicate.predicateOperatorType,
                 options: predicate.options
@@ -90,7 +90,7 @@ public final class Query: NSObject, BuilderType, Mappable {
         } else if let predicate = predicate as? NSCompoundPredicate {
             var subpredicates = [NSPredicate]()
             for predicate in predicate.subpredicates as! [NSPredicate] {
-                subpredicates.append(translatePredicate(predicate))
+                subpredicates.append(translate(predicate: predicate))
             }
             return NSCompoundPredicate(type: predicate.compoundPredicateType, subpredicates: subpredicates)
         }
@@ -104,7 +104,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     fileprivate var queryStringEncoded: String? {
         get {
             if let predicate = predicate {
-                let translatedPredicate = translatePredicate(predicate)
+                let translatedPredicate = translate(predicate: predicate)
                 let queryObj = translatedPredicate.mongoDBQuery!
                 
                 let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
