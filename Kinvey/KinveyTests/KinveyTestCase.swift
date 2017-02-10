@@ -461,9 +461,16 @@ class KinveyTestCase: XCTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            user.destroy { (error) -> Void in
+            user.destroy {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationDestroyUser?.fulfill()
             }

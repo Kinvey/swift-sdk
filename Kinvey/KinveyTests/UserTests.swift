@@ -129,9 +129,17 @@ class UserTests: KinveyTestCase {
             userId = user.userId
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            user.destroy(hard: true, completionHandler: { (error) -> Void in
+            user.destroy(hard: true, completionHandler: {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
+                
                 expectationDestroyUser?.fulfill()
             })
             
@@ -219,9 +227,16 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, completionHandler: { (error) -> Void in
+            User.destroy(userId: user.userId, hard: true, completionHandler: {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationDestroyUser?.fulfill()
             })

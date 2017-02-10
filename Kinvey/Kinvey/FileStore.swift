@@ -39,8 +39,8 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 open class FileStore {
     
     public typealias FileCompletionHandler = (Result<File>) -> Void
-    public typealias FileDataCompletionHandler = (File?, Data?, Swift.Error?) -> Void
-    public typealias FilePathCompletionHandler = (File?, URL?, Swift.Error?) -> Void
+    public typealias FileDataCompletionHandler = (Result<(file: File, data: Data)>) -> Void
+    public typealias FilePathCompletionHandler = (Result<(file: File, url: URL)>) -> Void
     public typealias UIntCompletionHandler = (Result<UInt>) -> Void
     public typealias FileArrayCompletionHandler = (Result<[File]>) -> Void
     
@@ -333,10 +333,11 @@ open class FileStore {
                     reject(buildError(nil, response, error, self.client))
                 }
             }
-        }.then { url in
-            completionHandler?(file, url, nil)
+        }.then { url -> Void in
+            let result: Result = .success((file: file, url: url))
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(file, nil, error)
+            completionHandler?(.failure(error))
         }
         return downloadTaskRequest
     }
@@ -352,10 +353,11 @@ open class FileStore {
                     reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { data in
-            completionHandler?(file, data, nil)
+        }.then { data -> Void in
+            let result: Result = .success((file: file, data: data))
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(file, nil, error)
+            completionHandler?(.failure(error))
         }
         return downloadTaskRequest
     }
@@ -404,7 +406,7 @@ open class FileStore {
         {
             file = cachedFile
             DispatchQueue.main.async { [file] in
-                completionHandler?(file, file.pathURL, nil)
+                completionHandler?(.success((file: file, url: pathURL)))
             }
         }
         
@@ -417,10 +419,10 @@ open class FileStore {
                     if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
-                        completionHandler?(file, nil, Error.invalidResponse(httpResponse: nil, data: nil))
+                        completionHandler?(.failure(Error.invalidResponse(httpResponse: nil, data: nil)))
                     }
-                }).catch { [file] error in
-                    completionHandler?(file, nil, error)
+                }).catch { error in
+                    completionHandler?(.failure(error))
                 }
                 return request
             }
@@ -444,7 +446,7 @@ open class FileStore {
         if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             file = cachedFile
             DispatchQueue.main.async { [file] in
-                completionHandler?(file, data, nil)
+                completionHandler?(.success((file: file, data: data)))
             }
         }
         

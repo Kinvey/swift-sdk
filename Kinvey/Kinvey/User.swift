@@ -22,7 +22,7 @@ open class User: NSObject, Credential, Mappable {
     
     public typealias UserHandler<U: User> = (Result<U>) -> Void
     public typealias UsersHandler<U: User> = (Result<[U]>) -> Void
-    public typealias VoidHandler = (Swift.Error?) -> Void
+    public typealias VoidHandler = (Result<Void>) -> Void
     public typealias BoolHandler = (Result<Bool>) -> Void
     
     /// `_id` property of the user.
@@ -101,9 +101,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { _ in
-            completionHandler?(nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -204,9 +204,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then {
-            completionHandler?(nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -248,9 +248,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then {
-            completionHandler?(nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -278,7 +278,7 @@ open class User: NSObject, Credential, Mappable {
             return User.resetPassword(usernameOrEmail: username, client: client, completionHandler: completionHandler)
         } else if let completionHandler = completionHandler {
             DispatchQueue.main.async(execute: { () -> Void in
-                completionHandler(Error.userWithoutEmailOrUsername)
+                completionHandler(.failure(Error.userWithoutEmailOrUsername))
             })
         }
         return LocalRequest()
@@ -313,9 +313,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then {
-            completionHandler?(nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(error)
+            completionHandler?(.failure(error))
         }
         return request
     }
