@@ -12,6 +12,5 @@ Pods
 docs
 /build
 Kinvey/build
-Carthage/Build/**/*.bcsymbolmap
-Carthage/Checkouts
+Carthage
 !Carthage/Checkouts/NSPredicate-MongoDB-Adaptor
