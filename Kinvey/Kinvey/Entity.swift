@@ -11,6 +11,8 @@ import Realm
 import RealmSwift
 import ObjectMapper
 
+public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
+
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
     let regex = try! NSRegularExpression(pattern: "RLM.+_.+") // regex to catch Realm classnames like `RLMStandalone_`, `RLMUnmanaged_` or `RLMAccessor_`
@@ -116,7 +118,7 @@ open class Entity: Object, Persistable {
             operationQueue.maxConcurrentOperationCount = 1
             operationQueue.addOperation {
                 let className = StringFromClass(cls: type(of: self))
-                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
                 self.propertyMapping(map)
                 originalThread.threadDictionary[KinveyMappingTypeKey] = Thread.current.threadDictionary[KinveyMappingTypeKey]
             }
@@ -124,6 +126,106 @@ open class Entity: Object, Persistable {
         } else {
             self.propertyMapping(map)
         }
+    }
+    
+}
+
+open class StringValue: Object, ExpressibleByStringLiteral {
+    
+    public dynamic var value = ""
+    
+    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
+    
+    public convenience required init(unicodeScalarLiteral value: String) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience required init(extendedGraphemeClusterLiteral value: String) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience required init(stringLiteral value: String) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience init(_ value: String) {
+        self.init()
+        self.value = value
+    }
+    
+}
+
+open class IntValue: Object, ExpressibleByIntegerLiteral {
+    
+    public dynamic var value = 0
+    
+    public typealias IntegerLiteralType = Int
+    
+    public convenience required init(integerLiteral value: Int) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience init(_ value: Int) {
+        self.init()
+        self.value = value
+    }
+    
+}
+
+open class FloatValue: Object, ExpressibleByFloatLiteral {
+    
+    public dynamic var value = Float(0)
+    
+    public typealias FloatLiteralType = Float
+    
+    public convenience required init(floatLiteral value: Float) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience init(_ value: Float) {
+        self.init()
+        self.value = value
+    }
+    
+}
+
+open class DoubleValue: Object, ExpressibleByFloatLiteral {
+    
+    public dynamic var value = 0.0
+    
+    public typealias FloatLiteralType = Double
+    
+    public convenience required init(floatLiteral value: Double) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience init(_ value: Double) {
+        self.init()
+        self.value = value
+    }
+    
+}
+
+open class BoolValue: Object, ExpressibleByBooleanLiteral {
+    
+    public dynamic var value = false
+    
+    public typealias FloatLiteralType = BooleanLiteralType
+    
+    public convenience required init(booleanLiteral value: Bool) {
+        self.init()
+        self.value = value
+    }
+    
+    public convenience init(_ value: Bool) {
+        self.init()
+        self.value = value
     }
     
 }

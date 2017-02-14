@@ -312,7 +312,7 @@ class AclTestCase: StoreTestCase {
                     "name" : "Victor",
                     "age" : 29,
                     "_acl" : [
-                        "r" : "[\"\(user.userId)\"]",
+                        "r" : ["\(user.userId)"],
                         "creator" : sharedClient.activeUser!.userId
                     ],
                     "_kmd" : [
@@ -377,7 +377,7 @@ class AclTestCase: StoreTestCase {
                     "name" : "Victor",
                     "age" : 29,
                     "_acl" : [
-                        "w" : "[\"\(user.userId)\"]",
+                        "w" : ["\(user.userId)"],
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [

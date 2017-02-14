@@ -61,7 +61,7 @@ public class Metadata: Object, Mappable {
     }
     
     /// Authentication Token.
-    open internal(set) var authtoken: String?
+    open internal(set) dynamic var authtoken: String?
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
     public required init?(map: Map) {

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="i2k-hE-exf">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="iRw-Tb-3ZN">
+            <objects>
+                <navigationController id="i2k-hE-exf" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="mke-xb-AtA">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="3ul-Vv-QF4" kind="relationship" relationship="rootViewController" id="x6Q-rN-cD7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="X8L-Gp-ET4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1342" y="34"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="2B0-Md-fBu">
+            <objects>
+                <viewController id="3ul-Vv-QF4" customClass="ViewController" customModule="SSOApp2" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="baF-tg-ako"/>
+                        <viewControllerLayoutGuide type="bottom" id="H8K-d3-BSV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="CSn-oK-VeE">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="User not loaded!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jmV-CI-Ic7">
+                                <rect key="frame" x="16" y="638" width="343" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uyp-97-hJt">
+                                <rect key="frame" x="16" y="318" width="343" height="30"/>
+                                <connections>
+                                    <action selector="signIn:" destination="3ul-Vv-QF4" eventType="touchUpInside" id="mvy-CJ-uYJ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="uyp-97-hJt" firstAttribute="leading" secondItem="CSn-oK-VeE" secondAttribute="leadingMargin" id="7tt-ol-fcE"/>
+                            <constraint firstItem="uyp-97-hJt" firstAttribute="trailing" secondItem="CSn-oK-VeE" secondAttribute="trailingMargin" id="Pyw-qT-hrJ"/>
+                            <constraint firstItem="uyp-97-hJt" firstAttribute="centerY" secondItem="CSn-oK-VeE" secondAttribute="centerY" id="ib5-pD-R0t"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="m3i-II-vTW"/>
+                    <connections>
+                        <outlet property="labelUser" destination="jmV-CI-Ic7" id="kg3-hb-UOe"/>
+                        <outlet property="signInButton" destination="uyp-97-hJt" id="2ai-8I-X7s"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GOZ-m0-eE4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-511.19999999999999" y="33.733133433283363"/>
+        </scene>
+    </scenes>
+</document>

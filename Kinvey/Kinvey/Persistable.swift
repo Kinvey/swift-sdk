@@ -9,6 +9,10 @@
 import Foundation
 import CoreData
 import ObjectMapper
+import CoreLocation
+
+public typealias Map = ObjectMapper.Map
+infix operator <- : DefaultPrecedence
 
 /// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
 public protocol Persistable: Mappable {
@@ -24,9 +28,9 @@ public protocol Persistable: Mappable {
     
 }
 
-private func kinveyMappingType(left: String, right: String) {
+internal func kinveyMappingType(left: String, right: String) {
     let currentThread = Thread.current
-    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
     {
@@ -55,19 +59,19 @@ public func <- <T>(left: inout T!, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T?, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(left: inout T!, right: (String, Map)) {
+public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
@@ -90,7 +94,228 @@ public func <- <Transform: TransformType>(left: inout Transform.Object!, right: 
     left <- (right.1, right.2)
 }
 
+// MARK: String Value Transform
+
+class StringValueTransform: TransformOf<List<StringValue>, [String]> {
+    init() {
+        super.init(fromJSON: { (array: [String]?) -> List<StringValue>? in
+            if let array = array {
+                let list = List<StringValue>()
+                for item in array {
+                    list.append(StringValue(item))
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list: List<StringValue>?) -> [String]? in
+            if let list = list {
+                return list.map { $0.value }
+            }
+            return nil
+        })
+    }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: List<StringValue>, right: (String, Map)) {
+    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    var list = left
+    switch right.1.mappingType {
+    case .toJSON:
+        list <- (right.1, StringValueTransform())
+    case .fromJSON:
+        list <- (right.1, StringValueTransform())
+        left.removeAll()
+        left.append(objectsIn: list)
+    }
+}
+
+// MARK: Int Value Transform
+
+class IntValueTransform: TransformOf<List<IntValue>, [Int]> {
+    init() {
+        super.init(fromJSON: { (array: [Int]?) -> List<IntValue>? in
+            if let array = array {
+                let list = List<IntValue>()
+                for item in array {
+                    list.append(IntValue(item))
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list: List<IntValue>?) -> [Int]? in
+            if let list = list {
+                return list.map { $0.value }
+            }
+            return nil
+        })
+    }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: List<IntValue>, right: (String, Map)) {
+    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    var list = left
+    switch right.1.mappingType {
+    case .toJSON:
+        list <- (right.1, IntValueTransform())
+    case .fromJSON:
+        list <- (right.1, IntValueTransform())
+        left.removeAll()
+        left.append(objectsIn: list)
+    }
+}
+
+// MARK: Float Value Transform
+
+class FloatValueTransform: TransformOf<List<FloatValue>, [Float]> {
+    init() {
+        super.init(fromJSON: { (array: [Float]?) -> List<FloatValue>? in
+            if let array = array {
+                let list = List<FloatValue>()
+                for item in array {
+                    list.append(FloatValue(item))
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list: List<FloatValue>?) -> [Float]? in
+            if let list = list {
+                return list.map { $0.value }
+            }
+            return nil
+        })
+    }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: List<FloatValue>, right: (String, Map)) {
+    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    var list = left
+    switch right.1.mappingType {
+    case .toJSON:
+        list <- (right.1, FloatValueTransform())
+    case .fromJSON:
+        list <- (right.1, FloatValueTransform())
+        left.removeAll()
+        left.append(objectsIn: list)
+    }
+}
+
+// MARK: Double Value Transform
+
+class DoubleValueTransform: TransformOf<List<DoubleValue>, [Double]> {
+    init() {
+        super.init(fromJSON: { (array: [Double]?) -> List<DoubleValue>? in
+            if let array = array {
+                let list = List<DoubleValue>()
+                for item in array {
+                    list.append(DoubleValue(item))
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list: List<DoubleValue>?) -> [Double]? in
+            if let list = list {
+                return list.map { $0.value }
+            }
+            return nil
+        })
+    }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: List<DoubleValue>, right: (String, Map)) {
+    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    var list = left
+    switch right.1.mappingType {
+    case .toJSON:
+        list <- (right.1, DoubleValueTransform())
+    case .fromJSON:
+        list <- (right.1, DoubleValueTransform())
+        left.removeAll()
+        left.append(objectsIn: list)
+    }
+}
+
+// MARK: Bool Value Transform
+
+class BoolValueTransform: TransformOf<List<BoolValue>, [Bool]> {
+    init() {
+        super.init(fromJSON: { (array: [Bool]?) -> List<BoolValue>? in
+            if let array = array {
+                let list = List<BoolValue>()
+                for item in array {
+                    list.append(BoolValue(item))
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list: List<BoolValue>?) -> [Bool]? in
+            if let list = list {
+                return list.map { $0.value }
+            }
+            return nil
+        })
+    }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: List<BoolValue>, right: (String, Map)) {
+    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    var list = left
+    switch right.1.mappingType {
+    case .toJSON:
+        list <- (right.1, BoolValueTransform())
+    case .fromJSON:
+        list <- (right.1, BoolValueTransform())
+        left.removeAll()
+        left.append(objectsIn: list)
+    }
+}
+
 internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
+
+struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
+    
+    typealias Key = String
+    typealias Value = String
+    typealias Element = (Key, Value)
+    
+    private var map = [Key : Value]()
+    private var keys = [Key]()
+    private var currentIndex = 0
+    
+    init(dictionaryLiteral elements: (Key, Value)...) {
+        for (key, value) in elements {
+            self[key] = value
+        }
+    }
+    
+    subscript(key: Key) -> Value? {
+        get {
+            return map[key]
+        }
+        set {
+            map[key] = newValue
+            if !keys.contains(key) {
+                keys.append(key)
+            }
+        }
+    }
+    
+    mutating func next() -> Element? {
+        if keys.startIndex <= currentIndex && currentIndex < keys.endIndex {
+            let key = keys[currentIndex]
+            if let value = map[key] {
+                currentIndex += 1
+                return (key, value)
+            }
+        }
+        return nil
+    }
+    
+}
 
 extension Persistable {
     
@@ -117,13 +342,13 @@ extension Persistable {
         return results
     }
     
-    static func propertyMapping() -> [String : String] {
+    static func propertyMapping() -> PropertyMap {
         let currentThread = Thread.current
         let className = StringFromClass(cls: self as! AnyClass)
-        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
         let obj = self.init()
         let _ = obj.toJSON()
-        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
             let kinveyMappingClassType = kinveyMappingType[className]
         {
             return kinveyMappingClassType

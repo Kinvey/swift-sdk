@@ -160,7 +160,123 @@ class QueryTest: XCTestCase {
     }
     
     func testPredicateSortSkipAndLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 }), "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))")
+        let result = encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 })
+        let expected = "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateBetween() {
+        let result = encodeQuery(Query(format: "expenses BETWEEN %@", [200, 400]))
+        let json = [
+            "$and" : [
+                ["expenses" : ["$gte" : 200]],
+                ["expenses" : ["$lte" : 400]]
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateContains() {
+        let result = encodeQuery(Query(format: "name CONTAINS[c] %@", "f"))
+        let json = [
+            "name" : [
+                "$regex" : ".*f.*"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateEndsWith() {
+        let result = encodeQuery(Query(format: "name ENDSWITH %@", "m"))
+        let json = [
+            "name" : [
+                "$regex" : ".*m"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateLike() {
+        let result = encodeQuery(Query(format: "name LIKE %@", "*m*"))
+        let json = [
+            "name" : [
+                "$regex" : "/(*m*)/"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateCount() {
+        var result = encodeQuery(Query(format: "names.@count == %@", 2))
+        let json = [
+            "names" : [
+                "$size" : 2
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+        
+        result = encodeQuery(Query(format: "%@ = names.@count", 2))
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateDate() {
+        let date = Date()
+        let result = encodeQuery(Query(format: "date == %@", date))
+        let json = [
+            "date" : date.timeIntervalSince1970
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateNil() {
+        let result = encodeQuery(Query(format: "date == %@", NSNull()))
+        let json = [
+            "date" : NSNull()
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testArrayContains() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames contains %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "SUBQUERY(authorNames, $item, $item.value == %@).@count > 0", "Victor"))
+    }
+    
+    func testArrayIndex() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[0] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[0].value == %@", "Victor"))
+    }
+    
+    func testArrayFirst() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[first] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[first].value == %@", "Victor"))
+    }
+    
+    func testArrayLast() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[last] == %@", "Victor"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[last].value == %@", "Victor"))
+    }
+    
+    func testArraySize() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "authorNames[size] == 2"))
+        XCTAssertEqual(predicate, NSPredicate(format: "authorNames[size] == 2"))
+    }
+    
+    func testArraySubquery() {
+        let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
+        let predicate = cache.translate(predicate: NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames like[c] %@).$count > 0", "Vic*"))
+        XCTAssertEqual(predicate, NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames.value like[c] %@).$count > 0", "Vic*"))
     }
     
 }

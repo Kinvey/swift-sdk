@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0800"
+   LastUpgradeVersion = "0810"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -91,6 +91,26 @@
                BlueprintIdentifier = "57873DF01DFFD983002C87BF"
                BuildableName = "KinveyTests Forget To Call Super PropertyMapping.xctest"
                BlueprintName = "KinveyTests Forget To Call Super PropertyMapping"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578870A21DD52EC80087FE78"
+               BuildableName = "SSOApp1Tests.xctest"
+               BlueprintName = "SSOApp1Tests"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578870C61DD52ECF0087FE78"
+               BuildableName = "SSOApp2Tests.xctest"
+               BlueprintName = "SSOApp2Tests"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
