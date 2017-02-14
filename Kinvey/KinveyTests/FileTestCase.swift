@@ -11,11 +11,50 @@ import XCTest
 
 class FileTestCase: StoreTestCase {
     
+    let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
     var file: File?
+    var caminandes3TrailerFileSize: UInt64 {
+        return try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerURL.path).filter { $0.key == .size }.first!.value as! UInt64
+    }
     
     lazy var fileStore: FileStore = {
         return FileStore.getInstance()
     }()
+    
+    override func setUp() {
+        super.setUp()
+        
+        if !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) {
+            weak var expectationDownload = expectation(description: "Download")
+            
+            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
+            let request = URLRequest(url: url)
+            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data,
+                    let responseBody = String(data: data, encoding: .utf8),
+                    let urlEncodedFmtStreamMap = URLComponents(string: "parse://?\(responseBody)")?.queryItems?.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
+                    let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
+                    let url = URL(string: urlString)
+                {
+                    let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                        if let url = url {
+                            try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
+                        }
+                        
+                        expectationDownload?.fulfill()
+                    }
+                    downloadTask.resume()
+                }
+            }
+            dataTask.resume()
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationDownload = nil
+            }
+            
+            XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
+        }
+    }
     
     override func tearDown() {
         if let file = file, let _ = file.fileId {
@@ -72,11 +111,11 @@ class FileTestCase: StoreTestCase {
     func testUpload() {
         signUp()
         
-        let file = File() {
+        var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
-        let path = Bundle(for: type(of: self)).path(forResource: "Caminandes 3 - TRAILER", ofType: "mp4")!
+        let path = caminandes3TrailerURL.path
         
         var uploadProgressCount = 0
         
@@ -200,10 +239,17 @@ class FileTestCase: StoreTestCase {
             let memoryBefore = reportMemory()
             XCTAssertNotNil(memoryBefore)
             
-            let request = fileStore.upload(file, path: path) { (file, error) in
+            let request = fileStore.upload(file, path: path) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
+                
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
+                
+                file = uploadedFile!
+                
+                XCTAssertNotNil(file.path)
+                XCTAssertNotNil(file.download)
+                XCTAssertNotNil(file.downloadURL)
                 
                 let memoryNow = self.reportMemory()
                 XCTAssertNotNil(memoryNow)
@@ -304,12 +350,13 @@ class FileTestCase: StoreTestCase {
             $0.publicAccessible = true
         }
         self.file = file
-        let path = Bundle(for: type(of: self)).path(forResource: "Caminandes 3 - TRAILER", ofType: "mp4")!
+        let path = caminandes3TrailerURL.path
         
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
             let request = fileStore.upload(file, path: path) { (file, error) in
+                self.file = file
                 XCTFail()
             }
             
@@ -324,7 +371,7 @@ class FileTestCase: StoreTestCase {
             }
         }
         
-        XCTAssertNotNil(file.fileId)
+        //XCTAssertNotNil(self.file?.entityId)
         
         do {
             weak var expectationWait = expectation(description: "Wait")
@@ -342,10 +389,9 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, path: path) { (file, error) in
+            fileStore.upload(self.file!, path: path) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
                 expectationUpload?.fulfill()
             }
             
@@ -357,7 +403,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, data: Data?, error) in
+            fileStore.download(self.file!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -382,7 +428,7 @@ class FileTestCase: StoreTestCase {
             $0.publicAccessible = true
         }
         self.file = file
-        let path = Bundle(for: type(of: self)).path(forResource: "Caminandes 3 - TRAILER", ofType: "mp4")!
+        let path = caminandes3TrailerURL.path
         
         do {
             if useMockData {
@@ -488,6 +534,7 @@ class FileTestCase: StoreTestCase {
             
             fileStore.upload(file, path: path) { (file, error) in
                 XCTAssertNotNil(file)
+                self.file = file
                 XCTAssertNil(error)
                 
                 expectationUpload?.fulfill()
@@ -498,11 +545,11 @@ class FileTestCase: StoreTestCase {
             }
         }
         
-        XCTAssertNotNil(file.fileId)
+        XCTAssertNotNil(self.file?.fileId)
         
         if useMockData {
-            let url = Bundle(for: FileTestCase.self).url(forResource: "Caminandes 3 - TRAILER", withExtension: "mp4")
-            let data = try! Data(contentsOf: url!)
+            let url = caminandes3TrailerURL
+            let data = try! Data(contentsOf: url)
             let chunkSize = data.count / 10
             var offset = 0
             var chunks = [ChunkData]()
@@ -528,7 +575,8 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            let request = fileStore.download(file) { (file, data: Data?, error) in
+            let request = fileStore.download(self.file!) { (file, data: Data?, error) in
+                self.file = file
                 XCTFail()
             }
             
@@ -543,21 +591,21 @@ class FileTestCase: StoreTestCase {
             }
         }
         
-        XCTAssertNotNil(file.resumeDownloadData)
-        if let resumeData = file.resumeDownloadData {
+        XCTAssertNotNil(self.file?.resumeDownloadData)
+        if let resumeData = self.file?.resumeDownloadData {
             XCTAssertGreaterThan(resumeData.count, 0)
         }
         
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file) { (file, data: Data?, error) in
+            fileStore.download(self.file!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
                 
                 if let data = data {
-                    XCTAssertEqual(data.count, 10899706)
+                    XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
                 }
                 
                 expectationDownload?.fulfill()
@@ -910,7 +958,7 @@ class FileTestCase: StoreTestCase {
     func testDownloadTTLExpired() {
         signUp()
         
-        let file = File() {
+        var file = File() {
             $0.publicAccessible = false
         }
         self.file = file
@@ -991,10 +1039,13 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            fileStore.upload(file, data: data) { (file, error) in
+            fileStore.upload(file, data: data) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
+                
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
+                
+                file = uploadedFile!
                 
                 expectationUpload?.fulfill()
             }
@@ -1049,11 +1100,14 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(file, ttl: ttl) { (file, url: URL?, error) in
+            fileStore.download(file, ttl: ttl) { (downloadedFile, url: URL?, error) in
                 XCTAssertTrue(Thread.isMainThread)
+                
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNil(error)
+                
+                file = downloadedFile!
                 
                 if let url = url, let _data = try? Data(contentsOf: url) {
                     XCTAssertEqual(data.count, _data.count)
@@ -1090,6 +1144,313 @@ class FileTestCase: StoreTestCase {
             if let fileURL = fileURL {
                 let fileManager = FileManager.default
                 XCTAssertTrue(fileManager.fileExists(atPath: fileURL.path))
+            }
+        }
+    }
+    
+    func testAclJson() {
+        let file = File {
+            $0.acl = Acl {
+                $0.writers = ["other-user-id"]
+            }
+        }
+        let result = file.toJSON()
+        let expected: JsonDictionary = [
+            "_public" : false,
+            "_acl" : [
+                "w" : ["other-user-id"]
+            ]
+        ]
+        
+        let resultData = try! JSONSerialization.data(withJSONObject: result)
+        let expectedData = try! JSONSerialization.data(withJSONObject: expected)
+        
+        let resultString = String(data: resultData, encoding: .utf8)!
+        let expectedString = String(data: expectedData, encoding: .utf8)!
+        
+        XCTAssertEqual(resultString, expectedString)
+    }
+    
+    func testAclShareWithAnotherUser() {
+        let username = "aclShareWithAnotherUser_\(UUID().uuidString)"
+        let password = UUID().uuidString
+        
+        signUp(username: username, password: password)
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        if let user = Kinvey.sharedClient.activeUser {
+            let userId = user.userId
+            
+            user.logout()
+            
+            XCTAssertNil(Kinvey.sharedClient.activeUser)
+            
+            signUp()
+            
+            XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+            
+            if let user = Kinvey.sharedClient.activeUser {
+                let secretMessage = "secret message"
+                let secretMessageData = secretMessage.data(using: .utf8)!
+                
+                var uploadedFileId: String? = nil
+                
+                do {
+                    if useMockData {
+                        var count = 0
+                        mockResponse { (request) -> HttpResponse in
+                            defer {
+                                count += 1
+                            }
+                            switch count {
+                            case 0:
+                                return HttpResponse(statusCode: 201, json: [
+                                    "_public" : false,
+                                    "_acl" : [
+                                        "r" : ["589e6b0587e8310c76216fbb"],
+                                        "w" : ["589e6b0587e8310c76216fbb"],
+                                        "creator" : "589e6b0536d98358401c04ae"
+                                    ],
+                                    "_id" : "b69d8159-e59f-4337-b03b-1c2df3ccfed9",
+                                    "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ],
+                                    "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429&uploadType=resumable&upload_id=AEnB2Up1heH7qbZXQIqsaT-XJNJTv3OKufiMN_9OXh5qGPVfwP4SaWrU5LW7-ZXswXc11l_Wi027IUjZx44CzajfycP8aam7HQ",
+                                    "_expiresAt" : Date(timeIntervalSinceNow: 7 * TimeUnit.day.timeInterval).toString(),
+                                    "_requiredHeaders" : [
+                                    ]
+                                ])
+                            case 1:
+                                return HttpResponse(json: [
+                                    "kind": "storage#object",
+                                    "id": "0b5b1cd673164e3185a2e75e815f5cfe/b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429/1486777096687000",
+                                    "selfLink": "https://www.googleapis.com/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429",
+                                    "name": "b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429",
+                                    "bucket": "0b5b1cd673164e3185a2e75e815f5cfe",
+                                    "generation": "1486777096687000",
+                                    "metageneration": "1",
+                                    "contentType": "application/octet-stream",
+                                    "timeCreated": Date().toString(),
+                                    "updated": Date().toString(),
+                                    "storageClass": "STANDARD",
+                                    "timeStorageClassUpdated": Date().toString(),
+                                    "size": "14",
+                                    "md5Hash": "stMQhvCYJU0yMUQ4qGPmHg==",
+                                    "mediaLink": "https://www.googleapis.com/download/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429?generation=1486777096687000&alt=media",
+                                    "crc32c": "BvSCPw==",
+                                    "etag": "CJib1aX0htICEAE="
+                                ])
+                            case 2:
+                                return HttpResponse(json: [
+                                    "_id" : "b69d8159-e59f-4337-b03b-1c2df3ccfed9",
+                                    "_public" : false,
+                                    "_acl" : [
+                                        "r" : ["589e6b0587e8310c76216fbb"],
+                                        "w" : ["589e6b0587e8310c76216fbb"],
+                                        "creator" : "589e6b0536d98358401c04ae"
+                                    ],
+                                    "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ],
+                                    "_downloadURL" : "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429?GoogleAccessId=558440376631@developer.gserviceaccount.com&Expires=1486780696&Signature=XW1B07b1srNI890hH0AUKiwroJJ8gl0DrqoDai1G45Txi2YzpJ1UAiDlrxeAMNWRNEYCTmJkuwkNXtdp8sXz7dYbQMK3x96vIQ6QRVVef590rvSbObhziBVBBdn%2B814PmTNEm6737awQNBTc%2FweK2SnDU6jFdbA5cCXqWs5USWk%3D",
+                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toString()
+                                ])
+                            default:
+                                fatalError()
+                            }
+                        }
+                    }
+                    defer {
+                        if useMockData {
+                            setURLProtocol(nil)
+                        }
+                    }
+                    
+                    let file = File {
+                        $0.acl = Acl {
+                            $0.readers = [userId]
+                            $0.writers = [userId]
+                        }
+                    }
+                    let fileStore = FileStore.getInstance()
+                    
+                    weak var expectationUpload = expectation(description: "Upload")
+                    
+                    fileStore.upload(file, data: secretMessageData) { file, error in
+                        XCTAssertNotNil(file)
+                        XCTAssertNil(error)
+                        
+                        if let file = file {
+                            uploadedFileId = file.fileId
+                        }
+                        
+                        expectationUpload?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationUpload = nil
+                    }
+                }
+                
+                XCTAssertNotNil(uploadedFileId)
+                
+                do {
+                    if useMockData {
+                        mockResponse(statusCode: 204, data: Data())
+                    }
+                    defer {
+                        if useMockData {
+                            setURLProtocol(nil)
+                        }
+                    }
+                    
+                    weak var expectationDestroy = expectation(description: "Destroy")
+                    
+                    user.destroy() { error in
+                        XCTAssertNil(error)
+                        
+                        expectationDestroy?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationDestroy = nil
+                    }
+                }
+                
+                XCTAssertNil(Kinvey.sharedClient.activeUser)
+                
+                do {
+                    if useMockData {
+                        let userId = "589e6b0587e8310c76216fbb"
+                        let user: JsonDictionary = [
+                            "_id" : userId,
+                            "username" : "aclShareWithAnotherUser_2AB4A3E2-793C-4E6F-B02D-BD4F714CE248",
+                            "_kmd" : [
+                                "lmt" : Date().toString(),
+                                "ect" : Date().toString(),
+                                "authtoken" : "f44b8f07-93ab-4c79-b413-f846ed7f34df.24+7RR+w8t845iG/dqkAJ3Vi6cU9ieO6tpg98vfVakY="
+                            ],
+                            "_acl" : [
+                                "creator":"589e6b0587e8310c76216fbb"
+                            ]
+                        ]
+                        mockResponse(json: user)
+                        MockKinveyBackend.user[userId] = user
+                    }
+                    defer {
+                        if useMockData {
+                            setURLProtocol(nil)
+                        }
+                    }
+                    
+                    weak var expectationLogin = expectation(description: "Login")
+                    
+                    User.login(username: username, password: password) { user, error in
+                        XCTAssertNotNil(user)
+                        XCTAssertNil(error)
+                        
+                        expectationLogin?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationLogin = nil
+                    }
+                }
+                
+                XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+                
+                let file = File { $0.fileId = uploadedFileId }
+                let fileStore = FileStore.getInstance()
+                
+                do {
+                    if useMockData {
+                        var count = 0
+                        mockResponse { (request) -> HttpResponse in
+                            defer {
+                                count += 1
+                            }
+                            switch count {
+                            case 0:
+                                return HttpResponse(json: [
+                                    "_id" : "b69d8159-e59f-4337-b03b-1c2df3ccfed9",
+                                    "_public" : false,
+                                    "_acl" : [
+                                        "r" : ["589e6b0587e8310c76216fbb"],
+                                        "w" : ["589e6b0587e8310c76216fbb"],
+                                        "creator" : "589e6b0536d98358401c04ae"
+                                    ],
+                                    "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ],
+                                    "_downloadURL" : "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429?GoogleAccessId=558440376631@developer.gserviceaccount.com&Expires=1486780697&Signature=dS5zlMOJ3jgNZawRHd%2FZfCGx9eIYgARLDiDV3QcFP6%2BKshaxjbpAbc9NF2%2FkkDt3KxKPKfQKJoKJ%2FYvGJ2H3qH7vnrab7%2F1zx56roHawWnkexusZ1WxWJzmc3KNyGV9PeQrtyMzAoeZEjEmX38IMZrcat3Lzqo3rpzsSwONOiBI%3D",
+                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toString()
+                                ])
+                            case 1:
+                                return HttpResponse(data: "secret message".data(using: .utf8))
+                            default:
+                                fatalError()
+                            }
+                        }
+                    }
+                    defer {
+                        if useMockData {
+                            setURLProtocol(nil)
+                        }
+                    }
+                    
+                    weak var expectationDownload = expectation(description: "Download")
+                    
+                    fileStore.download(file) { (file, data: Data?, error) in
+                        XCTAssertNotNil(file)
+                        XCTAssertNotNil(data)
+                        XCTAssertNil(error)
+                        
+                        if let data = data {
+                            let receivedMessage = String(data: data, encoding: .utf8)
+                            XCTAssertEqual(receivedMessage, secretMessage)
+                        }
+                        
+                        expectationDownload?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationDownload = nil
+                    }
+                }
+                
+                do {
+                    if useMockData {
+                        mockResponse(json: ["count" : 1])
+                    }
+                    defer {
+                        if useMockData {
+                            setURLProtocol(nil)
+                        }
+                    }
+                    
+                    weak var expectationDelete = expectation(description: "Delete")
+                    
+                    fileStore.remove(file) { (count, error) in
+                        XCTAssertNotNil(count)
+                        XCTAssertNil(error)
+                        
+                        if let count = count {
+                            XCTAssertEqual(count, 1)
+                        }
+                        
+                        expectationDelete?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationDelete = nil
+                    }
+                }
             }
         }
     }

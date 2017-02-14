@@ -9,9 +9,10 @@
 import Foundation
 import RealmSwift
 import Realm
+import ObjectMapper
 
 /// Class that represents a file in the backend holding all metadata of the file, but don't hold the data itself.
-open class File: Object {
+open class File: Object, Mappable {
     
     /// `_id` property of the file.
     open dynamic var fileId: String?
@@ -27,12 +28,6 @@ open class File: Object {
     
     /// `_public` property of the file, which represents if the file is accessible without need of credentials.
     open dynamic var publicAccessible = false
-    
-    /// `_acl` property of the file.
-    open dynamic var acl: Acl?
-    
-    /// `_kmd` property of the file.
-    open dynamic var metadata: Metadata?
     
     /// Temporary download URL String of the file.
     open dynamic var download: String?
@@ -50,14 +45,43 @@ open class File: Object {
         }
     }
     
+    open dynamic var upload:String?
+    
+    /// Temporary upload URL of the file.
+    open dynamic var uploadURL: URL? {
+        get {
+            if let upload = upload {
+                return URL(string: upload)
+            }
+            return nil
+        }
+        set {
+            upload = newValue?.absoluteString
+        }
+    
+    }
+
+    
     /// Expiration data of the `downloadURL`.
     open dynamic var expiresAt: Date?
     
-    dynamic var etag: String?
+    open internal(set) dynamic var etag: String?
     
-    dynamic var path: String?
+    open internal(set) dynamic var path: String? {
+        didSet {
+            if let path = path,
+                let documentURL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).first
+            {
+                let baseURL = documentURL.deletingLastPathComponent()
+                let relativePath = path.replacingOccurrences(of: baseURL.path, with: "~")
+                if self.path != relativePath {
+                    self.path = relativePath
+                }
+            }
+        }
+    }
     
-    dynamic var pathURL: URL? {
+    open internal(set) dynamic var pathURL: URL? {
         get {
             if let path = path {
                 return URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
@@ -69,61 +93,54 @@ open class File: Object {
         }
     }
     
-    /// Temporary upload URL of the file.
-    var uploadURL: URL?
+    /// The `_kmd` property mapped in the Kinvey backend.
+    public dynamic var metadata: Metadata?
+    
+    /// The `_acl` property mapped in the Kinvey backend.
+    public dynamic var acl: Acl?
     
     /// Headers needed to submit the request to the `uploadURL`.
     var uploadHeaders: [String : String]?
     
     var resumeDownloadData: Data?
     
-    /// Default Constructor
-    public required init() {
-        super.init()
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
+    public convenience required init?(map: Map) {
+        self.init()
     }
     
     /// Constructor of a file instance.
-    public init(_ block: (File) -> Void) {
-        super.init()
+    public convenience init(_ block: (File) -> Void) {
+        self.init()
         block(self)
     }
     
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
+    public func mapping(map: Map) {
+        fileId <- map[PersistableIdKey]
+        acl <- map[PersistableAclKey]
+        metadata <- map[PersistableMetadataKey]
+        publicAccessible <- map["_public"]
+        fileName <- map["_filename"]
+        mimeType <- map["_mimetype"]
+        upload <- map["_uploadURL"]
+        download <- map["_downloadURL"]
+        expiresAt <- (map["_expiresAt"], KinveyDateTransform())
+        uploadHeaders <- map["_requiredHeaders"]
+    }
+    
     open override class func primaryKey() -> String? {
         return "fileId"
     }
     
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
     open override class func ignoredProperties() -> [String] {
-        return [
+        var props = super.ignoredProperties()
+        props += [
             "downloadURL",
             "pathURL",
             "uploadURL",
             "uploadHeaders",
             "resumeDownloadData"
         ]
+        return props
     }
     
 }
