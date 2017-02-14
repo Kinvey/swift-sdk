@@ -91,9 +91,9 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{h,m}"
+  s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/*.{swift}"
   
-  s.public_header_files = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
+  # s.public_header_files = 
   
   # s.private_header_files = 
   
