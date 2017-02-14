@@ -9,12 +9,24 @@
 import Foundation
 import Realm
 import RealmSwift
+import MapKit
+
+let typesNeedsPredicateTranslation = [
+    StringValue.self.className(),
+    IntValue.self.className(),
+    FloatValue.self.className(),
+    DoubleValue.self.className(),
+    BoolValue.self.className()
+]
 
 internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     
     let realm: Realm
     let objectSchema: ObjectSchema
     let propertyNames: [String]
+    let propertyTypes: [PropertyType]
+    let propertyObjectClassNames: [String?]
+    let needsPredicateTranslation: Bool
     let executor: Executor
     
     lazy var entityType = T.self as! Entity.Type
@@ -41,23 +53,197 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
         objectSchema = realm.schema[className]!
-        propertyNames = objectSchema.properties.map {
-            return $0.name
+        
+        var propertyNames = [String]()
+        var propertyTypes = [PropertyType]()
+        var propertyObjectClassNames = [String?]()
+        for property in objectSchema.properties {
+            propertyNames.append(property.name)
+            propertyTypes.append(property.type)
+            propertyObjectClassNames.append(property.objectClassName)
         }
+        self.propertyNames = propertyNames
+        self.propertyTypes = propertyTypes
+        self.propertyObjectClassNames = propertyObjectClassNames
+        needsPredicateTranslation = !propertyObjectClassNames.filter {
+            if let className = $0 {
+                return typesNeedsPredicateTranslation.contains(className)
+            }
+            return false
+        }.isEmpty
+        
         executor = Executor()
         super.init(persistenceId: persistenceId)
         log.debug("Cache File: \(self.realm.configuration.fileURL!.path)")
+    }
+    
+    func translate(predicate: NSPredicate) -> NSPredicate {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            return NSPredicate(value: true)
+        }
+        
+        if let predicate = predicate as? NSComparisonPredicate {
+            let leftExpressionNeedsTranslation = needsTranslation(expression: predicate.leftExpression)
+            let rightExpressionNeedsTranslation = needsTranslation(expression: predicate.rightExpression)
+            if (leftExpressionNeedsTranslation || rightExpressionNeedsTranslation) {
+                if predicate.predicateOperatorType == .contains, let keyPathValuePairExpression = keyPathValuePairExpression(predicate: predicate) {
+                    return NSPredicate(format: "SUBQUERY(\(keyPathValuePairExpression.keyPathExpression.keyPath), $item, $item.value == %@).@count > 0", keyPathValuePairExpression.valueExpression.constantValue as! CVarArg)
+                } else {
+                    return NSComparisonPredicate(
+                        leftExpression: translate(expression: predicate.leftExpression),
+                        rightExpression: translate(expression: predicate.rightExpression),
+                        modifier: predicate.comparisonPredicateModifier,
+                        type: predicate.predicateOperatorType,
+                        options: predicate.options
+                    )
+                }
+            }
+        }
+        
+        return predicate
+    }
+    
+    func needsTranslation(expression: NSExpression) -> Bool {
+        switch expression.expressionType {
+        case .keyPath:
+            let keyPath = expression.keyPath
+            if keyPath.contains(".") {
+            } else {
+                if let idx = propertyNames.index(of: keyPath),
+                    let className = propertyObjectClassNames[idx],
+                    typesNeedsPredicateTranslation.contains(className)
+                {
+                    return true
+                }
+            }
+            return false
+        case .function:
+            if needsTranslation(expression: expression.operand) {
+                return true
+            } else if let arguments = expression.arguments {
+                for expression in arguments {
+                    if needsTranslation(expression: expression) {
+                        return true
+                    }
+                }
+            }
+            return false
+        case .subquery:
+            if let expression = expression.collection as? NSExpression {
+                return needsTranslation(expression: expression)
+            }
+            return false
+        default:
+            return false
+        }
+    }
+    
+    func keyPathValuePairExpression(predicate: NSComparisonPredicate) -> (keyPathExpression: NSExpression, valueExpression: NSExpression)? {
+        switch predicate.leftExpression.expressionType {
+        case .keyPath:
+            switch predicate.rightExpression.expressionType {
+            case .constantValue:
+                return (keyPathExpression: predicate.leftExpression, valueExpression: predicate.rightExpression)
+            default:
+                return nil
+            }
+        case .constantValue:
+            switch predicate.rightExpression.expressionType {
+            case .keyPath:
+                return (keyPathExpression: predicate.rightExpression, valueExpression: predicate.leftExpression)
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+    func variableValuePairExpression(predicate: NSComparisonPredicate) -> (variableExpression: NSExpression, expression: NSExpression)? {
+        switch predicate.leftExpression.expressionType {
+        case .variable:
+            return (variableExpression: predicate.leftExpression, expression: predicate.rightExpression)
+        default:
+            switch predicate.rightExpression.expressionType {
+            case .variable:
+                return (variableExpression: predicate.rightExpression, expression: predicate.leftExpression)
+            default:
+                return nil
+            }
+        }
+    }
+    
+    func translate(expression: NSExpression) -> NSExpression {
+        switch expression.expressionType {
+        case .keyPath:
+            var keyPath = expression.keyPath
+            if keyPath.contains(".") {
+            } else {
+                if let idx = propertyNames.index(of: keyPath),
+                    let className = propertyObjectClassNames[idx],
+                    typesNeedsPredicateTranslation.contains(className)
+                {
+                    keyPath += ".value"
+                }
+            }
+            return NSExpression(forKeyPath: keyPath)
+        case .function:
+            if expression.operand.expressionType == .subquery,
+                let suffix = expression.arguments?.first?.description
+            {
+                let subquery = translate(expression: expression.operand)
+                return NSExpression(format: "\(subquery).\(suffix)")
+            } else {
+                switch expression.function {
+                case "objectFrom:withIndex:":
+                    if let keyPath = expression.arguments?.first?.description,
+                        let idx = expression.arguments?.last?.description,
+                        idx != "SIZE"
+                    {
+                        return NSExpression(format: "\(keyPath)[\(idx)].value")
+                    }
+                    return expression
+                default:
+                    return expression
+                }
+            }
+        case .subquery:
+            if let collectionExpression = expression.collection as? NSExpression,
+                let subqueryPredicate = expression.predicate as? NSComparisonPredicate,
+                let variableValuePairExpression = variableValuePairExpression(predicate: subqueryPredicate)
+            {
+                let predicate = NSComparisonPredicate(
+                    leftExpression: NSExpression(forVariable: "\(variableValuePairExpression.variableExpression.variable).value"),
+                    rightExpression: variableValuePairExpression.expression,
+                    modifier: subqueryPredicate.comparisonPredicateModifier,
+                    type: subqueryPredicate.predicateOperatorType,
+                    options: subqueryPredicate.options
+                )
+                return NSExpression(
+                    forSubquery: collectionExpression,
+                    usingIteratorVariable: variableValuePairExpression.variableExpression.variable,
+                    predicate: predicate
+                )
+            }
+            return expression
+        default:
+            return expression
+        }
     }
     
     fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
         log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
-            realmResults = realmResults.filter(predicate)
+            realmResults = realmResults.filter(translate(predicate: predicate))
         }
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
-                realmResults = realmResults.sorted(byProperty: sortDescriptor.key!, ascending: sortDescriptor.ascending)
+                realmResults = realmResults.sorted(byKeyPath: sortDescriptor.key!, ascending: sortDescriptor.ascending)
             }
         }
         
@@ -75,7 +261,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     fileprivate func detach(_ entity: Object, props: [String]) -> Object {
         log.verbose("Detaching object: \(entity)")
         
-        var json:Dictionary<String, Any>
+        var json: Dictionary<String, Any>
         let obj = type(of:entity).init()
         
         json = entity.dictionaryWithValues(forKeys: props)
@@ -87,9 +273,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
                 
                 let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
                 let nestedObjectSchema = realm.schema[nestedClassName]
-                let nestedProperties = nestedObjectSchema?.properties.map {
-                    return $0.name
-                }
+                let nestedProperties = nestedObjectSchema?.properties.map { $0.name }
                     
                 json[property] = self.detach(value, props: nestedProperties!)
             }
@@ -123,7 +307,11 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     func detach(_ results: RealmSwift.Results<Entity>, query: Query?) -> [T] {
-        return detach(results.map { $0 as! T }, query: query)
+        var results: [T] = results.map { $0 as! T }
+        if let predicate = query?.predicate {
+            results = results.filter(predicate: predicate)
+        }
+        return detach(results, query: query)
     }
     
     override func saveEntity(_ entity: T) {
@@ -259,6 +447,86 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
                 self.realm.delete(self.realm.objects(self.entityType))
             }
         }
+    }
+    
+}
+
+extension NSComparisonPredicate {
+    
+    var keyPathConstantTuple: (keyPathExpression: NSExpression, constantValueExpression: NSExpression)? {
+        switch leftExpression.expressionType {
+        case .keyPath:
+            switch rightExpression.expressionType {
+            case .constantValue:
+                return (keyPathExpression: leftExpression, constantValueExpression: rightExpression)
+            default:
+                return nil
+            }
+        case .constantValue:
+            switch rightExpression.expressionType {
+            case .keyPath:
+                return (keyPathExpression: rightExpression, constantValueExpression: leftExpression)
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+}
+
+extension Array where Element: NSObject, Element: Persistable {
+    
+    fileprivate func filter(predicate: NSPredicate) -> [Array.Element] {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            if let circle = constantValue as? MKCircle {
+                let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
+                return filter({ (item) -> Bool in
+                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                        return CLLocation(geoPoint: geoPoint).distance(from: center) <= circle.radius
+                    }
+                    return false
+                })
+            } else if let polygon = constantValue as? MKPolygon {
+                let pointCount = polygon.pointCount
+                var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
+                polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
+                if let first = coordinates.first, let last = coordinates.last, first == last {
+                    coordinates.removeLast()
+                }
+                #if os(OSX)
+                    let path = NSBezierPath()
+                #else
+                    let path = UIBezierPath()
+                #endif
+                for (i, coordinate) in coordinates.enumerated() {
+                    let point = CGPoint(x: coordinate.latitude, y: coordinate.longitude)
+                    switch i {
+                    case 0:
+                        path.move(to: point)
+                    default:
+                        #if os(OSX)
+                            path.line(to: point)
+                        #else
+                            path.addLine(to: point)
+                        #endif
+                    }
+                }
+                path.close()
+                return filter({ (item) -> Bool in
+                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                        return path.contains(CGPoint(x: geoPoint.latitude, y: geoPoint.longitude))
+                    }
+                    return false
+                })
+            }
+        }
+        return self
     }
     
 }

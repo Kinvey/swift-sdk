@@ -16,9 +16,12 @@ checkout-dependencies:
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=10.1'
+
+build-dependencies-ios: checkout-dependencies
+	carthage build --platform iOS
 	
 build-ios:
-	carthage build --no-skip-current
+	carthage build --no-skip-current --platform iOS
 
 test: test-ios
 

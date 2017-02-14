@@ -153,7 +153,7 @@ class HttpRequestFactory: RequestFactory {
     
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
-        var bodyObject = Mapper<T>().toJSON(persistable)
+        var bodyObject = persistable.toJSON()
         let objId = bodyObject[PersistableIdKey] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
@@ -235,26 +235,12 @@ class HttpRequestFactory: RequestFactory {
             client: client
         )
         
-        var bodyObject: [String : Any] = [
-            "_public" : file.publicAccessible as AnyObject
-        ]
-        
-        if let fileId = file.fileId {
-            bodyObject["_id"] = fileId
-        }
-        
-        if let fileName = file.fileName {
-            bodyObject["_filename"] = fileName
-        }
-        
+        var bodyObject = file.toJSON()
+
         if let size = file.size.value {
             bodyObject["size"] = String(size)
         }
-        
-        if let mimeType = file.mimeType {
-            bodyObject["mimeType"] = mimeType
-        }
-        
+
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])

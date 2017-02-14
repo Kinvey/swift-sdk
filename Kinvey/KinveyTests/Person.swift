@@ -8,13 +8,14 @@
 
 @testable import Kinvey
 import ObjectMapper
+import CoreLocation
 
 class Person: Entity {
     
     dynamic var personId: String?
     dynamic var name: String?
     dynamic var age: Int = 0
-    
+    dynamic var geolocation: GeoPoint?
     dynamic var address: Address?
     
     override class func collectionName() -> String {
@@ -25,9 +26,10 @@ class Person: Entity {
         super.propertyMapping(map)
         
         personId <- ("personId", map[PersistableIdKey])
-        name <- map["name"]
-        age <- map["age"]
+        name <- ("name", map["name"])
+        age <- ("age", map["age"])
         address <- ("address", map["address"], AddressTransform())
+        geolocation <- ("geolocation", map["geolocation"])
     }
     
 }

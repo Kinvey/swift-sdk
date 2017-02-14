@@ -27,3 +27,26 @@ extension KIFTestActor {
         return KIFSystemTestActor(inFile: file, atLine: line, delegate: self)
     }
 }
+
+extension XCTestCase {
+    @discardableResult
+    @nonobjc func waitForCondition(_ condition: @autoclosure @escaping (Void) -> Bool, negateCondition: Bool = false, timeout: CFTimeInterval = 10) -> Bool {
+        var fulfilled = false
+        let observer = CFRunLoopObserverCreateWithHandler(nil, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { observer, activity in
+            fulfilled = condition()
+            if fulfilled {
+                CFRunLoopStop(CFRunLoopGetCurrent())
+            } else {
+                CFRunLoopWakeUp(CFRunLoopGetCurrent())
+            }
+        }
+        
+        CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, CFRunLoopMode.defaultMode)
+        
+        CFRunLoopRunInMode(CFRunLoopMode.defaultMode, timeout, false)
+        
+        CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, CFRunLoopMode.defaultMode)
+        
+        return fulfilled
+    }
+}
