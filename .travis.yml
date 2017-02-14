@@ -12,8 +12,11 @@ before_script:
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
+- carthage checkout --no-use-binaries
+- travis_wait 30 carthage build --platform iOS
+- date
 script:
-- travis_retry make test
+- travis_wait 30 make test
 after_script:
 - date
 - security delete-keychain ios-build.keychain
