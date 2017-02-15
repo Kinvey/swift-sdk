@@ -22,7 +22,7 @@ before_script:
 - travis_wait 30 carthage build --platform iOS realm-cocoa
 - date
 script:
-- travis_wait 30 make test
+- travis_retry make test
 after_script:
 - date
 - security delete-keychain ios-build.keychain
