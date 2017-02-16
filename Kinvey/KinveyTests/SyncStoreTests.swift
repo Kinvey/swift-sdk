@@ -29,10 +29,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testCreate() {
-        guard !useMockData else {
-            return
-        }
-        
         let person = self.person
         
         weak var expectationCreate = expectation(description: "Create")
@@ -56,14 +52,9 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreate = nil
         }
-        
     }
     
     func testUpdate() {
-        guard !useMockData else {
-            return
-        }
-        
         save()
         
         weak var expectationFind = expectation(description: "Create")
@@ -115,10 +106,6 @@ class SyncStoreTests: StoreTestCase {
     
     
     func testCustomTag() {
-        guard !useMockData else {
-            return
-        }
-        
         let fileManager = FileManager.default
         
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
@@ -166,13 +153,16 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPurge() {
-        guard !useMockData else {
-            return
-        }
-        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            mockResponse(json: [])
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
         
         weak var expectationPurge = expectation(description: "Purge")
         
@@ -246,13 +236,41 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSync() {
-        guard !useMockData else {
-            return
-        }
-        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            var count = 0
+            var personMockJson: JsonDictionary? = nil
+            mockResponse { (request) -> HttpResponse in
+                defer { count += 1 }
+                switch count {
+                case 0:
+                    XCTAssertEqual(request.httpMethod, "POST")
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = UUID().uuidString
+                    json[PersistableAclKey] = [
+                        Acl.CreatorKey : self.client.activeUser!.userId
+                    ]
+                    json[PersistableMetadataKey] = [
+                        Metadata.LmtKey : Date().toString(),
+                        Metadata.EctKey : Date().toString()
+                    ]
+                    personMockJson = json
+                    return HttpResponse(statusCode: 201, json: json)
+                case 1:
+                    XCTAssertEqual(request.httpMethod, "GET")
+                    XCTAssertNotNil(personMockJson)
+                    return HttpResponse(statusCode: 200, json: [personMockJson!])
+                default:
+                    fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
         
         weak var expectationSync = expectation(description: "Sync")
         
@@ -342,13 +360,28 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPush() {
-        guard !useMockData else {
-            return
-        }
-        
         save()
         
         XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            mockResponse { request -> HttpResponse in
+                XCTAssertEqual(request.httpMethod, "POST")
+                var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                json[PersistableIdKey] = UUID().uuidString
+                json[PersistableAclKey] = [
+                    Acl.CreatorKey : self.client.activeUser!.userId
+                ]
+                json[PersistableMetadataKey] = [
+                    Metadata.LmtKey : Date().toString(),
+                    Metadata.EctKey : Date().toString()
+                ]
+                return HttpResponse(statusCode: 201, json: json)
+            }
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
         
         weak var expectationPush = expectation(description: "Push")
         
@@ -414,17 +447,11 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPull() {
-        guard !useMockData else {
-            return
-        }
-        
         MockKinveyBackend.kid = client.appKey!
         setURLProtocol(MockKinveyBackend.self)
         defer {
             setURLProtocol(nil)
         }
-        
-        
         
         let md = Metadata()
         md.lastModifiedTime = Date()
@@ -668,10 +695,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testFindById() {
-        guard !useMockData else {
-            return
-        }
-        
         let person = save()
         
         XCTAssertNotNil(person.personId)
@@ -703,10 +726,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testFindByQuery() {
-        guard !useMockData else {
-            return
-        }
-        
         let person = save()
         
         XCTAssertNotNil(person.personId)
@@ -876,10 +895,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testExpiredTTL() {
-        guard !useMockData else {
-            return
-        }
-        
         store.ttl = 1.seconds
         
         let person = save()
@@ -932,10 +947,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSaveAndFind10SkipLimit() {
-        guard !useMockData else {
-            return
-        }
-        
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         guard let user = Kinvey.sharedClient.activeUser else {
@@ -1165,7 +1176,20 @@ class SyncStoreTests: StoreTestCase {
             }
         }
         
+        var mockObjects = [JsonDictionary]()
+        
         do {
+            if useMockData {
+                mockResponse { request -> HttpResponse in
+                    let json = self.decorateJsonFromPostRequest(request)
+                    mockObjects.append(json)
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData { setURLProtocol(nil) }
+            }
+            
             weak var expectationPush = expectation(description: "Push")
             
             store.push { count, error in
@@ -1185,6 +1209,19 @@ class SyncStoreTests: StoreTestCase {
         }
         
         skip = 0
+        
+        if useMockData {
+            mockResponse { request -> HttpResponse in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let skip = Int(urlComponents.queryItems!.filter { $0.name == "skip" }.first!.value!)!
+                let limt = Int(urlComponents.queryItems!.filter { $0.name == "limit" }.first!.value!)!
+                let filteredObjects = [JsonDictionary](mockObjects[skip ..< skip + limit])
+                return HttpResponse(json: filteredObjects)
+            }
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
         
         for _ in 0 ..< 5 {
             weak var expectationFind = expectation(description: "Find")
