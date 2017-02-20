@@ -537,63 +537,32 @@ extension Array where Element: NSObject, Element: Persistable {
 
 internal class RealmPendingOperation: Object, PendingOperationType {
     
-    dynamic var requestId: String
-    dynamic var date: Date
+    dynamic var requestId: String = ""
+    dynamic var date: Date = Date()
     
-    dynamic var collectionName: String
+    dynamic var collectionName: String = ""
     dynamic var objectId: String?
     
-    dynamic var method: String
-    dynamic var url: String
-    dynamic var headers: Data
+    dynamic var method: String = ""
+    dynamic var url: String = ""
+    dynamic var headers: Data = Data()
     dynamic var body: Data?
     
-    init(request: URLRequest, collectionName: String, objectId: String?) {
-        date = Date()
+    convenience init(request: URLRequest, collectionName: String, objectId: String?) {
+        self.init()
         requestId = request.value(forHTTPHeaderField: .requestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.httpMethod ?? "GET"
         url = request.url!.absoluteString
-        headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!, options: [])
+        headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!)
         body = request.httpBody
-        super.init()
-    }
-    
-    required init() {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init()
-    }
-    
-    required init(value: Any, schema: RLMSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(value: value, schema: schema)
-    }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(realm: realm, schema: schema)
     }
     
     func buildRequest() -> URLRequest {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method
-        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers, options: []) as! [String : String]
+        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers) as! [String : String]
         if let body = body {
             request.httpBody = body
         }
@@ -602,6 +571,31 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
     override class func primaryKey() -> String? {
         return "requestId"
+    }
+    
+}
+
+class RealmPendingOperationThreadSafeReference: PendingOperationType {
+    
+    let realmConfig: Realm.Configuration
+    let reference: ThreadSafeReference<RealmPendingOperation>
+    
+    init(_ realmPendingOperation: RealmPendingOperation) {
+        realmConfig = realmPendingOperation.realm!.configuration
+        reference = ThreadSafeReference(to: realmPendingOperation)
+    }
+    
+    lazy var realmPendingOperation: RealmPendingOperation = { [unowned self] in
+        let realm = try! Realm(configuration: self.realmConfig)
+        return realm.resolve(self.reference)!
+    }()
+    
+    var objectId: String? {
+        return realmPendingOperation.objectId
+    }
+    
+    func buildRequest() -> URLRequest {
+        return realmPendingOperation.buildRequest()
     }
     
 }

@@ -21,9 +21,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     }()
     
     var mustRemoveCachedRecords: Bool {
-        get {
-            return isEmptyQuery
-        }
+        return isEmptyQuery
     }
     
     typealias ResultsHandler = ([JsonDictionary]) -> Void

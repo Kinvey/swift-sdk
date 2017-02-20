@@ -13,9 +13,9 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
     typealias CompletionHandler = (R, Swift.Error?) -> Void
     
     let writePolicy: WritePolicy
-    let sync: Sync<T>?
+    let sync: AnySync?
     
-    init(writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.writePolicy = writePolicy
         self.sync = sync
         super.init(cache: cache, client: client)
