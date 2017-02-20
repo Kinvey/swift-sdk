@@ -9,34 +9,89 @@
 import Foundation
 import PromiseKit
 
+class PendingBlockOperation: CollectionBlockOperation {
+}
+
+class PushBlockOperation: PendingBlockOperation {
+}
+
+fileprivate class PushRequest: NSObject, Request {
+    
+    let completionOperation: PushBlockOperation
+    private let dispatchSerialQueue: DispatchQueue
+    
+    var progress: ((ProgressStatus) -> Void)?
+    
+    var executing: Bool {
+        return !completionOperation.isFinished
+    }
+    
+    var cancelled = false
+    
+    func cancel() {
+        cancelled = true
+        completionOperation.cancel()
+        for operation in self.completionOperation.dependencies {
+            operation.cancel()
+        }
+    }
+    
+    init(collectionName: String, completionBlock: @escaping () -> Void) {
+        dispatchSerialQueue = DispatchQueue(label: "Push \(collectionName)")
+        completionOperation = PushBlockOperation(collectionName: collectionName, block: completionBlock)
+    }
+    
+    func addOperation(operation: Foundation.Operation) {
+        dispatchSerialQueue.sync {
+            for dependencyOperation in self.completionOperation.dependencies {
+                operation.addDependency(dependencyOperation)
+            }
+            self.completionOperation.addDependency(operation)
+        }
+    }
+    
+    func execute(pendingBlockOperations: [PendingBlockOperation]) {
+        dispatchSerialQueue.sync {
+            for operation in self.completionOperation.dependencies {
+                operationsQueue.addOperation(operation)
+            }
+            for pendingBlockOperation in pendingBlockOperations {
+                self.completionOperation.addDependency(pendingBlockOperation)
+            }
+            operationsQueue.addOperation(self.completionOperation)
+        }
+    }
+    
+}
+
 internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]?> where T: NSObject {
     
-    internal override init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
+    internal override init(sync: AnySync?, cache: Cache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
     }
     
     override func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
-        let requests = OperationQueueRequest()
-        requests.operationQueue.maxConcurrentOperationCount = 1
         var count = UInt(0)
         var errors: [Swift.Error] = []
+        
+        let collectionName = T.collectionName()
+        let pushOperation = PushRequest(collectionName: collectionName) {
+            completionHandler?(count, errors.count > 0 ? errors : nil)
+        }
+        
+        let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
+        
         if let sync = sync {
-            let executor = Executor()
             for pendingOperation in sync.pendingOperations() {
                 let request = HttpRequest(request: pendingOperation.buildRequest(), timeout: timeout, client: client)
-                let operation = BlockOperation {
-                    let condition = NSCondition()
-                    condition.lock()
+                let objectId = pendingOperation.objectId
+                let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
                     request.execute() { data, response, error in
-                        condition.lock()
-                        if let response = response , response.isOK,
+                        if let response = response,
+                            response.isOK,
                             let data = data
                         {
                             let json = self.client.responseParser.parse(data)
-                            var objectId: String?
-                            executor.executeAndWait {
-                                objectId = pendingOperation.objectId
-                            }
                             if let cache = self.cache, let json = json, let objectId = objectId , request.request.httpMethod != "DELETE" {
                                 if let entity = cache.findEntity(objectId) {
                                     cache.removeEntity(entity)
@@ -73,19 +128,20 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                         } else {
                             errors.append(buildError(data, response, error, self.client))
                         }
-                        condition.signal()
-                        condition.unlock()
+                        operation.state = .finished
                     }
-                    condition.wait()
-                    condition.unlock()
                 }
-                requests.operationQueue.addOperation(operation)
+                
+                for pendingBlockOperation in pendingBlockOperations {
+                    operation.addDependency(pendingBlockOperation)
+                }
+                
+                pushOperation.addOperation(operation: operation)
             }
         }
-        requests.operationQueue.addOperation {
-            completionHandler?(count, errors.count > 0 ? errors : nil)
-        }
-        return requests
+        
+        pushOperation.execute(pendingBlockOperations: pendingBlockOperations)
+        return pushOperation
     }
     
 }

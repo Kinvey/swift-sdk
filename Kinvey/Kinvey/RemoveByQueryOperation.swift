@@ -10,7 +10,7 @@ import Foundation
 
 internal class RemoveByQueryOperation<T: Persistable>: RemoveOperation<T> where T: NSObject {
     
-    override init(query: Query, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    override init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
         super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     

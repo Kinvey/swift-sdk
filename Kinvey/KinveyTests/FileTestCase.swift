@@ -25,7 +25,7 @@ class FileTestCase: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        if !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) || !FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path) {
+        while !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) || !FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path) {
             weak var expectationDownloadVideo = expectation(description: "Download Video")
             weak var expectationDownloadImage = expectation(description: "Download Image")
             
@@ -36,33 +36,47 @@ class FileTestCase: StoreTestCase {
                     let responseBody = String(data: data, encoding: .utf8),
                     let queryItems = URLComponents(string: "parse://?\(responseBody)")?.queryItems
                 {
-                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerURL.path),
-                        let urlEncodedFmtStreamMap = queryItems.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
-                        let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
-                        let url = URL(string: urlString)
-                    {
-                        let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                            if let url = url {
-                                try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
+                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerURL.path) {
+                        if let urlEncodedFmtStreamMap = queryItems.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
+                            let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
+                            let url = URL(string: urlString)
+                        {
+                            let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                                if let url = url,
+                                    let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                                    let fileSize = attrs[.size] as? UInt64,
+                                    fileSize > 0
+                                {
+                                    try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
+                                }
+                                
+                                expectationDownloadVideo?.fulfill()
                             }
-                            
+                            downloadTask.resume()
+                        } else {
                             expectationDownloadVideo?.fulfill()
                         }
-                        downloadTask.resume()
                     }
                     
-                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path),
-                        let iurlmaxres = queryItems.filter({ return $0.name == "iurlmaxres" }).first?.value,
-                        let url = URL(string: iurlmaxres)
-                    {
-                        let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                            if let url = url {
-                                try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
+                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path) {
+                        if let iurlmaxres = queryItems.filter({ return $0.name == "iurlmaxres" }).first?.value,
+                            let url = URL(string: iurlmaxres)
+                        {
+                            let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                                if let url = url,
+                                    let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                                    let fileSize = attrs[.size] as? UInt64,
+                                    fileSize > 0
+                                {
+                                    try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
+                                }
+                                
+                                expectationDownloadImage?.fulfill()
                             }
-                            
+                            downloadTask.resume()
+                        } else {
                             expectationDownloadImage?.fulfill()
                         }
-                        downloadTask.resume()
                     }
                 }
             }
@@ -72,9 +86,9 @@ class FileTestCase: StoreTestCase {
                 expectationDownloadVideo = nil
                 expectationDownloadImage = nil
             }
-            
-            XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
         }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path))
     }
     
     override func tearDown() {

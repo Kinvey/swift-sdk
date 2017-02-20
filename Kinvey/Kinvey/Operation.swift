@@ -9,6 +9,27 @@
 import Foundation
 import ObjectMapper
 
+let operationsQueue = OperationQueue(name: "Kinvey")
+
+extension OperationQueue {
+    
+    convenience init(name: String) {
+        self.init()
+        self.name = name
+    }
+    
+    func pendingBlockOperations(forCollection collectionName: String) -> [PendingBlockOperation] {
+        return operationsQueue.operations.filter {
+            $0 is PendingBlockOperation
+        }.map {
+            $0 as! PendingBlockOperation
+        }.filter {
+            $0.collectionName == collectionName
+        }
+    }
+    
+}
+
 class AsyncBlockOperation : BlockOperation {
     
     convenience init(block: @escaping (AsyncBlockOperation) -> Void) {
@@ -68,6 +89,18 @@ class AsyncBlockOperation : BlockOperation {
             state = .executing
             super.main()
         }
+    }
+    
+}
+
+class CollectionBlockOperation: BlockOperation {
+    
+    let collectionName: String
+    
+    init(collectionName: String, block: @escaping () -> Void) {
+        self.collectionName = collectionName
+        super.init()
+        addExecutionBlock(block)
     }
     
 }
