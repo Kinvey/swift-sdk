@@ -15,7 +15,7 @@ public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
-    let regex = try! NSRegularExpression(pattern: "RLM.+_.+") // regex to catch Realm classnames like `RLMStandalone_`, `RLMUnmanaged_` or `RLMAccessor_`
+    let regex = try! NSRegularExpression(pattern: "(?:RLM.+_(.+))|(?:RLM:\\S* (.*))") // regex to catch Realm classnames like `RLMStandalone_`, `RLMUnmanaged_`, `RLMAccessor_` or `RLM:Unmanaged `
     var nMatches = regex.numberOfMatches(in: className, range: NSRange(location: 0, length: className.characters.count))
     while nMatches > 0 {
         let classObj: AnyClass! = NSClassFromString(className)!
