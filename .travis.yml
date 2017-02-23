@@ -12,6 +12,7 @@ before_script:
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
+- carthage version
 - carthage checkout --no-use-binaries
 - carthage checkout realm-cocoa
 - travis_wait 30 carthage build --platform iOS PromiseKit
