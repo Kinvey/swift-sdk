@@ -13,13 +13,13 @@ before_script:
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
 - carthage checkout --no-use-binaries
+- carthage checkout realm-cocoa
 - travis_wait 30 carthage build --platform iOS PromiseKit
 - travis_wait 30 carthage build --platform iOS KeychainAccess
 - travis_wait 30 carthage build --platform iOS ObjectMapper
 - travis_wait 30 carthage build --platform iOS XCGLogger
 - travis_wait 30 carthage build --platform iOS KIF
 - travis_wait 30 carthage build --platform iOS CwlPreconditionTesting
-- travis_wait 30 carthage build --platform iOS realm-cocoa
 - date
 script:
 - travis_retry make test
