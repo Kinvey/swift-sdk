@@ -35,10 +35,10 @@ class PushTestCase: KinveyTestCase {
                 
                 expectaionRegister?.fulfill()
             }
-            
-            tester().acknowledgeSystemAlert()
 
             #if (arch(i386) || arch(x86_64)) && os(iOS)
+            tester().acknowledgeSystemAlert()
+            
             DispatchQueue.main.async {
                 let app = UIApplication.shared
                 let data = UUID().uuidString.data(using: .utf8)!

@@ -451,6 +451,29 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
+    override func clear(query: Query? = nil) {
+        log.verbose("Clearing cache")
+        executor.executeAndWait {
+            try! self.realm.write {
+                if let query = query {
+                    var results = self.realm.objects(self.entityType)
+                    if let predicate = query.predicate {
+                        results = results.filter(predicate)
+                    }
+                    let ids: [String] = results.map { $0.entityId! }
+                    
+                    var pendingOperations = self.realm.objects(RealmPendingOperation.self)
+                    pendingOperations = pendingOperations.filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
+                    
+                    self.realm.delete(results)
+                    self.realm.delete(pendingOperations)
+                } else {
+                    self.realm.deleteAll()
+                }
+            }
+        }
+    }
+    
 }
 
 extension NSComparisonPredicate {
@@ -537,18 +560,19 @@ extension Array where Element: NSObject, Element: Persistable {
 
 internal class RealmPendingOperation: Object, PendingOperationType {
     
-    dynamic var requestId: String
-    dynamic var date: Date
+    dynamic var requestId: String = ""
+    dynamic var date: Date = Date()
     
-    dynamic var collectionName: String
+    dynamic var collectionName: String = ""
     dynamic var objectId: String?
     
-    dynamic var method: String
-    dynamic var url: String
-    dynamic var headers: Data
+    dynamic var method: String = ""
+    dynamic var url: String = ""
+    dynamic var headers: Data = Data()
     dynamic var body: Data?
     
-    init(request: URLRequest, collectionName: String, objectId: String?) {
+    convenience init(request: URLRequest, collectionName: String, objectId: String?) {
+        self.init()
         date = Date()
         requestId = request.value(forHTTPHeaderField: .requestId)!
         self.collectionName = collectionName
@@ -557,37 +581,6 @@ internal class RealmPendingOperation: Object, PendingOperationType {
         url = request.url!.absoluteString
         headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!, options: [])
         body = request.httpBody
-        super.init()
-    }
-    
-    required init() {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init()
-    }
-    
-    required init(value: Any, schema: RLMSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(value: value, schema: schema)
-    }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(realm: realm, schema: schema)
     }
     
     func buildRequest() -> URLRequest {
