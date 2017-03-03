@@ -14,3 +14,4 @@ docs
 Kinvey/build
 Carthage
 !Carthage/Checkouts/NSPredicate-MongoDB-Adaptor
+Kinvey.framework.zip
