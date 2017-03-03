@@ -1,9 +1,7 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
 
-all: build pack docs
-
-build: checkout-dependencies build-ios
+all: build archive pack docs
 
 clean:
 	rm -Rf docs
@@ -19,9 +17,26 @@ build-debug:
 
 build-dependencies-ios: checkout-dependencies
 	carthage build --platform iOS
-	
-build-ios:
+
+build: checkout-dependencies
+	carthage build --no-skip-current
+
+build-ios: checkout-dependencies
 	carthage build --no-skip-current --platform iOS
+
+build-macos: checkout-dependencies
+	carthage build --no-skip-current --platform macOS
+
+build-tvos: checkout-dependencies
+	carthage build --no-skip-current --platform tvOS
+
+build-watchos: checkout-dependencies
+	carthage build --no-skip-current --platform watchOS
+
+archive: archive-ios
+
+archive-ios:
+	carthage archive Kinvey
 
 test: test-ios
 
