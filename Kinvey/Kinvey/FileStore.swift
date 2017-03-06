@@ -10,7 +10,8 @@ import Foundation
 import PromiseKit
 import ObjectMapper
 
-#if os(iOS)
+
+#if !os(macOS)
     import UIKit
 #endif
 
@@ -34,6 +35,30 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   }
 }
 
+public enum ImageRepresentation {
+    
+    case png
+    case jpeg(compressionQuality: Float)
+
+#if !os(macOS)
+    func data(image: UIImage) -> Data? {
+        switch self {
+        case .png:
+            return UIImagePNGRepresentation(image)
+        case .jpeg(let compressionQuality):
+            return UIImageJPEGRepresentation(image, CGFloat(compressionQuality))
+        }
+    }
+#endif
+    
+    var mimeType: String {
+        switch self {
+        case .png: return "image/png"
+        case .jpeg: return "image/jpeg"
+        }
+    }
+    
+}
 
 /// Class to interact with the `Files` collection in the backend.
 open class FileStore {
@@ -57,12 +82,12 @@ open class FileStore {
         self.cache = client.cacheManager.fileCache(fileURL: client.fileURL())
     }
 
-#if os(iOS)
-    /// Uploads a `UIImage` in a PNG format.
+#if !os(macOS)
+    /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
-    open func upload(_ file: File, image: UIImage, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
-        let data = UIImagePNGRepresentation(image)!
-        file.mimeType = "image/png"
+    open func upload(_ file: File, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        let data = imageRepresentation.data(image: image)!
+        file.mimeType = imageRepresentation.mimeType
         return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
     }
 #endif
@@ -115,6 +140,16 @@ open class FileStore {
     
     /// Uploads a file using a `NSData`.
     fileprivate func upload(_ file: File, fromData: Data?, fromFile: URL?, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        if file.size.value == nil {
+            if let data = fromData {
+                file.size.value = Int64(data.count)
+            } else if let url = fromFile,
+                let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                let fileSize = attrs[.size] as? Int64
+            {
+                file.size.value = fileSize
+            }
+        }
         let requests = MultiRequest()
         Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
             let createUpdateFileEntry = {
@@ -132,8 +167,10 @@ open class FileStore {
                 }
             }
             
-            if let _ = file.fileId {
-                var request = URLRequest(url: file.uploadURL!)
+            if let _ = file.fileId,
+                let uploadURL = file.uploadURL
+            {
+                var request = URLRequest(url: uploadURL)
                 request.httpMethod = "PUT"
                 if let uploadHeaders = file.uploadHeaders {
                     for header in uploadHeaders {

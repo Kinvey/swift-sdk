@@ -235,12 +235,7 @@ class HttpRequestFactory: RequestFactory {
             client: client
         )
         
-        var bodyObject = file.toJSON()
-
-        if let size = file.size.value {
-            bodyObject["size"] = String(size)
-        }
-
+        let bodyObject = file.toJSON()
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
