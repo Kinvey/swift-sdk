@@ -16,18 +16,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    var completionHandler: User.UserHandler<User>? {
+    var completionHandler: User.UserHandler<User?>? {
         didSet {
             if let result = result {
-                completionHandler?(result.user, result.error)
+                completionHandler?(result)
             }
         }
     }
     
-    var result: (user: User?, error: Swift.Error?)? {
+    var result: Result<User?>? {
         didSet {
             if let result = result {
-                completionHandler?(result.user, result.error)
+                completionHandler?(result)
             }
         }
     }
@@ -43,15 +43,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func initializeKinvey() {
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") { user, error in
-            self.result = (user: user, error: error)
-            if let user = user  {
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") {
+            self.result = $0
+            switch $0 {
+            case .success(let user):
                 print("User: \(user)")
+            default: break
             }
         }
     }
     
-    func discardLocalCachedUser(completionHandler: @escaping User.UserHandler<User>) {
+    func discardLocalCachedUser(completionHandler: @escaping User.UserHandler<User?>) {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", completionHandler: completionHandler)
     }
 

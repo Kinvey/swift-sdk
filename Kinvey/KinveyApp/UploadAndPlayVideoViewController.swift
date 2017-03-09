@@ -48,12 +48,13 @@ class UploadAndPlayVideoViewController: UIViewController, UIImagePickerControlle
             let file = File()
             file.mimeType = "video/mp4"
             self.progressView.progress = 0
-            fileStore.upload(file, path: url.path) { file, error in
-                if let file = file {
+            fileStore.upload(file, path: url.path) {
+                switch $0 {
+                case .success(let file):
                     self.file = file
                     print("File Uploaded: \(file.downloadURL)")
-                } else {
-                    let alertVC = UIAlertController(title: "Error", message: error?.localizedDescription ?? "Unknow error", preferredStyle: .alert)
+                case .failure(let error):
+                    let alertVC = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
                     self.present(alertVC, animated: true)
                 }
             }

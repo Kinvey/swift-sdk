@@ -339,7 +339,7 @@ class KinveyTestCase: XCTestCase {
         
     }
     
-    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((Result<UserType>) -> Void)? = nil) {
         if let user = client.activeUser {
             user.logout()
         }
@@ -355,13 +355,19 @@ class KinveyTestCase: XCTestCase {
         
         weak var expectationSignUp = expectation(description: "Sign Up")
         
-        let handler: (UserType?, Swift.Error?) -> Void = { user, error in
+        let handler: (Result<UserType>) -> Void = {
+            XCTAssertTrue(Thread.isMainThread)
+            
             if let completionHandler = completionHandler {
-                completionHandler(user, error)
+                completionHandler($0)
             } else {
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
             }
             
             expectationSignUp?.fulfill()
@@ -410,10 +416,16 @@ class KinveyTestCase: XCTestCase {
         
         weak var expectationSignUp = expectation(description: "Sign Up")
         
-        User.signup(username: username, password: password) { user, error in
+        User.signup(username: username, password: password) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNil(error)
-            XCTAssertNotNil(user)
+            
+            switch $0 {
+            case .success(let user):
+                XCTAssertNotNil(user)
+            case .failure(let error):
+                XCTAssertNil(error)
+                XCTFail()
+            }
             
             expectationSignUp?.fulfill()
         }
@@ -449,9 +461,16 @@ class KinveyTestCase: XCTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            user.destroy { (error) -> Void in
+            user.destroy {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationDestroyUser?.fulfill()
             }

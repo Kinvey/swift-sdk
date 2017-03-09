@@ -56,7 +56,7 @@ open class MIC {
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
             } else {
-                completionHandler?(nil, buildError(data, response, error, client))
+                completionHandler?(.failure(buildError(data, response, error, client)))
             }
         }
         requests += request
@@ -93,10 +93,11 @@ open class MIC {
                         let url = URL(string: location),
                         let code = parseCode(redirectURI: redirectURI, url: url)
                     {
-                        requests += login(redirectURI: redirectURI, code: code, client: client) { user, error in
-                            if let user = user {
+                        requests += login(redirectURI: redirectURI, code: code, client: client) {
+                            switch $0 {
+                            case .success(let user):
                                 fulfill(user as! U)
-                            } else if let error = error {
+                            case .failure(let error):
                                 reject(error)
                             }
                         }
@@ -108,9 +109,9 @@ open class MIC {
                 requests += request
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }
@@ -123,7 +124,7 @@ open class MIC {
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
             } else {
-                completionHandler?(nil, buildError(data, response, error, client))
+                completionHandler?(.failure(buildError(data, response, error, client)))
             }
         }
         requests += request
@@ -357,10 +358,15 @@ class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebView
     func success(code: String) {
         activityIndicatorView.startAnimating()
         
-        MIC.login(redirectURI: redirectURI, code: code, client: client) { user, error in
+        MIC.login(redirectURI: redirectURI, code: code, client: client) {
             self.activityIndicatorView.stopAnimating()
             
-            self.closeViewControllerUserInteraction(user: user, error: error)
+            switch $0 {
+            case .success(let user):
+                self.closeViewControllerUserInteraction(user: user, error: nil)
+            case .failure(let error):
+                self.closeViewControllerUserInteraction(user: nil, error: error)
+            }
         }
     }
     

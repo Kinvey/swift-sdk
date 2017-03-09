@@ -35,8 +35,9 @@ class MICAuthorizationGrantViewController: UIViewController {
             redirectURI: redirectURI,
             username: textFieldUsername.text!,
             password: textFieldPassword.text!
-        ) { user, error in
-            if let user = user {
+        ) {
+            switch $0 {
+            case .success(let user):
                 self.labelUserID.text = user.userId
                 let store = DataStore<MedData>.collection(.network)
                 
@@ -49,10 +50,8 @@ class MICAuthorizationGrantViewController: UIViewController {
                         }
                     }
                 }
-            } else if let error = error {
+            case .failure(let error):
                 self.labelUserID.text = "Error: \((error as NSError).localizedDescription)"
-            } else {
-                self.labelUserID.text = ""
             }
         }
     }

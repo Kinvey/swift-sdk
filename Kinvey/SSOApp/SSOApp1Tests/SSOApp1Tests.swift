@@ -161,11 +161,17 @@ class SSOApp1Tests: KinveyTestCase {
         {
             weak var expectationLogin = expectation(description: "Login")
             
-            viewController.completionHandler = { (user, error) in
+            viewController.completionHandler = {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+                
+                switch $0 {
+                case .success(let user):
+                    XCTAssertNotNil(user)
+                    XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+                case .failure(let error):
+                    XCTAssertNil(error)
+                    XCTFail()
+                }
                 
                 expectationLogin?.fulfill()
             }

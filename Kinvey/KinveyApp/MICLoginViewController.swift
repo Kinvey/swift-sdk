@@ -43,20 +43,23 @@ open class MICLoginViewController: UIViewController {
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
         
         if useSafariViewControllerSwitch.isOn {
-            User.presentMICViewController(redirectURI: redirectURI) { user, error in
-                if let user = user {
+            User.presentMICViewController(redirectURI: redirectURI) {
+                switch $0 {
+                case .success(let user):
                     self.userIdLabel.text = user.userId
+                default: break
                 }
-                self.completionHandler?(user, error)
+                self.completionHandler?($0)
             }
         } else {
-            User.presentMICViewController(redirectURI: redirectURI, timeout: 60 * 5, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) { (user, error) -> Void in
-                if let user = user {
+            User.presentMICViewController(redirectURI: redirectURI, timeout: 60 * 5, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) {
+                switch $0 {
+                case .success(let user):
                     self.userIdLabel.text = user.userId
-                } else if let error = error{
+                case .failure(let error):
                     print("\(error)")
                 }
-                self.completionHandler?(user, error)
+                self.completionHandler?($0)
             }
         }
     }

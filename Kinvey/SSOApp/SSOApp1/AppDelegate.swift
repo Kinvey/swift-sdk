@@ -18,9 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") { user, error in
-            if let user = user  {
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") {
+            switch $0 {
+            case .success(let user):
                 print("User: \(user)")
+            default: break
             }
         }
         
