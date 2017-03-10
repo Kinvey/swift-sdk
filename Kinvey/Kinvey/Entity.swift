@@ -93,16 +93,22 @@ open class Entity: Object, Persistable {
      */
     open override class func ignoredProperties() -> [String] {
         var properties = [String]()
-        for property in ObjCRuntime.properties(self) {
-            if !(ObjCRuntime.type(property.1, isSubtypeOf: NSDate.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: NSData.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: NSString.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: RLMObjectBase.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: RLMOptionalBase.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: RLMListBase.self) ||
-                ObjCRuntime.type(property.1, isSubtypeOf: RLMCollection.self))
+        for (propertyName, (type, subType)) in ObjCRuntime.properties(forClass: self) {
+            if let type = type,
+                let typeClass = NSClassFromString(type),
+                !(ObjCRuntime.type(typeClass, isSubtypeOf: NSDate.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: NSData.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: NSString.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: RLMObjectBase.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: RLMOptionalBase.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: RLMListBase.self) ||
+                ObjCRuntime.type(typeClass, isSubtypeOf: RLMCollection.self))
             {
-                properties.append(property.0)
+                properties.append(propertyName)
+            } else if let subType = subType,
+                let _ = NSProtocolFromString(subType)
+            {
+                properties.append(propertyName)
             }
         }
         return properties
