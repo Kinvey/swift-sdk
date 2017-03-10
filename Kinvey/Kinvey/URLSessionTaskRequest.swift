@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-class NSURLSessionTaskRequest: TaskProgressRequest, Request {
+class URLSessionTaskRequest: TaskProgressRequest, Request {
     
     var executing: Bool {
         get {
@@ -40,34 +40,16 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     
     func cancel() {
         if let file = self.file, let downloadTask = task as? URLSessionDownloadTask {
-            let lock = NSCondition()
-            lock.lock()
-            downloadTask.cancel { (data) -> Void in
-                lock.lock()
-                file.resumeDownloadData = data
-                lock.signal()
-                lock.unlock()
-            }
-            lock.wait()
-            lock.unlock()
-        } else {
-            task?.cancel()
-        }
-    }
-    
-    fileprivate func downloadTask(_ url: URL?, response: URLResponse?, error: Swift.Error?, fulfill: ((Data, Response)) -> Void, reject: (Swift.Error) -> Void) {
-        if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = try? Data(contentsOf: url) {
-            if self.client.logNetworkEnabled {
-                do {
-                    log.debug("\(response.description(data))")
+            let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
+                downloadTask.cancel { (data) -> Void in
+                    file.resumeDownloadData = data
+                    operation.state = .finished
                 }
             }
-            
-            fulfill((data, HttpResponse(response: response)))
-        } else if let error = error {
-            reject(error)
+            operation.start()
+            operation.waitUntilFinished()
         } else {
-            reject(Error.invalidResponse(httpResponse: response as? HTTPURLResponse, data: nil))
+            task?.cancel()
         }
     }
     
@@ -81,29 +63,41 @@ class NSURLSessionTaskRequest: TaskProgressRequest, Request {
         }
     }
     
-    func downloadTaskWithURL(_ file: File, completionHandler: @escaping DataResponseCompletionHandler) {
+    func downloadTaskWithURL(_ file: File) -> Promise<(Data, Response)> {
         self.file = file
-        Promise<(Data, Response)> { fulfill, reject in
+        return Promise<(Data, Response)> { fulfill, reject in
             if self.client.logNetworkEnabled {
                 do {
                     log.debug("GET \(self.url)")
                 }
             }
             
+            let handler = { (url: URL?, response: URLResponse?, error: Swift.Error?) in
+                if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = try? Data(contentsOf: url) {
+                    if self.client.logNetworkEnabled {
+                        do {
+                            log.debug("\(response.description(data))")
+                        }
+                    }
+                    
+                    fulfill((data, HttpResponse(response: response)))
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.invalidResponse(httpResponse: response as? HTTPURLResponse, data: nil))
+                }
+            }
+            
             if let resumeData = file.resumeDownloadData {
                 task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
-                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
+                    handler(url, response, error)
                 }
             } else {
                 task = self.client.urlSession.downloadTask(with: url) { (url, response, error) -> Void in
-                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
+                    handler(url, response, error)
                 }
             }
             task!.resume()
-        }.then { data, response in
-            completionHandler(data, response, nil)
-        }.catch { error in
-            completionHandler(nil, nil, error)
         }
     }
     
