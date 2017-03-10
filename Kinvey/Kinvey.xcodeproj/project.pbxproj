@@ -21,7 +21,7 @@
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
-		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
+		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
 		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
@@ -531,7 +531,7 @@
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
-		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
+		5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionTaskRequest.swift; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
 		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
@@ -1051,7 +1051,7 @@
 				57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */,
 				57470FA61C7698B30096B15F /* MultiRequest.swift */,
 				57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */,
-				5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */,
+				5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */,
 				57A2ED851C49B9D5006D26A9 /* Response.swift */,
 				57A2ED871C49BADD006D26A9 /* HttpResponse.swift */,
 				57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */,
@@ -2009,7 +2009,7 @@
 				57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */,
 				574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */,
 				57470FA51C76926B0096B15F /* PushOperation.swift in Sources */,
-				5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */,
+				5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
 				57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */,
 			);
