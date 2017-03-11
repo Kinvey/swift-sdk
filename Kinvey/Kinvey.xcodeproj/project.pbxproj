@@ -21,7 +21,7 @@
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
-		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
+		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
 		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
@@ -68,7 +68,6 @@
 		577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8351C92365700080FFA /* FindOperationTest.swift */; };
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
 		5771F9FF1D301F6300903777 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771F9FE1D301F6300903777 /* Event.swift */; };
-		5776EEC01E31740B003B9DF0 /* MIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776EEBF1E31740B003B9DF0 /* MIC.swift */; };
 		5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 577751381DF8B8EA006C98F1 /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 577751381DF8B8EA006C98F1 /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5776EE9C1E300658003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
@@ -76,6 +75,7 @@
 		5776EE9E1E300786003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5776EE9F1E3007AC003B9DF0 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		5776EEA01E300898003B9DF0 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		5776EEC01E31740B003B9DF0 /* MIC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776EEBF1E31740B003B9DF0 /* MIC.swift */; };
 		577751441DF8E8EC006C98F1 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		577751451DF8E901006C98F1 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
@@ -169,8 +169,6 @@
 		57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */; };
 		57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */; };
 		57A2ED961C4D5F74006D26A9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
-		57A3BF981C8912A900DCD439 /* KNVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57A3BF961C8912A900DCD439 /* KNVClient.m */; };
-		57A3BF991C8946D200DCD439 /* KNVClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A3BF951C8912A900DCD439 /* KNVClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A3EBB51DDA81AA00983D2F /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A3EBB61DDA81B200983D2F /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57A3EBB71DDA88AA00983D2F /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -249,8 +247,6 @@
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
 		57F5621B1E006A1B00E1AC8E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57F5621C1E006A5400E1AC8E /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
-		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
-		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
 		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
 		57F91C291D6E2C020012850A /* CountOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C281D6E2C020012850A /* CountOperation.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
@@ -535,7 +531,7 @@
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
-		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
+		5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionTaskRequest.swift; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
 		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
@@ -648,8 +644,6 @@
 		57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		57A2ED951C4D5F74006D26A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		57A3BF951C8912A900DCD439 /* KNVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVClient.h; sourceTree = "<group>"; };
-		57A3BF961C8912A900DCD439 /* KNVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVClient.m; sourceTree = "<group>"; };
 		57A3EBBA1DDA8BB900983D2F /* auth.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = auth.html; sourceTree = "<group>"; };
 		57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableTestCase.swift; sourceTree = "<group>"; };
 		57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestCase.swift; sourceTree = "<group>"; };
@@ -1057,7 +1051,7 @@
 				57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */,
 				57470FA61C7698B30096B15F /* MultiRequest.swift */,
 				57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */,
-				5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */,
+				5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */,
 				57A2ED851C49B9D5006D26A9 /* Response.swift */,
 				57A2ED871C49BADD006D26A9 /* HttpResponse.swift */,
 				57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */,
@@ -2015,7 +2009,7 @@
 				57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */,
 				574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */,
 				57470FA51C76926B0096B15F /* PushOperation.swift in Sources */,
-				5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */,
+				5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
 				57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */,
 			);
@@ -2674,7 +2668,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
@@ -2702,7 +2696,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;

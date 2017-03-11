@@ -9,6 +9,69 @@
 import Foundation
 import ObjectMapper
 
+class AsyncBlockOperation : BlockOperation {
+    
+    convenience init(block: @escaping (AsyncBlockOperation) -> Void) {
+        self.init()
+        addExecutionBlock { [unowned self] in
+            block(self)
+        }
+    }
+    
+    enum State: String {
+        
+        case ready = "Ready"
+        case executing = "Executing"
+        case finished = "Finished"
+        
+        var keyPath: String {
+            return "is" + rawValue
+        }
+    }
+    
+    override var isAsynchronous: Bool {
+        return true
+    }
+    
+    var state = State.ready {
+        willSet {
+            willChangeValue(forKey: state.keyPath)
+            willChangeValue(forKey: newValue.keyPath)
+        }
+        didSet {
+            didChangeValue(forKey: oldValue.keyPath)
+            didChangeValue(forKey: state.keyPath)
+        }
+    }
+    
+    override var isExecuting: Bool {
+        return state == .executing
+    }
+    
+    override var isFinished: Bool {
+        return state == .finished
+    }
+    
+    override func start() {
+        if isCancelled {
+            state = .finished
+        } else {
+            state = .ready
+            main()
+        }
+    }
+    
+    override func main() {
+        if isCancelled {
+            state = .finished
+        } else {
+            state = .executing
+            super.main()
+        }
+    }
+    
+}
+
 internal class Operation<T: Persistable>: NSObject where T: NSObject {
     
     typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void

@@ -123,7 +123,7 @@ class StoreTestCase: KinveyTestCase {
     
     @discardableResult
     func save() -> Person {
-        let person = self.person
+        let person = self.newPerson
         
         weak var expectationCreate = expectation(description: "Create")
         

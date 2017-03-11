@@ -120,7 +120,8 @@ open class File: Object, Mappable {
         metadata <- map[PersistableMetadataKey]
         publicAccessible <- map["_public"]
         fileName <- map["_filename"]
-        mimeType <- map["_mimetype"]
+        mimeType <- map["mimeType"]
+        size.value <- map["size"]
         upload <- map["_uploadURL"]
         download <- map["_downloadURL"]
         expiresAt <- (map["_expiresAt"], KinveyDateTransform())
