@@ -1828,5 +1828,180 @@ class UserTests: KinveyTestCase {
             }
         }
     }
+    
+    func testMICLoginAutomatedAuthorizationGrantFlowRefreshTokenFails() {
+        if let user = client.activeUser {
+            user.logout()
+        }
+        defer {
+            if let user = client.activeUser {
+                user.logout()
+            }
+        }
+        
+        class MICLoginAutomatedAuthorizationGrantFlowURLProtocol: URLProtocol {
+            
+            static let code = "7af647ad1414986bec71d7799ced85fd271050a8"
+            static let tempLoginUri = "https://auth.kinvey.com/oauth/authenticate/b3ca941c1141468bb19d2f2c7409f7a6"
+            lazy var code: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.code
+            lazy var tempLoginUri: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.tempLoginUri
+            static var count = 0
+            static var invalidCredentialsCount = 0
+            
+            override class func canInit(with request: URLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                switch type(of: self).count {
+                case 0:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "temp_login_uri" : tempLoginUri
+                    ]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 1:
+                    XCTAssertEqual(request.url!.absoluteString, tempLoginUri)
+                    let redirectRequest = URLRequest(url: URL(string: "micauthgrantflow://?code=\(code)")!)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 302, httpVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.url!.absoluteString])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client?.urlProtocol(self, wasRedirectedTo: redirectRequest, redirectResponse: response)
+                    let data = "Found. Redirecting to micauthgrantflow://?code=\(code)".data(using: String.Encoding.utf8)!
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 2:
+                    switch Body.buildFormUrlEncoded(body: request.httpBodyString) {
+                    case .formUrlEncoded(let params):
+                        XCTAssertEqual(params, [
+                            "client_id" : MockKinveyBackend.kid,
+                            "code" : code,
+                            "redirect_uri" : "micAuthGrantFlow%3A%2F%2F",
+                            "grant_type" : "authorization_code"
+                        ])
+                    default:
+                        XCTFail()
+                    }
+                    
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
+                        "token_type" : "bearer",
+                        "expires_in" : 3599,
+                        "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
+                    ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 3:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "error" : "UserNotFound",
+                        "description" : "This user does not exist for this app backend",
+                        "debug" : ""
+                    ]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                case 4:
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "_socialIdentity" : [
+                            "kinveyAuth": [
+                                "access_token" : "a10a3743028e2e92b97037825b50a2666608b874",
+                                "refresh_token" : "627b034f5ec409899252a8017cb710566dfd2620",
+                                "id" : "custom",
+                                "audience" : MockKinveyBackend.kid
+                            ]
+                        ],
+                        "username" : "3b788b0c-cb99-4692-b3ae-a6b10b3d76f2",
+                        "password" : "fa0f771f-6480-4f11-a11b-dc85cce52beb",
+                        "_kmd" : [
+                            "lmt" : "2016-09-01T01:48:01.177Z",
+                            "ect" : "2016-09-01T01:48:01.177Z",
+                            "authtoken" : "12ed2b41-a5a1-4f37-a640-3a9c62c3fefd.rUHKOlQuRb4pW4NjmCimJ64rd2BF3drXy1SjHtuVCoM="
+                        ],
+                        "_id" : "57c788d168d976c525ee4602",
+                        "_acl" : [
+                            "creator" : "57c788d168d976c525ee4602"
+                        ]
+                    ] as [String : Any]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                default:
+                    type(of: self).invalidCredentialsCount += 1
+                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 2)
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    let json = [
+                        "error" : "InvalidCredentials",
+                        "description" : "Invalid credentials. Please retry your request with correct credentials",
+                        "debug" : "Error encountered authenticating against kinveyAuth: {\"error\":\"server_error\",\"error_description\":\"Access Token not found\"}"
+                    ]
+                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    client?.urlProtocol(self, didLoad: data)
+                    client?.urlProtocolDidFinishLoading(self)
+                }
+                type(of: self).count += 1
+            }
+            
+            override func stopLoading() {
+            }
+        }
+        
+        setURLProtocol(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        XCTAssertNil(client.activeUser)
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let redirectURI = URL(string: "micAuthGrantFlow://")!
+        User.login(
+            redirectURI: redirectURI,
+            username: "custom",
+            password: "1234"
+        ) { user, error in
+            XCTAssertNotNil(user)
+            XCTAssertNil(error)
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        do {
+            let store = DataStore<Person>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find { persons, error in
+                XCTAssertNil(persons)
+                XCTAssertNotNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
 
 }

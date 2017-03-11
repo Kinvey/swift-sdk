@@ -78,13 +78,15 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     func translate(predicate: NSPredicate) -> NSPredicate {
-        if let predicate = predicate as? NSComparisonPredicate,
-            let keyPathConstantTuple = predicate.keyPathConstantTuple,
-            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-            constantValue is MKCircle || constantValue is MKPolygon
-        {
-            return NSPredicate(value: true)
-        }
+        #if !os(watchOS)
+            if let predicate = predicate as? NSComparisonPredicate,
+                let keyPathConstantTuple = predicate.keyPathConstantTuple,
+                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+                constantValue is MKCircle || constantValue is MKPolygon
+            {
+                return NSPredicate(value: true)
+            }
+        #endif
         
         if let predicate = predicate as? NSComparisonPredicate {
             let leftExpressionNeedsTranslation = needsTranslation(expression: predicate.leftExpression)
@@ -479,53 +481,55 @@ extension NSComparisonPredicate {
 extension Array where Element: NSObject, Element: Persistable {
     
     fileprivate func filter(predicate: NSPredicate) -> [Array.Element] {
-        if let predicate = predicate as? NSComparisonPredicate,
-            let keyPathConstantTuple = predicate.keyPathConstantTuple,
-            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-            constantValue is MKCircle || constantValue is MKPolygon
-        {
-            if let circle = constantValue as? MKCircle {
-                let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
-                return filter({ (item) -> Bool in
-                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
-                        return CLLocation(geoPoint: geoPoint).distance(from: center) <= circle.radius
+        #if !os(watchOS)
+            if let predicate = predicate as? NSComparisonPredicate,
+                let keyPathConstantTuple = predicate.keyPathConstantTuple,
+                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+                constantValue is MKCircle || constantValue is MKPolygon
+            {
+                if let circle = constantValue as? MKCircle {
+                    let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
+                    return filter({ (item) -> Bool in
+                        if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                            return CLLocation(geoPoint: geoPoint).distance(from: center) <= circle.radius
+                        }
+                        return false
+                    })
+                } else if let polygon = constantValue as? MKPolygon {
+                    let pointCount = polygon.pointCount
+                    var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
+                    polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
+                    if let first = coordinates.first, let last = coordinates.last, first == last {
+                        coordinates.removeLast()
                     }
-                    return false
-                })
-            } else if let polygon = constantValue as? MKPolygon {
-                let pointCount = polygon.pointCount
-                var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
-                polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
-                if let first = coordinates.first, let last = coordinates.last, first == last {
-                    coordinates.removeLast()
+                    #if os(OSX)
+                        let path = NSBezierPath()
+                    #else
+                        let path = UIBezierPath()
+                    #endif
+                    for (i, coordinate) in coordinates.enumerated() {
+                        let point = CGPoint(x: coordinate.latitude, y: coordinate.longitude)
+                        switch i {
+                        case 0:
+                            path.move(to: point)
+                        default:
+                            #if os(OSX)
+                                path.line(to: point)
+                            #else
+                                path.addLine(to: point)
+                            #endif
+                        }
+                    }
+                    path.close()
+                    return filter({ (item) -> Bool in
+                        if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
+                            return path.contains(CGPoint(x: geoPoint.latitude, y: geoPoint.longitude))
+                        }
+                        return false
+                    })
                 }
-                #if os(OSX)
-                    let path = NSBezierPath()
-                #else
-                    let path = UIBezierPath()
-                #endif
-                for (i, coordinate) in coordinates.enumerated() {
-                    let point = CGPoint(x: coordinate.latitude, y: coordinate.longitude)
-                    switch i {
-                    case 0:
-                        path.move(to: point)
-                    default:
-                        #if os(OSX)
-                            path.line(to: point)
-                        #else
-                            path.addLine(to: point)
-                        #endif
-                    }
-                }
-                path.close()
-                return filter({ (item) -> Bool in
-                    if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
-                        return path.contains(CGPoint(x: geoPoint.latitude, y: geoPoint.longitude))
-                    }
-                    return false
-                })
             }
-        }
+        #endif
         return self
     }
     
