@@ -1,4 +1,5 @@
-ignore:
-  - "Kinvey/KinveyApp/**/*"
-  - "Kinvey/KinveyTests/**/*"
-  - "Kinvey/KinveySSOApp/**/*"
+coverage:
+  ignore:
+    - "Kinvey/KinveyApp/**/*"
+    - "Kinvey/KinveyTests/**/*"
+    - "Kinvey/KinveySSOApp/**/*"
