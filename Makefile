@@ -42,6 +42,7 @@ test: test-ios
 
 	
 test-ios:
+	set -o pipefail; \
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone SE' -enableCodeCoverage YES test | xcpretty
 
 pack:
