@@ -1,5 +1,6 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
+IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.2)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 
 all: build archive pack docs
 
@@ -42,8 +43,8 @@ test: test-ios
 
 	
 test-ios:
-	set -o pipefail; \
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone SE' -enableCodeCoverage YES test | xcpretty
+	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test | xcpretty
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)

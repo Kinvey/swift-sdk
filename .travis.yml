@@ -14,31 +14,32 @@ before_script:
   -T /usr/bin/codesign
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
+- "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
 - carthage version
-- if [ ! -d "Carthage/Checkouts" ]; then
-    carthage checkout --no-use-binaries
+- if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
+    carthage checkout --no-use-binaries;
   fi
 - if [ ! -d "Carthage/Build/iOS/Realm.framework" ] || [ ! -d "Carthage/Build/iOS/RealmSwift.framework" ]; then
-    carthage checkout realm-cocoa
+    carthage checkout realm-cocoa;
   fi
 - if [ ! -d "Carthage/Build/iOS/PromiseKit.framework" ]; then
-    carthage build --platform iOS PromiseKit
+    carthage build --platform iOS PromiseKit;
   fi
 - if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
-    carthage build --platform iOS KeychainAccess
+    carthage build --platform iOS KeychainAccess;
   fi
 - if [ ! -d "Carthage/Build/iOS/ObjectMapper.framework" ]; then
-    carthage build --platform iOS ObjectMapper
+    carthage build --platform iOS ObjectMapper;
   fi
 - if [ ! -d "Carthage/Build/iOS/XCGLogger.framework" ]; then
-    carthage build --platform iOS XCGLogger
+    carthage build --platform iOS XCGLogger;
   fi
 - if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
-    carthage build --platform iOS KIF
+    carthage build --platform iOS KIF;
   fi
 - if [ ! -d "Carthage/Build/iOS/CwlPreconditionTesting.framework" ]; then
-    carthage build --platform iOS CwlPreconditionTesting
+    carthage build --platform iOS CwlPreconditionTesting;
   fi
 - date
 script:
