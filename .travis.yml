@@ -1,5 +1,8 @@
 language: objective-c
 osx_image: xcode8.2
+cache:
+  directories:
+    - Carthage
 before_script:
 - security create-keychain -p travis ios-build.keychain
 - security default-keychain -s ios-build.keychain
@@ -13,14 +16,30 @@ before_script:
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - date
 - carthage version
-- carthage checkout --no-use-binaries
-- carthage checkout realm-cocoa
-- travis_wait 30 carthage build --platform iOS PromiseKit
-- travis_wait 30 carthage build --platform iOS KeychainAccess
-- travis_wait 30 carthage build --platform iOS ObjectMapper
-- travis_wait 30 carthage build --platform iOS XCGLogger
-- travis_wait 30 carthage build --platform iOS KIF
-- travis_wait 30 carthage build --platform iOS CwlPreconditionTesting
+- if [ ! -d "Carthage/Checkouts" ]; then
+    carthage checkout --no-use-binaries
+  fi
+- if [ ! -d "Carthage/Build/iOS/Realm.framework" ] || [ ! -d "Carthage/Build/iOS/RealmSwift.framework" ]; then
+    carthage checkout realm-cocoa
+  fi
+- if [ ! -d "Carthage/Build/iOS/PromiseKit.framework" ]; then
+    carthage build --platform iOS PromiseKit
+  fi
+- if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
+    carthage build --platform iOS KeychainAccess
+  fi
+- if [ ! -d "Carthage/Build/iOS/ObjectMapper.framework" ]; then
+    carthage build --platform iOS ObjectMapper
+  fi
+- if [ ! -d "Carthage/Build/iOS/XCGLogger.framework" ]; then
+    carthage build --platform iOS XCGLogger
+  fi
+- if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
+    carthage build --platform iOS KIF
+  fi
+- if [ ! -d "Carthage/Build/iOS/CwlPreconditionTesting.framework" ]; then
+    carthage build --platform iOS CwlPreconditionTesting
+  fi
 - date
 script:
 - travis_retry make test
