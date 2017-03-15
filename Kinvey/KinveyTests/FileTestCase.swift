@@ -2042,4 +2042,32 @@ class FileTestCase: StoreTestCase {
         }
     }
     
+    func testToJson() {
+        let file = File()
+        file.publicAccessible = true
+        let acl = Acl()
+        acl.globalRead.value = true
+        acl.globalWrite.value = true
+        acl.writers = ["user-to-write-1", "user-to-write-2"]
+        acl.readers = ["user-to-read-1", "user-to-read-2"]
+        file.acl = acl
+        let json = file.toJSON()
+        XCTAssertEqual(json["_public"] as? Bool, true)
+        XCTAssertTrue(json["_acl"] is [String : Any])
+        if let acl = json["_acl"] as? [String : Any] {
+            XCTAssertEqual(acl["gr"] as? Bool, true)
+            XCTAssertEqual(acl["gw"] as? Bool, true)
+            
+            XCTAssertTrue(acl["r"] is [String])
+            if let readers = acl["r"] as? [String] {
+                XCTAssertEqual(readers, ["user-to-read-1", "user-to-read-2"])
+            }
+            
+            XCTAssertTrue(acl["w"] is [String])
+            if let writers = acl["w"] as? [String] {
+                XCTAssertEqual(writers, ["user-to-write-1", "user-to-write-2"])
+            }
+        }
+    }
+    
 }
