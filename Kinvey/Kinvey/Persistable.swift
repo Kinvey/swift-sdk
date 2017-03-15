@@ -13,7 +13,12 @@ import CoreLocation
 import RealmSwift
 
 public typealias Map = ObjectMapper.Map
+
+public typealias Mappable = ObjectMapper.Mappable
+public typealias StaticMappable = ObjectMapper.StaticMappable
+
 public typealias KinveyOptional = RealmSwift.RealmOptional
+
 infix operator <- : DefaultPrecedence
 
 /// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
@@ -94,6 +99,40 @@ public func <- <Transform: TransformType>(left: inout Transform.Object?, right: 
 public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
+}
+  
+class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictionary]> where T: BaseMappable {
+    
+    init(_ list: List<T>) {
+        super.init(fromJSON: { (array) -> List<T>? in
+            if let array = array {
+                list.removeAll()
+                for item in array {
+                    if let item = T(JSON: item) {
+                        list.append(item)
+                    }
+                }
+                return list
+            }
+            return nil
+        }, toJSON: { (list) -> [JsonDictionary]? in
+            if let list = list {
+                return list.map { $0.toJSON() }
+            }
+            return nil
+        })
+    }
+    
+}
+
+public func <-<T: BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
+    var list = lhs
+    switch rhs.1.mappingType {
+    case .fromJSON:
+        list <- (rhs.1, ListValueTransform<T>(list))
+    case .toJSON:
+        list <- (rhs.1, ListValueTransform<T>(list))
+    }
 }
 
 // MARK: String Value Transform
