@@ -464,10 +464,10 @@ class SyncStoreTests: StoreTestCase {
             ]
         ]
         
+        store.clearCache(query: Query())
+        
         do {
             weak var expectationPull = expectation(description: "Pull")
-            
-            store.clearCache()
             
             store.pull() { results, error in
                 self.assertThread()

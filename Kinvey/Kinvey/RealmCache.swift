@@ -451,6 +451,29 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
+    override func clear(query: Query? = nil) {
+        log.verbose("Clearing cache")
+        executor.executeAndWait {
+            try! self.realm.write {
+                if let query = query {
+                    var results = self.realm.objects(self.entityType)
+                    if let predicate = query.predicate {
+                        results = results.filter(predicate)
+                    }
+                    let ids: [String] = results.map { $0.entityId! }
+                    
+                    var pendingOperations = self.realm.objects(RealmPendingOperation.self)
+                    pendingOperations = pendingOperations.filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
+                    
+                    self.realm.delete(results)
+                    self.realm.delete(pendingOperations)
+                } else {
+                    self.realm.deleteAll()
+                }
+            }
+        }
+    }
+    
 }
 
 extension NSComparisonPredicate {
@@ -550,6 +573,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
     convenience init(request: URLRequest, collectionName: String, objectId: String?) {
         self.init()
+        
         requestId = request.value(forHTTPHeaderField: .requestId)!
         self.collectionName = collectionName
         self.objectId = objectId

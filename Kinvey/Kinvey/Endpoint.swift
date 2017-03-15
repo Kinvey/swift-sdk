@@ -69,22 +69,28 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
         case .appDataByQuery(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
-            if (query.isEmpty()){
+            if query.isEmpty {
                 return URL(string: url)!
             }
             
-            let queryParams = query.queryParams
-            if queryParams.count > 0 {
-                return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+            if let urlQueryItems = query.urlQueryItems,
+                let url = URL(string: url),
+                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            {
+                urlComponents.queryItems = urlQueryItems
+                return urlComponents.url!
             }
             
             return URL(string: url)!
         case .appDataCount(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count").absoluteString
             if let query = query {
-                let queryParams = query.queryParams
-                if queryParams.count > 0 {
-                    return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                if let urlQueryItems = query.urlQueryItems,
+                    let url = URL(string: url),
+                    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                {
+                    urlComponents.queryItems = urlQueryItems
+                    return urlComponents.url!
                 }
             }
             return URL(string: url)!
@@ -99,24 +105,30 @@ internal enum Endpoint {
         case .blobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
             let url = client.apiHostName.appendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
             
-            var queryParams = [String : String]()
+            var urlQueryItems = [URLQueryItem]()
             
             if tls {
-                queryParams["tls"] = "true"
+                let tls = URLQueryItem(name: "tls", value: "true")
+                urlQueryItems.append(tls)
             }
             
             if let ttlInSeconds = ttlInSeconds {
-                queryParams["ttl_in_seconds"] = String(ttlInSeconds)
+                let ttl = URLQueryItem(name: "ttl_in_seconds", value: String(ttlInSeconds))
+                urlQueryItems.append(ttl)
             }
             
-            if let query = query , query.queryParams.count > 0 {
-                for (key, value) in query.queryParams {
-                    queryParams[key] = value
-                }
+            if let query = query,
+                let queryURLQueryItems = query.urlQueryItems
+            {
+                urlQueryItems.append(contentsOf: queryURLQueryItems)
             }
             
-            if queryParams.count > 0 {
-                return URL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+            if urlQueryItems.count > 0,
+                let url = URL(string: url),
+                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            {
+                urlComponents.queryItems = urlQueryItems
+                return urlComponents.url!
             }
             return URL(string: url)!
         case .blobByQuery(let client, let query):
