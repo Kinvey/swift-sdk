@@ -1,5 +1,8 @@
 language: objective-c
 osx_image: xcode8.2
+cache:
+  directories:
+    - Carthage
 before_script:
 - security create-keychain -p travis ios-build.keychain
 - security default-keychain -s ios-build.keychain
@@ -11,16 +14,33 @@ before_script:
   -T /usr/bin/codesign
 - security import ./scripts/certs/dist.p12 -k ~/Library/Keychains/ios-build.keychain
   -P $KEY_PASSWORD -T /usr/bin/codesign
+- "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
 - carthage version
-- carthage checkout --no-use-binaries
-- carthage checkout realm-cocoa
-- travis_wait 30 carthage build --platform iOS PromiseKit
-- travis_wait 30 carthage build --platform iOS KeychainAccess
-- travis_wait 30 carthage build --platform iOS ObjectMapper
-- travis_wait 30 carthage build --platform iOS XCGLogger
-- travis_wait 30 carthage build --platform iOS KIF
-- travis_wait 30 carthage build --platform iOS CwlPreconditionTesting
+- if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
+    carthage checkout --no-use-binaries;
+  fi
+- if [ ! -d "Carthage/Build/iOS/Realm.framework" ] || [ ! -d "Carthage/Build/iOS/RealmSwift.framework" ]; then
+    carthage checkout realm-cocoa;
+  fi
+- if [ ! -d "Carthage/Build/iOS/PromiseKit.framework" ]; then
+    carthage build --platform iOS PromiseKit;
+  fi
+- if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
+    carthage build --platform iOS KeychainAccess;
+  fi
+- if [ ! -d "Carthage/Build/iOS/ObjectMapper.framework" ]; then
+    carthage build --platform iOS ObjectMapper;
+  fi
+- if [ ! -d "Carthage/Build/iOS/XCGLogger.framework" ]; then
+    carthage build --platform iOS XCGLogger;
+  fi
+- if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
+    carthage build --platform iOS KIF;
+  fi
+- if [ ! -d "Carthage/Build/iOS/CwlPreconditionTesting.framework" ]; then
+    carthage build --platform iOS CwlPreconditionTesting;
+  fi
 - date
 script:
 - travis_retry make test
@@ -28,7 +48,7 @@ after_script:
 - date
 - security delete-keychain ios-build.keychain
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash) -J '^Kinvey$'
 env:
   global:
   - secure: a8tGuJggBK0qyY9oOEp1Y0zeA0zTu8safu34t7RNE3IPRj116rIKf1e/y9FxYRKu5BWmc62K8KTM0mPwsPgef7fizleHqPEE6brUJ3hiysNh92gDLHjqHKq6XK3WuMCDTKmgtbdJQbIBGGfAq+xkLCrhDMkm++88p1vmNbR2k2flpvHIV8opnIBsny62pMmgt8prEtsAT5NCVelVSlyRkwiVqvWk+zR9+Wi4jRWr24cv7WBjKgGO/LcxYi/zQEaLK3Ya38TFX29Ky6thNySHpikqDOiAzUwk6byZ05z8GiQ+TJ4P1+nzpKj4ZFg75v0A1wGkssOznuzZeRjl2GOyfqSsdoFflem9mLF97W3h0jUmzI6X3rP050gYgnjklacT9yk36IfsHdr1d6VTsU1Tx/z4yg8fDXTdY5SFIGZ/GReBwmvyVpbaR3yGbyKkaVSRSU8ixW1zq7BGZGSnMj+doKT5231wf1Be8M5PBtorBh/arOynZPOhpxzAFsoRKL9GRSgxuQIzFOdE/u56PfxjDhTCzuJu0F0ynlR6fIX2PWdrhejfvDpWx/dJWr9x85BKL3rGO8JaXAXlbils+CoEY/Pyfs2UoAaV8TGJR12FJbyl70VZ1hq/qimbFJ6z8TF435LrAA1/VO7qkDLgIJeqPnVnmKiPP3qNHBCNZA1vgzY=

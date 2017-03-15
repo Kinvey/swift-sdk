@@ -10,6 +10,26 @@
 import ObjectMapper
 import CoreLocation
 
+protocol PersonDelegate {
+}
+
+@objc
+protocol PersonObjCDelegate {
+}
+
+struct PersonStruct {
+    var test: String
+}
+
+enum PersonEnum {
+    case test
+}
+
+@objc
+enum PersonObjCEnum: Int {
+    case test
+}
+
 class Person: Entity {
     
     dynamic var personId: String?
@@ -17,6 +37,14 @@ class Person: Entity {
     dynamic var age: Int = 0
     dynamic var geolocation: GeoPoint?
     dynamic var address: Address?
+    
+    //testing properties that must be ignored
+    var personDelegate: PersonDelegate?
+    var personObjCDelegate: PersonObjCDelegate?
+    weak var weakPersonObjCDelegate: PersonObjCDelegate?
+    var personStruct: PersonStruct?
+    var personEnum: PersonEnum?
+    var personObjCEnum: PersonObjCEnum?
     
     override class func collectionName() -> String {
         return "Person"

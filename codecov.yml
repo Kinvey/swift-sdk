@@ -1,4 +1,0 @@
-ignore:
-  - "Kinvey/KinveyApp/**/*"
-  - "Kinvey/KinveyTests/**/*"
-  - "Kinvey/KinveySSOApp/**/*"

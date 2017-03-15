@@ -1,4 +1,4 @@
-  //
+//
 //  Persistable.swift
 //  Kinvey
 //
@@ -10,8 +10,10 @@ import Foundation
 import CoreData
 import ObjectMapper
 import CoreLocation
+import RealmSwift
 
 public typealias Map = ObjectMapper.Map
+public typealias KinveyOptional = RealmSwift.RealmOptional
 infix operator <- : DefaultPrecedence
 
 /// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
@@ -164,6 +166,12 @@ public func <- (left: List<IntValue>, right: (String, Map)) {
         left.removeAll()
         left.append(objectsIn: list)
     }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- <T : RealmOptionalType>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
+    kinveyMappingType(left: right.query, right: right.map.currentKey!)
+    left.value <- right.map
 }
 
 // MARK: Float Value Transform
