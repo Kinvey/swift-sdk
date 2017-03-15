@@ -23,7 +23,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"],
             let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
         {
-            Kinvey.sharedClient.initialize(appKey: appKey, appSecret: appSecret)
+            Kinvey.sharedClient.initialize(appKey: appKey, appSecret: appSecret) { user, error in
+                if let user = user {
+                    print("user: \(user)")
+                }
+            }
+        }
+        
+        if #available(iOS 10.0, *) {
+            Kinvey.sharedClient.push.registerForNotifications { (succeed, error) in
+                print("succeed: \(succeed)")
+                if let error = error {
+                    print("error: \(error)")
+                }
+            }
+        } else {
+            Kinvey.sharedClient.push.registerForPush { (succeed, error) in
+                print("succeed: \(succeed)")
+                if let error = error {
+                    print("error: \(error)")
+                }
+            }
         }
         
         return true
