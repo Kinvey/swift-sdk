@@ -1,4 +1,4 @@
-  //
+//
 //  Persistable.swift
 //  Kinvey
 //
@@ -13,8 +13,11 @@ import CoreLocation
 import RealmSwift
 
 public typealias Map = ObjectMapper.Map
+
 public typealias Mappable = ObjectMapper.Mappable
 public typealias StaticMappable = ObjectMapper.StaticMappable
+
+public typealias KinveyOptional = RealmSwift.RealmOptional
 
 infix operator <- : DefaultPrecedence
 
@@ -202,6 +205,12 @@ public func <- (left: List<IntValue>, right: (String, Map)) {
         left.removeAll()
         left.append(objectsIn: list)
     }
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- <T : RealmOptionalType>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
+    kinveyMappingType(left: right.query, right: right.map.currentKey!)
+    left.value <- right.map
 }
 
 // MARK: Float Value Transform

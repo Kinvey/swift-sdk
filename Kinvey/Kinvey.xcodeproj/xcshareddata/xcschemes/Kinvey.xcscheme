@@ -40,6 +40,9 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "PerformanceProductTestCase">
+               </Test>
+               <Test
                   Identifier = "PerformanceTestCase">
                </Test>
             </SkippedTests>
