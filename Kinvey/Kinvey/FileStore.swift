@@ -535,23 +535,17 @@ open class FileStore {
     open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: FileArrayCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
         Promise<[File]> { fulfill, reject in
-            request.execute({ (data, response, error) -> Void in
-                if let response = response , response.isOK,
-                    let jsonArray = self.client.responseParser.parseArray(data)
+            request.execute { (data, response, error) -> Void in
+                if let response = response,
+                    response.isOK,
+                    let jsonArray = self.client.responseParser.parseArray(data),
+                    let files = [File](JSONArray: jsonArray)
                 {
-                    var files: [File] = []
-                    for json in jsonArray {
-                        //let file = File()
-                        //self.fillFile(file, json: json)
-                        if let file = Mapper<File>().map(JSON: json) {
-                            files.append(file)
-                        }
-                    }
                     fulfill(files)
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
-            })
+            }
         }.then { files in
             completionHandler?(files, nil)
         }.catch { error in

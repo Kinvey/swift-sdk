@@ -408,9 +408,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
 
     /// Clear all data for the collection attached to the DataStore.
-    open func clearCache() {
-        cache?.removeAllEntities()
-        sync?.removeAllPendingOperations()
+    open func clearCache(query: Query? = nil) {
+        cache?.clear(query: query)
     }
 
 }
