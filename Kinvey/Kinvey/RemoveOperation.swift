@@ -13,7 +13,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }

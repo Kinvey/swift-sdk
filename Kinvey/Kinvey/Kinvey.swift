@@ -21,8 +21,6 @@ public let PersistableMetadataKey = "_kmd"
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 
-typealias PendingOperationIMP = RealmPendingOperation
-
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient
 

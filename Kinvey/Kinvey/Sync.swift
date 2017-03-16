@@ -10,84 +10,71 @@ import Foundation
 
 internal protocol SyncType {
     
-    associatedtype PendingOperation: PendingOperationType
-    
     var persistenceId: String { get }
     var collectionName: String { get }
     
-    init(persistenceId: String)
+    //Create
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType
     
-    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation
-    func savePendingOperation(_ pendingOperation: PendingOperation
-    )
+    //Read
+    func pendingOperations(_ objectId: String?) -> AnyCollection<PendingOperationType>
     
-    func pendingOperations() -> Results<PendingOperationIMP>
-    func pendingOperations(_ objectId: String?) -> Results<PendingOperationIMP>
+    //Update
+    func savePendingOperation(_ pendingOperation: PendingOperationType)
     
-    func removePendingOperation(_ pendingOperation: PendingOperation)
-    
-    func removeAllPendingOperations()
-    func removeAllPendingOperations(_ objectId: String?)
+    //Delete
+    func removePendingOperation(_ pendingOperation: PendingOperationType)
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?)
     
 }
 
-internal class Sync<T: Persistable>: SyncType where T: NSObject {
+
+internal final class AnySync: SyncType {
     
-    let collectionName: String
-    let persistenceId: String
-    
-    required init(persistenceId: String) {
-        self.collectionName = T.collectionName()
-        self.persistenceId = persistenceId
+    var persistenceId: String {
+        return _getPersistenceId()
     }
     
-    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationIMP {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    var collectionName: String {
+        return _getCollectionName()
     }
     
-    func savePendingOperation(_ pendingOperation: PendingOperationIMP) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    private let _getPersistenceId: () -> String
+    private let _getCollectionName: () -> String
+    private let _createPendingOperation: (URLRequest, String?) -> PendingOperationType
+    private let _pendingOperations: (String?) -> AnyCollection<PendingOperationType>
+    private let _savePendingOperation: (PendingOperationType) -> Void
+    private let _removePendingOperation: (PendingOperationType) -> Void
+    private let _removeAllPendingOperations: (String?, [String]?) -> Void
+    
+    init<Sync: SyncType>(_ sync: Sync) {
+        _getPersistenceId = { return sync.persistenceId }
+        _getCollectionName = { return sync.collectionName }
+        _createPendingOperation = sync.createPendingOperation
+        _pendingOperations = sync.pendingOperations
+        _savePendingOperation = sync.savePendingOperation
+        _removePendingOperation = sync.removePendingOperation
+        _removeAllPendingOperations = sync.removeAllPendingOperations
     }
     
-    func pendingOperations() -> Results<PendingOperationIMP> {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func createPendingOperation(_ request: URLRequest, objectId: String? = nil) -> PendingOperationType {
+        return _createPendingOperation(request, objectId)
     }
     
-    func pendingOperations(_ objectId: String?) -> Results<PendingOperationIMP> {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func pendingOperations(_ objectId: String? = nil) -> AnyCollection<PendingOperationType> {
+        return _pendingOperations(objectId)
     }
     
-    func removePendingOperation(_ pendingOperation: PendingOperationIMP) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func savePendingOperation(_ pendingOperation: PendingOperationType) {
+        _savePendingOperation(pendingOperation)
     }
     
-    func removeAllPendingOperations() {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func removePendingOperation(_ pendingOperation: PendingOperationType) {
+        _removePendingOperation(pendingOperation)
     }
     
-    func removeAllPendingOperations(_ objectId: String?) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
-    }
-    
-    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func removeAllPendingOperations(_ objectId: String? = nil, methods: [String]? = nil) {
+        _removeAllPendingOperations(objectId, methods)
     }
     
 }
