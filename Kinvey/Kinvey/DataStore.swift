@@ -68,7 +68,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     fileprivate let fileURL: URL?
     
     internal let cache: Cache<T>?
-    internal let sync: Sync<T>?
+    internal let sync: AnySync?
     
     fileprivate var deltaSet: Bool
     

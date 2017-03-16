@@ -1264,4 +1264,82 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testSyncMultithread() {
+        if useMockData {
+            var personMockJson: JsonDictionary? = nil
+            mockResponse { (request) -> HttpResponse in
+                switch request.httpMethod?.uppercased() ?? "GET" {
+                case "POST":
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = UUID().uuidString
+                    json[PersistableAclKey] = [
+                        Acl.CreatorKey : self.client.activeUser!.userId
+                    ]
+                    json[PersistableMetadataKey] = [
+                        Metadata.LmtKey : Date().toString(),
+                        Metadata.EctKey : Date().toString()
+                    ]
+                    personMockJson = json
+                    return HttpResponse(statusCode: 201, json: json)
+                case "GET":
+                    XCTAssertNotNil(personMockJson)
+                    return HttpResponse(statusCode: 200, json: [personMockJson!])
+                default:
+                    fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let timerSave = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (timer) in
+            self.store.save(self.newPerson) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                guard timer.isValid else { return }
+                
+                self.store.sync() { count, results, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    guard timer.isValid else { return }
+                }
+            }
+        }
+        
+        weak var expectationSync = expectation(description: "Sync")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            timerSave.invalidate()
+            
+            expectationSync?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSync = nil
+        }
+        
+        do {
+            weak var expectationPurge = expectation(description: "Purge")
+            
+            store.purge { count, error in
+                expectationPurge?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPurge = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+        
+    }
+    
 }

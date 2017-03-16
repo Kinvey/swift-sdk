@@ -12,9 +12,9 @@ internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
     
     internal typealias CompletionHandler = (R, E) -> Void
     
-    let sync: Sync<T>?
+    let sync: AnySync?
     
-    internal init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
+    internal init(sync: AnySync?, cache: Cache<T>?, client: Client) {
         self.sync = sync
         super.init(cache: cache, client: client)
     }

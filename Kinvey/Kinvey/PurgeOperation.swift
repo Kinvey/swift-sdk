@@ -11,7 +11,7 @@ import PromiseKit
 
 internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Error?> where T: NSObject {
     
-    internal override init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
+    internal override init(sync: AnySync?, cache: Cache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
     }
     
