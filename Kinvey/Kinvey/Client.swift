@@ -220,6 +220,13 @@ open class Client: NSObject, NSCoding, Credential {
         self.appSecret = appSecret
         self.accessGroup = accessGroup
         
+        let userDefaults = UserDefaults.standard
+        if let json = userDefaults.dictionary(forKey: appKey) {
+            keychain.user = userType.init(JSON: json)
+            userDefaults.removeObject(forKey: appKey)
+            userDefaults.synchronize()
+        }
+        
         if let user = keychain.user {
             user.client = self
             activeUser = user
