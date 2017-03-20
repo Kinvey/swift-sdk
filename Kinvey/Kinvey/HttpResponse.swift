@@ -31,39 +31,31 @@ struct HttpResponse: Response {
     }
     
     var isOK: Bool {
-        get {
-            return 200 <= response.statusCode && response.statusCode < 300
-        }
+        return 200 <= response.statusCode && response.statusCode < 300
     }
     
     var isNotModified: Bool {
-        get {
-            return response.statusCode == 304
-        }
+        return response.statusCode == 304
     }
     
     var isUnauthorized: Bool {
-        get {
-            return response.statusCode == 401
-        }
+        return response.statusCode == 401
+    }
+    
+    var isForbidden: Bool {
+        return response.statusCode == 403
     }
     
     var isNotFound: Bool {
-        get {
-            return response.statusCode == 404
-        }
+        return response.statusCode == 404
     }
     
     var isMethodNotAllowed: Bool {
-        get {
-            return response.statusCode == 405
-        }
+        return response.statusCode == 405
     }
     
     var etag: String? {
-        get {
-            return response.allHeaderFields["Etag"] as? String
-        }
+        return response.allHeaderFields["Etag"] as? String
     }
 
 }

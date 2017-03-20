@@ -13,6 +13,7 @@ class LocalResponse: Response {
     var isOK = true
     var isUnauthorized = false
     var isNotModified = false
+    var isForbidden = false
     var isNotFound = false
     var isMethodNotAllowed = false
     

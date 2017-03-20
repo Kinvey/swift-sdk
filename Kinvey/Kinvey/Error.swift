@@ -26,6 +26,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when a Data Link endpoint is not found, usually when you are using a Data Link Connector (DLC).
     case dataLinkEntityNotFound(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
+    /// Error when there's a missing configuration in the backend.
+    case missingConfiguration(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
+    
     /// Error when the type is unknow.
     case unknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String)
     
@@ -65,7 +68,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .dataLinkEntityNotFound(_, _, _, let description),
              .unknownError(_, _, let description),
              .unauthorized(_, _, _, let description),
-             .invalidOperation(let description):
+             .invalidOperation(let description),
+             .missingConfiguration(_, _, _, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -97,7 +101,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     public var debugDescription: String {
         switch self {
         case .methodNotAllowed(_, _, let debug, _),
-             .dataLinkEntityNotFound(_, _, let debug, _):
+             .dataLinkEntityNotFound(_, _, let debug, _),
+             .missingConfiguration(_, _, let debug, _):
             return debug
         default:
             return description
@@ -132,7 +137,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .dataLinkEntityNotFound(_, let data, _, _),
              .methodNotAllowed(_, let data, _, _),
              .unauthorized(_, let data, _, _),
-             .invalidResponse(_, let data):
+             .invalidResponse(_, let data),
+             .missingConfiguration(_, let data, _, _):
             return data
         default:
             return nil
