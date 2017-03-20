@@ -1342,4 +1342,23 @@ class SyncStoreTests: StoreTestCase {
         
     }
     
+    func testQueryWithPropertyNotMapped() {
+        let query = Query(format: "propertyNotMapped == %@", 10)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(query) { persons, error in
+            XCTAssertNotNil(persons)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(persons?.count, 0)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }

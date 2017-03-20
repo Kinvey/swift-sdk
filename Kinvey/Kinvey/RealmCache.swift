@@ -237,11 +237,21 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
-    fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
+    fileprivate func results(_ query: Query) -> AnyRandomAccessCollection<Entity> {
         log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
-            realmResults = realmResults.filter(translate(predicate: predicate))
+            if let exception = tryBlock({
+                realmResults = realmResults.filter(self.translate(predicate: predicate))
+            }), let reason = exception.reason
+            {
+                switch exception.name.rawValue {
+                case "Invalid property name":
+                    return AnyRandomAccessCollection([])
+                default:
+                    fatalError(reason)
+                }
+            }
         }
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
@@ -253,7 +263,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
-        return realmResults
+        return AnyRandomAccessCollection(realmResults)
     }
     
     fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
@@ -308,7 +318,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return detachedResults
     }
     
-    func detach(_ results: RealmSwift.Results<Entity>, query: Query?) -> [T] {
+    func detach(_ results: AnyRandomAccessCollection<Entity>, query: Query?) -> [T] {
         var results: [T] = results.map { $0 as! T }
         if let predicate = query?.predicate {
             results = results.filter(predicate: predicate)
@@ -376,7 +386,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         log.verbose("Finding All")
         var results = [T]()
         executor.executeAndWait {
-            results = self.detach(self.realm.objects(self.entityType), query: nil)
+            results = self.detach(AnyRandomAccessCollection(self.realm.objects(self.entityType)), query: nil)
         }
         return results
     }
@@ -386,7 +396,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         var result = 0
         executor.executeAndWait {
             if let query = query {
-                result = self.results(query).count
+                result = Int(self.results(query).count)
             } else {
                 result = self.realm.objects(self.entityType).count
             }
@@ -435,7 +445,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             try! self.realm.write {
                 let results = self.results(query)
-                result = results.count
+                result = Int(results.count)
                 self.realm.delete(results)
             }
         }
