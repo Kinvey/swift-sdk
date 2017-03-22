@@ -374,6 +374,238 @@ class FileTestCase: StoreTestCase {
         }
     }
     
+    func testUploadStream() {
+        signUp()
+        
+        var file = File() {
+            $0.publicAccessible = true
+        }
+        self.file = file
+        let path = caminandes3TrailerURL.path
+        
+        var uploadProgressCount = 0
+        
+        do {
+            if useMockData {
+                var count = 0
+                mockResponse { request in
+                    defer {
+                        count += 1
+                    }
+                    switch count {
+                    case 0:
+                        return HttpResponse(statusCode: 201, json: [
+                            "_public": true,
+                            "_id": "2a37d253-752f-42cd-987e-db319a626077",
+                            "_filename": "a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                            "_acl": [
+                                "creator": "584287c3b1c6f88d1990e1e8"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-03T08:52:19.204Z",
+                                "ect": "2016-12-03T08:52:19.204Z"
+                            ],
+                            "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
+                            "_expiresAt": "2016-12-10T08:52:19.488Z",
+                            "_requiredHeaders": [
+                            ]
+                        ])
+                    case 1:
+                        if let stream = request.httpBodyStream {
+                            stream.open()
+                            defer {
+                                stream.close()
+                            }
+                            let chunkSize = 4096
+                            var buffer = [UInt8](repeating: 0, count: chunkSize)
+                            var data = Data()
+                            while stream.hasBytesAvailable {
+                                let read = stream.read(&buffer, maxLength: chunkSize)
+                                data.append(buffer, count: read)
+                                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.0001))
+                            }
+                            RunLoop.current.run(until: Date(timeIntervalSinceNow: 3))
+                        }
+                        return HttpResponse(json: [
+                            "kind": "storage#object",
+                            "id": "0b5b1cd673164e3185a2e75e815f5cfe/2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa/1480755141849000",
+                            "selfLink": "https://www.googleapis.com/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                            "name": "2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                            "bucket": "0b5b1cd673164e3185a2e75e815f5cfe",
+                            "generation": "1480755141849000",
+                            "metageneration": "1",
+                            "contentType": "application/octet-stream",
+                            "timeCreated": "2016-12-03T08:52:21.841Z",
+                            "updated": "2016-12-03T08:52:21.841Z",
+                            "storageClass": "STANDARD",
+                            "timeStorageClassUpdated": "2016-12-03T08:52:21.841Z",
+                            "size": "10899706",
+                            "md5Hash": "HBplIh4F9FaBs7owRk25KA==",
+                            "mediaLink": "https://www.googleapis.com/download/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa?generation=1480755141849000&alt=media",
+                            "cacheControl": "private, max-age=0, no-transform",
+                            "acl": [
+                                [
+                                    "kind": "storage#objectAccessControl",
+                                    "id": "0b5b1cd673164e3185a2e75e815f5cfe/2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa/1480755141849000/user-00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f",
+                                    "selfLink": "https://www.googleapis.com/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa/acl/user-00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f",
+                                    "bucket": "0b5b1cd673164e3185a2e75e815f5cfe",
+                                    "object": "2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                                    "generation": "1480755141849000",
+                                    "entity": "user-00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f",
+                                    "role": "OWNER",
+                                    "entityId": "00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f",
+                                    "etag": "CKjf6uHS19ACEAE="
+                                ],
+                                [
+                                    "kind": "storage#objectAccessControl",
+                                    "id": "0b5b1cd673164e3185a2e75e815f5cfe/2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa/1480755141849000/allUsers",
+                                    "selfLink": "https://www.googleapis.com/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa/acl/allUsers",
+                                    "bucket": "0b5b1cd673164e3185a2e75e815f5cfe",
+                                    "object": "2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                                    "generation": "1480755141849000",
+                                    "entity": "allUsers",
+                                    "role": "READER",
+                                    "etag": "CKjf6uHS19ACEAE="
+                                ]
+                            ],
+                            "owner": [
+                                "entity": "user-00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f",
+                                "entityId": "00b4903a97d32a07d52ec70a8d0394967758e899886e3a64b82d01f2900a448f"
+                            ],
+                            "crc32c": "19icMQ==",
+                            "etag": "CKjf6uHS19ACEAE="
+                        ])
+                    case 2:
+                        return HttpResponse(json: [
+                            "_id": "2a37d253-752f-42cd-987e-db319a626077",
+                            "_public": true,
+                            "_filename": "a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                            "_acl": [
+                                "creator": "584287c3b1c6f88d1990e1e8"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-03T08:52:19.204Z",
+                                "ect": "2016-12-03T08:52:19.204Z"
+                            ],
+                            "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/f85b3eb0-fc22-4147-ae51-19bb201edfdf/0cab2b78-3142-4c10-987a-e837d1a9e269"
+                        ])
+                    default:
+                        fatalError()
+                    }
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationUpload = expectation(description: "Upload")
+            
+            let memoryBefore = reportMemory()
+            XCTAssertNotNil(memoryBefore)
+            
+            let inputStream = InputStream(fileAtPath: path)!
+            let request = fileStore.upload(file, stream: inputStream) { (uploadedFile, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                file = uploadedFile!
+                
+                XCTAssertNil(file.path)
+                XCTAssertNotNil(file.download)
+                XCTAssertNotNil(file.downloadURL)
+                
+                let memoryNow = self.reportMemory()
+                XCTAssertNotNil(memoryNow)
+                if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
+                    let diff = memoryNow - memoryBefore
+                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                }
+                
+                expectationUpload?.fulfill()
+            }
+            
+            var uploadProgressSent: Int64? = nil
+            var uploadProgressTotal: Int64? = nil
+            request.progress = {
+                XCTAssertTrue(Thread.isMainThread)
+                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
+                    //upload finished
+                } else {
+                    if uploadProgressCount == 0 {
+                        uploadProgressSent = $0.countOfBytesSent
+                        uploadProgressTotal = $0.countOfBytesExpectedToSend
+                    } else {
+                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
+                        XCTAssertGreaterThanOrEqual($0.countOfBytesSent, uploadProgressSent!)
+                        uploadProgressSent = $0.countOfBytesSent
+                    }
+                    uploadProgressCount += 1
+                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
+                }
+            }
+            
+            let memoryNow = reportMemory()
+            XCTAssertNotNil(memoryNow)
+            if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
+                let diff = memoryNow - memoryBefore
+                XCTAssertLessThan(diff, 10899706)
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        if !useMockData {
+            XCTAssertGreaterThan(uploadProgressCount, 0)
+        }
+        
+        XCTAssertNotNil(file.fileId)
+        
+        if let _ = file.fileId {
+            weak var expectationDownload = expectation(description: "Download")
+            
+            let request = fileStore.download(file) { (file, data: Data?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(data)
+                XCTAssertNil(error)
+                
+                if let data = data {
+                    XCTAssertEqual(data.count, 8578265)
+                }
+                
+                expectationDownload?.fulfill()
+            }
+            
+            var downloadProgressCount = 0
+            var downloadProgressSent: Int64? = nil
+            var downloadProgressTotal: Int64? = nil
+            request.progress = {
+                XCTAssertTrue(Thread.isMainThread)
+                if downloadProgressCount == 0 {
+                    downloadProgressSent = $0.countOfBytesReceived
+                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
+                } else {
+                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
+                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
+                    downloadProgressSent = $0.countOfBytesReceived
+                }
+                downloadProgressCount += 1
+                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationDownload = nil
+            }
+            
+            XCTAssertGreaterThan(downloadProgressCount, 0)
+        }
+    }
+    
     func testUploadUIImagePNG() {
         signUp()
         
@@ -491,7 +723,7 @@ class FileTestCase: StoreTestCase {
                                 "lmt": "2016-12-03T08:52:19.204Z",
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
-                            "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/b37e8f0e-7a41-4b97-a5fa-986a5f328c39/videoplayback.png"
+                            "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/429fb893-4bb2-4651-b907-a42145c31015/videoplayback.png"
                         ])
                     default:
                         fatalError()
