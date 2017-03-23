@@ -230,7 +230,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             log.error("Object Id is missing")
             throw Error.objectIdMissing
         }
-        return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
+        return remove(byId: id, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a list of records.
@@ -242,12 +242,18 @@ open class DataStore<T: Persistable> where T: NSObject {
                 ids.append(id)
             }
         }
-        return removeById(ids, writePolicy:writePolicy, completionHandler: completionHandler)
+        return remove(byIds: ids, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a record using the `_id` of the record.
     @discardableResult
+    @available(*, deprecated: 3.4.0, message: "Please use `remove(byId:)` instead")
     open func removeById(_ id: String, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
+        return remove(byId: id, writePolicy: writePolicy, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
+    open func remove(byId id: String, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         validate(id: id)
 
         let writePolicy = writePolicy ?? self.writePolicy
@@ -258,7 +264,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes a list of records using the `_id` of the records.
     @discardableResult
+    @available(*, deprecated: 3.4.0, message: "Please use `remove(byIds:)` instead")
     open func removeById(_ ids: [String], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
+        return remove(byIds: ids, writePolicy: writePolicy, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
+    open func remove(byIds ids: [String], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         if ids.isEmpty {
             let message = "ids cannot be an empty array"
             log.severe(message)

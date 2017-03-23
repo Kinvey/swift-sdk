@@ -30,21 +30,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        if #available(iOS 10.0, *) {
-            Kinvey.sharedClient.push.registerForNotifications { (succeed, error) in
-                print("succeed: \(succeed)")
-                if let error = error {
-                    print("error: \(error)")
-                }
-            }
-        } else {
-            Kinvey.sharedClient.push.registerForPush { (succeed, error) in
-                print("succeed: \(succeed)")
-                if let error = error {
-                    print("error: \(error)")
-                }
-            }
-        }
+//        if #available(iOS 10.0, *) {
+//            Kinvey.sharedClient.push.registerForNotifications { (succeed, error) in
+//                print("succeed: \(succeed)")
+//                if let error = error {
+//                    print("error: \(error)")
+//                }
+//            }
+//        } else {
+//            Kinvey.sharedClient.push.registerForPush { (succeed, error) in
+//                print("succeed: \(succeed)")
+//                if let error = error {
+//                    print("error: \(error)")
+//                }
+//            }
+//        }
         
         return true
     }

@@ -112,7 +112,7 @@ public final class Query: NSObject, BuilderType, Mappable {
                 return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
             }
             
-            return nil
+            return "{}"
         }
     }
     

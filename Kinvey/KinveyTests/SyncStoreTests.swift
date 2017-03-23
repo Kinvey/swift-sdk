@@ -1339,7 +1339,255 @@ class SyncStoreTests: StoreTestCase {
         }
         
         XCTAssertEqual(store.syncCount(), 0)
+    }
+    
+    func testPushMultithread() {
+        XCTAssertEqual(store.syncCount(), 0)
         
+        var personsArray = [Person]()
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 1"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 1")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 2"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 2")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 3"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 3")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        do {
+            personsArray[0].name = "\(personsArray[0].name!) (Renamed)"
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(personsArray[0]) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray[0] = person
+                    XCTAssertEqual(person.name, "Person 1 (Renamed)")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        do {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(byId: personsArray[2].personId!) { (count, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 1)
+                if count == 1 {
+                    personsArray.remove(at: 2)
+                }
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 2)
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 3"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 3")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        do {
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 3)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPush = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        defer {
+            do {
+                weak var expectationRemove = expectation(description: "Remove")
+                
+                store.removeAll() { (count, error) -> Void in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNil(error)
+                    
+                    XCTAssertEqual(count, 3)
+                    
+                    expectationRemove?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationRemove = nil
+                }
+            }
+            
+            XCTAssertEqual(store.syncCount(), 1)
+            
+            do {
+                weak var expectationPush = expectation(description: "Push")
+                
+                store.push() { (count, error) -> Void in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNil(error)
+                    
+                    XCTAssertEqual(count, 3)
+                    
+                    expectationPush?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationPush = nil
+                }
+            }
+            
+            XCTAssertEqual(store.syncCount(), 0)
+        }
+        
+        do {
+            let query = Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, readPolicy: .forceNetwork) { (persons, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons[0].name, "Person 1 (Renamed)")
+                    XCTAssertEqual(persons[0].name, personsArray[0].name)
+                    XCTAssertNotEqual(persons[0].personId, personsArray[0].personId)
+                    
+                    XCTAssertEqual(persons[1].name, "Person 2")
+                    XCTAssertEqual(persons[1].name, personsArray[1].name)
+                    XCTAssertNotEqual(persons[1].personId, personsArray[1].personId)
+                    
+                    XCTAssertEqual(persons[2].name, "Person 3")
+                    XCTAssertEqual(persons[2].name, personsArray[2].name)
+                    XCTAssertNotEqual(persons[2].personId, personsArray[2].personId)
+                    
+                    personsArray.removeAll()
+                    personsArray.append(contentsOf: persons)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
     }
     
 }
