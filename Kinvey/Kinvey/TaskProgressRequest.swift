@@ -125,7 +125,7 @@ class TaskProgressRequest: NSObject {
         {
             let progressStatus = ProgressStatus(task)
             if (progressStatus.countOfBytesSent == progressStatus.countOfBytesExpectedToSend && progressStatus.countOfBytesReceived >= 0 && progressStatus.countOfBytesExpectedToReceive != 0) ||
-                (progressStatus.countOfBytesSent >= 0 && progressStatus.countOfBytesExpectedToSend > 0)
+                (progressStatus.countOfBytesSent >= 0 && (progressStatus.countOfBytesExpectedToSend > 0 || progressStatus.countOfBytesExpectedToSend == -1))
             {
                 DispatchQueue.main.async {
                     if self.lastProgressStatus == nil || (self.lastProgressStatus!) != progressStatus {
