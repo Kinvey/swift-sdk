@@ -477,7 +477,7 @@ class SyncStoreTests: StoreTestCase {
                 if let results = results {
                     XCTAssertEqual(results.count, 3)
                     
-                    let cacheCount = Int((self.store.cache?.count())!)
+                    let cacheCount = Int((self.store.cache?.count(query: nil))!)
                     XCTAssertEqual(cacheCount, results.count)
 
                 }
@@ -505,7 +505,7 @@ class SyncStoreTests: StoreTestCase {
                 if let results = results {
                     XCTAssertEqual(results.count, 1)
                     
-                    let cacheCount = Int((self.store.cache?.count())!)
+                    let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertEqual(cacheCount, results.count)
                     
                     if let person = results.first {
@@ -617,7 +617,7 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.first {
                         XCTAssertEqual(person.personId, "Victor")
                         
-                        let cacheCount = Int((self.store.cache?.count())!)
+                        let cacheCount = self.store.cache?.count(query: nil)
                         XCTAssertEqual(cacheCount, results.count)
 
                     }

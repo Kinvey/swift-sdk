@@ -12,12 +12,12 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
     
     var persistable: T
     
-    init(persistable: inout T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: inout T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    init(persistable: T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
@@ -29,7 +29,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
             
             let persistable = self.fillObject(&self.persistable)
             if let cache = self.cache {
-                cache.saveEntity(persistable)
+                cache.save(entity: persistable)
             }
             
             if let sync = self.sync {
@@ -52,8 +52,8 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
                             sync.removeAllPendingOperations(objectId, methods: ["POST", "PUT"])
                         }
                         if let persistable = persistable, let cache = self.cache {
-                            cache.removeEntity(self.persistable)
-                            cache.saveEntity(persistable)
+                            cache.remove(entity: self.persistable)
+                            cache.save(entity: persistable)
                         }
                         self.merge(&self.persistable, json: json)
                     }

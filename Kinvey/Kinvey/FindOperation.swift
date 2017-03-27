@@ -27,7 +27,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
         self.resultsHandler = resultsHandler
@@ -39,7 +39,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
-                let json = cache.findEntityByQuery(self.query)
+                let json = cache.find(byQuery: self.query)
                 completionHandler?(json, nil)
             } else {
                 completionHandler?([], nil)
@@ -127,7 +127,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                                 let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                                 self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
                             }
-                            cache.saveEntities(entities)
+                            cache.save(entities: entities)
                         }
                         completionHandler?(entities, nil)
                     } else {
@@ -141,12 +141,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
         return request
     }
     
-    fileprivate func removeCachedRecords<S : Sequence>(_ cache: Cache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {
+    fileprivate func removeCachedRecords<S : Sequence>(_ cache: AnyCache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {
         let refKeys = Set<String>(keys)
         let deleted = deleted.subtracting(refKeys)
         if deleted.count > 0 {
             let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted as AnyObject)
-            cache.removeEntitiesByQuery(query)
+            cache.remove(byQuery: query)
         }
     }
     

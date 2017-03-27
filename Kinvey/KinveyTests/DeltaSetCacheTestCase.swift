@@ -52,21 +52,21 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.personId = "update"
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
-            cache.saveEntity(person)
+            cache.save(entity: person)
         }
         do {
             let person = Person()
             person.personId = "noChange"
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
-            cache.saveEntity(person)
+            cache.save(entity: person)
         }
         do {
             let person = Person()
             person.personId = "delete"
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
-            cache.saveEntity(person)
+            cache.save(entity: person)
         }
-        let operation = Operation(cache: cache, client: client)
+        let operation = Operation(cache: AnyCache(cache), client: client)
         let query = Query()
         let refObjs: [JsonDictionary] = [
             [

@@ -427,10 +427,8 @@ class KinveyTestCase: XCTestCase {
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
         let store = DataStore<T>.collection()
-        if let cache = store.cache as? RealmCache {
-            try! cache.realm.write {
-                cache.realm.deleteAll()
-            }
+        if let cache = store.cache {
+            cache.clear(query: nil)
         }
     }
     

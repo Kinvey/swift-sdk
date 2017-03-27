@@ -67,7 +67,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     fileprivate let fileURL: URL?
     
-    internal let cache: Cache<T>?
+    internal let cache: AnyCache<T>?
     internal let sync: AnySync?
     
     fileprivate var deltaSet: Bool
@@ -202,6 +202,98 @@ open class DataStore<T: Persistable> where T: NSObject {
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = CountOperation<T>(query: query, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
+        return request
+    }
+    
+    @discardableResult
+    open func group(keys: [String]? = nil, initialObject: JsonDictionary, reduceJSFunction: String, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationCustomResult<T>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let keys = keys ?? []
+        let aggregation: Aggregation = .custom(keys: keys, initialObject: initialObject, reduceJSFunction: reduceJSFunction)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationCustomResult<T>(value: T(JSON: $0)!, custom: $0)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func group<Count: CountType>(count keys: [String], countType: Count.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping
+        ([AggregationCountResult<T, Count>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let aggregation: Aggregation = .count(keys: keys)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationCountResult<T, Count>(value: T(JSON: $0)!, count: $0[aggregation.resultKey] as! Count)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func group<Sum: AddableType>(keys: [String], sum: String, sumType: Sum.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationSumResult<T, Sum>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let aggregation: Aggregation = .sum(keys: keys, sum: sum)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationSumResult<T, Sum>(value: T(JSON: $0)!, sum: $0[aggregation.resultKey] as! Sum)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func group<Avg: AddableType>(keys: [String], avg: String, avgType: Avg.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationAvgResult<T, Avg>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let aggregation: Aggregation = .avg(keys: keys, avg: avg)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationAvgResult<T, Avg>(value: T(JSON: $0)!, avg: $0[aggregation.resultKey] as! Avg)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func group<Min: MinMaxType>(keys: [String], min: String, minType: Min.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationMinResult<T, Min>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let aggregation: Aggregation = .min(keys: keys, min: min)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationMinResult<T, Min>(value: T(JSON: $0)!, min: $0[aggregation.resultKey] as! Min)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func group<Max: MinMaxType>(keys: [String], max: String, maxType: Max.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationMaxResult<T, Max>]?, Swift.Error?) -> Void) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let aggregation: Aggregation = .max(keys: keys, max: max)
+        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute { results, error in
+            let array = results?.map {
+                return AggregationMaxResult<T, Max>(value: T(JSON: $0)!, max: $0[aggregation.resultKey] as! Max)
+            }
+            let completionHandler = self.dispatchAsyncMainQueue(completionHandler)
+            completionHandler?(array, error)
+        }
         return request
     }
     
