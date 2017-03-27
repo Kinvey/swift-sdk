@@ -43,9 +43,6 @@ fileprivate class PushRequest: NSObject, Request {
     
     func addOperation(operation: Foundation.Operation) {
         dispatchSerialQueue.sync {
-            for dependencyOperation in self.completionOperation.dependencies {
-                operation.addDependency(dependencyOperation)
-            }
             self.completionOperation.addDependency(operation)
         }
     }

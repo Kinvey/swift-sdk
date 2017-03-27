@@ -56,6 +56,12 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         log.verbose("Saving pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
+                if !pendingOperation.collectionName.isEmpty,
+                    let objectId = pendingOperation.objectId
+                {
+                    let previousPendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId == %@", pendingOperation.collectionName, objectId)
+                    self.realm.delete(previousPendingOperations)
+                }
                 self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: true)
             }
         }

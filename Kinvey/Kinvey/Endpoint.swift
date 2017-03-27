@@ -22,7 +22,7 @@ internal enum Endpoint {
     
     case appData(client: Client, collectionName: String)
     case appDataById(client: Client, collectionName: String, id: String)
-    case appDataByQuery(client: Client, collectionName: String, query: Query)
+    case appDataByQuery(client: Client, collectionName: String, query: Query?)
     case appDataCount(client: Client, collectionName: String, query: Query?)
     
     case pushRegisterDevice(client: Client)
@@ -69,7 +69,7 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
         case .appDataByQuery(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
-            if query.isEmpty {
+            guard let query = query else {
                 return URL(string: url)!
             }
             
