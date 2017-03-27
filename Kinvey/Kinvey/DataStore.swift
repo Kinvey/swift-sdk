@@ -252,6 +252,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         return remove(byId: id, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a record using the `_id` of the record.
     @discardableResult
     open func remove(byId id: String, writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         validate(id: id)
@@ -269,6 +270,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         return remove(byIds: ids, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a list of records using the `_id` of the records.
     @discardableResult
     open func remove(byIds ids: [String], writePolicy: WritePolicy? = nil, completionHandler: IntCompletionHandler?) -> Request {
         if ids.isEmpty {
