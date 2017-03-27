@@ -172,13 +172,15 @@ open class Push {
     /// Unregister the current device to receive push notifications.
     open func unRegisterDeviceToken(_ completionHandler: BoolCompletionHandler? = nil) {
         guard let deviceToken = deviceToken else {
+            log.error("Device token not found")
             fatalError("Device token not found")
         }
         
         Promise<Bool> { fulfill, reject in
             let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(deviceToken)
             request.execute({ (data, response, error) -> Void in
-                if let response = response , response.isOK {
+                if let response = response, response.isOK {
+                    self.deviceToken = nil
                     fulfill(true)
                 } else {
                     reject(buildError(data, response, error, self.client))
