@@ -13,3 +13,13 @@ FOUNDATION_EXPORT double KinveyVersionNumber;
 
 //! Project version string for Kinvey.
 FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
+
+NS_INLINE NSException * _Nullable tryBlock(void(^_Nonnull tryBlock)(void)) {
+    @try {
+        tryBlock();
+    }
+    @catch (NSException *exception) {
+        return exception;
+    }
+    return nil;
+}
