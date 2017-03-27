@@ -12,6 +12,8 @@
 		5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9981DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57089DD61D5CE80D00A36035 /* PullOperation.swift */; };
+		570BD2FD1E845E7A000341C9 /* AggregateOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */; };
+		5711E1221E979EEF003351F0 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
 		57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
@@ -229,7 +231,6 @@
 		57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57D643411CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		57D643421CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
-		57D643481CAB3C8A00F6D16E /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
 		57DB87E81C62B0F6002BA684 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* Data.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
@@ -551,6 +552,7 @@
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
+		570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AggregateOperation.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKinveyBackend.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
@@ -926,6 +928,7 @@
 				574B0FA61C729EAF00CDC48F /* GetOperation.swift */,
 				574B0FA81C729EB900CDC48F /* FindOperation.swift */,
 				57F91C281D6E2C020012850A /* CountOperation.swift */,
+				570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */,
 				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
 				57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */,
 				574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */,
@@ -2057,6 +2060,7 @@
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
+				570BD2FD1E845E7A000341C9 /* AggregateOperation.swift in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				57557FE61D185BC3001D991C /* RealmResultsArray.swift in Sources */,
@@ -2075,7 +2079,6 @@
 				57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */,
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
 				57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */,
-				57D643481CAB3C8A00F6D16E /* MemoryCache.swift in Sources */,
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
@@ -2139,6 +2142,7 @@
 				5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */,
+				5711E1221E979EEF003351F0 /* MemoryCache.swift in Sources */,
 				576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */,
 				57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */,
 				57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */,

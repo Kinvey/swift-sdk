@@ -12,7 +12,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client) {
+    init(id: String, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client) {
         self.id = id
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
@@ -20,7 +20,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let persistable = self.cache?.findEntity(self.id)
+            let persistable = self.cache?.find(byId: self.id)
             completionHandler?(persistable, nil)
         }
         return request
@@ -32,7 +32,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
             if let response = response , response.isOK, let json = self.client.responseParser.parse(data) {
                 let obj = T(JSON: json)
                 if let obj = obj, let cache = self.cache {
-                    cache.saveEntity(obj)
+                    cache.save(entity: obj)
                 }
                 completionHandler?(obj, nil)
             } else {

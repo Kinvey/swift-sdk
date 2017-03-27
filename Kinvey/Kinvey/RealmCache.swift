@@ -19,7 +19,9 @@ let typesNeedsPredicateTranslation = [
     BoolValue.self.className()
 ]
 
-internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
+internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
+    
+    typealias `Type` = T
     
     let realm: Realm
     let objectSchema: ObjectSchema
@@ -297,18 +299,18 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
 
     }
     
-    override func detach(_ results: [T], query: Query?) -> [T] {
-        log.verbose("Detaching \(results.count) object(s)")
+    func detach(entities: [T], query: Query?) -> [T] {
+        log.verbose("Detaching \(entities.count) object(s)")
         var detachedResults = [T]()
         let skip = query?.skip ?? 0
-        let limit = query?.limit ?? results.count
+        let limit = query?.limit ?? entities.count
         var arrayEnumerate: [T]
-        if skip != 0 || limit != results.count {
-            let begin = max(min(skip, results.count), 0)
-            let end = max(min(skip + limit, results.count), 0)
-            arrayEnumerate = Array<T>(results[begin ..< end])
+        if skip != 0 || limit != entities.count {
+            let begin = max(min(skip, entities.count), 0)
+            let end = max(min(skip + limit, entities.count), 0)
+            arrayEnumerate = Array<T>(entities[begin ..< end])
         } else {
-            arrayEnumerate = results
+            arrayEnumerate = entities
         }
         for entity in arrayEnumerate {
             if let entity = entity as? Object {
@@ -323,10 +325,10 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         if let predicate = query?.predicate {
             results = results.filter(predicate: predicate)
         }
-        return detach(results, query: query)
+        return detach(entities: results, query: query)
     }
     
-    override func saveEntity(_ entity: T) {
+    func save(entity: T) {
         log.verbose("Saving object: \(entity)")
         executor.executeAndWait {
             try! self.realm.write {
@@ -335,7 +337,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
-    override func saveEntities(_ entities: [T]) {
+    func save(entities: [T]) {
         log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
             try! self.realm.write {
@@ -346,7 +348,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
-    override func findEntity(_ objectId: String) -> T? {
+    func find(byId objectId: String) -> T? {
         log.verbose("Finding object by ID: \(objectId)")
         var result: T?
         executor.executeAndWait {
@@ -360,7 +362,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func findEntityByQuery(_ query: Query) -> [T] {
+    func find(byQuery query: Query) -> [T] {
         log.verbose("Finding objects by query: \(query)")
         var results = [T]()
         executor.executeAndWait {
@@ -369,7 +371,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return results
     }
     
-    override func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
+    func findIdsLmts(byQuery query: Query) -> [String : String] {
         log.verbose("Finding ids and lmts by query: \(query)")
         var results = [String : String]()
         executor.executeAndWait {
@@ -382,7 +384,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return results
     }
     
-    override func findAll() -> [T] {
+    func findAll() -> [T] {
         log.verbose("Finding All")
         var results = [T]()
         executor.executeAndWait {
@@ -391,7 +393,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return results
     }
     
-    override func count(_ query: Query? = nil) -> Int {
+    func count(query: Query? = nil) -> Int {
         log.verbose("Counting by query: \(String(describing: query))")
         var result = 0
         executor.executeAndWait {
@@ -404,7 +406,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func removeEntity(_ entity: T) -> Bool {
+    func remove(entity: T) -> Bool {
         log.verbose("Removing object: \(entity)")
         var result = false
         if let entityId = entity.entityId {
@@ -422,7 +424,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func removeEntities(_ entities: [T]) -> Bool {
+    func remove(entities: [T]) -> Bool {
         log.verbose("Removing objects: \(entities)")
         var result = false
         executor.executeAndWait {
@@ -439,7 +441,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func removeEntitiesByQuery(_ query: Query) -> Int {
+    func remove(byQuery query: Query) -> Int {
         log.verbose("Removing objects by query: \(query)")
         var result = 0
         executor.executeAndWait {
@@ -452,7 +454,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return result
     }
     
-    override func removeAllEntities() {
+    func removeAll() {
         log.verbose("Removing all objects")
         executor.executeAndWait {
             try! self.realm.write {
@@ -461,7 +463,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
-    override func clear(query: Query? = nil) {
+    func clear(query: Query? = nil) {
         log.verbose("Clearing cache")
         executor.executeAndWait {
             try! self.realm.write {
@@ -482,6 +484,10 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
                 }
             }
         }
+    }
+    
+    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
+        fatalError("Custom Aggregation not supported against local cache")
     }
     
 }
