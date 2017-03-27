@@ -10,6 +10,7 @@ import Foundation
 
 internal protocol PendingOperationType {
     
+    var collectionName: String { get }
     var objectId: String? { get }
     
     func buildRequest() -> URLRequest

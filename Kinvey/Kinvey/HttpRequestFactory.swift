@@ -142,7 +142,7 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildAppDataFindByQuery(collectionName: String, query: Query) -> HttpRequest {
-        let request = HttpRequest(endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
+        let request = HttpRequest(endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query.isEmpty ? nil : query), credential: client.activeUser, client: client)
         return request
     }
     

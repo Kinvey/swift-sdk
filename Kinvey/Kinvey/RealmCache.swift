@@ -624,6 +624,10 @@ class RealmPendingOperationThreadSafeReference: PendingOperationType {
         return realm.resolve(self.reference)!
     }()
     
+    var collectionName: String {
+        return realmPendingOperation.collectionName
+    }
+    
     var objectId: String? {
         return realmPendingOperation.objectId
     }

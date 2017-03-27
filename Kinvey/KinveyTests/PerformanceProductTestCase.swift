@@ -170,7 +170,8 @@ class PerformanceProductTestCase: KinveyTestCase {
             }
             
             let checkpoint = Date()
-            productsJsonArray = try! JSONSerialization.jsonObject(with: inputStream) as! [JsonDictionary]
+            let object = try! JSONSerialization.jsonObject(with: inputStream)
+            productsJsonArray = object as! [JsonDictionary]
             print(String(format: "JSON Parse: %3.3f second(s)", -checkpoint.timeIntervalSinceNow))
         }
         
@@ -542,6 +543,55 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         var skip = 0
         let limit = 100
+        
+        measure {
+            for productJson in self.productsJsonArray![skip ..< skip + limit] {
+                let product = Product(JSON: productJson)!
+                
+                weak var expectationSave = self.expectation(description: "Save")
+                
+                store.save(product) { (product, error) in
+                    XCTAssertNotNil(product)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                self.waitForExpectations(timeout: self.defaultTimeout) { (error) in
+                    expectationSave = nil
+                }
+            }
+            
+            skip += limit
+            
+            weak var expectationPush = self.expectation(description: "Push")
+            
+            store.push { (count, errors) in
+                XCTAssertNotNil(count)
+                XCTAssertNil(errors)
+                
+                if let count = count {
+                    XCTAssertGreaterThan(count, UInt(0))
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            self.waitForExpectations(timeout: 60 * 5) { (error) in
+                expectationPush = nil
+            }
+        }
+    }
+    
+    func testPerformancePush_1000() {
+        XCTAssertNotNil(client.activeUser)
+        
+        loadMockData()
+        
+        let store = DataStore<Product>.collection(.sync)
+        
+        var skip = 0
+        let limit = 1000
         
         measure {
             for productJson in self.productsJsonArray![skip ..< skip + limit] {
