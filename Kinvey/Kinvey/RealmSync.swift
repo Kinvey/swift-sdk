@@ -68,7 +68,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func pendingOperations(_ objectId: String?) -> AnyCollection<PendingOperationType> {
-        log.verbose("Fetching pending operations by object id: \(objectId)")
+        log.verbose("Fetching pending operations by object id: \(String(describing: objectId))")
         var results: [PendingOperationType]?
         executor.executeAndWait {
             var realmResults = self.realm.objects(RealmPendingOperation.self)
@@ -93,7 +93,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        log.verbose("Removing pending operations by object id: \(objectId)")
+        log.verbose("Removing pending operations by object id: \(String(describing: objectId))")
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self)

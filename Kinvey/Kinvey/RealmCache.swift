@@ -392,7 +392,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
     }
     
     override func count(_ query: Query? = nil) -> Int {
-        log.verbose("Counting by query: \(query)")
+        log.verbose("Counting by query: \(String(describing: query))")
         var result = 0
         executor.executeAndWait {
             if let query = query {

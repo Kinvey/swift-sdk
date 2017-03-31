@@ -682,7 +682,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(results)
             XCTAssertNotNil(error)
             
-            if let error = error as? NSError {
+            if let error = error as? NSError? {
                 XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
@@ -1215,6 +1215,11 @@ class SyncStoreTests: StoreTestCase {
                 let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
                 let skip = Int(urlComponents.queryItems!.filter { $0.name == "skip" }.first!.value!)!
                 let limt = Int(urlComponents.queryItems!.filter { $0.name == "limit" }.first!.value!)!
+                let mockObjects = mockObjects.sorted(by: { (obj1, obj2) -> Bool in
+                    let name1 = obj1["name"] as! String
+                    let name2 = obj2["name"] as! String
+                    return name1 < name2
+                })
                 let filteredObjects = [JsonDictionary](mockObjects[skip ..< skip + limit])
                 return HttpResponse(json: filteredObjects)
             }
@@ -1492,7 +1497,31 @@ class SyncStoreTests: StoreTestCase {
         
         XCTAssertEqual(store.syncCount(), 3)
         
+        var mockResponses = [JsonDictionary]()
+        
         do {
+            if useMockData {
+                mockResponse { (request) -> HttpResponse in
+                    XCTAssertEqual(request.httpMethod, "POST")
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json["_id"] = UUID().uuidString
+                    json["_acl"] = [
+                        "creator" : self.client.activeUser!.userId
+                    ]
+                    json["_kmd"] = [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                    mockResponses.append(json)
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationPush = expectation(description: "Push")
             
             store.push() { (count, error) -> Void in
@@ -1516,7 +1545,9 @@ class SyncStoreTests: StoreTestCase {
             do {
                 weak var expectationRemove = expectation(description: "Remove")
                 
-                store.removeAll() { (count, error) -> Void in
+                let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+                
+                store.remove(query) { (count, error) -> Void in
                     XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(count)
                     XCTAssertNil(error)
@@ -1534,6 +1565,15 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertEqual(store.syncCount(), 1)
             
             do {
+                if useMockData {
+                    mockResponse(json: ["count" : 3])
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
                 weak var expectationPush = expectation(description: "Push")
                 
                 store.push() { (count, error) -> Void in
@@ -1555,7 +1595,20 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let query = Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
+            if useMockData {
+                mockResponse(json: mockResponses.sorted(by: { (obj1, obj2) -> Bool in
+                    let name1 = obj1["name"] as! String
+                    let name2 = obj2["name"] as! String
+                    return name1 < name2
+                }))
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let query = Query(predicate: NSPredicate(format: "acl.creator == %@", client.activeUser!.userId), sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
             
             weak var expectationFind = expectation(description: "Find")
             
