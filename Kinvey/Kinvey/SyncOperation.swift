@@ -19,10 +19,4 @@ internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
         super.init(cache: cache, client: client)
     }
     
-    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
-    }
-    
 }

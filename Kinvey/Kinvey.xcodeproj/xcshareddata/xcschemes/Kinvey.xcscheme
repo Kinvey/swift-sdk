@@ -117,6 +117,26 @@
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FC11E8DE53900C2B280"
+               BuildableName = "PushMissingConfiguration.xctest"
+               BlueprintName = "PushMissingConfiguration"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FF81E8EC3CB00C2B280"
+               BuildableName = "UserUpgradeFromOldVersion.xctest"
+               BlueprintName = "UserUpgradeFromOldVersion"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

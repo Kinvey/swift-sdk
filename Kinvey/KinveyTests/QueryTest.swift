@@ -189,23 +189,23 @@ class QueryTest: XCTestCase {
     }
     
     func testSortAscending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "sort=\(encodeURL(["name" : 1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "query=%7B%7D&sort=\(encodeURL(["name" : 1]))")
     }
     
     func testSortDescending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "sort=\(encodeURL(["name" : -1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "query=%7B%7D&sort=\(encodeURL(["name" : -1]))")
     }
     
     func testSkip() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "skip=100")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "query=%7B%7D&skip=100")
     }
     
     func testLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "limit=100")
+        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "query=%7B%7D&limit=100")
     }
     
     func testSkipAndLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "skip=100&limit=300")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "query=%7B%7D&skip=100&limit=300")
     }
     
     func testPredicateSortSkipAndLimit() {

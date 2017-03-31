@@ -19,7 +19,7 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
     
     var cancelled: Bool {
         get {
-            return task?.state == .canceling || (task?.error as? NSError)?.code == NSURLErrorCancelled
+            return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
         }
     }
     

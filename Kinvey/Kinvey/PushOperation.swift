@@ -67,7 +67,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         super.init(sync: sync, cache: cache, client: client)
     }
     
-    override func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
+    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         var count = UInt(0)
         var errors: [Swift.Error] = []
         
