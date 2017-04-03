@@ -15,7 +15,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Erro
         super.init(sync: sync, cache: cache, client: client)
     }
     
-    override func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
+    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
         var promises: [Promise<Void>] = []
         if let sync = sync {

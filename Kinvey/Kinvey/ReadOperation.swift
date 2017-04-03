@@ -19,6 +19,26 @@ internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
         super.init(cache: cache, client: client)
     }
     
+}
+
+protocol ReadOperationType {
+    
+    associatedtype SuccessType
+    associatedtype FailureType
+    typealias CompletionHandler = (SuccessType?, FailureType?) -> Void
+    
+    var readPolicy: ReadPolicy { get }
+    
+    @discardableResult
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request
+    
+    @discardableResult
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request
+    
+}
+
+extension ReadOperationType {
+    
     @discardableResult
     func execute(_ completionHandler: CompletionHandler? = nil) -> Request {
         switch readPolicy {
@@ -34,20 +54,6 @@ internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
             }
             return request
         }
-    }
-    
-    @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
-    }
-    
-    @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
     }
     
 }
