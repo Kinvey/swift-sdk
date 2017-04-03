@@ -29,7 +29,7 @@ class FileTestCase: StoreTestCase {
             weak var expectationDownloadVideo = expectation(description: "Download Video")
             weak var expectationDownloadImage = expectation(description: "Download Image")
             
-            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
+            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg&el=info")!
             let request = URLRequest(url: url)
             let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data,

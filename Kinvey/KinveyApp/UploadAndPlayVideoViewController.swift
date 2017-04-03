@@ -51,7 +51,7 @@ class UploadAndPlayVideoViewController: UIViewController, UIImagePickerControlle
             fileStore.upload(file, path: url.path) { file, error in
                 if let file = file {
                     self.file = file
-                    print("File Uploaded: \(file.downloadURL)")
+                    print("File Uploaded: \(String(describing: file.downloadURL))")
                 } else {
                     let alertVC = UIAlertController(title: "Error", message: error?.localizedDescription ?? "Unknow error", preferredStyle: .alert)
                     self.present(alertVC, animated: true)

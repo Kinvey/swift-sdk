@@ -133,7 +133,6 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         fatalError(message)
     }
     
-    @discardableResult
     func removeAllEntities() {
         let message = "Method \(#function) must be overridden"
         log.severe(message)

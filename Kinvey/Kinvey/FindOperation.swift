@@ -11,7 +11,7 @@ import PromiseKit
 
 private let MaxIdsPerQuery = 200
 
-internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error> where T: NSObject {
+internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>, ReadOperationType where T: NSObject {
     
     let query: Query
     let deltaSet: Bool
@@ -35,7 +35,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     }
     
     @discardableResult
-    override func executeLocal(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeLocal(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
@@ -51,7 +51,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
     @discardableResult
-    override func executeNetwork(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeNetwork(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: fields != nil ? Query(query) { $0.fields = fields } : query)
