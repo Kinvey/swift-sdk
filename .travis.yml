@@ -23,11 +23,11 @@ before_script:
 - if [ ! -d "Carthage/Build/iOS/Realm.framework" ] || [ ! -d "Carthage/Build/iOS/RealmSwift.framework" ]; then
     carthage checkout realm-cocoa;
   fi
+- if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
+    carthage checkout KeychainAccess;
+  fi
 - if [ ! -d "Carthage/Build/iOS/PromiseKit.framework" ]; then
     carthage build --platform iOS PromiseKit;
-  fi
-- if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
-    carthage build --platform iOS KeychainAccess;
   fi
 - if [ ! -d "Carthage/Build/iOS/ObjectMapper.framework" ]; then
     carthage build --platform iOS ObjectMapper;

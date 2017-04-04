@@ -10,7 +10,7 @@ clean:
 	rm -Rf Carthage
 	
 checkout-dependencies:
-	carthage checkout --no-use-binaries
+	carthage checkout
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
