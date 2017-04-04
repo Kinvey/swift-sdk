@@ -38,9 +38,6 @@ before_script:
 - if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
     carthage build --platform iOS KIF;
   fi
-- if [ ! -d "Carthage/Build/iOS/CwlPreconditionTesting.framework" ]; then
-    carthage build --platform iOS CwlPreconditionTesting;
-  fi
 - date
 script:
 - travis_retry make test
