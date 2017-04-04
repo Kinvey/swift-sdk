@@ -9,12 +9,15 @@
 import Foundation
 import RealmSwift
 
-class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
+class RealmSync<T: Persistable>: SyncType where T: NSObject {
     
     let realm: Realm
     let objectSchema: ObjectSchema
     let propertyNames: [String]
     let executor: Executor
+    
+    let persistenceId: String
+    lazy var collectionName: String = T.collectionName()
     
     lazy var entityType = T.self as! Entity.Type
     
@@ -35,7 +38,7 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
         executor = Executor()
-        super.init(persistenceId: persistenceId)
+        self.persistenceId = persistenceId
         log.debug("Sync File: \(self.realm.configuration.fileURL!.path)")
     }
 
@@ -45,55 +48,52 @@ class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
         fatalError(message)
     }
     
-    override func createPendingOperation(_ request: URLRequest, objectId: String?) -> RealmPendingOperation {
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType {
         return RealmPendingOperation(request: request, collectionName: T.collectionName(), objectId: objectId)
     }
     
-    override func savePendingOperation(_ pendingOperation: RealmPendingOperation) {
+    func savePendingOperation(_ pendingOperation: PendingOperationType) {
         log.verbose("Saving pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
+                if !pendingOperation.collectionName.isEmpty,
+                    let objectId = pendingOperation.objectId
+                {
+                    let previousPendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId == %@", pendingOperation.collectionName, objectId)
+                    self.realm.delete(previousPendingOperations)
+                }
                 self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: true)
             }
         }
     }
     
-    override func pendingOperations() -> Results<RealmPendingOperation> {
-        return pendingOperations(nil)
-    }
-    
-    override func pendingOperations(_ objectId: String?) -> Results<RealmPendingOperation> {
-        log.verbose("Fetching pending operations by object id: \(objectId)")
-        var results: Results<RealmPendingOperation>?
+    func pendingOperations(_ objectId: String?) -> AnyCollection<PendingOperationType> {
+        log.verbose("Fetching pending operations by object id: \(String(describing: objectId))")
+        var results: [PendingOperationType]?
         executor.executeAndWait {
             var realmResults = self.realm.objects(RealmPendingOperation.self)
             if let objectId = objectId {
                 realmResults = realmResults.filter("objectId == %@", objectId)
             }
-            results = Results(realmResults)
+            results = realmResults.map {
+                return RealmPendingOperationThreadSafeReference($0)
+            }
         }
-        return results!
+        return AnyCollection(results!)
     }
     
-    override func removePendingOperation(_ pendingOperation: RealmPendingOperation) {
+    func removePendingOperation(_ pendingOperation: PendingOperationType) {
         log.verbose("Removing pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.delete(pendingOperation)
+                let realmPendingOperation = (pendingOperation as! RealmPendingOperationThreadSafeReference).realmPendingOperation
+                self.realm.delete(realmPendingOperation)
             }
         }
     }
     
-    override func removeAllPendingOperations() {
-        removeAllPendingOperations(nil, methods: nil)
-    }
-    
-    override func removeAllPendingOperations(_ objectId: String?) {
-        removeAllPendingOperations(objectId, methods: nil)
-    }
-    
-    override func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        log.verbose("Removing pending operations by object id: \(objectId)")
+    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
+        log.verbose("Removing pending operations by object id: \(String(describing: objectId))")
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self)

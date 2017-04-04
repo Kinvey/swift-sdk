@@ -40,6 +40,9 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "PerformanceProductTestCase">
+               </Test>
+               <Test
                   Identifier = "PerformanceTestCase">
                </Test>
             </SkippedTests>
@@ -111,6 +114,26 @@
                BlueprintIdentifier = "578870C61DD52ECF0087FE78"
                BuildableName = "SSOApp2Tests.xctest"
                BlueprintName = "SSOApp2Tests"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FC11E8DE53900C2B280"
+               BuildableName = "PushMissingConfiguration.xctest"
+               BlueprintName = "PushMissingConfiguration"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FF81E8EC3CB00C2B280"
+               BuildableName = "UserUpgradeFromOldVersion.xctest"
+               BlueprintName = "UserUpgradeFromOldVersion"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>

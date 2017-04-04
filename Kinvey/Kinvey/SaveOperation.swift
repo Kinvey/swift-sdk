@@ -12,12 +12,12 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
     
     var persistable: T
     
-    init(persistable: inout T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: inout T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    init(persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }

@@ -464,10 +464,10 @@ class SyncStoreTests: StoreTestCase {
             ]
         ]
         
+        store.clearCache(query: Query())
+        
         do {
             weak var expectationPull = expectation(description: "Pull")
-            
-            store.clearCache()
             
             store.pull() { results, error in
                 self.assertThread()
@@ -682,7 +682,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(results)
             XCTAssertNotNil(error)
             
-            if let error = error as? NSError {
+            if let error = error as? NSError? {
                 XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
@@ -1215,6 +1215,11 @@ class SyncStoreTests: StoreTestCase {
                 let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
                 let skip = Int(urlComponents.queryItems!.filter { $0.name == "skip" }.first!.value!)!
                 let limt = Int(urlComponents.queryItems!.filter { $0.name == "limit" }.first!.value!)!
+                let mockObjects = mockObjects.sorted(by: { (obj1, obj2) -> Bool in
+                    let name1 = obj1["name"] as! String
+                    let name2 = obj2["name"] as! String
+                    return name1 < name2
+                })
                 let filteredObjects = [JsonDictionary](mockObjects[skip ..< skip + limit])
                 return HttpResponse(json: filteredObjects)
             }
@@ -1261,6 +1266,399 @@ class SyncStoreTests: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
+        }
+    }
+    
+    func testSyncMultithread() {
+        if useMockData {
+            var personMockJson: JsonDictionary? = nil
+            mockResponse { (request) -> HttpResponse in
+                switch request.httpMethod?.uppercased() ?? "GET" {
+                case "POST":
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = UUID().uuidString
+                    json[PersistableAclKey] = [
+                        Acl.CreatorKey : self.client.activeUser!.userId
+                    ]
+                    json[PersistableMetadataKey] = [
+                        Metadata.LmtKey : Date().toString(),
+                        Metadata.EctKey : Date().toString()
+                    ]
+                    personMockJson = json
+                    return HttpResponse(statusCode: 201, json: json)
+                case "GET":
+                    XCTAssertNotNil(personMockJson)
+                    return HttpResponse(statusCode: 200, json: [personMockJson!])
+                default:
+                    fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let timerSave = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (timer) in
+            self.store.save(self.newPerson) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                guard timer.isValid else { return }
+                
+                self.store.sync() { count, results, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    guard timer.isValid else { return }
+                }
+            }
+        }
+        
+        weak var expectationSync = expectation(description: "Sync")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            timerSave.invalidate()
+            
+            expectationSync?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSync = nil
+        }
+        
+        do {
+            weak var expectationPurge = expectation(description: "Purge")
+            
+            store.purge { count, error in
+                expectationPurge?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPurge = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+    }
+    
+    func testPushMultithread() {
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        var personsArray = [Person]()
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 1"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 1")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 2"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 2")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 3"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 3")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        do {
+            personsArray[0].name = "\(personsArray[0].name!) (Renamed)"
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(personsArray[0]) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray[0] = person
+                    XCTAssertEqual(person.name, "Person 1 (Renamed)")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        do {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(byId: personsArray[2].personId!) { (count, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 1)
+                if count == 1 {
+                    personsArray.remove(at: 2)
+                }
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 2)
+        
+        do {
+            weak var expectationSave = expectation(description: "Save")
+            
+            let person = Person()
+            person.name = "Person 3"
+            store.save(person) { (person, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    personsArray.append(person)
+                    XCTAssertEqual(person.name, "Person 3")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        var mockResponses = [JsonDictionary]()
+        
+        do {
+            if useMockData {
+                mockResponse { (request) -> HttpResponse in
+                    XCTAssertEqual(request.httpMethod, "POST")
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json["_id"] = UUID().uuidString
+                    json["_acl"] = [
+                        "creator" : self.client.activeUser!.userId
+                    ]
+                    json["_kmd"] = [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                    mockResponses.append(json)
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 3)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPush = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        defer {
+            do {
+                weak var expectationRemove = expectation(description: "Remove")
+                
+                let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+                
+                store.remove(query) { (count, error) -> Void in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNil(error)
+                    
+                    XCTAssertEqual(count, 3)
+                    
+                    expectationRemove?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationRemove = nil
+                }
+            }
+            
+            XCTAssertEqual(store.syncCount(), 1)
+            
+            do {
+                if useMockData {
+                    mockResponse(json: ["count" : 3])
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
+                weak var expectationPush = expectation(description: "Push")
+                
+                store.push() { (count, error) -> Void in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(count)
+                    XCTAssertNil(error)
+                    
+                    XCTAssertEqual(count, 3)
+                    
+                    expectationPush?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationPush = nil
+                }
+            }
+            
+            XCTAssertEqual(store.syncCount(), 0)
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: mockResponses.sorted(by: { (obj1, obj2) -> Bool in
+                    let name1 = obj1["name"] as! String
+                    let name2 = obj2["name"] as! String
+                    return name1 < name2
+                }))
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let query = Query(predicate: NSPredicate(format: "acl.creator == %@", client.activeUser!.userId), sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, readPolicy: .forceNetwork) { (persons, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons[0].name, "Person 1 (Renamed)")
+                    XCTAssertEqual(persons[0].name, personsArray[0].name)
+                    XCTAssertNotEqual(persons[0].personId, personsArray[0].personId)
+                    
+                    XCTAssertEqual(persons[1].name, "Person 2")
+                    XCTAssertEqual(persons[1].name, personsArray[1].name)
+                    XCTAssertNotEqual(persons[1].personId, personsArray[1].personId)
+                    
+                    XCTAssertEqual(persons[2].name, "Person 3")
+                    XCTAssertEqual(persons[2].name, personsArray[2].name)
+                    XCTAssertNotEqual(persons[2].personId, personsArray[2].personId)
+                    
+                    personsArray.removeAll()
+                    personsArray.append(contentsOf: persons)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testQueryWithPropertyNotMapped() {
+        let query = Query(format: "propertyNotMapped == %@", 10)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(query) { persons, error in
+            XCTAssertNotNil(persons)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(persons?.count, 0)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
         }
     }
     

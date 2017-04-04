@@ -21,8 +21,6 @@ public let PersistableMetadataKey = "_kmd"
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 
-typealias PendingOperationIMP = RealmPendingOperation
-
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient
 
@@ -82,10 +80,19 @@ func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ c
         let json = client.responseParser.parse(data) as? [String : String]
     {
         return Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response , response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "MethodNotAllowed" {
+    } else if let response = response, response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "MethodNotAllowed" {
         return Error.buildMethodNotAllowed(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response , response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "DataLinkEntityNotFound" {
+    } else if let response = response, response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "DataLinkEntityNotFound" {
         return Error.buildDataLinkEntityNotFound(httpResponse: response.httpResponse, data: data, json: json)
+    } else if let response = response,
+        response.isForbidden,
+        let json = client.responseParser.parse(data) as? [String : String],
+        let error = json["error"],
+        error == "MissingConfiguration",
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.missingConfiguration(httpResponse: response.httpResponse, data: data, debug: debug, description: description)
     } else if let response = response, let json = client.responseParser.parse(data) {
         return Error.buildUnknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
     } else {

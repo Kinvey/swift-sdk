@@ -12,7 +12,7 @@ import ObjectMapper
 private let lockEncryptionKey = NSLock()
 
 /// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
-open class Client: NSObject, NSCoding, Credential {
+open class Client: Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
     open static let sharedClient = Client()
@@ -126,11 +126,9 @@ open class Client: NSObject, NSCoding, Credential {
     open var micApiVersion: MICApiVersion? = .v1
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
-    public override init() {
+    public init() {
         apiHostName = Client.defaultApiHostName
         authHostName = Client.defaultAuthHostName
-        
-        super.init()
         
         push = Push(client: self)
         networkRequestFactory = HttpRequestFactory(client: self)
@@ -220,6 +218,13 @@ open class Client: NSObject, NSCoding, Credential {
         self.appSecret = appSecret
         self.accessGroup = accessGroup
         
+        let userDefaults = UserDefaults.standard
+        if let json = userDefaults.dictionary(forKey: appKey) {
+            keychain.user = userType.init(JSON: json)
+            userDefaults.removeObject(forKey: appKey)
+            userDefaults.synchronize()
+        }
+        
         if let user = keychain.user {
             user.client = self
             activeUser = user
@@ -259,18 +264,6 @@ open class Client: NSObject, NSCoding, Credential {
     
     internal func fileURL(_ tag: String = defaultTag) -> URL {
         return Client.fileURL(appKey: self.appKey!, tag: tag)
-    }
-    
-    public convenience required init?(coder aDecoder: NSCoder) {
-        guard
-            let appKey = aDecoder.decodeObject(of: NSString.self, forKey: "appKey") as? String,
-            let appSecret = aDecoder.decodeObject(of: NSString.self, forKey: "appSecret") as? String,
-            let apiHostName = aDecoder.decodeObject(of: NSURL.self, forKey: "apiHostName") as? URL,
-            let authHostName = aDecoder.decodeObject(of: NSURL.self, forKey: "authHostName") as? URL
-        else {
-                return nil
-        }
-        self.init(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }
     
     public func encode(with aCoder: NSCoder) {

@@ -12,6 +12,7 @@ import RealmSwift
 import ObjectMapper
 
 public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
+public typealias Object = RealmSwift.Object
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)

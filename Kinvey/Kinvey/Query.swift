@@ -97,8 +97,8 @@ public final class Query: NSObject, BuilderType, Mappable {
         return predicate
     }
     
-    func isEmpty() -> Bool {
-        return self.predicate == nil && self.sortDescriptors == nil
+    var isEmpty: Bool {
+        return predicate == nil && sortDescriptors == nil && skip == nil && limit == nil
     }
     
     fileprivate var queryStringEncoded: String? {
@@ -108,46 +108,48 @@ public final class Query: NSObject, BuilderType, Mappable {
                 let queryObj = translatedPredicate.mongoDBQuery!
                 
                 let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
-                var queryStr = String(data: data, encoding: String.Encoding.utf8)!
-                queryStr = queryStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                let queryStr = String(data: data, encoding: String.Encoding.utf8)!
                 return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
             }
             
-            return nil
+            return "{}"
         }
     }
     
-    internal var queryParams: [String : String] {
-        get {
-            var queryParams = [String : String]()
-            
-            if let queryParam = queryStringEncoded , !queryParam.isEmpty {
-                queryParams["query"] = queryParam
-            }
-            
-            if let sortDescriptors = sortDescriptors {
-                var sorts = [String : Int]()
-                for sortDescriptor in sortDescriptors {
-                    sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
-                }
-                let data = try! JSONSerialization.data(withJSONObject: sorts)
-                queryParams["sort"] = String(data: data, encoding: String.Encoding.utf8)!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-            }
-            
-            if let fields = fields {
-                queryParams["fields"] = fields.joined(separator: ",").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-            }
-            
-            if let skip = skip {
-                queryParams["skip"] = String(skip)
-            }
-            
-            if let limit = limit {
-                queryParams["limit"] = String(limit)
-            }
-            
-            return queryParams
+    internal var urlQueryItems: [URLQueryItem]? {
+        var queryParams = [URLQueryItem]()
+        
+        if let queryParam = queryStringEncoded, !queryParam.isEmpty {
+            let queryItem = URLQueryItem(name: "query", value: queryParam)
+            queryParams.append(queryItem)
         }
+        
+        if let sortDescriptors = sortDescriptors {
+            var sorts = [String : Int]()
+            for sortDescriptor in sortDescriptors {
+                sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
+            }
+            let data = try! JSONSerialization.data(withJSONObject: sorts)
+            let queryItem = URLQueryItem(name: "sort", value: String(data: data, encoding: String.Encoding.utf8)!)
+            queryParams.append(queryItem)
+        }
+        
+        if let fields = fields {
+            let queryItem = URLQueryItem(name: "fields", value: fields.joined(separator: ","))
+            queryParams.append(queryItem)
+        }
+        
+        if let skip = skip {
+            let queryItem = URLQueryItem(name: "skip", value: String(skip))
+            queryParams.append(queryItem)
+        }
+        
+        if let limit = limit {
+            let queryItem = URLQueryItem(name: "limit", value: String(limit))
+            queryParams.append(queryItem)
+        }
+        
+        return queryParams.count > 0 ? queryParams : nil
     }
     
     var persistableType: Persistable.Type?
@@ -259,18 +261,4 @@ public final class Query: NSObject, BuilderType, Mappable {
         }
     }
 
-}
-
-extension Dictionary where Key: ExpressibleByStringLiteral, Value: ExpressibleByStringLiteral {
-    
-    internal var urlQueryEncoded: String {
-        get {
-            var queryParams = [String]()
-            for (key, value) in self {
-                queryParams.append("\(key)=\(value)")
-            }
-            return queryParams.joined(separator: "&")
-        }
-    }
-    
 }

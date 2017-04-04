@@ -12,6 +12,9 @@ class Book: Entity {
     
     dynamic var title: String?
     let authorNames = List<StringValue>()
+    
+    let editions = List<BookEdition>()
+    
     let editionsYear = List<IntValue>()
     let editionsRetailPrice = List<FloatValue>()
     let editionsRating = List<DoubleValue>()
@@ -26,10 +29,33 @@ class Book: Entity {
         
         title <- ("title", map["title"])
         authorNames <- ("authorNames", map["authorNames"])
+        
+        editions <- ("editions", map["editions"])
+        
         editionsYear <- ("editionsYear", map["editionsYear"])
         editionsRetailPrice <- ("editionsRetailPrice", map["editionsRetailPrice"])
         editionsRating <- ("editionsRating", map["editionsRating"])
         editionsAvailable <- ("editionsAvailable", map["editionsAvailable"])
+    }
+    
+}
+
+class BookEdition: Object, Mappable {
+    
+    convenience required init?(map: Map) {
+        self.init()
+    }
+    
+    dynamic var year: Int = 0
+    dynamic var retailPrice: Float = 0.0
+    dynamic var rating: Float = 0.0
+    dynamic var available: Bool = false
+    
+    func mapping(map: Map) {
+        year <- ("year", map["year"])
+        retailPrice <- ("retailPrice", map["retailPrice"])
+        rating <- ("rating", map["rating"])
+        available <- ("available", map["available"])
     }
     
 }

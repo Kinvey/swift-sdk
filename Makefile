@@ -1,5 +1,6 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
+IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.3)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 
 all: build archive pack docs
 
@@ -9,11 +10,11 @@ clean:
 	rm -Rf Carthage
 	
 checkout-dependencies:
-	carthage checkout --no-use-binaries
+	carthage checkout
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=10.1'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE'
 
 build-dependencies-ios: checkout-dependencies
 	carthage build --platform iOS
@@ -42,7 +43,8 @@ test: test-ios
 
 	
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' -enableCodeCoverage YES test
+	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test | xcpretty
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)

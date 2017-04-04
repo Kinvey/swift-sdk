@@ -13,13 +13,41 @@ import MapKit
 class QueryTest: XCTestCase {
     
     func encodeQuery(_ query: Query) -> String {
-        return query.queryParams.urlQueryEncoded.removingPercentEncoding!
+        var urlComponents = URLComponents(url: URL(string: "parse://")!, resolvingAgainstBaseURL: false)!
+        urlComponents.queryItems = query.urlQueryItems
+        return urlComponents.url!.query!
+    }
+    
+    func convert(urlQueryItems: [URLQueryItem]?) -> [String : String]? {
+        guard let urlQueryItems = urlQueryItems else {
+            return nil
+        }
+        
+        var result = [String : String](minimumCapacity: urlQueryItems.count)
+        for urlQueryItem in urlQueryItems {
+            result[urlQueryItem.name] = urlQueryItem.value!
+        }
+        return result
+    }
+    
+    func convert(jsonDictionary : [String : Any]) -> [String : String] {
+        var result = [String : String](minimumCapacity: jsonDictionary.count)
+        for (key, value) in jsonDictionary {
+            if let value = value as? String {
+                result[key] = value
+            } else if let value = value as? [String : Any] {
+                result[key] = String(data: try! JSONSerialization.data(withJSONObject: value), encoding: .utf8)!
+            } else {
+                fatalError()
+            }
+        }
+        return result
     }
     
     func encodeURL(_ query: JsonDictionary) -> String {
         let data = try! JSONSerialization.data(withJSONObject: query)
         let str = String(data: data, encoding: String.Encoding.utf8)!
-        return str
+        return str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
     }
     
     func testQueryEq() {
@@ -74,21 +102,27 @@ class QueryTest: XCTestCase {
 
     
     func testQueryGeoWithinCenterSphere() {
-        let resultString = encodeQuery(Query(format: "location = %@", MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)))
-        let expectString = encodeURL(["location" : ["$geoWithin" : ["$centerSphere" : [ [-74, 40.74], 10/6378.1 ]]]])
+        let result = convert(urlQueryItems: Query(format: "location = %@", MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)).urlQueryItems)!
+        let expect = convert(jsonDictionary: [
+            "query" : [
+                "location" : [
+                    "$geoWithin" : [
+                        "$centerSphere" : [
+                            [-74, 40.74],
+                            10/6378.1
+                        ]
+                    ]
+                ]
+            ]
+        ])
         
-        XCTAssertTrue(resultString.hasPrefix("query={"))
-        XCTAssertTrue(resultString.hasSuffix("}"))
-        let resultQueryString = (resultString as NSString).substring(from: "query=".characters.count) as String
-        let result = try! JSONSerialization.jsonObject(with: resultQueryString.data(using: String.Encoding.utf8)!, options: []) as? [String : [String : [String : [AnyObject]]]]
-        let expect = try! JSONSerialization.jsonObject(with: expectString.data(using: String.Encoding.utf8)!, options: []) as? [String : [String : [String : [AnyObject]]]]
-        
-        XCTAssertNotNil(result)
-        XCTAssertNotNil(expect)
-        
-        if var result = result, var expect = expect {
-            let centerSphereResult = result["location"]!["$geoWithin"]!["$centerSphere"]!
-            let centerSphereExpect = expect["location"]!["$geoWithin"]!["$centerSphere"]!
+        XCTAssertEqual(result.count, expect.count)
+        if result.count == expect.count {
+            let resultQuery = try! JSONSerialization.jsonObject(with: result["query"]!.data(using: .utf8)!) as! [String : [String : [String : [Any]]]]
+            let expectQuery = try! JSONSerialization.jsonObject(with: expect["query"]!.data(using: .utf8)!) as! [String : [String : [String : [Any]]]]
+            
+            let centerSphereResult = resultQuery["location"]!["$geoWithin"]!["$centerSphere"]!
+            let centerSphereExpect = expectQuery["location"]!["$geoWithin"]!["$centerSphere"]!
             
             XCTAssertEqual(centerSphereResult.count, 2)
             XCTAssertEqual(centerSphereExpect.count, 2)
@@ -109,59 +143,74 @@ class QueryTest: XCTestCase {
     
     func testQueryGeoWithinPolygon() {
         var coordinates = [CLLocationCoordinate2D(latitude: 40.74, longitude: -74), CLLocationCoordinate2D(latitude: 50.74, longitude: -74), CLLocationCoordinate2D(latitude: 40.74, longitude: -64)]
-        let resultString = encodeQuery(Query(format: "location = %@", MKPolygon(coordinates: &coordinates, count: 3)))
-        let expectString = encodeURL(["location" : ["$geoWithin" : ["$geometry" : ["type" : "Polygon", "coordinates" : [[-74, 40.74], [-74, 50.74], [-64, 40.74]]]]]])
+        let result = convert(urlQueryItems: Query(format: "location = %@", MKPolygon(coordinates: &coordinates, count: 3)).urlQueryItems)!
+        let expect = convert(jsonDictionary: [
+            "query" : [
+                "location" : [
+                    "$geoWithin" : [
+                        "$geometry" : [
+                            "type" : "Polygon",
+                            "coordinates" : [
+                                [-74, 40.74],
+                                [-74, 50.74],
+                                [-64, 40.74]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ])
         
-        XCTAssertTrue(resultString.hasPrefix("query={"))
-        XCTAssertTrue(resultString.hasSuffix("}"))
-        let resultQueryString = (resultString as NSString).substring(from: "query=".characters.count) as String
-        let result = try! JSONSerialization.jsonObject(with: resultQueryString.data(using: String.Encoding.utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
-        let expect = try! JSONSerialization.jsonObject(with: expectString.data(using: String.Encoding.utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
-        
-        if var result = result, var expect = expect {
-            let geometryResult = result["location"]!["$geoWithin"]!["$geometry"]!
-            let geometryExpect = expect["location"]!["$geoWithin"]!["$geometry"]!
+        XCTAssertEqual(result.count, expect.count)
+        if result.count == expect.count {
+            let result = try! JSONSerialization.jsonObject(with: result["query"]!.data(using: .utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
+            let expect = try! JSONSerialization.jsonObject(with: expect["query"]!.data(using: .utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
             
-            XCTAssertEqual(geometryResult["type"] as? String, geometryExpect["type"] as? String)
-            
-            let coordinatesResult = geometryResult["coordinates"] as? [[Double]]
-            let coordinatesExpect = geometryExpect["coordinates"] as? [[Double]]
-            
-            XCTAssertNotNil(coordinatesResult)
-            XCTAssertNotNil(coordinatesExpect)
-            
-            if let coordinatesResult = coordinatesResult, let coordinatesExpect = coordinatesExpect {
-                XCTAssertEqual(coordinatesResult.count, coordinatesExpect.count)
-                for (index, _) in coordinatesResult.enumerated() {
-                    XCTAssertEqual(coordinatesResult[index].count, coordinatesExpect[index].count)
+            if var result = result, var expect = expect {
+                let geometryResult = result["location"]!["$geoWithin"]!["$geometry"]!
+                let geometryExpect = expect["location"]!["$geoWithin"]!["$geometry"]!
+                
+                XCTAssertEqual(geometryResult["type"] as? String, geometryExpect["type"] as? String)
+                
+                let coordinatesResult = geometryResult["coordinates"] as? [[Double]]
+                let coordinatesExpect = geometryExpect["coordinates"] as? [[Double]]
+                
+                XCTAssertNotNil(coordinatesResult)
+                XCTAssertNotNil(coordinatesExpect)
+                
+                if let coordinatesResult = coordinatesResult, let coordinatesExpect = coordinatesExpect {
+                    XCTAssertEqual(coordinatesResult.count, coordinatesExpect.count)
+                    for (index, _) in coordinatesResult.enumerated() {
+                        XCTAssertEqual(coordinatesResult[index].count, coordinatesExpect[index].count)
+                    }
                 }
             }
         }
     }
     
     func testSortAscending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "sort=\(encodeURL(["name" : 1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "query=%7B%7D&sort=\(encodeURL(["name" : 1]))")
     }
     
     func testSortDescending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "sort=\(encodeURL(["name" : -1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "query=%7B%7D&sort=\(encodeURL(["name" : -1]))")
     }
     
     func testSkip() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "skip=100")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "query=%7B%7D&skip=100")
     }
     
     func testLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "limit=100")
+        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "query=%7B%7D&limit=100")
     }
     
     func testSkipAndLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "skip=100&limit=300")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "query=%7B%7D&skip=100&limit=300")
     }
     
     func testPredicateSortSkipAndLimit() {
         let result = encodeQuery(Query { $0.predicate = NSPredicate(format: "lastName == %@", "Barros"); $0.sortDescriptors = [NSSortDescriptor(key: "age", ascending: false)]; $0.skip = 2; $0.limit = 5 })
-        let expected = "query=\(encodeURL(["lastName" : "Barros"]))&limit=5&skip=2&sort=\(encodeURL(["age" : -1]))"
+        let expected = "query=\(encodeURL(["lastName" : "Barros"]))&sort=\(encodeURL(["age" : -1]))&skip=2&limit=5"
         XCTAssertEqual(result, expected)
     }
     
