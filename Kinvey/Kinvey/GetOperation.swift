@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error> where T: NSObject {
+internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, ReadOperationType where T: NSObject {
     
     let id: String
     
@@ -17,7 +17,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error> wh
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
-    override func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             let persistable = self.cache?.findEntity(self.id)
@@ -26,7 +26,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error> wh
         return request
     }
     
-    override func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.collectionName(), id: id)
         request.execute() { data, response, error in
             if let response = response , response.isOK, let json = self.client.responseParser.parse(data) {

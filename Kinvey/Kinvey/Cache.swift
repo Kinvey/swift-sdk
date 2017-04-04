@@ -38,6 +38,8 @@ internal protocol CacheType {
     
     func removeAllEntities()
     
+    func clear(query: Query?)
+    
 }
 
 extension CacheType {
@@ -131,8 +133,13 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         fatalError(message)
     }
     
-    @discardableResult
     func removeAllEntities() {
+        let message = "Method \(#function) must be overridden"
+        log.severe(message)
+        fatalError(message)
+    }
+    
+    func clear(query: Query? = nil) {
         let message = "Method \(#function) must be overridden"
         log.severe(message)
         fatalError(message)

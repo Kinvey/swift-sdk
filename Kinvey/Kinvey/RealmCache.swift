@@ -237,11 +237,21 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         }
     }
     
-    fileprivate func results(_ query: Query) -> RealmSwift.Results<Entity> {
+    fileprivate func results(_ query: Query) -> AnyRandomAccessCollection<Entity> {
         log.verbose("Fetching by query: \(query)")
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
-            realmResults = realmResults.filter(translate(predicate: predicate))
+            if let exception = tryBlock({
+                realmResults = realmResults.filter(self.translate(predicate: predicate))
+            }), let reason = exception.reason
+            {
+                switch exception.name.rawValue {
+                case "Invalid property name":
+                    return AnyRandomAccessCollection([])
+                default:
+                    fatalError(reason)
+                }
+            }
         }
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
@@ -253,7 +263,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
-        return realmResults
+        return AnyRandomAccessCollection(realmResults)
     }
     
     fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
@@ -308,7 +318,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         return detachedResults
     }
     
-    func detach(_ results: RealmSwift.Results<Entity>, query: Query?) -> [T] {
+    func detach(_ results: AnyRandomAccessCollection<Entity>, query: Query?) -> [T] {
         var results: [T] = results.map { $0 as! T }
         if let predicate = query?.predicate {
             results = results.filter(predicate: predicate)
@@ -376,17 +386,17 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         log.verbose("Finding All")
         var results = [T]()
         executor.executeAndWait {
-            results = self.detach(self.realm.objects(self.entityType), query: nil)
+            results = self.detach(AnyRandomAccessCollection(self.realm.objects(self.entityType)), query: nil)
         }
         return results
     }
     
     override func count(_ query: Query? = nil) -> Int {
-        log.verbose("Counting by query: \(query)")
+        log.verbose("Counting by query: \(String(describing: query))")
         var result = 0
         executor.executeAndWait {
             if let query = query {
-                result = self.results(query).count
+                result = Int(self.results(query).count)
             } else {
                 result = self.realm.objects(self.entityType).count
             }
@@ -435,7 +445,7 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             try! self.realm.write {
                 let results = self.results(query)
-                result = results.count
+                result = Int(results.count)
                 self.realm.delete(results)
             }
         }
@@ -447,6 +457,29 @@ internal class RealmCache<T: Persistable>: Cache<T> where T: NSObject {
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.delete(self.realm.objects(self.entityType))
+            }
+        }
+    }
+    
+    override func clear(query: Query? = nil) {
+        log.verbose("Clearing cache")
+        executor.executeAndWait {
+            try! self.realm.write {
+                if let query = query {
+                    var results = self.realm.objects(self.entityType)
+                    if let predicate = query.predicate {
+                        results = results.filter(predicate)
+                    }
+                    let ids: [String] = results.map { $0.entityId! }
+                    
+                    var pendingOperations = self.realm.objects(RealmPendingOperation.self)
+                    pendingOperations = pendingOperations.filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
+                    
+                    self.realm.delete(results)
+                    self.realm.delete(pendingOperations)
+                } else {
+                    self.realm.deleteAll()
+                }
             }
         }
     }
@@ -537,63 +570,33 @@ extension Array where Element: NSObject, Element: Persistable {
 
 internal class RealmPendingOperation: Object, PendingOperationType {
     
-    dynamic var requestId: String
-    dynamic var date: Date
+    dynamic var requestId: String = ""
+    dynamic var date: Date = Date()
     
-    dynamic var collectionName: String
+    dynamic var collectionName: String = ""
     dynamic var objectId: String?
     
-    dynamic var method: String
-    dynamic var url: String
-    dynamic var headers: Data
+    dynamic var method: String = ""
+    dynamic var url: String = ""
+    dynamic var headers: Data = Data()
     dynamic var body: Data?
     
-    init(request: URLRequest, collectionName: String, objectId: String?) {
-        date = Date()
+    convenience init(request: URLRequest, collectionName: String, objectId: String?) {
+        self.init()
+        
         requestId = request.value(forHTTPHeaderField: .requestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.httpMethod ?? "GET"
         url = request.url!.absoluteString
-        headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!, options: [])
+        headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!)
         body = request.httpBody
-        super.init()
-    }
-    
-    required init() {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init()
-    }
-    
-    required init(value: Any, schema: RLMSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(value: value, schema: schema)
-    }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        date = Date()
-        requestId = ""
-        collectionName = ""
-        method = ""
-        url = ""
-        headers = Data()
-        super.init(realm: realm, schema: schema)
     }
     
     func buildRequest() -> URLRequest {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method
-        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers, options: []) as! [String : String]
+        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers) as! [String : String]
         if let body = body {
             request.httpBody = body
         }
@@ -602,6 +605,35 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
     override class func primaryKey() -> String? {
         return "requestId"
+    }
+    
+}
+
+class RealmPendingOperationThreadSafeReference: PendingOperationType {
+    
+    let realmConfig: Realm.Configuration
+    let reference: ThreadSafeReference<RealmPendingOperation>
+    
+    init(_ realmPendingOperation: RealmPendingOperation) {
+        realmConfig = realmPendingOperation.realm!.configuration
+        reference = ThreadSafeReference(to: realmPendingOperation)
+    }
+    
+    lazy var realmPendingOperation: RealmPendingOperation = { [unowned self] in
+        let realm = try! Realm(configuration: self.realmConfig)
+        return realm.resolve(self.reference)!
+    }()
+    
+    var collectionName: String {
+        return realmPendingOperation.collectionName
+    }
+    
+    var objectId: String? {
+        return realmPendingOperation.objectId
+    }
+    
+    func buildRequest() -> URLRequest {
+        return realmPendingOperation.buildRequest()
     }
     
 }

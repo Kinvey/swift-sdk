@@ -13,6 +13,7 @@ internal protocol Response {
     var isOK: Bool { get }
     var isNotModified: Bool { get }
     var isUnauthorized: Bool { get }
+    var isForbidden: Bool { get }
     var isNotFound: Bool { get }
     var isMethodNotAllowed: Bool { get }
     

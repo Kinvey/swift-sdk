@@ -298,7 +298,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
     
     internal var cancelled: Bool {
         get {
-            return task?.state == .canceling || (task?.error as? NSError)?.code == NSURLErrorCancelled
+            return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
         }
     }
     
@@ -419,7 +419,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
                     headers += "-H \"\(header.0): \(header.1)\" "
                 }
             }
-            return "curl -X \(request.httpMethod) \(headers) \(request.url!)"
+            return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
         }
     }
 
