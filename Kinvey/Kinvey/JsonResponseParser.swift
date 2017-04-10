@@ -51,32 +51,32 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    fileprivate func parse<U: User>(_ json: JsonDictionary, userType: U.Type) -> U? {
+    fileprivate func parse<UserType: User>(_ json: JsonDictionary, userType: UserType.Type) -> UserType? {
         let map = Map(mappingType: .fromJSON, JSON: json)
-        let user = userType.init(map: map)
+        let user: UserType? = userType.init(map: map)
         user?.mapping(map: map)
         return user
     }
     
-    func parseUser(_ data: Data?) -> User? {
+    func parseUser<UserType: User>(_ data: Data?) -> UserType? {
         if let data = data , data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? JsonDictionary,
             let json = result
         {
             let user = parse(json, userType: client.userType)
-            return user
+            return user as? UserType
         }
         return nil
     }
     
-    func parseUsers(_ data: Data?) -> [User]? {
+    func parseUsers<UserType: User>(_ data: Data?) -> [UserType]? {
         if let data = data , data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary],
             let jsonArray = result
         {
-            var users = [User]()
+            var users = [UserType]()
             for json in jsonArray {
-                if let user = parse(json, userType: client.userType) {
+                if let user = parse(json, userType: client.userType) as? UserType {
                     users.append(user)
                 }
             }

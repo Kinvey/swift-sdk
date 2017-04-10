@@ -546,6 +546,89 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testCustomUserLookup() {
+        client.userType = MyUser.self
+        
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertTrue(client.activeUser is MyUser)
+        
+        if let user = client.activeUser as? MyUser {
+            let email = "victor@kinvey.com"
+            
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "username" : "victor",
+                        "email" : email
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            do {
+                weak var expectationUserLookup = expectation(description: "User Lookup")
+                
+                let userQuery = UserQuery {
+                    $0.email = email
+                }
+                user.lookup(userQuery) { users, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(users)
+                    XCTAssertNil(error)
+                    
+                    if let users = users {
+                        XCTAssertEqual(users.count, 1)
+                        
+                        if let user = users.first {
+                            XCTAssertTrue(user is MyUser)
+                            XCTAssertEqual(user.email, email)
+                        }
+                    }
+                    
+                    expectationUserLookup?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationUserLookup = nil
+                }
+            }
+            
+            do {
+                weak var expectationUserLookup = expectation(description: "User Lookup")
+                
+                let userQuery = UserQuery {
+                    $0.email = email
+                }
+                user.lookup(userQuery) { (users: [MyUser]?, error) in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(users)
+                    XCTAssertNil(error)
+                    
+                    if let users = users {
+                        XCTAssertEqual(users.count, 1)
+                        
+                        if let user = users.first {
+                            XCTAssertEqual(user.email, email)
+                        }
+                    }
+                    
+                    expectationUserLookup?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationUserLookup = nil
+                }
+            }
+        }
+    }
+    
     func testLogoutLogin() {
         guard !useMockData else {
             return
