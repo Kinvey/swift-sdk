@@ -136,6 +136,11 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataPing() -> HttpRequest {
+        let request = HttpRequest(httpMethod: .get, endpoint: Endpoint.appDataPing(client: client), client: client)
+        return request
+    }
+    
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.appDataById(client: client, collectionName: collectionName, id: id), credential: client.activeUser, client: client)
         return request
