@@ -26,6 +26,7 @@ protocol RequestFactory {
     func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email: String) -> HttpRequest
     
+    func buildAppDataPing() -> HttpRequest
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest
     func buildAppDataFindByQuery(collectionName: String, query: Query) -> HttpRequest
     func buildAppDataCountByQuery(collectionName: String, query: Query?) -> HttpRequest

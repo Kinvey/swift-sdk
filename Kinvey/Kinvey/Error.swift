@@ -59,6 +59,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when a `User` doen't have an email or username.
     case userWithoutEmailOrUsername
     
+    /// Error when the `appKey` and `appSecret` does not match with any Kinvey environment.
+    case appNotFound(description: String)
     
     /// Error localized description.
     public var description: String {
@@ -69,7 +71,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unknownError(_, _, let description),
              .unauthorized(_, _, _, let description),
              .invalidOperation(let description),
-             .missingConfiguration(_, _, _, let description):
+             .missingConfiguration(_, _, _, let description),
+             .appNotFound(let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")

@@ -93,6 +93,13 @@ func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ c
         let description = json["description"]
     {
         return Error.missingConfiguration(httpResponse: response.httpResponse, data: data, debug: debug, description: description)
+    } else if let response = response,
+        response.isNotFound,
+        let json = client.responseParser.parse(data) as? [String : String],
+        json["error"] == "AppNotFound",
+        let description = json["description"]
+    {
+        return Error.appNotFound(description: description)
     } else if let response = response, let json = client.responseParser.parse(data) {
         return Error.buildUnknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
     } else {
