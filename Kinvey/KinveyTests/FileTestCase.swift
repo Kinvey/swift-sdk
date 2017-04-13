@@ -25,12 +25,15 @@ class FileTestCase: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        while !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) || !FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path) {
-            weak var expectationDownloadVideo = expectation(description: "Download Video")
-            weak var expectationDownloadImage = expectation(description: "Download Image")
+        var count = 0
+        
+        while count < 10, !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) || !FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path) {
+            count += 1
+            let downloadGroup = DispatchGroup()
             
             let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg&el=info")!
             let request = URLRequest(url: url)
+            downloadGroup.enter()
             let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data,
                     let responseBody = String(data: data, encoding: .utf8),
@@ -41,6 +44,7 @@ class FileTestCase: StoreTestCase {
                             let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
                             let url = URL(string: urlString)
                         {
+                            downloadGroup.enter()
                             let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
                                 if let url = url,
                                     let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
@@ -50,11 +54,9 @@ class FileTestCase: StoreTestCase {
                                     try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
                                 }
                                 
-                                expectationDownloadVideo?.fulfill()
+                                downloadGroup.leave()
                             }
                             downloadTask.resume()
-                        } else {
-                            expectationDownloadVideo?.fulfill()
                         }
                     }
                     
@@ -62,6 +64,7 @@ class FileTestCase: StoreTestCase {
                         if let iurlmaxres = queryItems.filter({ return $0.name == "iurlmaxres" }).first?.value,
                             let url = URL(string: iurlmaxres)
                         {
+                            downloadGroup.enter()
                             let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
                                 if let url = url,
                                     let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
@@ -71,22 +74,20 @@ class FileTestCase: StoreTestCase {
                                     try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
                                 }
                                 
-                                expectationDownloadImage?.fulfill()
+                                downloadGroup.leave()
                             }
                             downloadTask.resume()
-                        } else {
-                            expectationDownloadImage?.fulfill()
                         }
                     }
                 }
+                
+                downloadGroup.leave()
             }
             dataTask.resume()
             
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationDownloadVideo = nil
-                expectationDownloadImage = nil
-            }
+            downloadGroup.wait()
         }
+        
         XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path))
     }
@@ -2143,8 +2144,15 @@ class FileTestCase: StoreTestCase {
                     
                     weak var expectationDestroy = expectation(description: "Destroy")
                     
-                    user.destroy() { error in
-                        XCTAssertNil(error)
+                    user.destroy() {
+                        XCTAssertTrue(Thread.isMainThread)
+                        
+                        switch $0 {
+                        case .success:
+                            break
+                        case .failure:
+                            XCTFail()
+                        }
                         
                         expectationDestroy?.fulfill()
                     }
@@ -2312,6 +2320,171 @@ class FileTestCase: StoreTestCase {
             XCTAssertTrue(acl["w"] is [String])
             if let writers = acl["w"] as? [String] {
                 XCTAssertEqual(writers, ["user-to-write-1", "user-to-write-2"])
+            }
+        }
+    }
+    
+    func testFind() {
+        signUp()
+        
+        let fileStore = FileStore.getInstance()
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "_id" : UUID().uuidString,
+                    "_acl" : [
+                        "gr" : true,
+                        "creator" : UUID().uuidString
+                    ],
+                    "_filename" : "file.txt",
+                    "_public" : true,
+                    "mimeType" : "plain/txt",
+                    "size" : 100,
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ],
+                    "_downloadURL" : "https://storage.googleapis.com/file.txt"
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        fileStore.find() { files, error in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(files)
+            XCTAssertNil(error)
+            
+            if let files = files {
+                XCTAssertEqual(files.count, 1)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testRefresh() {
+        signUp()
+        
+        let fileStore = FileStore.getInstance()
+        var _file: File? = nil
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "_filename" : "image.png",
+                        "size" : 4096,
+                        "mimeType" : "image/png",
+                        "_acl" : [
+                            "gr" : true,
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_downloadURL" : "https://storage.googleapis.com/image.png",
+                        "_expiresAt" : Date(timeIntervalSinceNow: 3).toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            fileStore.find(ttl: (5, .second)) { files, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(files)
+                XCTAssertNil(error)
+                
+                if var files = files {
+                    files = files.filter { $0.expiresAt != nil }
+                    XCTAssertEqual(files.count, 1)
+                    
+                    if let file = files.first {
+                        _file = file
+                        let expiresInSeconds = file.expiresAt?.timeIntervalSinceNow
+                        XCTAssertNotNil(expiresInSeconds)
+                        if let expiresInSeconds = expiresInSeconds {
+                            XCTAssertGreaterThan(expiresInSeconds, 0)
+                            XCTAssertLessThanOrEqual(expiresInSeconds, 5)
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        XCTAssertNotNil(_file)
+        
+        if let file = _file {
+            if useMockData {
+                mockResponse(json: [
+                    "_id" : UUID().uuidString,
+                    "_filename" : "image.png",
+                    "size" : 4096,
+                    "mimeType" : "image/png",
+                    "_acl" : [
+                        "gr" : true,
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ],
+                    "_downloadURL" : "https://storage.googleapis.com/image.png",
+                    "_expiresAt" : Date(timeIntervalSinceNow: 3).toString()
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRefresh = expectation(description: "Refresh")
+            
+            fileStore.refresh(file, ttl: (5, .second)) { file, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                if let file = file {
+                    let expiresInSeconds = file.expiresAt?.timeIntervalSinceNow
+                    XCTAssertNotNil(expiresInSeconds)
+                    if let expiresInSeconds = expiresInSeconds {
+                        XCTAssertGreaterThan(expiresInSeconds, 0)
+                        XCTAssertLessThanOrEqual(expiresInSeconds, 5)
+                    }
+                }
+                
+                expectationRefresh?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRefresh = nil
             }
         }
     }

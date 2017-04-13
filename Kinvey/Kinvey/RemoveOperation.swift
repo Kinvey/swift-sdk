@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject {
+class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
@@ -24,7 +24,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
         fatalError(message)
     }
     
-    override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             var count: Int?
@@ -47,21 +47,25 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
                     count = 0
                 }
             }
-            completionHandler?(count, nil)
+            if let count = count {
+                completionHandler?(.success(count))
+            } else {
+                completionHandler?(.failure(buildError(client: client)))
+            }
         }
         return request
     }
     
-    override func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         request.execute() { data, response, error in
             if let response = response , response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? Int
             {
                 self.cache?.remove(byQuery: self.query)
-                completionHandler?(count, nil)
+                completionHandler?(.success(count))
             } else {
-                completionHandler?(nil, buildError(data, response, error, self.client))
+                completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
         return request

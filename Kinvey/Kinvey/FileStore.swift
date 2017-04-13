@@ -86,6 +86,24 @@ open class FileStore {
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
     open func upload(_ file: File, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(
+            file,
+            image: image,
+            imageRepresentation: imageRepresentation,
+            ttl: ttl
+        ) { (result: Result<File, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Uploads a `UIImage` in a PNG or JPEG format.
+    @discardableResult
+    open func upload(_ file: File, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
@@ -95,20 +113,54 @@ open class FileStore {
     /// Uploads a file using the file path.
     @discardableResult
     open func upload(_ file: File, path: String, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(
+            file,
+            path: path,
+            ttl: ttl
+        ) { (result: Result<File, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Uploads a file using the file path.
+    @discardableResult
+    open func upload(_ file: File, path: String, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .url(URL(fileURLWithPath: path)), ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Uploads a file using a input stream.
     @discardableResult
     open func upload(_ file: File, stream: InputStream, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(
+            file,
+            stream: stream,
+            ttl: ttl
+        ) { (result: Result<File, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Uploads a file using a input stream.
+    @discardableResult
+    open func upload(_ file: File, stream: InputStream, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .stream(stream), ttl: ttl, completionHandler: completionHandler)
     }
 
     fileprivate func getFileMetadata(_ file: File, ttl: TTL? = nil) -> (request: Request, promise: Promise<File>) {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(file, ttl: ttl)
         let promise = Promise<File> { fulfill, reject in
-            request.execute({ (data, response, error) -> Void in
-                if let response = response , response.isOK,
+            request.execute() { (data, response, error) -> Void in
+                if let response = response, response.isOK,
                     let json = self.client.responseParser.parse(data),
                     let newFile = File(JSON: json) {
                     newFile.path = file.path
@@ -120,7 +172,7 @@ open class FileStore {
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
-            })
+            }
         }
         return (request: request, promise: promise)
     }
@@ -128,6 +180,23 @@ open class FileStore {
     /// Uploads a file using a `NSData`.
     @discardableResult
     open func upload(_ file: File, data: Data, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(
+            file,
+            data: data,
+            ttl: ttl
+        ) { (result: Result<File, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Uploads a file using a `NSData`.
+    @discardableResult
+    open func upload(_ file: File, data: Data, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .data(data), ttl: ttl, completionHandler: completionHandler)
     }
     
@@ -140,7 +209,7 @@ open class FileStore {
     }
     
     /// Uploads a file using a `NSData`.
-    fileprivate func upload(_ file: File, fromSource source: InputSource, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    fileprivate func upload(_ file: File, fromSource source: InputSource, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
         if file.size.value == nil {
             switch source {
             case let .data(data):
@@ -178,8 +247,8 @@ open class FileStore {
                 var request = URLRequest(url: uploadURL)
                 request.httpMethod = "PUT"
                 if let uploadHeaders = file.uploadHeaders {
-                    for header in uploadHeaders {
-                        request.setValue(header.1, forHTTPHeaderField: header.0)
+                    for (headerField, value) in uploadHeaders {
+                        request.setValue(value, forHTTPHeaderField: headerField)
                     }
                 }
                 request.setValue("0", forHTTPHeaderField: "Content-Length")
@@ -240,8 +309,8 @@ open class FileStore {
                 var request = URLRequest(url: file.uploadURL!)
                 request.httpMethod = "PUT"
                 if let uploadHeaders = file.uploadHeaders {
-                    for header in uploadHeaders {
-                        request.setValue(header.1, forHTTPHeaderField: header.0)
+                    for (headerField, value) in uploadHeaders {
+                        request.setValue(value, forHTTPHeaderField: headerField)
                     }
                 }
                 
@@ -317,11 +386,13 @@ open class FileStore {
                 }
             }
         }.then { file in //fetching download url
-            return self.getFileMetadata(file, ttl: ttl).1
+            let (request, promise) = self.getFileMetadata(file, ttl: ttl)
+            requests += request
+            return promise
         }.then { file in
-            completionHandler?(file, nil)
+            completionHandler?(.success(file))
         }.catch { error in
-            completionHandler?(file, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }
@@ -329,12 +400,27 @@ open class FileStore {
     /// Refresh a `File` instance.
     @discardableResult
     open func refresh(_ file: File, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
-        let fileMetadata = getFileMetadata(file, ttl: ttl)
-        let request = fileMetadata.0
-        fileMetadata.1.then { file in
-            completionHandler?(file, nil)
+        return refresh(
+            file,
+            ttl: ttl
+        ) { (result: Result<File, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Refresh a `File` instance.
+    @discardableResult
+    open func refresh(_ file: File, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+        let (request, promise) = getFileMetadata(file, ttl: ttl)
+        promise.then { file in
+            completionHandler?(.success(file))
         }.catch { error in
-            completionHandler?(file, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -439,15 +525,32 @@ open class FileStore {
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
     open func download(_ file: File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+        return download(
+            file,
+            storeType: storeType,
+            ttl: ttl
+        ) { (result: Result<(File, URL), Swift.Error>) in
+            switch result {
+            case .success(let file, let url):
+                completionHandler?(file, url, nil)
+            case .failure(let error):
+                completionHandler?(nil, nil, error)
+            }
+        }
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
+    open func download(_ file: File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: ((Result<(File, URL), Swift.Error>) -> Void)? = nil) -> Request {
         crashIfInvalid(file: file)
         
         if storeType == .sync || storeType == .cache,
             let entityId = file.fileId,
             let cachedFile = cachedFile(entityId),
-            file.pathURL != nil
+            let pathURL = file.pathURL
         {
             DispatchQueue.main.async {
-                completionHandler?(cachedFile, cachedFile.pathURL, nil)
+                completionHandler?(.success(cachedFile, pathURL))
             }
         }
         
@@ -478,9 +581,9 @@ open class FileStore {
                     }
                 }
             }.then { file, localUrl -> Void in
-                completionHandler?(file, localUrl, nil)
-            }.catch { [file] error in
-                completionHandler?(file, nil, error)
+                completionHandler?(.success(file, localUrl))
+            }.catch { error in
+                completionHandler?(.failure(error))
             }
             return multiRequest
         } else {
@@ -491,11 +594,27 @@ open class FileStore {
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
     open func download(_ file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
+        return download(
+            file,
+            ttl: ttl
+        ) { (result: Result<(File, Data), Swift.Error>) in
+            switch result {
+            case .success(let file, let data):
+                completionHandler?(file, data, nil)
+            case .failure(let error):
+                completionHandler?(nil, nil, error)
+            }
+        }
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
+    open func download(_ file: File, ttl: TTL? = nil, completionHandler: ((Result<(File, Data), Swift.Error>) -> Void)? = nil) -> Request {
         crashIfInvalid(file: file)
         
         if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             DispatchQueue.main.async {
-                completionHandler?(cachedFile, data, nil)
+                completionHandler?(.success(cachedFile, data))
             }
         }
         
@@ -521,9 +640,9 @@ open class FileStore {
             multiRequest += (request, addProgress: true)
             return promise
         }.then { data in
-            completionHandler?(file, data, nil)
+            completionHandler?(.success(file, data))
         }.catch { error in
-            completionHandler?(file, nil, error)
+            completionHandler?(.failure(error))
         }
         return multiRequest
     }
@@ -531,6 +650,19 @@ open class FileStore {
     /// Deletes a file instance in the backend.
     @discardableResult
     open func remove(_ file: File, completionHandler: UIntCompletionHandler? = nil) -> Request {
+        return remove(file) { (result: Result<UInt, Swift.Error>) in
+            switch result {
+            case .success(let count):
+                completionHandler?(count, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Deletes a file instance in the backend.
+    @discardableResult
+    open func remove(_ file: File, completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
@@ -548,9 +680,9 @@ open class FileStore {
                 }
             })
         }.then { count in
-            completionHandler?(count, nil)
+            completionHandler?(.success(count))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -558,6 +690,22 @@ open class FileStore {
     /// Gets a list of files that matches with the query passed by parameter.
     @discardableResult
     open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: FileArrayCompletionHandler? = nil) -> Request {
+        return find(
+            query,
+            ttl: ttl
+        ) { (result: Result<[File], Swift.Error>) in
+            switch result {
+            case .success(let files):
+                completionHandler?(files, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Gets a list of files that matches with the query passed by parameter.
+    @discardableResult
+    open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: ((Result<[File], Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
         Promise<[File]> { fulfill, reject in
             request.execute { (data, response, error) -> Void in
@@ -572,9 +720,9 @@ open class FileStore {
                 }
             }
         }.then { files in
-            completionHandler?(files, nil)
+            completionHandler?(.success(files))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return request
     }

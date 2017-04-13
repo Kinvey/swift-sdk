@@ -10,7 +10,7 @@ import Foundation
 
 internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObject {
     
-    typealias CompletionHandler = (R?, E?) -> Void
+    typealias CompletionHandler = (Result<R, E>) -> Void
     
     let readPolicy: ReadPolicy
     
@@ -25,7 +25,7 @@ protocol ReadOperationType {
     
     associatedtype SuccessType
     associatedtype FailureType
-    typealias CompletionHandler = (SuccessType?, FailureType?) -> Void
+    typealias CompletionHandler = (Result<SuccessType, FailureType>) -> Void
     
     var readPolicy: ReadPolicy { get }
     
@@ -48,8 +48,8 @@ extension ReadOperationType {
             return executeNetwork(completionHandler)
         case .both:
             let request = MultiRequest()
-            executeLocal() { obj, error in
-                completionHandler?(obj, nil)
+            executeLocal() { result in
+                completionHandler?(result)
                 request.addRequest(self.executeNetwork(completionHandler))
             }
             return request

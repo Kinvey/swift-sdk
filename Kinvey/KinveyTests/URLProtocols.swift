@@ -8,6 +8,8 @@
 
 import Foundation
 
+let timeoutError = NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil)
+
 class TimeoutErrorURLProtocol: URLProtocol {
     
     override class func canInit(with request: URLRequest) -> Bool {
