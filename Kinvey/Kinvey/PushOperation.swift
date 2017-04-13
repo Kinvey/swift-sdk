@@ -61,7 +61,7 @@ fileprivate class PushRequest: NSObject, Request {
     
 }
 
-internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]?> where T: NSObject {
+internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]> where T: NSObject {
     
     internal override init(sync: AnySync?, cache: AnyCache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
@@ -73,7 +73,11 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         
         let collectionName = T.collectionName()
         let pushOperation = PushRequest(collectionName: collectionName) {
-            completionHandler?(count, errors.count > 0 ? errors : nil)
+            if errors.isEmpty {
+                completionHandler?(.success(count))
+            } else {
+                completionHandler?(.failure(errors))
+            }
         }
         
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)

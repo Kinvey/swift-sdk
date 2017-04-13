@@ -63,13 +63,13 @@ class CacheMigrationTestCaseStep1: XCTestCase {
         
         let store = DataStore<Person>.collection(.sync)
         
-        var person = Person()
+        let person = Person()
         person.firstName = "Victor"
         person.lastName = "Barros"
         
         weak var expectationSave = expectation(description: "Save")
         
-        store.save(&person) { (person, error) in
+        store.save(person) { (person, error) in
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             

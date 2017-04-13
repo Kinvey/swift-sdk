@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSObject {
+internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperationType where T: NSObject {
     
     var persistable: T
     
@@ -22,7 +22,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    override func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
@@ -35,12 +35,12 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
             if let sync = self.sync {
                 sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.entityId))
             }
-            completionHandler?(self.persistable, nil)
+            completionHandler?(.success(self.persistable))
         }
         return request
     }
     
-    override func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataSave(persistable)
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
@@ -57,18 +57,18 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> where T: NSO
                         }
                         self.merge(&self.persistable, json: json)
                     }
-                    completionHandler?(self.persistable, nil)
+                    completionHandler?(.success(self.persistable))
                 } else {
-                    completionHandler?(nil, buildError(data, response, error, self.client))
+                    completionHandler?(.failure(buildError(data, response, error, self.client)))
                 }
             }
         }
         return request
     }
     
-    fileprivate func checkRequirements(_ completionHandler: ObjectCompletionHandler?) -> Bool {
+    fileprivate func checkRequirements(_ completionHandler: CompletionHandler?) -> Bool {
         guard let _ = client.activeUser else {
-            completionHandler?(nil, Error.noActiveUser)
+            completionHandler?(.failure(Error.noActiveUser))
             return false
         }
         

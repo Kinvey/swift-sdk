@@ -8,6 +8,7 @@
 
 import Foundation
 import ObjectMapper
+import PromiseKit
 
 /// Class to interact with a custom endpoint in the backend.
 open class CustomEndpoint {
@@ -61,14 +62,19 @@ open class CustomEndpoint {
     @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
     open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
         let params = params != nil ? Params(params!) : nil
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
-                    completionHandler(json, nil)
+        var request: Request!
+        Promise<JsonDictionary> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
+                if let response = response, response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
+                    fulfill(json)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { json in
+            completionHandler?(json, nil)
+        }.catch { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -78,14 +84,19 @@ open class CustomEndpoint {
     @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
     open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
         let params = params != nil ? Params(params!) : nil
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
-                    completionHandler(json, nil)
+        var request: Request!
+        Promise<[JsonDictionary]> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
+                if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
+                    fulfill(json)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { jsonArray in
+            completionHandler?(jsonArray, nil)
+        }.catch { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -93,14 +104,36 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let json = client.responseParser.parse(data) {
-                    completionHandler(json, nil)
+        return execute(
+            name,
+            params: params,
+            client: client
+        ) { (result: Result<JsonDictionary, Swift.Error>) in
+            switch result {
+            case .success(let json):
+                completionHandler?(json, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil) -> Request {
+        var request: Request!
+        Promise<JsonDictionary> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
+                if let response = response, response.isOK, let json = client.responseParser.parse(data) {
+                    fulfill(json)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { json in
+            completionHandler?(.success(json))
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
         return request
     }
@@ -108,93 +141,114 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+        return execute(
+            name,
+            params: params,
+            client: client
+        ) { (result: Result<[JsonDictionary], Swift.Error>) in
+            switch result {
+            case .success(let json):
+                completionHandler?(json, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil) -> Request {
+        var request: Request!
+        Promise<[JsonDictionary]> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
                 if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
-                    completionHandler(json, nil)
+                    fulfill(json)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { json in
+            completionHandler?(.success(json))
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
         return request
     }
     
-    //MARK: Mappable
+    //MARK: BaseMappable: Mappable or StaticMappable
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: Mappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
+    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
+        return execute(
+            name,
+            params: params,
+            client: client
+        ) { (result: Result<T, Swift.Error>) in
+            switch result {
+            case .success(let obj):
+                completionHandler?(obj, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil) -> Request {
+        var request: Request!
+        Promise<T> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
                 if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
-                    completionHandler(obj, nil)
+                    fulfill(obj)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { obj in
+            completionHandler?(.success(obj))
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
         return request
     }
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: Mappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
-                    completionHandler(objArray, nil)
-                } else {
-                    completionHandler(nil, buildError(data, response, error, client))
-                }
+    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
+        return execute(
+            name,
+            params: params,
+            client: client
+        ) { (result: Result<[T], Swift.Error>) in
+            switch result {
+            case .success(let objArray):
+                completionHandler?(objArray, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
             }
         }
-        return request
-    }
-    
-    //MARK: StaticMappable
-    
-    /// Executes a custom endpoint by name and passing the expected parameters.
-    @discardableResult
-    open static func execute<T: StaticMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
-                    completionHandler(obj, nil)
-                } else {
-                    completionHandler(nil, buildError(data, response, error, client))
-                }
-            }
-        }
-        return request
     }
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: StaticMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
-        let request = callEndpoint(name, params: params, client: client) { data, response, error in
-            if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
-                if let response = response , response.isOK, let objArray: [T] = client.responseParser.parse(data) {
-                    completionHandler(objArray, nil)
+    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil) -> Request {
+        var request: Request!
+        Promise<[T]> { fulfill, reject in
+            request = callEndpoint(name, params: params, client: client) { data, response, error in
+                if let response = response, response.isOK, let objArray: [T] = client.responseParser.parse(data) {
+                    fulfill(objArray)
                 } else {
-                    completionHandler(nil, buildError(data, response, error, client))
+                    reject(buildError(data, response, error, client))
                 }
             }
+        }.then { objArray in
+            completionHandler?(.success(objArray))
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
         return request
-    }
-    
-    //MARK: Dispatch Async Main Queue
-    
-    fileprivate static func dispatchAsyncMainQueue<R>(_ completionHandler: ((R?, Swift.Error?) -> Void)? = nil) -> ((R?, Swift.Error?) -> Void)? {
-        if let completionHandler = completionHandler {
-            return { (obj, error) -> Void in
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(obj, error)
-                })
-            }
-        }
-        return nil
     }
     
 }

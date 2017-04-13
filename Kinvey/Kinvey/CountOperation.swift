@@ -17,20 +17,20 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
-    func executeLocal(_ completionHandler: ((Int?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
                 let count = cache.count(query: self.query)
-                completionHandler?(count, nil)
+                completionHandler?(.success(count))
             } else {
-                completionHandler?(0, nil)
+                completionHandler?(.success(0))
             }
         }
         return request
     }
     
-    func executeNetwork(_ completionHandler: ((Int?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(collectionName: T.collectionName(), query: query)
         request.execute() { data, response, error in
             if let response = response , response.isOK,
@@ -39,9 +39,9 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
                 let result = json as? [String : Int],
                 let count = result["count"]
             {
-                completionHandler?(count, nil)
+                completionHandler?(.success(count))
             } else {
-                completionHandler?(nil, buildError(data, response, error, self.client))
+                completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
         return request

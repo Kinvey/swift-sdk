@@ -10,7 +10,7 @@ import Foundation
 
 internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObject {
     
-    internal typealias CompletionHandler = (R, E) -> Void
+    internal typealias CompletionHandler = (Result<R, E>) -> Void
     
     let sync: AnySync?
     
