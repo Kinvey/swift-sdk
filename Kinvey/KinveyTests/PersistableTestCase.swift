@@ -247,4 +247,138 @@ class PersistableTestCase: StoreTestCase {
         }
     }
     
+    func testUnmappedProperties() {
+        let json: JsonDictionary = [
+            "name" : "Test",
+            "age" : 18,
+            "server-side-property" : 10
+        ]
+        let person = Person(JSON: json)!
+        person.name = "Test 2"
+        let jsonResponse = person.toJSON()
+        XCTAssertEqual(jsonResponse.count, 3)
+        XCTAssertEqual(jsonResponse["name"] as? String, "Test 2")
+        XCTAssertEqual(jsonResponse["age"] as? Int, 18)
+        XCTAssertEqual(jsonResponse["server-side-property"] as? Int, 10)
+    }
+    
+    func testSendUnmappedProperties() {
+        signUp()
+        
+        store = DataStore<Person>.collection(.network)
+        
+        var personTest: Person? = nil
+        let personTestId = "58f69ff5c873232414c5fc1d"
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    "_id" : personTestId,
+                    "age" : 18,
+                    "name" : "Test",
+                    "unmapped_property" : 10,
+                    "_acl": [
+                        "creator" : "kid_WyWKm0pPM-",
+                        "gr" : true,
+                        "gw" : true
+                    ],
+                    "_kmd" : [
+                        "lmt" : "2017-04-18T23:31:56.288Z",
+                        "ect" : "2017-04-18T23:23:33.606Z"
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(personTestId) { (person, error) in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                personTest = person
+                if let person = person {
+                    XCTAssertEqual(person.name, "Test")
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        XCTAssertNotNil(personTest)
+        var mockJson: JsonDictionary! = nil
+        
+        if let person = personTest {
+            if useMockData {
+                mockResponse { (request) -> HttpResponse in
+                    mockJson = (try! JSONSerialization.jsonObject(with: request)) as! JsonDictionary
+                    XCTAssertEqual(mockJson["_id"] as? String, personTestId)
+                    XCTAssertEqual(mockJson["name"] as? String, "Test 2")
+                    XCTAssertEqual(mockJson["age"] as? Int, 18)
+                    XCTAssertEqual(mockJson["unmapped_property"] as? Int, 10)
+                    return HttpResponse(json: mockJson)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            person.name = "Test 2"
+            
+            store.save(person) { (person, error) in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                personTest = person
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: mockJson)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(personTestId) { (person, error) in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                personTest = person
+                if let person = person {
+                    XCTAssertEqual(person.name, "Test 2")
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
 }

@@ -52,6 +52,8 @@ open class Entity: Object, Persistable {
     /// The `_acl` property mapped in the Kinvey backend.
     public dynamic var acl: Acl?
     
+    private dynamic var json: String?
+    
     /// Default Constructor.
     public required init() {
         super.init()
@@ -75,6 +77,24 @@ open class Entity: Object, Persistable {
     
     /// Override this method to tell how to map your own objects.
     open func propertyMapping(_ map: Map) {
+        switch map.mappingType {
+        case .fromJSON:
+            if let data = try? JSONSerialization.data(withJSONObject: map.JSON),
+                let jsonString = String(data: data, encoding: .utf8)
+            {
+                json = jsonString
+            }
+        case .toJSON:
+            if let jsonString = json,
+                let data = jsonString.data(using: .utf8),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                let jsonDictionary = jsonObject as? JsonDictionary
+            {
+                for (key, var value) in jsonDictionary {
+                    value <- map[key]
+                }
+            }
+        }
         entityId <- ("entityId", map[PersistableIdKey])
         metadata <- ("metadata", map[PersistableMetadataKey])
         acl <- ("acl", map[PersistableAclKey])
