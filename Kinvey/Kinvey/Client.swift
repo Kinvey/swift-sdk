@@ -8,6 +8,7 @@
 
 import Foundation
 import ObjectMapper
+import PromiseKit
 
 private let lockEncryptionKey = NSLock()
 
@@ -266,10 +267,62 @@ open class Client: Credential {
         return Client.fileURL(appKey: self.appKey!, tag: tag)
     }
     
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(appKey, forKey: "appKey")
-        aCoder.encode(appSecret, forKey: "appSecret")
-        aCoder.encode(apiHostName, forKey: "apiHostName")
-        aCoder.encode(authHostName, forKey: "authHostName")
+    @discardableResult
+    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
+        guard let _ = appKey, let _ = appSecret else {
+            let message = "Please initialize your client calling the initialize() method before call ping()"
+            log.error(message)
+            fatalError(message)
+        }
+        
+        let request = networkRequestFactory.buildAppDataPing()
+        Promise<EnvironmentInfo> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let data = data,
+                    let json = try? JSONSerialization.jsonObject(with: data),
+                    let result = json as? [String : String],
+                    let environmentInfo = EnvironmentInfo(JSON: result)
+                {
+                    fulfill(environmentInfo)
+                } else {
+                    reject(buildError(data, response, error, self))
+                }
+            }
+        }.then {
+            completionHandler($0, nil)
+        }.catch {
+            completionHandler(nil, $0)
+        }
+        return request
     }
+}
+
+public struct EnvironmentInfo: StaticMappable {
+    
+    public let version: String
+    public let kinvey: String
+    public let appName: String
+    public let environmentName: String
+    
+    public static func objectForMapping(map: Map) -> BaseMappable? {
+        guard let version: String = map["version"].value(),
+            let kinvey: String = map["kinvey"].value(),
+            let appName: String = map["appName"].value(),
+            let environmentName: String = map["environmentName"].value()
+            else {
+                return nil
+        }
+        return EnvironmentInfo(
+            version: version,
+            kinvey: kinvey,
+            appName: appName,
+            environmentName: environmentName
+        )
+    }
+    
+    public mutating func mapping(map: Map) {
+    }
+    
 }
