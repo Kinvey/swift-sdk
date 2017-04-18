@@ -20,6 +20,8 @@ internal enum Endpoint {
     case userResetPassword(usernameOrEmail: String, client: Client)
     case userForgotUsername(client: Client)
     
+    case appDataPing(client: Client)
+    
     case appData(client: Client, collectionName: String)
     case appDataById(client: Client, collectionName: String, id: String)
     case appDataByQuery(client: Client, collectionName: String, query: Query?)
@@ -63,6 +65,8 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
         case .userForgotUsername(let client):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
+        case .appDataPing(let client):
+            return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)")
         case .appData(let client, let collectionName):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
         case .appDataById(let client, let collectionName, let id):
