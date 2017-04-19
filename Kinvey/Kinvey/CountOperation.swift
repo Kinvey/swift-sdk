@@ -12,7 +12,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     
     let query: Query?
     
-    init(query: Query? = nil, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client) {
+    init(query: Query? = nil, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client) {
         self.query = query
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
@@ -21,7 +21,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
-                let count = cache.count(self.query)
+                let count = cache.count(query: self.query)
                 completionHandler?(count, nil)
             } else {
                 completionHandler?(0, nil)

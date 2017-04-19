@@ -1235,4 +1235,322 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testGroupCustomAggregation() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let (person, result) = results?.first {
+                XCTAssertNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupCustomAggregationByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "sum" : 926
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let (person, result) = results?.first {
+                XCTAssertNotNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationCountByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "count" : 32
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            count: ["name"],
+            countType: Int.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertGreaterThanOrEqual(results.count, 0)
+                
+                if let first = results.first {
+                    XCTAssertNotNil(first.value.name)
+                    XCTAssertEqual(first.count, 32)
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationSumByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "sum" : 926.2
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            sum: "age",
+            sumType: Double.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertGreaterThanOrEqual(results.count, 0)
+                
+                if let first = results.first {
+                    XCTAssertNotNil(first.value.name)
+                    XCTAssertEqual(first.sum, 926.2)
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationAvgByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "sum" : 926,
+                    "count" : 32,
+                    "avg" : 28.9375
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            avg: "age",
+            avgType: Double.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNotNil(result)
+            XCTAssertNil(error)
+            
+            if let result = result {
+                XCTAssertGreaterThanOrEqual(result.count, 0)
+                
+                if let first = result.first {
+                    XCTAssertNotNil(first.value.name)
+                    XCTAssertEqual(first.avg, 28.9375)
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationMinByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "min" : 27.6
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            min: "age",
+            minType: Float.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNotNil(result)
+            XCTAssertNil(error)
+            
+            if let result = result {
+                XCTAssertGreaterThanOrEqual(result.count, 0)
+                
+                if let (person, min) = result.first {
+                    XCTAssertNotNil(person.name)
+                    XCTAssertEqual(min, 27.6)
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationMaxByName() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "name" : "Victor",
+                    "max" : 30.5
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            max: "age",
+            maxType: Float.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNotNil(result)
+            XCTAssertNil(error)
+            
+            if let result = result {
+                XCTAssertGreaterThanOrEqual(result.count, 0)
+                
+                if let (person, max) = result.first {
+                    XCTAssertNotNil(person.name)
+                    XCTAssertEqual(max, 30.5)
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
 }

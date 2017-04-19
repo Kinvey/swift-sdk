@@ -422,5 +422,10 @@ internal class HttpRequest: TaskProgressRequest, Request {
             return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
         }
     }
+    
+    func setBody(json: [String : Any]) {
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try! JSONSerialization.data(withJSONObject: json)
+    }
 
 }
