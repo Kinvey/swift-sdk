@@ -156,6 +156,20 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataGroup(collectionName: String, keys: [String], initialObject: [String : Any], reduceJSFunction: String, condition: NSPredicate?) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataGroup(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        var json: [String : Any] = [
+            "key" : keys,
+            "initial" : initialObject,
+            "reduce" : reduceJSFunction
+        ]
+        if let condition = condition {
+            json["condition"] = condition.mongoDBQuery
+        }
+        request.setBody(json: json)
+        return request
+    }
+    
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
         var bodyObject = persistable.toJSON()

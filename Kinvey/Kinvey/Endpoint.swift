@@ -26,6 +26,7 @@ internal enum Endpoint {
     case appDataById(client: Client, collectionName: String, id: String)
     case appDataByQuery(client: Client, collectionName: String, query: Query?)
     case appDataCount(client: Client, collectionName: String, query: Query?)
+    case appDataGroup(client: Client, collectionName: String)
     
     case pushRegisterDevice(client: Client)
     case pushUnRegisterDevice(client: Client)
@@ -98,6 +99,8 @@ internal enum Endpoint {
                 }
             }
             return URL(string: url)!
+        case .appDataGroup(let client, let collectionName):
+            return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_group")
         case .pushRegisterDevice(let client):
             return client.apiHostName.appendingPathComponent("/push/\(client.appKey!)/register-device")
         case .pushUnRegisterDevice(let client):
