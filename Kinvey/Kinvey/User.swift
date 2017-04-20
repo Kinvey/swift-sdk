@@ -360,6 +360,28 @@ open class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /// Gets a `User` instance using the `userId` property.
+    @discardableResult
+    open func refresh(completionHandler: VoidHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserGet(userId: userId)
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response, response.isOK, let json = self.client.responseParser.parse(data) {
+                    let map = Map(mappingType: .fromJSON, JSON: json)
+                    self.mapping(map: map)
+                    fulfill()
+                } else {
+                    reject(buildError(data, response, error, self.client))
+                }
+            }
+        }.then { user in
+            completionHandler?(nil)
+        }.catch { error in
+            completionHandler?(error)
+        }
+        return request
+    }
+    
     /// Default Constructor.
     public init(userId: String? = nil, acl: Acl? = nil, metadata: UserMetadata? = nil, client: Client = Kinvey.sharedClient) {
         self._userId = userId
