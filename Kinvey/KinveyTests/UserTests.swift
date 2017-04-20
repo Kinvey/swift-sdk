@@ -303,22 +303,29 @@ class UserTests: KinveyTestCase {
     }
     
     func testGet() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
+        XCTAssertNotNil(client.activeUser)
+        
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(json: user.toJSON())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationUserExists = expectation(description: "User Exists")
             
-            User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
+            User.get(userId: user.userId) { user, error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
                 expectationUserExists?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserExists = nil
@@ -344,6 +351,44 @@ class UserTests: KinveyTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserExists = nil
+            }
+        }
+    }
+    
+    func testRefresh() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            XCTAssertNil(user.email)
+            
+            let emailTest = "me@kinvey.com"
+            
+            if useMockData {
+                var json = user.toJSON()
+                json["email"] = emailTest
+                mockResponse(json: json)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRefresh = expectation(description: "Refresh")
+            
+            user.refresh() { error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(user.email, emailTest)
+                
+                expectationRefresh?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRefresh = nil
             }
         }
     }
