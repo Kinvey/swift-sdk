@@ -262,8 +262,8 @@ class HttpRequestFactory: RequestFactory {
     }
     
     fileprivate func ttlInSeconds(_ ttl: TTL?) -> UInt? {
-        if let ttl = ttl {
-            return UInt(ttl.1.toTimeInterval(ttl.0))
+        if let (value, unit) = ttl {
+            return UInt(unit.toTimeInterval(value))
         }
         return nil
     }

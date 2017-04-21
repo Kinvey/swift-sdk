@@ -160,6 +160,26 @@ open class Client: Credential {
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
     open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: User.UserHandler<U>) {
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            encrypted: encrypted,
+            schema: schema
+        ) { (result: Result<U, Swift.Error>) in
+            switch result {
+            case .success(let user):
+                completionHandler(user, nil)
+            case .failure(let error):
+                completionHandler(nil, error)
+            }
+        }
+    }
+    
+    /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: (Result<U, Swift.Error>) -> Void) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
 
         var encryptionKey: Data? = nil
@@ -196,6 +216,26 @@ open class Client: Credential {
     
     /// Initialize a `Client` instance with all the needed parameters.
     open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            encryptionKey: encryptionKey,
+            schema: schema
+        ) { (result: Result<U?, Swift.Error>) in
+            switch result {
+            case .success(let user):
+                completionHandler(user, nil)
+            case .failure(let error):
+                completionHandler(nil, error)
+            }
+        }
+    }
+    
+    /// Initialize a `Client` instance with all the needed parameters.
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping (Result<U?, Swift.Error>) -> Void) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
@@ -229,11 +269,19 @@ open class Client: Credential {
         if let user = keychain.user {
             user.client = self
             activeUser = user
-            completionHandler((user as! U), nil)
+            let customUser = user as! U
+            completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self, completionHandler: completionHandler)
+            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self) { (result: Result<U, Swift.Error>) in
+                switch result {
+                case .success(let user):
+                    completionHandler(.success(user))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
         } else {
-            completionHandler(nil, nil)
+            completionHandler(.success(nil))
         }
     }
     
@@ -251,8 +299,15 @@ open class Client: Credential {
         }
     }
 
-    internal func isInitialized () -> Bool {
+    internal func isInitialized() -> Bool {
         return self.appKey != nil && self.appSecret != nil
+    }
+    
+    internal func validate() -> Swift.Error? {
+        guard isInitialized() else {
+            return Error.clientNotInitialized
+        }
+        return nil
     }
     
     internal class func fileURL(appKey: String, tag: String = defaultTag) -> URL {
@@ -269,6 +324,18 @@ open class Client: Credential {
     
     @discardableResult
     public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
+        return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
+            switch result {
+            case .success(let envInfo):
+                completionHandler(envInfo, nil)
+            case .failure(let error):
+                completionHandler(nil, error)
+            }
+        }
+    }
+    
+    @discardableResult
+    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
         guard let _ = appKey, let _ = appSecret else {
             let message = "Please initialize your client calling the initialize() method before call ping()"
             log.error(message)
@@ -291,9 +358,9 @@ open class Client: Credential {
                 }
             }
         }.then {
-            completionHandler($0, nil)
+            completionHandler(.success($0))
         }.catch {
-            completionHandler(nil, $0)
+            completionHandler(.failure($0))
         }
         return request
     }

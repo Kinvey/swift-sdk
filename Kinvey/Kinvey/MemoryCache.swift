@@ -53,8 +53,8 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
             let kmd = entity.metadata!
             return (entity.entityId!, kmd.lmt!)
         }
-        for item in array {
-            results[item.0] = item.1
+        for (key, value) in array {
+            results[key] = value
         }
         return results
     }

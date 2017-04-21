@@ -70,10 +70,22 @@ let defaultTag = "kinvey"
 let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 
 func buildError(_ data: Data?, _ response: URLResponse?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
-    return buildError(data, HttpResponse(response: response), error, client)
+    return buildError(data: data, urlResponse: response, error: error, client: client)
+}
+
+func buildError(data: Data?, urlResponse: URLResponse?, error: Swift.Error?, client: Client) -> Swift.Error {
+    return buildError(data: data, response: HttpResponse(response: urlResponse), error: error, client: client)
 }
 
 func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
+    return buildError(data: data, response: response, error: error, client: client)
+}
+
+func buildError(client: Client) -> Swift.Error {
+    return buildError(data: nil, response: nil, error: nil, client: client)
+}
+
+func buildError(data: Data?, response: Response?, error: Swift.Error?, client: Client) -> Swift.Error {
     if let error = error {
         return error
     } else if let response = response , response.isUnauthorized,

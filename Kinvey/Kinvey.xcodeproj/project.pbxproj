@@ -257,6 +257,7 @@
 		57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
 		57E7C7B51C51981400848748 /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B41C51981400848748 /* RequestType.swift */; };
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
+		57F216AC1E9DA1640084AAF9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F216AB1E9DA1640084AAF9 /* Result.swift */; };
 		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
 		57F91C291D6E2C020012850A /* CountOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C281D6E2C020012850A /* CountOperation.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
@@ -751,6 +752,7 @@
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
+		57F216AB1E9DA1640084AAF9 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		57F91C251D6D15590012850A /* TaskProgressRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskProgressRequest.swift; sourceTree = "<group>"; };
 		57F91C281D6E2C020012850A /* CountOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountOperation.swift; sourceTree = "<group>"; };
 		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -1122,6 +1124,7 @@
 				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
 				57C2F1721D5E5A68005A214B /* BuilderType.swift */,
 				57A526521E42A07900B33A51 /* Geolocation.swift */,
+				57F216AB1E9DA1640084AAF9 /* Result.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -2070,6 +2073,7 @@
 				573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
+				57F216AC1E9DA1640084AAF9 /* Result.swift in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
 				57A526531E42A07900B33A51 /* Geolocation.swift in Sources */,
 				57FB57D91C86581300AA590F /* String.swift in Sources */,
