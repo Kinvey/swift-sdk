@@ -384,6 +384,13 @@ class UserTests: KinveyTestCase {
                 
                 XCTAssertEqual(user.email, emailTest)
                 
+                let keychain = Keychain(appKey: self.client.appKey!, client: self.client)
+                let user = keychain.user
+                XCTAssertNotNil(user)
+                if let user = user {
+                    XCTAssertEqual(user.email, emailTest)
+                }
+                
                 expectationRefresh?.fulfill()
             }
             
