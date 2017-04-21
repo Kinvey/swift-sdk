@@ -369,6 +369,7 @@ open class User: NSObject, Credential, Mappable {
                 if let response = response, response.isOK, let json = self.client.responseParser.parse(data) {
                     let map = Map(mappingType: .fromJSON, JSON: json)
                     self.mapping(map: map)
+                    self.client.activeUser = self
                     fulfill()
                 } else {
                     reject(buildError(data, response, error, self.client))
