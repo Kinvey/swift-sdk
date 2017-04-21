@@ -360,7 +360,7 @@ open class User: NSObject, Credential, Mappable {
         return request
     }
     
-    /// Gets a `User` instance using the `userId` property.
+    /// Refresh the user's data.
     @discardableResult
     open func refresh(completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
