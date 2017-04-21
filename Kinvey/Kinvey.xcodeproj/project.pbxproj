@@ -559,7 +559,6 @@
 		57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKinveyBackend.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
-		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -629,9 +628,7 @@
 		5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTestCase.swift; sourceTree = "<group>"; };
 		5781D1351CE3D0BA00369F40 /* FileTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTestCase.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
-		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
-		57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CwlPreconditionTesting.framework; sourceTree = "<group>"; };
 		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		578870921DD52EC80087FE78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		578870941DD52EC80087FE78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Sources/ViewController.swift; sourceTree = "<group>"; };
@@ -723,7 +720,6 @@
 		57B768801D10C0C70086AA38 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalRequest.swift; sourceTree = "<group>"; };
 		57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalResponse.swift; sourceTree = "<group>"; };
-		57BB8EEF1DED5070000D8A69 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		57BEAE2C1C98805600479206 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		57BEAE2E1C98805E00479206 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		57BEAE341C98AB3900479206 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -1202,7 +1198,6 @@
 				57B0C1DA1CDCE88900492D6C /* Realm.framework */,
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
-				57873DED1DFFCEEF002C87BF /* CwlPreconditionTesting.framework */,
 			);
 			name = iOS;
 			path = ../Carthage/Build/iOS;
@@ -1274,12 +1269,9 @@
 		DBD4AA6B25714F7AAA213880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				57BB8EEF1DED5070000D8A69 /* libsqlite3.tbd */,
 				5795AB0F1DD3B894001FC808 /* SafariServices.framework */,
-				5719905A1CB301D500070CDA /* Security.framework */,
 				57BEAE2E1C98805E00479206 /* QuartzCore.framework */,
 				57BEAE2C1C98805600479206 /* CoreGraphics.framework */,
-				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
 				57B0C1C11CDCE88900492D6C /* iOS */,
 				57B0C1DE1CDCE88900492D6C /* Mac */,
 				57B0C1EB1CDCE88900492D6C /* tvOS */,
