@@ -497,7 +497,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Refresh the user's data.
     @discardableResult
-    open func refresh(completionHandler: VoidHandler? = nil) -> Request {
+    open func refresh(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -511,9 +511,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
         }.then { user in
-            completionHandler?(nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(error)
+            completionHandler?(.failure(error))
         }
         return request
     }

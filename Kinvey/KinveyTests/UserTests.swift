@@ -446,17 +446,21 @@ class UserTests: KinveyTestCase {
             
             weak var expectationRefresh = expectation(description: "Refresh")
             
-            user.refresh() { error in
+            user.refresh() { result in
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
                 
-                XCTAssertEqual(user.email, emailTest)
-                
-                let keychain = Keychain(appKey: self.client.appKey!, client: self.client)
-                let user = keychain.user
-                XCTAssertNotNil(user)
-                if let user = user {
+                switch result {
+                case .success:
                     XCTAssertEqual(user.email, emailTest)
+                    
+                    let keychain = Keychain(appKey: self.client.appKey!, client: self.client)
+                    let user = keychain.user
+                    XCTAssertNotNil(user)
+                    if let user = user {
+                        XCTAssertEqual(user.email, emailTest)
+                    }
+                case .failure:
+                    XCTFail()
                 }
                 
                 expectationRefresh?.fulfill()
