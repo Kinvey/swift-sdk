@@ -19,20 +19,20 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
-    func executeLocal(_ completionHandler: (([JsonDictionary]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
                 let result = cache.group(aggregation: aggregation, predicate: predicate)
-                completionHandler?(result, nil)
+                completionHandler?(.success(result))
             } else {
-                completionHandler?([], nil)
+                completionHandler?(.success([]))
             }
         }
         return request
     }
     
-    func executeNetwork(_ completionHandler: (([JsonDictionary]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildAppDataGroup(collectionName: T.collectionName(), keys: aggregation.keys, initialObject: aggregation.initialObject, reduceJSFunction: aggregation.reduceJSFunction, condition: predicate)
         request.execute() { data, response, error in
             if let response = response, response.isOK,
@@ -40,9 +40,9 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
                 let json = try? JSONSerialization.jsonObject(with: data),
                 let result = json as? [JsonDictionary]
             {
-                completionHandler?(result, nil)
+                completionHandler?(.success(result))
             } else {
-                completionHandler?(nil, buildError(data, response, error, self.client))
+                completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
         return request

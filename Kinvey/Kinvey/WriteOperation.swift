@@ -10,7 +10,7 @@ import Foundation
 
 internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject {
     
-    typealias CompletionHandler = (R, Swift.Error?) -> Void
+    typealias CompletionHandler = (Result<R, Swift.Error>) -> Void
     
     let writePolicy: WritePolicy
     let sync: AnySync?
@@ -20,6 +20,26 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
         self.sync = sync
         super.init(cache: cache, client: client)
     }
+    
+}
+
+protocol WriteOperationType {
+    
+    associatedtype SuccessType
+    associatedtype FailureType
+    typealias CompletionHandler = (Result<SuccessType, FailureType>) -> Void
+    
+    var writePolicy: WritePolicy { get }
+    
+    @discardableResult
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Request
+    
+    @discardableResult
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request
+    
+}
+
+extension WriteOperationType {
     
     @discardableResult
     func execute(_ completionHandler: CompletionHandler?) -> Request {
@@ -32,20 +52,6 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
         case .forceNetwork:
             return executeNetwork(completionHandler)
         }
-    }
-    
-    @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
-    }
-    
-    @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
     }
     
 }
