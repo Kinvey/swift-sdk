@@ -9,9 +9,9 @@
 import Foundation
 import PromiseKit
 
-internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Error?> where T: NSObject {
+internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error> where T: NSObject {
     
-    internal override init(sync: AnySync?, cache: Cache<T>?, client: Client) {
+    internal override init(sync: AnySync?, cache: AnyCache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
     }
     
@@ -33,7 +33,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Erro
                             request.execute() { data, response, error in
                                 if let response = response , response.isOK, let json = self.client.responseParser.parse(data) {
                                     if let cache = self.cache, let persistable = T(JSON: json) {
-                                        cache.saveEntity(persistable)
+                                        cache.save(entity: persistable)
                                     }
                                     self.sync?.removePendingOperation(pendingOperation)
                                     fulfill()
@@ -54,7 +54,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Erro
                     promises.append(Promise<Void> { fulfill, reject in
                         if let objectId = pendingOperation.objectId {
                             let query = Query(format: "\(T.entityIdProperty()) == %@", objectId)
-                            cache?.removeEntitiesByQuery(query)
+                            cache?.remove(byQuery: query)
                         }
                         sync.removePendingOperation(pendingOperation)
                         fulfill()
@@ -66,9 +66,9 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int?, Swift.Erro
         }
         
         when(fulfilled: promises).then { results in
-            completionHandler?(results.count, nil)
+            completionHandler?(.success(results.count))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }

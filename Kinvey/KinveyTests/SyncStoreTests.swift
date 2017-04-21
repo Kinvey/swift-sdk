@@ -198,8 +198,13 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(count)
             XCTAssertNotNil(error)
             
-            if let error = error as? NSError {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .invalidDataStoreType:
+                    break
+                default:
+                    XCTFail()
+                }
             }
             
             expectationPurge?.fulfill()
@@ -224,7 +229,7 @@ class SyncStoreTests: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
-            XCTAssertNotNil(count)
+            XCTAssertNil(count)
             XCTAssertNotNil(error)
             
             expectationPurge?.fulfill()
@@ -338,7 +343,7 @@ class SyncStoreTests: StoreTestCase {
         
         store.sync() { count, results, error in
             self.assertThread()
-            XCTAssertEqual(count, 0)
+            XCTAssertNil(count)
             XCTAssertNil(results)
             XCTAssertNotNil(error)
             
@@ -354,7 +359,8 @@ class SyncStoreTests: StoreTestCase {
     func testSyncNoCompletionHandler() {
         save()
         
-        let request = store.sync()
+        let request = store.sync { (_, _, _) in
+        }
         
         XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
@@ -441,7 +447,8 @@ class SyncStoreTests: StoreTestCase {
     func testPushNoCompletionHandler() {
         save()
         
-        let request = store.push()
+        let request = store.push { (_, _) in
+        }
         
         XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
@@ -477,7 +484,7 @@ class SyncStoreTests: StoreTestCase {
                 if let results = results {
                     XCTAssertEqual(results.count, 3)
                     
-                    let cacheCount = Int((self.store.cache?.count())!)
+                    let cacheCount = Int((self.store.cache?.count(query: nil))!)
                     XCTAssertEqual(cacheCount, results.count)
 
                 }
@@ -505,7 +512,7 @@ class SyncStoreTests: StoreTestCase {
                 if let results = results {
                     XCTAssertEqual(results.count, 1)
                     
-                    let cacheCount = Int((self.store.cache?.count())!)
+                    let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertEqual(cacheCount, results.count)
                     
                     if let person = results.first {
@@ -617,7 +624,7 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.first {
                         XCTAssertEqual(person.personId, "Victor")
                         
-                        let cacheCount = Int((self.store.cache?.count())!)
+                        let cacheCount = self.store.cache?.count(query: nil)
                         XCTAssertEqual(cacheCount, results.count)
 
                     }

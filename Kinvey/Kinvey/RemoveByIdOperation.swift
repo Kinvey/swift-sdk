@@ -16,7 +16,7 @@ internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> where T: 
         return client.networkRequestFactory.buildAppDataRemoveById(collectionName: T.collectionName(), objectId: objectId)
     }
     
-    internal init(objectId: String, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
+    internal init(objectId: String, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
         self.objectId = objectId
         let query = Query(format: "\(T.entityIdProperty()) == %@", objectId as Any)
         super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)

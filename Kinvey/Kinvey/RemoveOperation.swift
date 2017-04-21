@@ -8,12 +8,12 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject {
+class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
     
-    init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
@@ -24,15 +24,15 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
         fatalError(message)
     }
     
-    override func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             var count: Int?
             if let cache = self.cache {
-                let realmObjects = cache.findEntityByQuery(self.query)
+                let realmObjects = cache.find(byQuery: self.query)
                 count = realmObjects.count
-                let detachedObjects = cache.detach(realmObjects, query: self.query)
-                if cache.removeEntities(realmObjects) {
+                let detachedObjects = cache.detach(entities: realmObjects, query: self.query)
+                if cache.remove(entities: realmObjects) {
                     let idKey = T.entityIdProperty()
                     for object in detachedObjects {
                         if let objectId = object[idKey] as? String, let sync = self.sync {
@@ -47,21 +47,25 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int?> where T: NSObject
                     count = 0
                 }
             }
-            completionHandler?(count, nil)
+            if let count = count {
+                completionHandler?(.success(count))
+            } else {
+                completionHandler?(.failure(buildError(client: client)))
+            }
         }
         return request
     }
     
-    override func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         request.execute() { data, response, error in
             if let response = response , response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? Int
             {
-                self.cache?.removeEntitiesByQuery(self.query)
-                completionHandler?(count, nil)
+                self.cache?.remove(byQuery: self.query)
+                completionHandler?(.success(count))
             } else {
-                completionHandler?(nil, buildError(data, response, error, self.client))
+                completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
         return request

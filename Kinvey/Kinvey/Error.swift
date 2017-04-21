@@ -59,6 +59,12 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when a `User` doen't have an email or username.
     case userWithoutEmailOrUsername
     
+    /// Error when the `appKey` and `appSecret` does not match with any Kinvey environment.
+    case appNotFound(description: String)
+    
+    /// Error when any operation is called but the client was not initiliazed yet.
+    case clientNotInitialized
+    
     
     /// Error localized description.
     public var description: String {
@@ -69,7 +75,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unknownError(_, _, let description),
              .unauthorized(_, _, _, let description),
              .invalidOperation(let description),
-             .missingConfiguration(_, _, _, let description):
+             .missingConfiguration(_, _, _, let description),
+             .appNotFound(let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -87,6 +94,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
             return NSLocalizedString("Error.invalidDataStoreType", bundle: bundle, comment: "")
         case .userWithoutEmailOrUsername:
             return NSLocalizedString("Error.userWithoutEmailOrUsername", bundle: bundle, comment: "")
+        case .clientNotInitialized:
+            return NSLocalizedString("Error.clientNotInitialized", bundle: bundle, comment: "")
         }
     }
     
@@ -172,5 +181,11 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     static func buildUnauthorized(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
         return unauthorized(httpResponse: httpResponse, data: data, error: json["error"]!, description: json["description"]!)
     }
+    
+}
+
+struct MultipleErrors: Swift.Error {
+    
+    let errors: [Swift.Error]
     
 }

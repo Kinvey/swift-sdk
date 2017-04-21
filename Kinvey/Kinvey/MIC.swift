@@ -49,22 +49,35 @@ open class MIC {
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, code: String, client: Client = sharedClient, completionHandler: User.UserHandler<U>? = nil) -> Request {
+    class func login<U: User>(redirectURI: URL, code: String, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code)
-        request.execute { (data, response, error) in
-            if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
-                requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
-            } else {
-                completionHandler?(nil, buildError(data, response, error, client))
+        Promise<U> { fulfill, reject in
+            let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code)
+            request.execute { (data, response, error) in
+                if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
+                    requests += User.login(authSource: .kinvey, authData, client: client) { (result: Result<U, Swift.Error>) in
+                        switch result {
+                        case .success(let user):
+                            fulfill(user)
+                        case .failure(let error):
+                            reject(error)
+                        }
+                    }
+                } else {
+                    reject(buildError(data, response, error, client))
+                }
             }
+            requests += request
+        }.then { user in
+            completionHandler?(.success(user))
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
-        requests += request
         return requests
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, username: String, password: String, client: Client = sharedClient, completionHandler: User.UserHandler<U>? = nil) -> Request {
+    class func login<U: User>(redirectURI: URL, username: String, password: String, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
         let requests = MultiRequest()
         let request = client.networkRequestFactory.buildOAuthGrantAuth(redirectURI: redirectURI)
         Promise<URL> { fulfill, reject in
@@ -93,10 +106,11 @@ open class MIC {
                         let url = URL(string: location),
                         let code = parseCode(redirectURI: redirectURI, url: url)
                     {
-                        requests += login(redirectURI: redirectURI, code: code, client: client) { user, error in
-                            if let user = user {
+                        requests += login(redirectURI: redirectURI, code: code, client: client) { result in
+                            switch result {
+                            case .success(let user):
                                 fulfill(user as! U)
-                            } else if let error = error {
+                            case .failure(let error):
                                 reject(error)
                             }
                         }
@@ -108,9 +122,9 @@ open class MIC {
                 requests += request
             }
         }.then { user in
-            completionHandler?(user, nil)
+            completionHandler?(.success(user))
         }.catch { error in
-            completionHandler?(nil, error)
+            completionHandler?(.failure(error))
         }
         return requests
     }
@@ -165,15 +179,9 @@ public enum MICApiVersion: String {
 import UIKit
 import WebKit
 
-enum MICUserActionResult {
+class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewDelegate {
     
-    case cancel, timeout
-    
-}
-
-class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebViewDelegate {
-    
-    typealias UserHandler<U: User> = (U?, Swift.Error?, MICUserActionResult?) -> Void
+    typealias UserHandler<U: User> = (Result<U, Swift.Error>) -> Void
     
     var activityIndicatorView: UIActivityIndicatorView!
     
@@ -192,12 +200,19 @@ class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebView
         }
     }
     
-    init<U: User>(redirectURI: URL, userType: U.Type, timeout: TimeInterval? = nil, forceUIWebView: Bool = false, client: Client = sharedClient, completionHandler: @escaping UserHandler<U>) {
+    init<UserType: User>(redirectURI: URL, userType: UserType.Type, timeout: TimeInterval? = nil, forceUIWebView: Bool = false, client: Client = sharedClient, completionHandler: @escaping UserHandler<UserType>) {
         self.redirectURI = redirectURI
         self.timeout = timeout
         self.forceUIWebView = forceUIWebView
         self.client = client
-        self.completionHandler = completionHandler as! UserHandler<User>
+        self.completionHandler = {
+            switch $0 {
+            case .success(let user):
+                completionHandler(.success(user as! UserType))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -333,17 +348,17 @@ class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebView
     }
     
     func closeViewControllerUserInteractionCancel(_ sender: Any) {
-        closeViewControllerUserInteraction(userActionResult: .cancel)
+        closeViewControllerUserInteraction(.failure(Error.requestCancelled))
     }
     
     func closeViewControllerUserInteractionTimeout(_ sender: Any) {
-        closeViewControllerUserInteraction(userActionResult: .timeout)
+        closeViewControllerUserInteraction(.failure(Error.requestTimeout))
     }
     
-    func closeViewControllerUserInteraction(user: User? = nil, error: Swift.Error? = nil, userActionResult: MICUserActionResult? = nil) {
+    func closeViewControllerUserInteraction(_ result: Result<User, Swift.Error>) {
         timer = nil
         dismiss(animated: true) {
-            self.completionHandler(user, error, userActionResult)
+            self.completionHandler(result)
         }
     }
     
@@ -357,10 +372,10 @@ class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebView
     func success(code: String) {
         activityIndicatorView.startAnimating()
         
-        MIC.login(redirectURI: redirectURI, code: code, client: client) { user, error in
+        MIC.login(redirectURI: redirectURI, code: code, client: client) { result in
             self.activityIndicatorView.stopAnimating()
             
-            self.closeViewControllerUserInteraction(user: user, error: error)
+            self.closeViewControllerUserInteraction(result)
         }
     }
     
@@ -369,7 +384,7 @@ class MICLoginViewController : UIViewController, WKNavigationDelegate, UIWebView
         if url == nil || !MIC.isValid(redirectURI: redirectURI, url: url!) {
             activityIndicatorView.stopAnimating()
             
-            closeViewControllerUserInteraction(error: error)
+            closeViewControllerUserInteraction(.failure(error))
         }
     }
     

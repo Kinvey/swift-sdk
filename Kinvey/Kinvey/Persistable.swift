@@ -49,56 +49,65 @@ internal func kinveyMappingType(left: String, right: String) {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(left: inout T, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(left: inout T?, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(left: inout T!, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- right.1
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- (right.1, right.2)
+    let (right, map, transform) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- (right.1, right.2)
+    let (right, map, transform) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
-    left <- (right.1, right.2)
+    let (right, map, transform) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- (map, transform)
 }
   
 class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictionary]> where T: BaseMappable {
@@ -126,12 +135,13 @@ class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictio
 }
 
 public func <-<T: BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
+    let (_, map) = rhs
     var list = lhs
-    switch rhs.1.mappingType {
+    switch map.mappingType {
     case .fromJSON:
-        list <- (rhs.1, ListValueTransform<T>(list))
+        list <- (map, ListValueTransform<T>(list))
     case .toJSON:
-        list <- (rhs.1, ListValueTransform<T>(list))
+        list <- (map, ListValueTransform<T>(list))
     }
 }
 
@@ -159,13 +169,14 @@ class StringValueTransform: TransformOf<List<StringValue>, [String]> {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<StringValue>, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
     var list = left
-    switch right.1.mappingType {
+    switch map.mappingType {
     case .toJSON:
-        list <- (right.1, StringValueTransform())
+        list <- (map, StringValueTransform())
     case .fromJSON:
-        list <- (right.1, StringValueTransform())
+        list <- (map, StringValueTransform())
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -195,13 +206,14 @@ class IntValueTransform: TransformOf<List<IntValue>, [Int]> {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<IntValue>, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
     var list = left
-    switch right.1.mappingType {
+    switch map.mappingType {
     case .toJSON:
-        list <- (right.1, IntValueTransform())
+        list <- (map, IntValueTransform())
     case .fromJSON:
-        list <- (right.1, IntValueTransform())
+        list <- (map, IntValueTransform())
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -237,13 +249,14 @@ class FloatValueTransform: TransformOf<List<FloatValue>, [Float]> {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<FloatValue>, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
     var list = left
-    switch right.1.mappingType {
+    switch map.mappingType {
     case .toJSON:
-        list <- (right.1, FloatValueTransform())
+        list <- (map, FloatValueTransform())
     case .fromJSON:
-        list <- (right.1, FloatValueTransform())
+        list <- (map, FloatValueTransform())
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -273,13 +286,14 @@ class DoubleValueTransform: TransformOf<List<DoubleValue>, [Double]> {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<DoubleValue>, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
     var list = left
-    switch right.1.mappingType {
+    switch map.mappingType {
     case .toJSON:
-        list <- (right.1, DoubleValueTransform())
+        list <- (map, DoubleValueTransform())
     case .fromJSON:
-        list <- (right.1, DoubleValueTransform())
+        list <- (map, DoubleValueTransform())
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -309,13 +323,14 @@ class BoolValueTransform: TransformOf<List<BoolValue>, [Bool]> {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<BoolValue>, right: (String, Map)) {
-    kinveyMappingType(left: right.0, right: right.1.currentKey!)
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
     var list = left
-    switch right.1.mappingType {
+    switch map.mappingType {
     case .toJSON:
-        list <- (right.1, BoolValueTransform())
+        list <- (map, BoolValueTransform())
     case .fromJSON:
-        list <- (right.1, BoolValueTransform())
+        list <- (map, BoolValueTransform())
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -368,13 +383,13 @@ extension Persistable {
     
     static func propertyMappingReverse() -> [String : [String]] {
         var results = [String : [String]]()
-        for keyPair in propertyMapping() {
-            var properties = results[keyPair.1]
+        for (key, value) in propertyMapping() {
+            var properties = results[value]
             if properties == nil {
                 properties = [String]()
             }
-            properties!.append(keyPair.0)
-            results[keyPair.1] = properties
+            properties!.append(key)
+            results[value] = properties
         }
         guard
             results[PersistableIdKey] != nil,

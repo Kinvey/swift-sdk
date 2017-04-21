@@ -7,8 +7,11 @@
 //
 
 import Foundation
+@testable import Kinvey
 
-class MemoryCache<T: Persistable>: Cache<T> where T: NSObject {
+class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
+    
+    typealias `Type` = T
     
     var memory = [String : T]()
     
@@ -16,22 +19,22 @@ class MemoryCache<T: Persistable>: Cache<T> where T: NSObject {
         super.init(persistenceId: "")
     }
     
-    override func saveEntity(_ entity: T) {
+    func save(entity: T) {
         let objId = entity.entityId!
         memory[objId] = entity
     }
     
-    override func saveEntities(_ entities: [T]) {
+    func save(entities: [T]) {
         for entity in entities {
-            saveEntity(entity)
+            save(entity: entity)
         }
     }
     
-    override func findEntity(_ objectId: String) -> T? {
+    func find(byId objectId: String) -> T? {
         return memory[objectId]
     }
     
-    override func findEntityByQuery(_ query: Query) -> [T] {
+    func find(byQuery query: Query) -> [T] {
         guard let predicate = query.predicate else {
             return memory.values.map({ (json) -> Type in
                 return json
@@ -44,46 +47,68 @@ class MemoryCache<T: Persistable>: Cache<T> where T: NSObject {
         })
     }
     
-    override func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
+    func findIdsLmts(byQuery query: Query) -> [String : String] {
         var results = [String : String]()
-        let array = findEntityByQuery(query).map { (entity) -> (String, String) in
+        let array = find(byQuery: query).map { (entity) -> (String, String) in
             let kmd = entity.metadata!
             return (entity.entityId!, kmd.lmt!)
         }
-        for item in array {
-            results[item.0] = item.1
+        for (key, value) in array {
+            results[key] = value
         }
         return results
     }
     
-    override func findAll() -> [T] {
-        return findEntityByQuery(Query())
+    func findAll() -> [T] {
+        return find(byQuery: Query())
     }
     
-    override func count(_ query: Query? = nil) -> Int {
+    func count(query: Query? = nil) -> Int {
         if let query = query {
-            return findEntityByQuery(query).count
+            return find(byQuery: query).count
         }
         return memory.count
     }
     
     @discardableResult
-    override func removeEntity(_ entity: T) -> Bool {
+    func remove(entity: T) -> Bool {
         let objId = entity.entityId!
         return memory.removeValue(forKey: objId) != nil
     }
     
     @discardableResult
-    override func removeEntitiesByQuery(_ query: Query) -> Int {
-        let objs = findEntityByQuery(query)
+    func remove(entities: [T]) -> Bool {
+        for entity in entities {
+            if !remove(entity: entity) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    @discardableResult
+    func remove(byQuery query: Query) -> Int {
+        let objs = find(byQuery: query)
         for obj in objs {
-            removeEntity(obj)
+            remove(entity: obj)
         }
         return objs.count
     }
     
-    override func removeAllEntities() {
+    func removeAll() {
         memory.removeAll()
+    }
+    
+    func clear(query: Query?) {
+        memory.removeAll()
+    }
+    
+    func detach(entities: [T], query: Query?) -> [T] {
+        return entities
+    }
+    
+    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
+        return []
     }
     
 }

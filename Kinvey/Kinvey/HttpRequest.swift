@@ -169,8 +169,8 @@ extension URLRequest {
     public var description: String {
         var description = "\(httpMethod ?? "GET") \(url?.absoluteString ?? "")"
         if let headers = allHTTPHeaderFields {
-            for keyPair in headers {
-                description += "\n\(keyPair.0): \(keyPair.1)"
+            for (headerField, value) in headers {
+                description += "\n\(headerField): \(value)"
             }
         }
         if let body = httpBody, let bodyString = String(data: body, encoding: String.Encoding.utf8) {
@@ -186,8 +186,8 @@ extension HTTPURLResponse {
     /// Description for the NSHTTPURLResponse including url and headers
     open override var description: String {
         var description = "\(statusCode) \(HTTPURLResponse.localizedString(forStatusCode: statusCode))"
-        for keyPair in allHeaderFields {
-            description += "\n\(keyPair.0): \(keyPair.1)"
+        for (headerField, value) in allHeaderFields {
+            description += "\n\(headerField): \(value)"
         }
         return description
     }
@@ -415,12 +415,17 @@ internal class HttpRequest: TaskProgressRequest, Request {
             
             var headers = ""
             if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-                for header in allHTTPHeaderFields {
-                    headers += "-H \"\(header.0): \(header.1)\" "
+                for (headerField, value) in allHTTPHeaderFields {
+                    headers += "-H \"\(headerField): \(value)\" "
                 }
             }
             return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
         }
+    }
+    
+    func setBody(json: [String : Any]) {
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try! JSONSerialization.data(withJSONObject: json)
     }
 
 }

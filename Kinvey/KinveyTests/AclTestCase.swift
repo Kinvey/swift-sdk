@@ -145,7 +145,7 @@ class AclTestCase: StoreTestCase {
             
             store.push() { count, errors in
                 self.assertThread()
-                XCTAssertEqual(count, 0)
+                XCTAssertNil(count)
                 XCTAssertNotNil(errors)
                 
                 if let errors = errors {

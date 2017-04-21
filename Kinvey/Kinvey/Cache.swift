@@ -8,49 +8,56 @@
 
 import Foundation
 
-internal protocol CacheType {
+internal protocol CacheType: class {
     
     var persistenceId: String { get }
     var collectionName: String { get }
     var ttl: TimeInterval? { get set }
     
-    associatedtype `Type`
+    associatedtype `Type`: Persistable
     
-    func saveEntity(_ entity: Type)
+    func save(entity: Type)
     
-    func saveEntities(_ entities: [Type])
+    func save(entities: [Type])
     
-    func findEntity(_ objectId: String) -> Type?
+    func find(byId objectId: String) -> Type?
     
-    func findEntityByQuery(_ query: Query) -> [Type]
+    func find(byQuery query: Query) -> [Type]
     
-    func findIdsLmtsByQuery(_ query: Query) -> [String : String]
+    func findIdsLmts(byQuery query: Query) -> [String : String]
     
     func findAll() -> [Type]
     
-    func count(_ query: Query?) -> Int
+    func count(query: Query?) -> Int
     
-    func removeEntity(_ entity: Type) -> Bool
+    @discardableResult
+    func remove(entity: Type) -> Bool
     
-    func removeEntities(_ entity: [Type]) -> Bool
+    @discardableResult
+    func remove(entities: [Type]) -> Bool
     
-    func removeEntitiesByQuery(_ query: Query) -> Int
+    @discardableResult
+    func remove(byQuery query: Query) -> Int
     
-    func removeAllEntities()
+    func removeAll()
     
     func clear(query: Query?)
+    
+    func detach(entities: [Type], query: Query?) -> [Type]
+    
+    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary]
     
 }
 
 extension CacheType {
     
     func isEmpty() -> Bool {
-        return count(nil) == 0
+        return count(query: nil) == 0
     }
     
 }
 
-internal class Cache<T: Persistable>: CacheType where T: NSObject {
+internal class Cache<T: Persistable> where T: NSObject {
     
     internal typealias `Type` = T
     
@@ -64,85 +71,126 @@ internal class Cache<T: Persistable>: CacheType where T: NSObject {
         self.ttl = ttl
     }
     
-    func detach(_ entity: [T], query: Query) -> [T] {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+}
+
+class AnyCache<T: Persistable>: CacheType {
+    
+    var persistenceId: String {
+        return _getPersistenceId()
     }
     
-    func saveEntity(_ entity: T) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    var collectionName: String {
+        return _getCollectionName()
     }
     
-    func saveEntities(_ entities: [T]) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    var ttl: TimeInterval? {
+        get {
+            return _getTTL()
+        }
+        set {
+            _setTTL(newValue)
+        }
     }
     
-    func findEntity(_ objectId: String) -> T? {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    private let _getPersistenceId: () -> String
+    private let _getCollectionName: () -> String
+    private let _getTTL: () -> TimeInterval?
+    private let _setTTL: (TimeInterval?) -> Void
+    private let _saveEntity: (T) -> Void
+    private let _saveEntities: ([T]) -> Void
+    private let _findById: (String) -> T?
+    private let _findByQuery: (Query) -> [T]
+    private let _findIdsLmtsByQuery: (Query) -> [String : String]
+    private let _findAll: () -> [T]
+    private let _count: (Query?) -> Int
+    private let _removeEntity: (T) -> Bool
+    private let _removeEntities: ([T]) -> Bool
+    private let _removeByQuery: (Query) -> Int
+    private let _removeAll: () -> Void
+    private let _clear: (Query?) -> Void
+    private let _detach: ([T], Query?) -> [T]
+    private let _group: (Aggregation, NSPredicate?) -> [JsonDictionary]
+    
+    typealias `Type` = T
+
+    init<Cache: CacheType>(_ cache: Cache) where Cache.`Type` == T {
+        _getPersistenceId = { return cache.persistenceId }
+        _getCollectionName = { return cache.collectionName }
+        _getTTL = { return cache.ttl }
+        _setTTL = { cache.ttl = $0 }
+        _saveEntity = cache.save(entity:)
+        _saveEntities = cache.save(entities:)
+        _findById = cache.find(byId:)
+        _findByQuery = cache.find(byQuery:)
+        _findIdsLmtsByQuery = cache.findIdsLmts(byQuery:)
+        _findAll = cache.findAll
+        _count = cache.count(query:)
+        _removeEntity = cache.remove(entity:)
+        _removeEntities = cache.remove(entities:)
+        _removeByQuery = cache.remove(byQuery:)
+        _removeAll = cache.removeAll
+        _clear = cache.clear(query:)
+        _detach = cache.detach(entities: query:)
+        _group = cache.group(aggregation: predicate:)
     }
     
-    func findEntityByQuery(_ query: Query) -> [T] {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func save(entity: T) {
+        _saveEntity(entity)
     }
     
-    func findIdsLmtsByQuery(_ query: Query) -> [String : String] {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func save(entities: [T]) {
+        _saveEntities(entities)
+    }
+    
+    func find(byId objectId: String) -> T? {
+        return _findById(objectId)
+    }
+    
+    func find(byQuery query: Query) -> [T] {
+        return _findByQuery(query)
+    }
+    
+    func findIdsLmts(byQuery query: Query) -> [String : String] {
+        return _findIdsLmtsByQuery(query)
     }
     
     func findAll() -> [T] {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+        return _findAll()
     }
     
-    func count(_ query: Query? = nil) -> Int {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func count(query: Query?) -> Int {
+        return _count(query)
     }
     
     @discardableResult
-    func removeEntity(_ entity: T) -> Bool {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func remove(entity: T) -> Bool {
+        return _removeEntity(entity)
     }
     
     @discardableResult
-    func removeEntities(_ entity: [T]) -> Bool {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func remove(entities: [T]) -> Bool {
+        return _removeEntities(entities)
     }
     
     @discardableResult
-    func removeEntitiesByQuery(_ query: Query) -> Int {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func remove(byQuery query: Query) -> Int {
+        return _removeByQuery(query)
     }
     
-    func removeAllEntities() {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func removeAll() {
+        _removeAll()
     }
     
-    func clear(query: Query? = nil) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+    func clear(query: Query?) {
+        _clear(query)
+    }
+    
+    func detach(entities: [T], query: Query?) -> [T] {
+        return _detach(entities, query)
+    }
+    
+    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
+        return _group(aggregation, predicate)
     }
     
 }
