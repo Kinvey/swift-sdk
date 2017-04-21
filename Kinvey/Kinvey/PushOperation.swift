@@ -61,9 +61,9 @@ fileprivate class PushRequest: NSObject, Request {
     
 }
 
-internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]?> where T: NSObject {
+internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]> where T: NSObject {
     
-    internal override init(sync: AnySync?, cache: Cache<T>?, client: Client) {
+    internal override init(sync: AnySync?, cache: AnyCache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
     }
     
@@ -73,7 +73,11 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         
         let collectionName = T.collectionName()
         let pushOperation = PushRequest(collectionName: collectionName) {
-            completionHandler?(count, errors.count > 0 ? errors : nil)
+            if errors.isEmpty {
+                completionHandler?(.success(count))
+            } else {
+                completionHandler?(.failure(errors))
+            }
         }
         
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
@@ -90,13 +94,13 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                         {
                             let json = self.client.responseParser.parse(data)
                             if let cache = self.cache, let json = json, let objectId = objectId , request.request.httpMethod != "DELETE" {
-                                if let entity = cache.findEntity(objectId) {
-                                    cache.removeEntity(entity)
+                                if let entity = cache.find(byId: objectId) {
+                                    cache.remove(entity: entity)
                                 }
                                 
                                 let persistable = T(JSON: json)
                                 if let persistable = persistable {
-                                    cache.saveEntity(persistable)
+                                    cache.save(entity: persistable)
                                 }
                             }
                             if request.request.httpMethod != "DELETE" {

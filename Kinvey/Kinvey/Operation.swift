@@ -112,10 +112,10 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
     typealias UIntArrayCompletionHandler = (UInt?, [T]?, Swift.Error?) -> Void
     
-    let cache: Cache<T>?
+    let cache: AnyCache<T>?
     let client: Client
     
-    init(cache: Cache<T>? = nil, client: Client) {
+    init(cache: AnyCache<T>? = nil, client: Client) {
         self.cache = cache
         self.client = client
     }
@@ -138,7 +138,7 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
             return (created: Set<String>(), updated: Set<String>(), deleted: Set<String>())
         }
         let refKeys = Set<String>(refObjs.keys)
-        let cachedObjs = cache.findIdsLmtsByQuery(query)
+        let cachedObjs = cache.findIdsLmts(byQuery: query)
         let cachedKeys = Set<String>(cachedObjs.keys)
         let createdKeys = refKeys.subtracting(cachedKeys)
         let deletedKeys = cachedKeys.subtracting(refKeys)

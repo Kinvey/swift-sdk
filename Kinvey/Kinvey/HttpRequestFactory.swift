@@ -136,6 +136,11 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataPing() -> HttpRequest {
+        let request = HttpRequest(httpMethod: .get, endpoint: Endpoint.appDataPing(client: client), client: client)
+        return request
+    }
+    
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.appDataById(client: client, collectionName: collectionName, id: id), credential: client.activeUser, client: client)
         return request
@@ -148,6 +153,20 @@ class HttpRequestFactory: RequestFactory {
     
     func buildAppDataCountByQuery(collectionName: String, query: Query?) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.appDataCount(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
+        return request
+    }
+    
+    func buildAppDataGroup(collectionName: String, keys: [String], initialObject: [String : Any], reduceJSFunction: String, condition: NSPredicate?) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataGroup(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        var json: [String : Any] = [
+            "key" : keys,
+            "initial" : initialObject,
+            "reduce" : reduceJSFunction
+        ]
+        if let condition = condition {
+            json["condition"] = condition.mongoDBQuery
+        }
+        request.setBody(json: json)
         return request
     }
     
@@ -243,8 +262,8 @@ class HttpRequestFactory: RequestFactory {
     }
     
     fileprivate func ttlInSeconds(_ ttl: TTL?) -> UInt? {
-        if let ttl = ttl {
-            return UInt(ttl.1.toTimeInterval(ttl.0))
+        if let (value, unit) = ttl {
+            return UInt(unit.toTimeInterval(value))
         }
         return nil
     }

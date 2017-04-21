@@ -48,6 +48,14 @@ struct HttpResponse {
     let statusCode: Int?
     let headerFields: [String : String]?
     let chunks: [ChunkData]?
+    let error: Swift.Error?
+    
+    init(error: Swift.Error) {
+        statusCode = nil
+        headerFields = nil
+        chunks = nil
+        self.error = error
+    }
     
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]? = nil) {
         var headerFields = headerFields ?? [:]
@@ -59,6 +67,7 @@ struct HttpResponse {
         self.statusCode = statusCode
         self.headerFields = headerFields
         self.chunks = chunks
+        error = nil
     }
     
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
@@ -175,17 +184,21 @@ extension XCTestCase {
         
         override func startLoading() {
             let responseObj = MockURLProtocol.completionHandler!(self.request)
-            let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
-            self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
-            if let chunks = responseObj.chunks {
-                for chunk in chunks {
-                    self.client!.urlProtocol(self, didLoad: chunk.data)
-                    if let delay = chunk.delay {                        
-                        RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+            if let error = responseObj.error {
+                self.client!.urlProtocol(self, didFailWithError: error)
+            } else {
+                let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
+                self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+                if let chunks = responseObj.chunks {
+                    for chunk in chunks {
+                        self.client!.urlProtocol(self, didLoad: chunk.data)
+                        if let delay = chunk.delay {                        
+                            RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                        }
                     }
                 }
+                self.client!.urlProtocolDidFinishLoading(self)
             }
-            self.client!.urlProtocolDidFinishLoading(self)
         }
         
         override func stopLoading() {
@@ -427,10 +440,8 @@ class KinveyTestCase: XCTestCase {
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
         let store = DataStore<T>.collection()
-        if let cache = store.cache as? RealmCache {
-            try! cache.realm.write {
-                cache.realm.deleteAll()
-            }
+        if let cache = store.cache {
+            cache.clear(query: nil)
         }
     }
     
@@ -449,9 +460,15 @@ class KinveyTestCase: XCTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            user.destroy { (error) -> Void in
+            user.destroy {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
                 
                 expectationDestroyUser?.fulfill()
             }

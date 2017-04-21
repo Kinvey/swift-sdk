@@ -98,7 +98,7 @@ class CacheStoreTests: StoreTestCase {
             
             store.find(byId: temporaryObjectId, readPolicy: .forceLocal) { (person, error) in
                 XCTAssertNil(person)
-                XCTAssertNil(error)
+                XCTAssertNotNil(error)
                 
                 expectationFind?.fulfill()
             }

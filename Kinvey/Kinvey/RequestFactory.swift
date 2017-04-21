@@ -26,9 +26,11 @@ protocol RequestFactory {
     func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email: String) -> HttpRequest
     
+    func buildAppDataPing() -> HttpRequest
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest
     func buildAppDataFindByQuery(collectionName: String, query: Query) -> HttpRequest
     func buildAppDataCountByQuery(collectionName: String, query: Query?) -> HttpRequest
+    func buildAppDataGroup(collectionName: String, keys: [String], initialObject: [String : Any], reduceJSFunction: String, condition: NSPredicate?) -> HttpRequest
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest
     func buildAppDataRemoveByQuery(collectionName: String, query: Query) -> HttpRequest
     func buildAppDataRemoveById(collectionName: String, objectId: String) -> HttpRequest

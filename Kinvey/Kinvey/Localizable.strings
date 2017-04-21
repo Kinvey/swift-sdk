@@ -17,3 +17,5 @@
 "Error.invalidDataStoreType" = "DataStore type does not support this operation";
 
 "Error.userWithoutEmailOrUsername" = "User has no email or username";
+
+"Error.clientNotInitialized" = "Client is not initialized. Please call the initialize() method to initialize the client and try again.";

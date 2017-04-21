@@ -27,7 +27,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
         self.resultsHandler = resultsHandler
@@ -35,14 +35,14 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     }
     
     @discardableResult
-    func executeLocal(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
-                let json = cache.findEntityByQuery(self.query)
-                completionHandler?(json, nil)
+                let json = cache.find(byQuery: self.query)
+                completionHandler?(.success(json))
             } else {
-                completionHandler?([], nil)
+                completionHandler?(.success([]))
             }
         }
         return request
@@ -51,7 +51,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
     @discardableResult
-    func executeNetwork(_ completionHandler: (([T]?, Swift.Error?) -> Void)? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: fields != nil ? Query(query) { $0.fields = fields } : query)
@@ -81,11 +81,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                                         newRefObjs[key] = value
                                     }
                                 }
-                                operation.execute { (results, error) -> Void in
-                                    if let results = results {
+                                operation.execute { (result) -> Void in
+                                    switch result {
+                                    case .success(let results):
                                         fulfill(results)
-                                    } else {
-                                        reject(buildError(data, response, error, self.client))
+                                    case .failure(let error):
+                                        reject(error)
                                     }
                                 }
                             }
@@ -97,7 +98,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                             }
                             self.executeLocal(completionHandler)
                         }.catch { error in
-                            completionHandler?(nil, error)
+                            completionHandler?(.failure(error))
                         }
                     } else if allIds.count > 0 {
                         let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
@@ -105,14 +106,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .forceNetwork, cache: cache, client: self.client) { jsonArray in
                             newRefObjs = self.reduceToIdsLmts(jsonArray)
                         }
-                        operation.execute { (results, error) -> Void in
-                            if let _ = results {
+                        operation.execute { (result) -> Void in
+                            switch result {
+                            case .success:
                                 if self.mustRemoveCachedRecords, let refObjs = newRefObjs {
                                     self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
                                 }
                                 self.executeLocal(completionHandler)
-                            } else {
-                                completionHandler?(nil, buildError(data, response, error, self.client))
+                            case .failure(let error):
+                                completionHandler?(.failure(buildError(data, response, error, self.client)))
                             }
                         }
                     } else {
@@ -127,26 +129,26 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                                 let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                                 self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
                             }
-                            cache.saveEntities(entities)
+                            cache.save(entities: entities)
                         }
-                        completionHandler?(entities, nil)
+                        completionHandler?(.success(entities))
                     } else {
-                        completionHandler?(nil, buildError(data, response, error, self.client))
+                        completionHandler?(.failure(buildError(data, response, error, self.client)))
                     }
                 }
             } else {
-                completionHandler?(nil, buildError(data, response, error, self.client))
+                completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
         return request
     }
     
-    fileprivate func removeCachedRecords<S : Sequence>(_ cache: Cache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {
+    fileprivate func removeCachedRecords<S : Sequence>(_ cache: AnyCache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {
         let refKeys = Set<String>(keys)
         let deleted = deleted.subtracting(refKeys)
         if deleted.count > 0 {
             let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted as AnyObject)
-            cache.removeEntitiesByQuery(query)
+            cache.remove(byQuery: query)
         }
     }
     
