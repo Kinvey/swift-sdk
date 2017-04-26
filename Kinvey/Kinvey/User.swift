@@ -543,7 +543,6 @@ open class User: NSObject, Credential, Mappable {
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
-        socialIdentity <- map["_socialIdentity"]
     }
     
     /// Sign out the current active user.
@@ -819,56 +818,34 @@ open class User: NSObject, Credential, Mappable {
 
 }
 
-public struct UserAuthToken : StaticMappable {
-    
-    var accessToken: String
-    var refreshToken: String?
-    var tokenType: String?
-    var expiresIn: Int?
-    
-    public static func objectForMapping(map: Map) -> BaseMappable? {
-        guard let accessToken: String = map["access_token"].value() else {
-            return nil
-        }
-        return UserAuthToken(accessToken: accessToken, refreshToken: nil, tokenType: nil, expiresIn: nil)
-    }
-    
-    public mutating func mapping(map: Map) {
-        accessToken <- map["access_token"]
-        refreshToken <- map["refresh_token"]
-        tokenType <- map["token_type"]
-        expiresIn <- map["expires_in"]
-    }
-    
-}
-
 public struct UserSocialIdentity : StaticMappable {
     
     /// Facebook social identity
-    var facebook: UserAuthToken?
+    public let facebook: [String : Any]?
     
     /// Twitter social identity
-    var twitter: UserAuthToken?
+    public let twitter: [String : Any]?
     
     /// Google+ social identity
-    var googlePlus: UserAuthToken?
+    public let googlePlus: [String : Any]?
     
     /// LinkedIn social identity
-    var linkedIn: UserAuthToken?
+    public let linkedIn: [String : Any]?
     
     /// Kinvey MIC social identity
-    var kinvey: UserAuthToken?
+    public let kinvey: [String : Any]?
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
-        return UserSocialIdentity()
+        return UserSocialIdentity(
+            facebook: map[AuthSource.facebook.rawValue].value(),
+            twitter: map[AuthSource.twitter.rawValue].value(),
+            googlePlus: map[AuthSource.googlePlus.rawValue].value(),
+            linkedIn: map[AuthSource.linkedIn.rawValue].value(),
+            kinvey: map[AuthSource.kinvey.rawValue].value()
+        )
     }
     
     public mutating func mapping(map: Map) {
-        facebook <- map[AuthSource.facebook.rawValue]
-        twitter <- map[AuthSource.twitter.rawValue]
-        googlePlus <- map[AuthSource.googlePlus.rawValue]
-        linkedIn <- map[AuthSource.linkedIn.rawValue]
-        kinvey <- map[AuthSource.kinvey.rawValue]
     }
     
 }

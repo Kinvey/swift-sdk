@@ -54,15 +54,24 @@ class Keychain {
     }
     
     fileprivate static let kinveyAuthKey = AuthSource.kinvey.rawValue
-    var kinveyAuth: UserAuthToken? {
+    var kinveyAuth: [String : Any]? {
         get {
-            guard let jsonString = keychain[Keychain.kinveyAuthKey] else {
-                return nil
+            if let jsonString = keychain[Keychain.kinveyAuthKey],
+                let data = jsonString.data(using: .utf8),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data)
+            {
+                return jsonObject as? JsonDictionary
             }
-            return UserAuthToken(JSONString: jsonString)
+            return nil
         }
         set {
-            keychain[Keychain.kinveyAuthKey] = newValue?.toJSONString()
+            if let newValue = newValue,
+                let data = try? JSONSerialization.data(withJSONObject: newValue)
+            {
+                keychain[Keychain.kinveyAuthKey] = String(data: data, encoding: .utf8)
+            } else {
+                keychain[Keychain.kinveyAuthKey] = nil
+            }
         }
     }
     
