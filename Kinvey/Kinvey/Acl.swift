@@ -19,7 +19,7 @@ class AclTransformType: TransformType {
     func transformFromJSON(_ value: Any?) -> [String]? {
         if let value = value as? String,
             let data = value.data(using: String.Encoding.utf8),
-            let json = try? JSONSerialization.jsonObject(with: data, options: []),
+            let json = try? JSONSerialization.jsonObject(with: data),
             let array = json as? [String]
         {
             return array
@@ -29,7 +29,7 @@ class AclTransformType: TransformType {
     
     func transformToJSON(_ value: [String]?) -> String? {
         if let value = value,
-            let data = try? JSONSerialization.data(withJSONObject: value, options: []),
+            let data = try? JSONSerialization.data(withJSONObject: value),
             let json = String(data: data, encoding: String.Encoding.utf8)
         {
             return json

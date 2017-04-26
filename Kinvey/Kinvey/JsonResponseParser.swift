@@ -18,7 +18,7 @@ class JsonResponseParser: ResponseParser {
     }
     
     func parse(_ data: Data?) -> JsonDictionary? {
-        if let data = data , data.count > 0,
+        if let data = data, data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? JsonDictionary,
             let json = result
         {
@@ -28,7 +28,7 @@ class JsonResponseParser: ResponseParser {
     }
     
     func parseArray(_ data: Data?) -> [JsonDictionary]? {
-        if let data = data , data.count > 0,
+        if let data = data, data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary],
             let json = result
         {
@@ -59,7 +59,7 @@ class JsonResponseParser: ResponseParser {
     }
     
     func parseUser<UserType: User>(_ data: Data?) -> UserType? {
-        if let data = data , data.count > 0,
+        if let data = data, data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? JsonDictionary,
             let json = result
         {
@@ -70,7 +70,7 @@ class JsonResponseParser: ResponseParser {
     }
     
     func parseUsers<UserType: User>(_ data: Data?) -> [UserType]? {
-        if let data = data , data.count > 0,
+        if let data = data, data.count > 0,
             let result = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary],
             let jsonArray = result
         {

@@ -21,16 +21,8 @@ extension NSPredicate: StaticMappable {
     
     public func mapping(map: Map) {
         if let json = json {
-            for (key, value) in json {
-                if var array = value as? Array<Any> {
-                    array <- map[key]
-                } else if var dictionary = value as? Dictionary<String, Any> {
-                    dictionary <- map[key]
-                } else if var string = value as? String {
-                    string <- map[key]
-                } else if var string = value as? NSNumber {
-                    string <- map[key]
-                }
+            for (key, var value) in json {
+                value <- map[key]
             }
         }
     }
@@ -225,9 +217,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     }
     
     public init?(map: Map) {
-        if map.mappingType == .fromJSON {
-            return nil
-        }
+        return nil
     }
     
     let sortLock = NSLock()

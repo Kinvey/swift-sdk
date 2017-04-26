@@ -22,6 +22,9 @@ public enum TimeUnit {
     
     /// Time unit that represents days.
     case day
+    
+    /// Time unit that represents weeks.
+    case week
 }
 
 extension TimeUnit {
@@ -32,6 +35,7 @@ extension TimeUnit {
         case .minute: return 60
         case .hour: return 60 * TimeUnit.minute.timeInterval
         case .day: return 24 * TimeUnit.hour.timeInterval
+        case .week: return 7 * TimeUnit.day.timeInterval
         }
     }
     
@@ -49,26 +53,6 @@ extension Int {
     internal var minutes: TTL { return TTL(self, .minute) }
     internal var hours: TTL { return TTL(self, .hour) }
     internal var days: TTL { return TTL(self, .day) }
-    
-    var secondsDate : Date { return date(.second) }
-    var minutesDate : Date { return date(.minute) }
-    var hoursDate   : Date { return date(.hour) }
-    var daysDate    : Date { return date(.day) }
-    
-    internal func date(_ timeUnit: TimeUnit, calendar: Calendar = Calendar.current) -> Date {
-        var dateComponents = DateComponents()
-        switch timeUnit {
-        case .second:
-            dateComponents.day = -self
-        case .minute:
-            dateComponents.minute = -self
-        case .hour:
-            dateComponents.hour = -self
-        case .day:
-            dateComponents.day = -self
-        }
-        let newDate = (calendar as NSCalendar).date(byAdding: dateComponents, to: Date(), options: [])
-        return newDate!
-    }
+    internal var weeks: TTL { return TTL(self, .week) }
     
 }

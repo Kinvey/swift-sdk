@@ -58,7 +58,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         request.execute() { data, response, error in
-            if let response = response , response.isOK,
+            if let response = response, response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? Int
             {

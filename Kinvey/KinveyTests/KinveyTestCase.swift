@@ -239,11 +239,33 @@ extension XCTestCase {
         setURLProtocol(MockURLProtocol.self)
     }
     
+    func mockResponse(error: Swift.Error) {
+        MockURLProtocol.completionHandler = { _ in
+            return HttpResponse(error: error)
+        }
+        setURLProtocol(MockURLProtocol.self)
+    }
+    
     func mockResponse(completionHandler: @escaping (URLRequest) -> HttpResponse) {
         MockURLProtocol.completionHandler = completionHandler
         setURLProtocol(MockURLProtocol.self)
     }
     
+}
+
+@inline(__always)
+func XCTAssertMainThread() {
+    XCTAssertTrue(Thread.isMainThread)
+}
+
+@inline(__always)
+func XCTAssertTimeoutError(_ error: Swift.Error?) {
+    XCTAssertNotNil(error)
+    if let error = error {
+        let error = error as NSError
+        XCTAssertEqual(error.domain, NSURLErrorDomain)
+        XCTAssertEqual(error.code, NSURLErrorTimedOut)
+    }
 }
 
 class KinveyTestCase: XCTestCase {
@@ -394,49 +416,6 @@ class KinveyTestCase: XCTestCase {
             XCTAssertNotNil(client.activeUser)
         }
     }
-    
-    func signUp(username: String, password: String) {
-        if let user = client.activeUser {
-            user.logout()
-        }
-        
-        if useMockData {
-            mockResponse(statusCode: 201, json: [
-                "username": username,
-                "password": password,
-                "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString(),
-                    "authtoken": UUID().uuidString
-                ],
-                "_id": UUID().uuidString,
-                "_acl": [
-                    "creator": UUID().uuidString
-                ]
-            ])
-        }
-        defer {
-            if useMockData {
-                setURLProtocol(nil)
-            }
-        }
-        
-        weak var expectationSignUp = expectation(description: "Sign Up")
-        
-        User.signup(username: username, password: password) { user, error in
-            XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNil(error)
-            XCTAssertNotNil(user)
-            
-            expectationSignUp?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationSignUp = nil
-        }
-        
-        XCTAssertNotNil(client.activeUser)
-    }
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
         let store = DataStore<T>.collection()
@@ -466,8 +445,8 @@ class KinveyTestCase: XCTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()

@@ -27,15 +27,10 @@ open class User: NSObject, Credential, Mappable {
     
     /// `_id` property of the user.
     open var userId: String {
-        guard let userId = _userId, !userId.isEmpty else {
-            let message = "User has an empty or nil `userId` value."
-            log.severe(message)
-            fatalError(message)
-        }
-        return userId
+        return _userId!
     }
     
-    private var _userId: String?
+    private dynamic var _userId: String?
     
     /// `_acl` property of the user.
     open fileprivate(set) var acl: Acl?
@@ -85,7 +80,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password, user: user)
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     client.activeUser = user
                     fulfill(user)
                 } else {
@@ -106,8 +101,8 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK {
-                    if let activeUser = client.activeUser , activeUser.userId == userId {
+                if let response = response, response.isOK {
+                    if let activeUser = client.activeUser, activeUser.userId == userId {
                         client.activeUser = nil
                     }
                     fulfill()
@@ -234,7 +229,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     client.activeUser = user
                     fulfill(user)
                 } else {
@@ -287,18 +282,14 @@ open class User: NSObject, Credential, Mappable {
      */
     @discardableResult
     open func sendEmailConfirmation(_ client: Client = Kinvey.sharedClient, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
-        guard let username = username else {
-            let message = "Username is required to send the email confirmation"
-            log.severe(message)
-            fatalError(message)
-        }
         guard let _ = email else {
-            let message = "Email is required to send the email confirmation"
-            log.severe(message)
-            fatalError(message)
+            DispatchQueue.main.async {
+                completionHandler?(.failure(Error.invalidOperation(description: "Email is required to send the email confirmation")))
+            }
+            return LocalRequest()
         }
         
-        return User.sendEmailConfirmation(forUsername: username, client: client, completionHandler: completionHandler)
+        return User.sendEmailConfirmation(forUsername: username!, client: client, completionHandler: completionHandler)
     }
     
     /// Sends an email to the user with a link to reset the password
@@ -323,7 +314,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK {
+                if let response = response, response.isOK {
                     fulfill()
                 } else {
                     reject(buildError(data, response, error, client))
@@ -409,7 +400,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK {
+                if let response = response, response.isOK {
                     fulfill()
                 } else {
                     reject(buildError(data, response, error, client))
@@ -445,7 +436,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
+                if let response = response, response.isOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
                     fulfill(usernameExists)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -481,7 +472,7 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
                     fulfill(user)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -584,8 +575,10 @@ open class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSave(user: self, newPassword: newPassword)
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response , response.isOK, let user = client.responseParser.parseUser(data) as? U {
-                    client.activeUser = user
+                if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
+                    if user.userId == client.activeUser?.userId {
+                        client.activeUser = user
+                    }
                     fulfill(user)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -640,13 +633,11 @@ open class User: NSObject, Credential, Mappable {
     
     /// Autorization header used for calls that requires a logged `User`.
     open var authorizationHeader: String? {
-        get {
-            var authorization: String? = nil
-            if let authtoken = metadata?.authtoken {
-                authorization = "Kinvey \(authtoken)"
-            }
-            return authorization
+        var authorization: String? = nil
+        if let authtoken = metadata?.authtoken {
+            authorization = "Kinvey \(authtoken)"
         }
+        return authorization
     }
     
     /**
@@ -677,8 +668,8 @@ open class User: NSObject, Credential, Mappable {
 
 #if os(iOS)
     
-    private static let MICSafariViewControllerSuccessNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Success")
-    private static let MICSafariViewControllerFailureNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Failure")
+    static let MICSafariViewControllerSuccessNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Success")
+    static let MICSafariViewControllerFailureNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Failure")
     
     private static var MICSafariViewControllerSuccessNotificationObserver: Any? = nil {
         willSet {
@@ -758,7 +749,7 @@ open class User: NSObject, Credential, Mappable {
             
             switch micUserInterface {
             case .safari:
-                let url = MIC.urlForLogin(redirectURI: redirectURI)
+                let url = MIC.urlForLogin(redirectURI: redirectURI, client: client)
                 micVC = SFSafariViewController(url: url)
                 micVC.modalPresentationStyle = .overCurrentContext
                 MICSafariViewControllerSuccessNotificationObserver = NotificationCenter.default.addObserver(

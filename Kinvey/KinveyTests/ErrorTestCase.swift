@@ -19,6 +19,7 @@ class ErrorTestCase: KinveyTestCase {
         XCTAssertEqual(Kinvey.Error.objectIdMissing.failureReason, expectedDescription)
         XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedDescription, expectedDescription)
         XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedFailureReason, expectedDescription)
+        XCTAssertNil(Kinvey.Error.objectIdMissing.responseStringBody)
     }
     
     func testInvalidResponse() {

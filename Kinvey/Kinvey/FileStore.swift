@@ -230,7 +230,7 @@ open class FileStore {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file)
                 requests += request
                 request.execute { (data, response, error) -> Void in
-                    if let response = response , response.isOK,
+                    if let response = response, response.isOK,
                         let json = self.client.responseParser.parse(data),
                         let newFile = File(JSON: json) {
                         
@@ -280,7 +280,7 @@ open class FileStore {
                     }
                     
                     let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
-                    if let response = response as? HTTPURLResponse , 200 <= response.statusCode && response.statusCode < 300 {
+                    if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
                         createUpdateFileEntry()
                     } else if let response = response as? HTTPURLResponse,
                         response.statusCode == 308,
@@ -431,7 +431,7 @@ open class FileStore {
         let promise = Promise<URL> { fulfill, reject in
             let executor = Executor()
             downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, response, error) in
-                if let response = response , response.isOK || response.isNotModified, let url = url {
+                if let response = response, response.isOK || response.isNotModified, let url = url {
                     if storeType == .cache {
                         var pathURL: URL? = nil
                         var entityId: String? = nil
@@ -439,7 +439,7 @@ open class FileStore {
                             entityId = file.fileId
                             pathURL = file.pathURL
                         }
-                        if let pathURL = pathURL , response.isNotModified {
+                        if let pathURL = pathURL, response.isNotModified {
                             fulfill(pathURL)
                         } else {
                             let fileManager = FileManager()
@@ -620,13 +620,13 @@ open class FileStore {
         
         let multiRequest = MultiRequest()
         Promise<(File, URL)> { fulfill, reject in
-            if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
+            if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                 fulfill((file, downloadURL))
             } else {
                 let (request, promise) = getFileMetadata(file, ttl: ttl)
                 multiRequest += request
                 promise.then { file -> Void in
-                    if let downloadURL = file.downloadURL , file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
+                    if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         fulfill(file, downloadURL)
                     } else {
                         throw Error.invalidResponse(httpResponse: nil, data: nil)
@@ -666,7 +666,7 @@ open class FileStore {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response , response.isOK,
+                if let response = response, response.isOK,
                     let json = self.client.responseParser.parse(data),
                     let count = json["count"] as? UInt
                 {

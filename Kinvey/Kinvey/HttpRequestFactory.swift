@@ -94,10 +94,6 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserSave(user: User) -> HttpRequest {
-        return buildUserSave(user: user, newPassword: nil)
-    }
-    
     func buildUserSave(user: User, newPassword: String?) -> HttpRequest {
         let request = HttpRequest(httpMethod: .put, endpoint: Endpoint.userById(client: client, userId: user.userId), credential: client.activeUser, client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")

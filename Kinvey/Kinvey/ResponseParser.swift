@@ -23,16 +23,3 @@ internal protocol ResponseParser {
     func parseUsers<UserType: User>(_ data: Data?) -> [UserType]?
 
 }
-
-extension ResponseParser {
-    
-    func isResponseOk(_ response: URLResponse?) -> Bool {
-        if let response = response {
-            if let httpResponse = response as? HTTPURLResponse {
-                return 200 <= httpResponse.statusCode && httpResponse.statusCode < 300
-            }
-        }
-        return false
-    }
-    
-}

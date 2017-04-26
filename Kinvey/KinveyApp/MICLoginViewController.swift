@@ -36,6 +36,10 @@ open class MICLoginViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    @IBAction func dismiss(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
 
     @IBAction func login(_ sender: UIButton) {
         URLCache.shared.removeAllCachedResponses()
@@ -46,6 +50,8 @@ open class MICLoginViewController: UIViewController {
             User.presentMICViewController(redirectURI: redirectURI) { user, error in
                 if let user = user {
                     self.userIdLabel.text = user.userId
+                } else if let error = error {
+                    print("\(error)")
                 }
                 self.completionHandler?(user, error)
             }

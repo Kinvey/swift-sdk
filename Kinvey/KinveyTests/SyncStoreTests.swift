@@ -153,12 +153,117 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPurge() {
+        store.clearCache()
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        var persons = [Person]()
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test 1",
+                        "age" : 29,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ],
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test 2",
+                        "age" : 30,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.pull() { (_persons, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(_persons)
+                XCTAssertNil(error)
+                
+                if let _persons = _persons {
+                    XCTAssertGreaterThanOrEqual(_persons.count, 2)
+                    persons = _persons
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPush = nil
+            }
+        }
+        
+        if let person = persons.first {
+            person.name = "Test 1 (Renamed)"
+            
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.save(person) { person, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        if let person = persons.last {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(byId: person.entityId!) { count, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                XCTAssertEqual(count, 1)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
         save()
         
-        XCTAssertEqual(store.syncCount(), 1)
+        XCTAssertEqual(store.syncCount(), 3)
         
         if useMockData {
-            mockResponse(json: [])
+            var count = 0
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                defer {
+                    count += 1
+                }
+                switch count {
+                case 0:
+                    return HttpResponse(json: persons.last!.toJSON())
+                case 1:
+                    return HttpResponse(json: persons.toJSON())
+                default:
+                    fatalError()
+                }
+            })
         }
         defer {
             if useMockData { setURLProtocol(nil) }
@@ -168,11 +273,12 @@ class SyncStoreTests: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             
             if let count = count {
-                XCTAssertEqual(count, 1)
+                XCTAssertEqual(count, 3)
             }
             
             expectationPurge?.fulfill()
@@ -183,6 +289,143 @@ class SyncStoreTests: StoreTestCase {
         }
         
         XCTAssertEqual(store.syncCount(), 0)
+    }
+    
+    func testPurgeUpdateTimeoutError() {
+        store.clearCache()
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        var persons = [Person]()
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test 1",
+                        "age" : 29,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ],
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test 2",
+                        "age" : 30,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.pull() { (_persons, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(_persons)
+                XCTAssertNil(error)
+                
+                if let _persons = _persons {
+                    XCTAssertGreaterThanOrEqual(_persons.count, 2)
+                    persons = _persons
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPush = nil
+            }
+        }
+        
+        if let person = persons.first {
+            person.name = "Test 1 (Renamed)"
+            
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.save(person) { person, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        if let person = persons.last {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(byId: person.entityId!) { count, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                XCTAssertEqual(count, 1)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        save()
+        
+        XCTAssertEqual(store.syncCount(), 3)
+        
+        if useMockData {
+            var count = 0
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                defer {
+                    count += 1
+                }
+                switch count {
+                case 0:
+                    return HttpResponse(error: timeoutError)
+                case 1:
+                    return HttpResponse(json: persons.toJSON())
+                default:
+                    fatalError()
+                }
+            })
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
+        
+        weak var expectationPurge = expectation(description: "Purge")
+        
+        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        store.purge(query) { (count, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(count)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationPurge?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationPurge = nil
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
     }
     
     func testPurgeInvalidDataStoreType() {
@@ -220,7 +463,7 @@ class SyncStoreTests: StoreTestCase {
         person.age = person.age + 1
         save(person)
         
-        setURLProtocol(TimeoutErrorURLProtocol.self)
+        mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
@@ -231,6 +474,8 @@ class SyncStoreTests: StoreTestCase {
         store.purge(query) { (count, error) -> Void in
             XCTAssertNil(count)
             XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
             
             expectationPurge?.fulfill()
         }
@@ -297,7 +542,63 @@ class SyncStoreTests: StoreTestCase {
         }
 
         XCTAssertEqual(store.syncCount(), 0)
-
+    }
+    
+    func testSyncPullTimeoutError() {
+        save()
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            var count = 0
+            var personMockJson: JsonDictionary? = nil
+            mockResponse { (request) -> HttpResponse in
+                defer { count += 1 }
+                switch count {
+                case 0:
+                    XCTAssertEqual(request.httpMethod, "POST")
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = UUID().uuidString
+                    json[PersistableAclKey] = [
+                        Acl.CreatorKey : self.client.activeUser!.userId
+                    ]
+                    json[PersistableMetadataKey] = [
+                        Metadata.LmtKey : Date().toString(),
+                        Metadata.EctKey : Date().toString()
+                    ]
+                    personMockJson = json
+                    return HttpResponse(statusCode: 201, json: json)
+                case 1:
+                    return HttpResponse(error: timeoutError)
+                default:
+                    fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
+        
+        weak var expectationSync = expectation(description: "Sync")
+        
+        store.sync() { count, results, errors in
+            XCTAssertMainThread()
+            
+            XCTAssertNil(count)
+            XCTAssertNil(results)
+            XCTAssertNotNil(errors)
+            
+            XCTAssertEqual(errors?.count, 1)
+            XCTAssertTimeoutError(errors?.first)
+            
+            expectationSync?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSync = nil
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
     }
     
     func testSyncInvalidDataStoreType() {

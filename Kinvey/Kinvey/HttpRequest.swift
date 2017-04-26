@@ -88,6 +88,12 @@ enum HttpMethod {
     
 }
 
+enum HttpHeaderKey: String {
+    
+    case authorization = "Authorization"
+    
+}
+
 enum HttpHeader {
     
     case authorization(credential: Credential?)
@@ -100,7 +106,7 @@ enum HttpHeader {
         get {
             switch self {
             case .authorization:
-                return "Authorization"
+                return HttpHeaderKey.authorization.rawValue
             case .apiVersion:
                 return "X-Kinvey-API-Version"
             case .requestId:
@@ -307,9 +313,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         self.endpoint = Endpoint.url(url: request.url!)
         self.client = client
         
-        if let authorization = request.value(forHTTPHeaderField: HttpHeader.authorization(credential: nil).name) {
-            self.credential = HttpHeaderCredential(authorization)
-        } else {
+        if request.value(forHTTPHeaderField: HttpHeaderKey.authorization.rawValue) == nil {
             self.credential = client.activeUser ?? client
         }
         self.request = request

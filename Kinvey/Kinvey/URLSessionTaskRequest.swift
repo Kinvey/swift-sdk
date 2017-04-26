@@ -54,7 +54,7 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
     }
     
     fileprivate func downloadTask(_ url: URL?, response: URLResponse?, error: Swift.Error?, completionHandler: PathResponseCompletionHandler) {
-        if let response = response as? HTTPURLResponse?, let httpResponse = HttpResponse(response: response) , httpResponse.isOK || httpResponse.isNotModified, let url = url {
+        if let response = response as? HTTPURLResponse?, let httpResponse = HttpResponse(response: response), httpResponse.isOK || httpResponse.isNotModified, let url = url {
             completionHandler(url, httpResponse, nil)
         } else if let error = error {
             completionHandler(nil, nil, error)
