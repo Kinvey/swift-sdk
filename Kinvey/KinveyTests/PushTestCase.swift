@@ -9,6 +9,7 @@
 import XCTest
 import KIF
 @testable import Kinvey
+import Foundation
 
 class PushTestCase: KinveyTestCase {
     

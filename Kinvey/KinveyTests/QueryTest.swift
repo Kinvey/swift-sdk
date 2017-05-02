@@ -328,4 +328,32 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(predicate, NSPredicate(format: "subquery(authorNames, $authorNames, $authorNames.value like[c] %@).$count > 0", "Vic*"))
     }
     
+    func testAscending() {
+        let query = Query()
+        query.ascending("name")
+        let queryItems = query.urlQueryItems
+        
+        XCTAssertNotNil(queryItems)
+        XCTAssertEqual(queryItems?.count, 2)
+        XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":1}")
+    }
+    
+    func testDescending() {
+        let query = Query()
+        query.descending("name")
+        let queryItems = query.urlQueryItems
+        
+        XCTAssertNotNil(queryItems)
+        XCTAssertEqual(queryItems?.count, 2)
+        XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":-1}")
+    }
+    
+    func testDeserialize() {
+        XCTAssertNil(Query(JSON: [:]))
+    }
+    
+    func testPredicateDeserialize() {
+        XCTAssertNil(NSPredicate(JSON: [:]))
+    }
+    
 }

@@ -87,4 +87,36 @@ class ClientTestCase: KinveyTestCase {
         }
     }
     
+    func testPingClientNotInitialized() {
+        let client = Client()
+        
+        weak var expectationPing = self.expectation(description: "Ping")
+        
+        client.ping { (envInfo, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(envInfo)
+            XCTAssertNotNil(error)
+            
+            if let error = error as? Kinvey.Error {
+                XCTAssertEqual(error.description, "Please initialize your client calling the initialize() method before call ping()")
+                switch error {
+                case .invalidOperation(let description):
+                    XCTAssertEqual(description, "Please initialize your client calling the initialize() method before call ping()")
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationPing?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationPing = nil
+        }
+    }
+    
+    func testEmptyEnvironmentInfo() {
+        XCTAssertNil(EnvironmentInfo(JSON: [:]))
+    }
+    
 }

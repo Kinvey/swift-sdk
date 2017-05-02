@@ -9,6 +9,7 @@
 import XCTest
 @testable import Kinvey
 import ObjectMapper
+import Foundation
 
 class DataTypeTestCase: StoreTestCase {
     
@@ -43,7 +44,7 @@ class DataTypeTestCase: StoreTestCase {
         
         mockResponse(json: [
             [
-                "_id" : UUID().uuidString,
+                "_id" : Foundation.UUID().uuidString,
                 "fullName2" : [
                     "lastName" : "Barros",
                     "fontDescriptor" : [

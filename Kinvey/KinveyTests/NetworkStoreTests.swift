@@ -285,9 +285,26 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
                 
-                if let count = count {
-                    eventsCount = count
-                }
+                XCTAssertEqual(count, 85)
+                
+                eventsCount = count
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCount = nil
+            }
+        }
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            store.count(readPolicy: .forceLocal) { (count, error) in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, 0)
                 
                 expectationCount?.fulfill()
             }
@@ -362,6 +379,30 @@ class NetworkStoreTests: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
+        }
+    }
+    
+    func testCountTimeoutError() {
+        let store = DataStore<Event>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationCount = expectation(description: "Count")
+        
+        store.count { (count, error) in
+            XCTAssertNil(count)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationCount?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCount = nil
         }
     }
     
@@ -750,6 +791,314 @@ class NetworkStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
+    }
+    
+    func testRemoveArrayTimeoutError() {
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 1",
+                "age": 18,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ],
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 2",
+                "age": 21,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ]
+        ]
+        
+        var _persons: [Person]? = nil
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(readPolicy: .forceNetwork) { (persons, error) in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(persons?.count, 2)
+                
+                _persons = persons
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+        
+        XCTAssertNotNil(_persons)
+        
+        if let persons = _persons {
+            mockResponse(error: timeoutError)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(persons, writePolicy: .forceNetwork) { count, error in
+                XCTAssertNil(count)
+                XCTAssertNotNil(error)
+                
+                XCTAssertTimeoutError(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+    }
+    
+    func testRemoveArrayById() {
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 1",
+                "age": 18,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ],
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 2",
+                "age": 21,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ]
+        ]
+        
+        var _persons: [Person]? = nil
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(readPolicy: .forceNetwork) { (persons, error) in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(persons?.count, 2)
+                
+                _persons = persons
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+        
+        XCTAssertNotNil(_persons)
+        
+        if let persons = _persons {
+            mockResponse(json: ["count" : persons.count])
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.removeById(persons.map { $0.entityId! }, writePolicy: .forceNetwork) { count, error in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(count, persons.count)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+    }
+    
+    func testRemoveArrayByIdTimeoutError() {
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 1",
+                "age": 18,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ],
+            [
+                "_id": UUID().uuidString,
+                "name": "Test 2",
+                "age": 21,
+                "_acl": [
+                    "creator": UUID().uuidString
+                ],
+                "_kmd": [
+                    "lmt": Date().toString(),
+                    "ect": Date().toString()
+                ]
+            ]
+        ]
+        
+        var _persons: [Person]? = nil
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(readPolicy: .forceNetwork) { (persons, error) in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(persons?.count, 2)
+                
+                _persons = persons
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+        
+        XCTAssertNotNil(_persons)
+        
+        if let persons = _persons {
+            mockResponse(error: timeoutError)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.remove(byIds: persons.map { $0.entityId! }, writePolicy: .forceNetwork) { count, error in
+                XCTAssertNil(count)
+                XCTAssertNotNil(error)
+                
+                XCTAssertTimeoutError(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+    }
+    
+    func testRemoveEmptyArray() {
+        mockResponse(json: [])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationRemove = expectation(description: "Remove")
+        
+        store.remove(byIds: [], writePolicy: .forceNetwork) { count, error in
+            XCTAssertNil(count)
+            XCTAssertNotNil(error)
+            
+            XCTAssertEqual(error?.localizedDescription, "ids cannot be an empty array")
+            
+            expectationRemove?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationRemove = nil
+        }
+    }
+    
+    func testRemoveAllTimeoutError() {
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationRemove = expectation(description: "Remove")
+        
+        store.removeAll(.forceNetwork) { count, error in
+            XCTAssertNil(count)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationRemove?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationRemove = nil
+        }
+    }
+    
+    func testSyncCount() {
+        let person = Person()
+        person.name = "Test"
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) { person, error in
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+        
+        XCTAssertEqual(DataStore<Person>.collection(.network).syncCount(), 0)
+        XCTAssertEqual(DataStore<Person>.collection(.sync).syncCount(), 1)
+        
+        DataStore<Person>.clearCache()
+        
+        XCTAssertEqual(DataStore<Person>.collection(.sync).syncCount(), 0)
     }
     
     func testClientAppVersion() {
@@ -1317,6 +1666,36 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testGroupCustomAggregationTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNil(results)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
     func testGroupAggregationCountByName() {
         signUp()
         
@@ -1354,6 +1733,36 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(first.count, 32)
                 }
             }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationCountByNameTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            count: ["name"],
+            countType: Int.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNil(results)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
             
             expectationGroup?.fulfill()
         }
@@ -1401,6 +1810,37 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(first.sum, 926.2)
                 }
             }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationSumByNameTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            sum: "age",
+            sumType: Double.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (results, error) in
+            XCTAssertNil(results)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
             
             expectationGroup?.fulfill()
         }
@@ -1459,6 +1899,37 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testGroupAggregationAvgByNameTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            avg: "age",
+            avgType: Double.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNil(result)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
     func testGroupAggregationMinByName() {
         signUp()
         
@@ -1506,6 +1977,37 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testGroupAggregationMinByNameTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            min: "age",
+            minType: Float.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNil(result)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
     func testGroupAggregationMaxByName() {
         signUp()
         
@@ -1544,6 +2046,37 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(max, 30.5)
                 }
             }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupAggregationMaxByNameTimeoutError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            keys: ["name"],
+            max: "age",
+            maxType: Float.self,
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
+        ) { (result, error) in
+            XCTAssertNil(result)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
             
             expectationGroup?.fulfill()
         }

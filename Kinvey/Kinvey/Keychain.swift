@@ -56,22 +56,13 @@ class Keychain {
     fileprivate static let kinveyAuthKey = AuthSource.kinvey.rawValue
     var kinveyAuth: UserAuthToken? {
         get {
-            if
-                let jsonString = keychain[Keychain.kinveyAuthKey],
-                let authToken = UserAuthToken(JSONString: jsonString)
-            {
-                return authToken
+            guard let jsonString = keychain[Keychain.kinveyAuthKey] else {
+                return nil
             }
-            return nil
+            return UserAuthToken(JSONString: jsonString)
         }
         set {
-            if let newValue = newValue,
-                let jsonString = newValue.toJSONString()
-            {
-                keychain[Keychain.kinveyAuthKey] = jsonString
-            } else {
-                keychain[Keychain.kinveyAuthKey] = nil
-            }
+            keychain[Keychain.kinveyAuthKey] = newValue?.toJSONString()
         }
     }
     

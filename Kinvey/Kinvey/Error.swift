@@ -162,8 +162,13 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         return nil
     }
     
-    static func buildUnknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String) -> Error {
-        return unknownError(httpResponse: httpResponse, data: data, error: error)
+    internal var responseBodyJsonDictionary: JsonDictionary? {
+        if let data = responseDataBody,
+            let jsonObject = try? JSONSerialization.jsonObject(with: data)
+        {
+            return jsonObject as? JsonDictionary
+        }
+        return nil
     }
     
     static func buildUnknownJsonError(httpResponse: HTTPURLResponse?, data: Data?, json: [String : Any]) -> Error {

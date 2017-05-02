@@ -634,10 +634,11 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// Deletes a list of records using the `_id` of the records.
     @discardableResult
     open func remove(byIds ids: [String], writePolicy: WritePolicy? = nil, completionHandler: ((Result<Int, Swift.Error>) -> Void)?) -> Request {
-        if ids.isEmpty {
-            let message = "ids cannot be an empty array"
-            log.severe(message)
-            fatalError(message)
+        guard !ids.isEmpty else {
+            DispatchQueue.main.async {
+                completionHandler?(.failure(Error.invalidOperation(description: "ids cannot be an empty array")))
+            }
+            return LocalRequest()
         }
         
         let query = Query(format: "\(T.entityIdProperty()) IN %@", ids as AnyObject)
@@ -826,8 +827,11 @@ open class DataStore<T: Persistable> where T: NSObject {
         }.then { count, array in
             completionHandler?(.success(count, array))
         }.catch { error in
-            let error = error as! MultipleErrors
-            completionHandler?(.failure(error.errors))
+            if let error = error as? MultipleErrors {
+                completionHandler?(.failure(error.errors))
+            } else {
+                completionHandler?(.failure([error]))
+            }
         }
         return requests
     }

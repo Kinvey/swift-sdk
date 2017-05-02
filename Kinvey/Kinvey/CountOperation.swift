@@ -33,7 +33,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(collectionName: T.collectionName(), query: query)
         request.execute() { data, response, error in
-            if let response = response , response.isOK,
+            if let response = response, response.isOK,
                 let data = data,
                 let json = try? JSONSerialization.jsonObject(with: data, options: []),
                 let result = json as? [String : Int],

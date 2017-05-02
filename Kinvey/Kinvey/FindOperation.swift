@@ -56,11 +56,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: fields != nil ? Query(query) { $0.fields = fields } : query)
         request.execute() { data, response, error in
-            if let response = response , response.isOK,
+            if let response = response, response.isOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
             {
                 self.resultsHandler?(jsonArray)
-                if let cache = self.cache , deltaSet {
+                if let cache = self.cache, deltaSet {
                     let refObjs = self.reduceToIdsLmts(jsonArray)
                     let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                     var allIds = Set<String>()

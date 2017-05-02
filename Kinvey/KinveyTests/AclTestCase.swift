@@ -44,6 +44,19 @@ class AclTestCase: StoreTestCase {
             XCTAssertNotNil(error as? Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
+                let result = error.responseBodyJsonDictionary
+                XCTAssertNotNil(result)
+                if let result = result {
+                    let expected = [
+                        "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                        "debug" : "",
+                        "error" : "InsufficientCredentials"
+                    ]
+                    XCTAssertEqual(result.count, expected.count)
+                    XCTAssertEqual(result["description"] as? String, expected["description"])
+                    XCTAssertEqual(result["debug"] as? String, expected["debug"])
+                    XCTAssertEqual(result["error"] as? String, expected["error"])
+                }
                 switch error {
                 case .unauthorized(_, _, let error, _):
                     XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)

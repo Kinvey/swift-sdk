@@ -93,7 +93,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             let data = data
                         {
                             let json = self.client.responseParser.parse(data)
-                            if let cache = self.cache, let json = json, let objectId = objectId , request.request.httpMethod != "DELETE" {
+                            if let cache = self.cache, let json = json, let objectId = objectId, request.request.httpMethod != "DELETE" {
                                 if let entity = cache.find(byId: objectId) {
                                     cache.remove(entity: entity)
                                 }
@@ -112,7 +112,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             } else {
                                 errors.append(buildError(data, response, error, self.client))
                             }
-                        } else if let response = response , response.isUnauthorized,
+                        } else if let response = response, response.isUnauthorized,
                             let data = data,
                             let json = self.client.responseParser.parse(data) as? [String : String]
                         {

@@ -67,7 +67,7 @@ public class Metadata: Object, Mappable {
     public required init?(map: Map) {
         super.init()
     }
-    
+
     /// Default Constructor.
     public required init() {
         super.init()

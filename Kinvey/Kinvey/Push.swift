@@ -245,7 +245,7 @@ open class Push {
             Promise<Bool> { fulfill, reject in
                 let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
                 request.execute({ (data, response, error) -> Void in
-                    if let response = response , response.isOK {
+                    if let response = response, response.isOK {
                         fulfill(true)
                     } else {
                         reject(buildError(data, response, error, self.client))
