@@ -11,6 +11,7 @@ import WebKit
 import KinveyApp
 @testable import Kinvey
 import ObjectMapper
+import SafariServices
 
 typealias MICLoginViewController = KinveyApp.MICLoginViewController
 
@@ -64,14 +65,14 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpWithUsernameAndPassword() {
-        guard !useMockData else {
-            return
-        }
+        XCTAssertNil(client.activeUser)
         
         let username = UUID().uuidString
         let password = UUID().uuidString
         signUp(username: username, password: password)
+        
         XCTAssertNotNil(client.activeUser)
+        XCTAssertEqual(client.activeUser?.username, username)
     }
     
     func testSignUpAndDestroy() {
@@ -161,7 +162,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
-            User.get(userId: userId , completionHandler: { (user, error) in
+            User.get(userId: userId, completionHandler: { (user, error) in
                 XCTAssertNil(user)
                 XCTAssertNotNil(error)
                 expectationFindDestroyedUser?.fulfill()
@@ -221,6 +222,42 @@ class UserTests: KinveyTestCase {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
             User.destroy(userId: user.userId, hard: true, completionHandler: {
+                XCTAssertTrue(Thread.isMainThread)
+                
+                switch $0 {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationDestroyUser?.fulfill()
+            })
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationDestroyUser = nil
+            }
+            
+            XCTAssertNil(client.activeUser)
+        }
+    }
+    
+    func testSignUpAndDestroyNotHardClassFunc() {
+        signUp()
+        
+        if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationDestroyUser = expectation(description: "Destroy User")
+            
+            User.destroy(userId: user.userId, hard: false, completionHandler: {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -309,11 +346,40 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    func testChangePassword() {
-        guard !useMockData else {
-            return
-        }
+    func testUserDeserialize() {
+        let userId = UUID().uuidString
+        let username = "test"
+        let json: JsonDictionary = [
+            "_id" : userId,
+            "username" : username,
+            "_kmd": [
+                "lmt" : Date().toString(),
+                "ect" : Date().toString(),
+                "authtoken" : UUID().uuidString
+            ],
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ]
+        ]
+        let user = User(JSON: json)
         
+        XCTAssertNotNil(user)
+        
+        if let user = user {
+            XCTAssertEqual(user.userId, userId)
+            XCTAssertEqual(user.username, username)
+            
+            XCTAssertNotNil(user.metadata)
+            
+            if let metadata = user.metadata {
+                XCTAssertNotNil(metadata.lmt)
+                XCTAssertNotNil(metadata.ect)
+                XCTAssertNotNil(metadata.authtoken)
+            }
+        }
+    }
+    
+    func testChangePassword() {
         signUp()
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
@@ -322,12 +388,24 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection()
+        let store = DataStore<Person>.collection(.network)
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    ["name" : "Test"]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .forceNetwork) { results, error in
+            store.find() { results, error in
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
@@ -340,11 +418,33 @@ class UserTests: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                var json = user.toJSON()
+                if var kmd = json["_kmd"] as? JsonDictionary {
+                    kmd["authtoken"] = UUID().uuidString
+                    json["_kmd"] = kmd
+                }
+                mockResponse(json: json)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationChangePassword = expectation(description: "Change Password")
             
+            let previousAuthtoken = user.metadata?.authtoken
+            XCTAssertNotNil(previousAuthtoken)
+            
             user.changePassword(newPassword: "test") { user, error in
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
+                
+                XCTAssertNotNil(user?.metadata?.authtoken)
+                XCTAssertNotEqual(previousAuthtoken, user?.metadata?.authtoken)
+                XCTAssertEqual(Kinvey.sharedClient.activeUser?.metadata?.authtoken, user?.metadata?.authtoken)
                 
                 expectationChangePassword?.fulfill()
             }
@@ -355,9 +455,119 @@ class UserTests: KinveyTestCase {
         }
         
         do {
+            if useMockData {
+                mockResponse(json: [
+                    ["name" : "Test"]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .forceNetwork) { results, error in
+            store.find() { results, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testChangePasswordTimeoutError() {
+        signUp()
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    ["name" : "Test"]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() { results, error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(error: timeoutError)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationChangePassword = expectation(description: "Change Password")
+            
+            let previousAuthtoken = user.metadata?.authtoken
+            XCTAssertNotNil(previousAuthtoken)
+            
+            user.changePassword(newPassword: "test") { user, error in
+                XCTAssertMainThread()
+                XCTAssertNil(user)
+                XCTAssertNotNil(error)
+                
+                if let error = error {
+                    XCTAssertTimeoutError(error)
+                }
+                
+                expectationChangePassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationChangePassword = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    ["name" : "Test"]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() { results, error in
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
@@ -472,11 +682,45 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    func testLookup() {
-        guard !useMockData else {
-            return
-        }
+    func testRefreshTimeoutError() {
+        signUp()
         
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            XCTAssertNil(user.email)
+            
+            if useMockData {
+                mockResponse(error: timeoutError)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRefresh = expectation(description: "Refresh")
+            
+            user.refresh() { result in
+                XCTAssertTrue(Thread.isMainThread)
+                
+                switch result {
+                case .success:
+                    XCTFail()
+                case .failure:
+                    break
+                }
+                
+                expectationRefresh?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRefresh = nil
+            }
+        }
+    }
+    
+    func testLookup() {
         let username = UUID().uuidString
         let password = UUID().uuidString
         let email = "\(username)@kinvey.com"
@@ -486,6 +730,16 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
+                if useMockData {
+                    mockResponse(completionHandler: { (request) -> HttpResponse in
+                        let json = try! JSONSerialization.jsonObject(with: request)
+                        return HttpResponse(json: json as! JsonDictionary)
+                    })
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
                 weak var expectationSave = expectation(description: "Save")
                 
                 user.email = email
@@ -504,6 +758,19 @@ class UserTests: KinveyTestCase {
             }
             
             do {
+                if useMockData {
+                    mockResponse(json: [
+                        [
+                            "_id" : user.userId,
+                            "email" : user.email!,
+                            "username" : user.username!
+                        ]
+                    ])
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
                 weak var expectationUserLookup = expectation(description: "User Lookup")
                 
                 let userQuery = UserQuery {
@@ -534,6 +801,74 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testLookupTimeoutError() {
+        let username = UUID().uuidString
+        let password = UUID().uuidString
+        let email = "\(username)@kinvey.com"
+        signUp(username: username, password: password)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            do {
+                if useMockData {
+                    mockResponse(completionHandler: { (request) -> HttpResponse in
+                        let json = try! JSONSerialization.jsonObject(with: request)
+                        return HttpResponse(json: json as! JsonDictionary)
+                    })
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.email = email
+                
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(user)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
+            }
+            
+            do {
+                if useMockData {
+                    mockResponse(error: timeoutError)
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
+                weak var expectationUserLookup = expectation(description: "User Lookup")
+                
+                let userQuery = UserQuery {
+                    $0.username = username
+                }
+                
+                user.lookup(userQuery) { users, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNil(users)
+                    XCTAssertNotNil(error)
+                    
+                    XCTAssertTimeoutError(error)
+                    
+                    expectationUserLookup?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationUserLookup = nil
+                }
+            }
+        }
+    }
+    
     class MyUser: User {
         
         var foo: String?
@@ -547,10 +882,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testSave() {
-        guard !useMockData else {
-            return
-        }
-        
         client.userType = MyUser.self
         
         let user = User()
@@ -598,6 +929,7 @@ class UserTests: KinveyTestCase {
         
         XCTAssertNotNil(client.activeUser)
         XCTAssertTrue(client.activeUser is MyUser)
+        XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyUser)
         
         if let user = client.activeUser as? MyUser {
             if useMockData {
@@ -638,10 +970,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveTimeoutError() {
-        guard !useMockData else {
-            return
-        }
-        
         client.userType = MyUser.self
         
         signUp()
@@ -651,6 +979,9 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser as? MyUser {
             setURLProtocol(TimeoutErrorURLProtocol.self)
+            defer {
+                setURLProtocol(nil)
+            }
             
             weak var expectationUserSave = expectation(description: "User Save")
             
@@ -958,10 +1289,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testExists() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
@@ -970,6 +1297,13 @@ class UserTests: KinveyTestCase {
             XCTAssertNotNil(user.username)
             
             if let username = user.username {
+                if useMockData {
+                    mockResponse(json: ["usernameExists" : true])
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
                 weak var expectationUserExists = expectation(description: "User Exists")
                 
                 User.exists(username: username) { (exists, error) -> Void in
@@ -1100,44 +1434,146 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    func testUserMetadata() {
-        guard !useMockData else {
-            return
-        }
+    func testSendEmailConfirmationWithoutEmail() {
+        signUp(username: UUID().uuidString)
         
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            mockResponse(statusCode: 204, data: Data())
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
+            
+            user.sendEmailConfirmation {
+                XCTAssertTrue(Thread.isMainThread)
+                
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertTrue(error is Kinvey.Error)
+                    if let error = error as? Kinvey.Error {
+                        XCTAssertEqual(error.description, "Email is required to send the email confirmation")
+                        switch error {
+                        case .invalidOperation(let description):
+                            XCTAssertEqual(description, "Email is required to send the email confirmation")
+                        default:
+                            XCTFail()
+                        }
+                    }
+                }
+                
+                expectationSendEmailConfirmation?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSendEmailConfirmation = nil
+            }
+        }
+    }
+    
+    func testSendEmailConfirmationTimeoutError() {
+        signUp(username: UUID().uuidString)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            do {
+                var json = user.toJSON()
+                json["email"] = "victor@kinvey.com"
+                mockResponse(json: json)
+                defer {
+                    setURLProtocol(nil)
+                }
+                
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.email = "victor@kinvey.com"
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(user)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
+            }
+            
+            do {
+                mockResponse(error: timeoutError)
+                defer {
+                    setURLProtocol(nil)
+                }
+                
+                weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
+                
+                user.sendEmailConfirmation {
+                    XCTAssertTrue(Thread.isMainThread)
+                    
+                    switch $0 {
+                    case .success:
+                        XCTFail()
+                    case .failure(let error):
+                        let error = error as NSError
+                        XCTAssertEqual(error.domain, NSURLErrorDomain)
+                        XCTAssertEqual(error.code, NSURLErrorTimedOut)
+                    }
+                    
+                    expectationSendEmailConfirmation?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSendEmailConfirmation = nil
+                }
+            }
+        }
+    }
+    
+    func testUserMetadata() {
         signUp()
         
-        class Mock200URLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            fileprivate override func startLoading() {
-                let request = self.request
-                
+        if useMockData {
+            mockResponse(completionHandler: { (request) -> HttpResponse in
                 let userId = request.url?.lastPathComponent
                 
-                let cannedResponse = "{\"_id\": \"\(userId!)\", \"username\": \"test\", \"_acl\": {\"creator\": \"582b81b95c84a5525e9abcc9\"},\"email\": \"tejas@kinvey.com\",\"_kmd\": {\"lmt\": \"2016-11-15T21:44:37.302Z\",\"ect\": \"2016-11-15T21:44:25.756Z\",\"status\":{\"val\":\"disabled\",\"lastChange\": \"2016-11-16T15:08:52.225Z\"},\"passwordReset\":{\"status\":\"InProgress\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\"},\"emailVerification\":{\"status\":\"confirmed\",\"lastStateChangeAt\":\"2012-10-10T19:56:03.282Z\",\"lastConfirmedAt\":\"2012-10-10T19:56:03.282Z\",\"emailAddress\":\"johndoe@kinvey.com\"}}}"
-
-                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                client!.urlProtocol(self, didLoad: cannedResponse.data(using: String.Encoding.utf8)!)
-                client!.urlProtocolDidFinishLoading(self)
-            }
-            
-            fileprivate override func stopLoading() {
-            }
-            
+                return HttpResponse(json: [
+                    "_id" : userId!,
+                    "username" : "test",
+                    "_acl": [
+                        "creator" : "582b81b95c84a5525e9abcc9"
+                    ],
+                    "email" : "tejas@kinvey.com",
+                    "_kmd" : [
+                        "lmt" : "2016-11-15T21:44:37.302Z",
+                        "ect" : "2016-11-15T21:44:25.756Z",
+                        "status" : [
+                            "val" : "disabled",
+                            "lastChange" : "2016-11-16T15:08:52.225Z"
+                        ],
+                        "passwordReset" : [
+                            "status" : "InProgress",
+                            "lastStateChangeAt" : "2012-10-10T19:56:03.282Z"
+                        ],
+                        "emailVerification" : [
+                            "status" : "confirmed",
+                            "lastStateChangeAt" : "2012-10-10T19:56:03.282Z",
+                            "lastConfirmedAt" : "2012-10-10T19:56:03.282Z",
+                            "emailAddress" : "johndoe@kinvey.com"
+                        ]
+                    ]
+                ])
+            })
         }
-        
-        setURLProtocol(Mock200URLProtocol.self)
         defer {
-            setURLProtocol(nil)
+            if useMockData {
+                setURLProtocol(nil)
+            }
         }
         
         weak var expectationUserMetadata = expectation(description: "Email Confirmation Status")
@@ -1168,56 +1604,49 @@ class UserTests: KinveyTestCase {
     
     }
     func testResetPasswordByEmail() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            user.email = "\(user.username!)@kinvey.com"
-            
-            weak var expectationSave = expectation(description: "Save")
-            
-            user.save() { user, error in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+            do {
+                if useMockData {
+                    var json = user.toJSON()
+                    if var kmd = json["_kmd"] as? JsonDictionary {
+                        kmd["authtoken"] = UUID().uuidString
+                        json["_kmd"] = kmd
+                    }
+                    mockResponse(json: json)
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                user.email = "\(user.username!)@kinvey.com"
                 
-                expectationSave?.fulfill()
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(user)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
             }
             
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationSave = nil
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
             }
-            
-            class Mock204URLProtocol: URLProtocol {
-                
-                override class func canInit(with request: URLRequest) -> Bool {
-                    return true
-                }
-                
-                override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                    return request
-                }
-                
-                fileprivate override func startLoading() {
-                    let response = HTTPURLResponse(url: request.url!, statusCode: 204, httpVersion: "HTTP/1.1", headerFields: [:])!
-                    client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    client!.urlProtocol(self, didLoad: Data())
-                    client!.urlProtocolDidFinishLoading(self)
-                }
-                
-                fileprivate override func stopLoading() {
-                }
-                
-            }
-            
-            setURLProtocol(Mock204URLProtocol.self)
             defer {
-                setURLProtocol(nil)
+                if useMockData {
+                    setURLProtocol(nil)
+                }
             }
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
@@ -1242,15 +1671,20 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordByUsername() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
             user.resetPassword {
@@ -1262,6 +1696,102 @@ class UserTests: KinveyTestCase {
                 case .failure:
                     XCTFail()
                 }
+                
+                expectationResetPassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationResetPassword = nil
+            }
+        }
+    }
+    
+    func testResetPasswordByUsernameClassFunc() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationResetPassword = expectation(description: "Reset Password")
+            
+            User.resetPassword(username: user.username!) { error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                
+                expectationResetPassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationResetPassword = nil
+            }
+        }
+    }
+    
+    func testResetPasswordByUsernameClassFuncTimeoutError() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            if useMockData {
+                mockResponse(error: timeoutError)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationResetPassword = expectation(description: "Reset Password")
+            
+            User.resetPassword(email: user.username!) { error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(error)
+                
+                if let error = error {
+                    XCTAssertTimeoutError(error)
+                }
+                
+                expectationResetPassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationResetPassword = nil
+            }
+        }
+    }
+    
+    func testResetPasswordByEmailClassFunc() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            user.email = "me@kinvey.com"
+            
+            weak var expectationResetPassword = expectation(description: "Reset Password")
+            
+            User.resetPassword(email: user.email!) { error in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
                 
                 expectationResetPassword?.fulfill()
             }
@@ -1273,77 +1803,80 @@ class UserTests: KinveyTestCase {
     }
     
     func testResetPasswordNoEmailOrUsername() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            user.username = nil
-            
-            weak var expectationSave = expectation(description: "Save")
-            
-            user.save() { user, error in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+            do {
+                user.username = nil
                 
-                expectationSave?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationSave = nil
-            }
-            
-            weak var expectationResetPassword = expectation(description: "Reset Password")
-            
-            user.resetPassword {
-                XCTAssertTrue(Thread.isMainThread)
-                
-                switch $0 {
-                case .success:
-                    XCTFail()
-                case .failure:
-                    break
+                if useMockData {
+                    mockResponse(json: user.toJSON())
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
                 }
                 
-                expectationResetPassword?.fulfill()
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(user)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
             }
             
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationResetPassword = nil
+            do {
+                if useMockData {
+                    mockResponse(statusCode: 204, data: Data())
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
+                weak var expectationResetPassword = expectation(description: "Reset Password")
+                
+                user.resetPassword {
+                    XCTAssertTrue(Thread.isMainThread)
+                    
+                    switch $0 {
+                    case .success:
+                        XCTFail()
+                    case .failure:
+                        break
+                    }
+                    
+                    expectationResetPassword?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationResetPassword = nil
+                }
             }
         }
     }
     
     func testResetPasswordTimeoutError() {
-        guard !useMockData else {
-            return
-        }
-        
         signUp()
         
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            weak var expectationSave = expectation(description: "Save")
-            
-            user.save() { user, error in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                
-                expectationSave?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationSave = nil
-            }
-            
             setURLProtocol(TimeoutErrorURLProtocol.self)
+            defer {
+                setURLProtocol(nil)
+            }
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
@@ -1367,27 +1900,63 @@ class UserTests: KinveyTestCase {
     }
     
     func testForgotUsername() {
-        guard !useMockData else {
-            return
-        }
+        signUp()
         
-        weak var expectationForgotUsername = expectation(description: "Forgot Username")
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
-        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") {
-            XCTAssertTrue(Thread.isMainThread)
+        if let user = Kinvey.sharedClient.activeUser {
+            user.email = "\(UUID().uuidString)@kinvey.com"
             
-            switch $0 {
-            case .success:
-                break
-            case .failure:
-                XCTFail()
+            do {
+                if useMockData {
+                    mockResponse(json: user.toJSON())
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(user)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
             }
             
-            expectationForgotUsername?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { error in
-            expectationForgotUsername = nil
+            do {
+                if useMockData {
+                    mockResponse(statusCode: 204, data: Data())
+                }
+                defer {
+                    if useMockData { setURLProtocol(nil) }
+                }
+                
+                weak var expectationForgotUsername = expectation(description: "Forgot Username")
+                
+                User.forgotUsername(email: user.email!) {
+                    XCTAssertTrue(Thread.isMainThread)
+                    
+                    switch $0 {
+                    case .success:
+                        break
+                    case .failure:
+                        XCTFail()
+                    }
+                    
+                    expectationForgotUsername?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationForgotUsername = nil
+                }
+            }
         }
     }
     
@@ -1415,60 +1984,33 @@ class UserTests: KinveyTestCase {
     }
     
     func testFacebookLogin() {
-        class FakeFacebookSocialLoginURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                let userId = "503bc9806065332d6f000005"
-                let headers = [
-                    "Location" : "https://baas.kinvey.com/user/:appKey/\(userId)",
-                    "Content-Type" : "application/json"
-                ]
-                let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: headers)!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                
-                let jsonResponse = [
-                    "_id": userId,
-                    "username": "73abe64e-139e-4034-9f88-08e3d9e1e5f8",
-                    "password": "a94fa673-993e-4770-ac64-af82e6ab02b7",
-                    "_socialIdentity": [
-                        "facebook": [
-                            "id": "100004289534145",
-                            "name": "Kois Steel",
-                            "gender": "female",
-                            "email": "kois.steel@testFB.net",
-                            "birthday": "2012/08/20",
-                            "location": "Cambridge, USA"
-                        ]
-                    ],
-                    "_kmd": [
-                        "lmt": "2012-08-27T19:24:47.975Z",
-                        "ect": "2012-08-27T19:24:47.975Z",
-                        "authtoken": "8d4c427d-51ee-4f0f-bd99-acd2192d43d2.Clii9/Pjq05g8C5rqQgQg9ty+qewsxlTjhgNjyt9Pn4="
-                    ],
-                    "_acl": [
-                        "creator": "503bc9806065332d6f000005"
+        mockResponse { (request) -> HttpResponse in
+            let userId = "503bc9806065332d6f000005"
+            let jsonResponse: [String : Any] = [
+                "_id": userId,
+                "username": "73abe64e-139e-4034-9f88-08e3d9e1e5f8",
+                "password": "a94fa673-993e-4770-ac64-af82e6ab02b7",
+                "_socialIdentity": [
+                    "facebook": [
+                        "id": "100004289534145",
+                        "name": "Kois Steel",
+                        "gender": "female",
+                        "email": "kois.steel@testFB.net",
+                        "birthday": "2012/08/20",
+                        "location": "Cambridge, USA"
                     ]
-                ] as [String : Any]
-                
-                let data = try! JSONSerialization.data(withJSONObject: jsonResponse, options: [])
-                client!.urlProtocol(self, didLoad: data)
-                client!.urlProtocolDidFinishLoading(self)
-            }
-            
-            override func stopLoading() {
-            }
-            
+                ],
+                "_kmd": [
+                    "lmt": "2012-08-27T19:24:47.975Z",
+                    "ect": "2012-08-27T19:24:47.975Z",
+                    "authtoken": "8d4c427d-51ee-4f0f-bd99-acd2192d43d2.Clii9/Pjq05g8C5rqQgQg9ty+qewsxlTjhgNjyt9Pn4="
+                ],
+                "_acl": [
+                    "creator": "503bc9806065332d6f000005"
+                ]
+            ]
+            return HttpResponse(statusCode: 201, headerFields: ["Location" : "https://baas.kinvey.com/user/:appKey/\(userId)"], json: jsonResponse)
         }
-        
-        setURLProtocol(FakeFacebookSocialLoginURLProtocol.self)
         defer {
             setURLProtocol(nil)
         }
@@ -1495,6 +2037,51 @@ class UserTests: KinveyTestCase {
     
     func testFacebookLoginTimeout() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFacebookLogin = expectation(description: "Facebook Login")
+        
+        let fakeFacebookData = [
+            "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
+            "expires": "5105388"
+        ]
+        User.login(authSource: .facebook, fakeFacebookData) { user, error in
+            XCTAssertNil(user)
+            XCTAssertNotNil(error)
+            
+            if let error = error {
+                let error = error as NSError
+                XCTAssertEqual(error.domain, NSURLErrorDomain)
+                XCTAssertEqual(error.code, NSURLErrorTimedOut)
+            }
+            
+            expectationFacebookLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFacebookLogin = nil
+        }
+        
+        client.activeUser = nil
+    }
+    
+    func testFacebookLoginCreateTimeout() {
+        var count = 0
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(statusCode: 404, data: Data())
+            case 1:
+                return HttpResponse(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil))
+            default:
+                fatalError()
+            }
+        }
         defer {
             setURLProtocol(nil)
         }
@@ -1636,6 +2223,291 @@ class UserTests: KinveyTestCase {
         }
         
         client.activeUser = nil
+    }
+    
+    func testMICLoginSafari() {
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
+        
+        defer {
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                if let safariVC = navigationController.presentedViewController as? SFSafariViewController {
+                    weak var expectationDismiss = expectation(description: "Dismiss")
+                    
+                    safariVC.dismiss(animated: true) {
+                        expectationDismiss?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { (error) in
+                        expectationDismiss = nil
+                    }
+                }
+                
+                navigationController.popViewController(animated: true)
+                tester().waitForAnimationsToFinish()
+            }
+        }
+        
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        
+        tester().waitForAnimationsToFinish()
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let userId = UUID().uuidString
+        let user = User(JSON: [
+            "_id" : userId,
+            "username" : UUID().uuidString,
+            "_kmd" : [
+                "lmt" : Date().toString(),
+                "ect" : Date().toString(),
+                "authtoken" : UUID().uuidString
+            ],
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ]
+        ])
+        XCTAssertNotNil(user)
+        
+        NotificationCenter.default.post(
+            name: User.MICSafariViewControllerSuccessNotificationName,
+            object: user
+        )
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let view = tester().waitForView(withAccessibilityIdentifier: "User ID Value") as? UILabel
+        XCTAssertNotNil(view)
+        if let view = view {
+            XCTAssertNotNil(view.text)
+            if let text = view.text {
+                XCTAssertEqual(text, userId)
+            }
+        }
+    }
+    
+    func testMICLoginSafariTimeoutError() {
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
+        
+        defer {
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                if let safariVC = navigationController.presentedViewController as? SFSafariViewController {
+                    weak var expectationDismiss = expectation(description: "Dismiss")
+                    
+                    safariVC.dismiss(animated: true) {
+                        expectationDismiss?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { (error) in
+                        expectationDismiss = nil
+                    }
+                }
+                
+                navigationController.popViewController(animated: true)
+                tester().waitForAnimationsToFinish()
+            }
+        }
+        
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        
+        tester().waitForAnimationsToFinish()
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        NotificationCenter.default.post(
+            name: User.MICSafariViewControllerFailureNotificationName,
+            object: timeoutError
+        )
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let view = tester().waitForView(withAccessibilityIdentifier: "User ID Value") as? UILabel
+        XCTAssertNotNil(view)
+        if let view = view {
+            XCTAssertNotNil(view.text)
+            if let text = view.text {
+                XCTAssertEqual(text.trimmingCharacters(in: .whitespacesAndNewlines), "")
+            }
+        }
+    }
+    
+    func testMICLoginSafariModalTimeoutError() {
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        
+        tester().tapView(withAccessibilityIdentifier: "MIC Login Modal")
+        
+        defer {
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                if let safariVC = navigationController.presentedViewController as? SFSafariViewController {
+                    weak var expectationDismiss = expectation(description: "Dismiss")
+                    
+                    safariVC.dismiss(animated: true) {
+                        expectationDismiss?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { (error) in
+                        expectationDismiss = nil
+                    }
+                }
+                
+                tester().tapView(withAccessibilityIdentifier: "Dismiss")
+                tester().waitForAnimationsToFinish()
+            }
+        }
+        
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        
+        tester().waitForAnimationsToFinish()
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        NotificationCenter.default.post(
+            name: User.MICSafariViewControllerFailureNotificationName,
+            object: timeoutError
+        )
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let view = tester().waitForView(withAccessibilityIdentifier: "User ID Value") as? UILabel
+        XCTAssertNotNil(view)
+        if let view = view {
+            XCTAssertNotNil(view.text)
+            if let text = view.text {
+                XCTAssertEqual(text.trimmingCharacters(in: .whitespacesAndNewlines), "")
+            }
+        }
+    }
+    
+    func testMICLoginSafariSuccessWrongNotificationObject() {
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
+        
+        defer {
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                if let safariVC = navigationController.presentedViewController as? SFSafariViewController {
+                    weak var expectationDismiss = expectation(description: "Dismiss")
+                    
+                    safariVC.dismiss(animated: true) {
+                        expectationDismiss?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { (error) in
+                        expectationDismiss = nil
+                    }
+                }
+                
+                navigationController.popViewController(animated: true)
+                tester().waitForAnimationsToFinish()
+            }
+        }
+        
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        
+        tester().waitForAnimationsToFinish()
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        NotificationCenter.default.post(
+            name: User.MICSafariViewControllerSuccessNotificationName,
+            object: timeoutError
+        )
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let view = tester().waitForView(withAccessibilityIdentifier: "User ID Value") as? UILabel
+        XCTAssertNotNil(view)
+        if let view = view {
+            XCTAssertNotNil(view.text)
+            if let text = view.text {
+                XCTAssertEqual(text.trimmingCharacters(in: .whitespacesAndNewlines), "")
+            }
+        }
+    }
+    
+    func testMICLoginSafariFailureWrongNotificationObject() {
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        
+        tester().tapView(withAccessibilityIdentifier: "MIC Login")
+        
+        defer {
+            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                if let safariVC = navigationController.presentedViewController as? SFSafariViewController {
+                    weak var expectationDismiss = expectation(description: "Dismiss")
+                    
+                    safariVC.dismiss(animated: true) {
+                        expectationDismiss?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { (error) in
+                        expectationDismiss = nil
+                    }
+                }
+                
+                navigationController.popViewController(animated: true)
+                tester().waitForAnimationsToFinish()
+            }
+        }
+        
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        
+        tester().waitForAnimationsToFinish()
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let userId = UUID().uuidString
+        let user = User(JSON: [
+            "_id" : userId,
+            "username" : UUID().uuidString,
+            "_kmd" : [
+                "lmt" : Date().toString(),
+                "ect" : Date().toString(),
+                "authtoken" : UUID().uuidString
+            ],
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ]
+        ])
+        XCTAssertNotNil(user)
+        
+        NotificationCenter.default.post(
+            name: User.MICSafariViewControllerFailureNotificationName,
+            object: user
+        )
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let view = tester().waitForView(withAccessibilityIdentifier: "User ID Value") as? UILabel
+        XCTAssertNotNil(view)
+        if let view = view {
+            XCTAssertNotNil(view.text)
+            if let text = view.text {
+                XCTAssertEqual(text.trimmingCharacters(in: .whitespacesAndNewlines), "")
+            }
+        }
     }
     
     func testMICLoginWKWebView() {
@@ -1788,7 +2660,7 @@ class UserTests: KinveyTestCase {
                     weak var expectationWait = expectation(description: "Wait")
                     
                     webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result , !(result is NSNull) {
+                        if let result = result, !(result is NSNull) {
                             wait = false
                         }
                         expectationWait?.fulfill()
@@ -1960,21 +2832,23 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    func testMICErrorMessage() {
-        guard !useMockData else {
-            return
+    func testMICErrorMessageUIWebView() {
+        let responseBody = [
+            "error" : "invalid_client",
+            "error_description" : "Client authentication failed.",
+            "debug" : "Client Verification Failed: redirect uri not valid"
+        ]
+        if useMockData {
+            mockResponse(json: responseBody)
         }
-        
         defer {
-            if let user = client.activeUser {
-                user.logout()
-            }
+            if useMockData { setURLProtocol(nil) }
         }
         
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, micUserInterface: .uiWebView) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             XCTAssertNotNil(error as? Kinvey.Error)
@@ -1983,15 +2857,81 @@ class UserTests: KinveyTestCase {
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .unknownJsonError(_, _, let json):
-                    let responseBody = [
-                        "error" : "invalid_client",
-                        "error_description" : "Client authentication failed.",
-                        "debug" : "Client Verification Failed: redirect uri not valid"
-                    ]
                     XCTAssertEqual(json.count, responseBody.count)
                     XCTAssertEqual(json["error"] as? String, responseBody["error"])
                     XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
                     XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
+        }
+    }
+    
+    func testMICErrorMessageWKWebView() {
+        let responseBody = [
+            "error" : "invalid_client",
+            "error_description" : "Client authentication failed.",
+            "debug" : "Client Verification Failed: Error: Invalid Client"
+        ]
+        if useMockData {
+            mockResponse(json: responseBody)
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let redirectURI = URL(string: "throwAnError://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(error)
+            XCTAssertNotNil(error as? Kinvey.Error)
+            XCTAssertNil(user)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .unknownJsonError(_, _, let json):
+                    XCTAssertEqual(json.count, responseBody.count)
+                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
+        }
+    }
+    
+    func testMICClientNotInitialized() {
+        let client = Client()
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let redirectURI = URL(string: "throwAnError://")!
+        User.presentMICViewController(redirectURI: redirectURI, client: client) { user, error in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(error)
+            XCTAssertNotNil(error as? Kinvey.Error)
+            XCTAssertNil(user)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .clientNotInitialized:
+                    break
                 default:
                     XCTFail()
                 }
@@ -2467,6 +3407,30 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testUserMICLoginTimeoutError() {
+        mockResponse(error: timeoutError)
+        
+        expectation(forNotification: User.MICSafariViewControllerFailureNotificationName.rawValue, object: nil) { (notification) -> Bool in
+            XCTAssertNotNil(notification.object)
+            XCTAssertTrue(notification.object is Swift.Error)
+            if let error = notification.object as? Swift.Error {
+                XCTAssertTimeoutError(error)
+            }
+            return true
+        }
+        
+        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?code=1234")!)
+        XCTAssertTrue(result)
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+        }
+    }
+    
+    func testUserMICLoginWrongCode() {
+        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?no_code=1234")!)
+        XCTAssertFalse(result)
+    }
+    
     func testMICLoginTimeoutDuringLoginCall() {
         var count = 0
         mockResponse { (request) -> HttpResponse in
@@ -2521,6 +3485,65 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testUserMICLogin() {
+        var count = 0
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(
+                    statusCode: 200,
+                    json: [
+                        "_socialIdentity" : [
+                            "kinveyAuth" : [
+                                "access_token" : UUID().uuidString,
+                                "token_type" : "Bearer",
+                                "expires_in" : 59,
+                                "refresh_token" : UUID().uuidString
+                            ]
+                        ]
+                    ]
+                )
+            case 1:
+                return HttpResponse(json: [
+                    "_id" : UUID().uuidString,
+                    "username" : "test",
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString(),
+                        "authtoken" : UUID().uuidString
+                    ],
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ]
+                ])
+            default:
+                fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        expectation(forNotification: User.MICSafariViewControllerSuccessNotificationName.rawValue, object: nil) { (notification) -> Bool in
+            XCTAssertNotNil(notification.object)
+            XCTAssertTrue(notification.object is User)
+            if let user = notification.object as? User {
+                XCTAssertEqual(user.username, "test")
+                MockKinveyBackend.user[user.userId] = user.toJSON()
+            }
+            return true
+        }
+        
+        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?code=1234")!)
+        XCTAssertTrue(result)
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+        }
+    }
+    
     func testMICLoginUsernamePasswordTimeout() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
         defer {
@@ -2540,6 +3563,29 @@ class UserTests: KinveyTestCase {
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
                 XCTAssertEqual(error.code, NSURLErrorTimedOut)
             }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+    }
+    
+    func testUserLoginUsernamePasswordTimeout() {
+        setURLProtocol(TimeoutErrorURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        User.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString) { user, error in
+            XCTAssertTrue(Thread.isMainThread)
+            
+            XCTAssertNil(user)
+            XCTAssertNotNil(error)
+            XCTAssertTimeoutError(error)
             
             expectationLogin?.fulfill()
         }
@@ -2647,6 +3693,10 @@ class UserTests: KinveyTestCase {
         waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationLogin = nil
         }
+    }
+    
+    func testUserWithoutUserID() {
+        XCTAssertNil(User(JSON: ["username" : "Test"]))
     }
 
 }

@@ -69,14 +69,6 @@ let defaultTag = "kinvey"
 
 let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 
-func buildError(_ data: Data?, _ response: URLResponse?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
-    return buildError(data: data, urlResponse: response, error: error, client: client)
-}
-
-func buildError(data: Data?, urlResponse: URLResponse?, error: Swift.Error?, client: Client) -> Swift.Error {
-    return buildError(data: data, response: HttpResponse(response: urlResponse), error: error, client: client)
-}
-
 func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
     return buildError(data: data, response: response, error: error, client: client)
 }
@@ -88,13 +80,13 @@ func buildError(client: Client) -> Swift.Error {
 func buildError(data: Data?, response: Response?, error: Swift.Error?, client: Client) -> Swift.Error {
     if let error = error {
         return error
-    } else if let response = response , response.isUnauthorized,
+    } else if let response = response, response.isUnauthorized,
         let json = client.responseParser.parse(data) as? [String : String]
     {
         return Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response, response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "MethodNotAllowed" {
+    } else if let response = response, response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String], json["error"] == "MethodNotAllowed" {
         return Error.buildMethodNotAllowed(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response, response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "DataLinkEntityNotFound" {
+    } else if let response = response, response.isNotFound, let json = client.responseParser.parse(data) as? [String : String], json["error"] == "DataLinkEntityNotFound" {
         return Error.buildDataLinkEntityNotFound(httpResponse: response.httpResponse, data: data, json: json)
     } else if let response = response,
         response.isForbidden,
@@ -114,7 +106,6 @@ func buildError(data: Data?, response: Response?, error: Swift.Error?, client: C
         return Error.appNotFound(description: description)
     } else if let response = response, let json = client.responseParser.parse(data) {
         return Error.buildUnknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
-    } else {
-        return Error.invalidResponse(httpResponse: response?.httpResponse, data: data)
     }
+    return Error.invalidResponse(httpResponse: response?.httpResponse, data: data)
 }

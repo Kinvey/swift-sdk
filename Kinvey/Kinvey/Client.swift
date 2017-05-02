@@ -246,11 +246,11 @@ open class Client: Credential {
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         
         var apiHostName = apiHostName
-        if let apiHostNameString = apiHostName.absoluteString as String? , apiHostNameString.characters.last == "/" {
+        if let apiHostNameString = apiHostName.absoluteString as String?, apiHostNameString.characters.last == "/" {
             apiHostName = URL(string: apiHostNameString.substring(to: apiHostNameString.characters.index(before: apiHostNameString.characters.endIndex)))!
         }
         var authHostName = authHostName
-        if let authHostNameString = authHostName.absoluteString as String? , authHostNameString.characters.last == "/" {
+        if let authHostNameString = authHostName.absoluteString as String?, authHostNameString.characters.last == "/" {
             authHostName = URL(string: authHostNameString.substring(to: authHostNameString.characters.index(before: authHostNameString.characters.endIndex)))!
         }
         self.apiHostName = apiHostName
@@ -272,7 +272,7 @@ open class Client: Credential {
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self) { (result: Result<U, Swift.Error>) in
+            User.login(authSource: .kinvey, kinveyAuth, client: self) { (result: Result<U, Swift.Error>) in
                 switch result {
                 case .success(let user):
                     completionHandler(.success(user))
@@ -337,11 +337,11 @@ open class Client: Credential {
     @discardableResult
     public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
         guard let _ = appKey, let _ = appSecret else {
-            let message = "Please initialize your client calling the initialize() method before call ping()"
-            log.error(message)
-            fatalError(message)
+            DispatchQueue.main.async {
+                completionHandler(.failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()")))
+            }
+            return LocalRequest()
         }
-        
         let request = networkRequestFactory.buildAppDataPing()
         Promise<EnvironmentInfo> { fulfill, reject in
             request.execute() { data, response, error in

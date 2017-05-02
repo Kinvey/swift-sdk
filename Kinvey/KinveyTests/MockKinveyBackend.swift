@@ -8,6 +8,7 @@
 
 import Foundation
 @testable import Kinvey
+import Foundation
 
 class MockKinveyBackend: URLProtocol {
     
@@ -28,7 +29,8 @@ class MockKinveyBackend: URLProtocol {
             defer {
                 httpBodyStream.close()
             }
-            return (try? JSONSerialization.jsonObject(with: httpBodyStream, options: [])) as? [String : Any]
+            let object = try? JSONSerialization.jsonObject(with: httpBodyStream)
+            return object as? [String : Any]
         } else {
             return nil
         }
@@ -66,8 +68,8 @@ class MockKinveyBackend: URLProtocol {
                             array = collection.filter({ (entity) -> Bool in
                                 for keyValuePair in query {
                                     if let value = entity[keyValuePair.0] as? String,
-                                        let matchValue = keyValuePair.1 as? String
-                                        , value != matchValue
+                                        let matchValue = keyValuePair.1 as? String,
+                                        value != matchValue
                                     {
                                         return false
                                     }

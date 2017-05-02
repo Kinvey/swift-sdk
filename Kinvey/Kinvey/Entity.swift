@@ -34,7 +34,6 @@ open class Entity: Object, Persistable {
     public required init?(map: Map) {
         super.init()
     }
-
     
     /// Override this method and return the name of the collection for Kinvey.
     open class func collectionName() -> String {

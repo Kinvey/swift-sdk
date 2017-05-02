@@ -40,28 +40,6 @@ internal class CacheManager: NSObject {
         return RealmFileCache(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
-    func clearFiles() {
-        if let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
-            let basePath = (path as NSString).appendingPathComponent(persistenceId) + "files"
-            
-            let fileManager = FileManager.default
-            
-            var isDirectory = ObjCBool(false)
-            let exists = fileManager.fileExists(atPath: basePath, isDirectory: &isDirectory)
-            if exists && isDirectory.boolValue {
-                if let files = try? fileManager.subpathsOfDirectory(atPath: basePath) {
-                    for file in files {
-                        do {
-                            try fileManager.removeItem(atPath: file)
-                        } catch {
-                            //ignore possible errors if for any reason is not possible to delete the file
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
     func clearAll(_ tag: String? = nil) {
         if let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
             let basePath = (path as NSString).appendingPathComponent(persistenceId)

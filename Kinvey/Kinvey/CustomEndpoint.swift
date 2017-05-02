@@ -161,7 +161,7 @@ open class CustomEndpoint {
         var request: Request!
         Promise<[JsonDictionary]> { fulfill, reject in
             request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response , response.isOK, let json = client.responseParser.parseArray(data) {
+                if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
                     fulfill(json)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -200,7 +200,7 @@ open class CustomEndpoint {
         var request: Request!
         Promise<T> { fulfill, reject in
             request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response , response.isOK, let obj: T = client.responseParser.parse(data) {
+                if let response = response, response.isOK, let obj: T = client.responseParser.parse(data) {
                     fulfill(obj)
                 } else {
                     reject(buildError(data, response, error, client))

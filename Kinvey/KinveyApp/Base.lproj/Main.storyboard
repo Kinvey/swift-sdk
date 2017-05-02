@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Bl7-eH-WkD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Bl7-eH-WkD">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -132,11 +132,11 @@
                                         <rect key="frame" x="0.0" y="220" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1jv-Qq-SQ5" id="N3W-wg-wDl">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Upload &amp; Play Video" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jld-JN-GGe">
-                                                    <rect key="frame" x="15" y="0.0" width="345" height="43"/>
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -182,7 +182,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pim-MP-Veo">
-                                <rect key="frame" x="85.5" y="28" width="4.5" height="20.5"/>
+                                <rect key="frame" x="85.5" y="72" width="4.5" height="20.5"/>
                                 <accessibility key="accessibilityConfiguration" identifier="User ID Value">
                                     <bool key="isElement" value="YES"/>
                                 </accessibility>
@@ -191,30 +191,30 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User ID:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lLB-OQ-MDw">
-                                <rect key="frame" x="16" y="28" width="61.5" height="20.5"/>
+                                <rect key="frame" x="16" y="72" width="61.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Force UIWebView:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FtQ-aU-NMd">
-                                <rect key="frame" x="16" y="62.5" width="139.5" height="20.5"/>
+                                <rect key="frame" x="16" y="106.5" width="139.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="iz3-JI-0WT">
-                                <rect key="frame" x="163.5" y="57" width="51" height="31"/>
+                                <rect key="frame" x="163.5" y="101" width="51" height="31"/>
                                 <accessibility key="accessibilityConfiguration" identifier="Force UIWebView Value"/>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use SafariViewController" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7lC-9C-9nc">
-                                <rect key="frame" x="16" y="101.5" width="191" height="20.5"/>
+                                <rect key="frame" x="16" y="145.5" width="191" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="r4F-fL-ya5">
-                                <rect key="frame" x="215" y="96" width="51" height="31"/>
-                                <accessibility key="accessibilityConfiguration" identifier="Force UIWebView Value"/>
+                                <rect key="frame" x="215" y="140" width="51" height="31"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Use SafariViewController Value"/>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Py-hQ-JY0">
                                 <rect key="frame" x="168.5" y="318.5" width="38" height="30"/>
@@ -224,9 +224,18 @@
                                     <action selector="login:" destination="AWA-yI-CjK" eventType="touchUpInside" id="na5-ob-14a"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OIX-P9-NM5">
+                                <rect key="frame" x="160" y="617" width="54" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Dismiss"/>
+                                <state key="normal" title="Dismiss"/>
+                                <connections>
+                                    <action selector="dismiss:" destination="AWA-yI-CjK" eventType="touchUpInside" id="bWZ-Rz-IhL"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="OIX-P9-NM5" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="379-0f-Qg8"/>
                             <constraint firstItem="7lC-9C-9nc" firstAttribute="leading" secondItem="FtQ-aU-NMd" secondAttribute="leading" id="6nu-cV-jAX"/>
                             <constraint firstItem="3Py-hQ-JY0" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="DIC-DD-CGy"/>
                             <constraint firstItem="r4F-fL-ya5" firstAttribute="top" secondItem="iz3-JI-0WT" secondAttribute="bottom" constant="8" id="IJT-oE-nai"/>
@@ -242,6 +251,7 @@
                             <constraint firstItem="r4F-fL-ya5" firstAttribute="leading" secondItem="7lC-9C-9nc" secondAttribute="trailing" constant="8" id="rGQ-UA-yqz"/>
                             <constraint firstItem="3Py-hQ-JY0" firstAttribute="centerY" secondItem="iYE-ue-OHW" secondAttribute="centerY" id="yLs-bj-pUA"/>
                             <constraint firstItem="FtQ-aU-NMd" firstAttribute="centerY" secondItem="iz3-JI-0WT" secondAttribute="centerY" id="zMO-He-nj9"/>
+                            <constraint firstItem="KzI-ss-dHc" firstAttribute="top" secondItem="OIX-P9-NM5" secondAttribute="bottom" constant="20" id="zgD-Vl-xSP"/>
                         </constraints>
                     </view>
                     <connections>
