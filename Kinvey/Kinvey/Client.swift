@@ -272,7 +272,7 @@ open class Client: Credential {
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth.toJSON(), client: self) { (result: Result<U, Swift.Error>) in
+            User.login(authSource: .kinvey, kinveyAuth, client: self) { (result: Result<U, Swift.Error>) in
                 switch result {
                 case .success(let user):
                     completionHandler(.success(user))

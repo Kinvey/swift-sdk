@@ -390,7 +390,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
                     let user = self.credential as? User,
                     let socialIdentity = user.socialIdentity,
                     let kinveyAuthToken = socialIdentity.kinvey,
-                    let refreshToken = kinveyAuthToken.refreshToken
+                    let refreshToken = kinveyAuthToken["refresh_token"] as? String
                 {
                     MIC.login(refreshToken: refreshToken) { user, error in
                         if let user = user {
