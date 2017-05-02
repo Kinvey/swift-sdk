@@ -43,10 +43,7 @@ class Keychain {
     fileprivate static let userKey = "user"
     var user: User? {
         get {
-            if let json = keychain[Keychain.userKey] {
-                return client.userType.init(JSONString: json)
-            }
-            return nil
+            return client.responseParser.parseUser(keychain[Keychain.userKey]?.data(using: .utf8))
         }
         set {
             keychain[Keychain.userKey] = newValue?.toJSONString()

@@ -929,6 +929,7 @@ class UserTests: KinveyTestCase {
         
         XCTAssertNotNil(client.activeUser)
         XCTAssertTrue(client.activeUser is MyUser)
+        XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyUser)
         
         if let user = client.activeUser as? MyUser {
             if useMockData {
