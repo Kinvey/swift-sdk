@@ -1098,7 +1098,6 @@
 				573851AB1D47C7EB00E4712A /* FileCache.swift */,
 				573851AD1D47C7F800E4712A /* RealmFileCache.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
-				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
 				5781D1261CE29AA600369F40 /* ObjCRuntime.swift */,
 				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
@@ -1114,6 +1113,7 @@
 			children = (
 				57A960A21CC6D729005E52A8 /* Models */,
 				57A27C921C178F18000DF951 /* Info.plist */,
+				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
 				5765B83C1C972D7000080FFA /* URLProtocols.swift */,
 				578F5C921C99EED100B20F17 /* KIF.swift */,
 				57A27C901C178F18000DF951 /* KinveyTestCase.swift */,
