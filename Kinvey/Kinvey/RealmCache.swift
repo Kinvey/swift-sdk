@@ -384,15 +384,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return results
     }
     
-    func findAll() -> [T] {
-        log.verbose("Finding All")
-        var results = [T]()
-        executor.executeAndWait {
-            results = self.detach(AnyRandomAccessCollection(self.realm.objects(self.entityType)), query: nil)
-        }
-        return results
-    }
-    
     func count(query: Query? = nil) -> Int {
         log.verbose("Counting by query: \(String(describing: query))")
         var result = 0
@@ -454,15 +445,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return result
     }
     
-    func removeAll() {
-        log.verbose("Removing all objects")
-        executor.executeAndWait {
-            try! self.realm.write {
-                self.realm.delete(self.realm.objects(self.entityType))
-            }
-        }
-    }
-    
     func clear(query: Query? = nil) {
         log.verbose("Clearing cache")
         executor.executeAndWait {
@@ -484,10 +466,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
             }
         }
-    }
-    
-    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
-        fatalError("Custom Aggregation not supported against local cache")
     }
     
 }

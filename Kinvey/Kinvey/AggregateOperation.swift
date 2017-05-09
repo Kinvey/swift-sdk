@@ -22,9 +22,8 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            if let cache = self.cache {
-                let result = cache.group(aggregation: aggregation, predicate: predicate)
-                completionHandler?(.success(result))
+            if let _ = self.cache {
+                completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
             } else {
                 completionHandler?(.success([]))
             }

@@ -356,4 +356,18 @@ class QueryTest: XCTestCase {
         XCTAssertNil(NSPredicate(JSON: [:]))
     }
     
+    func testGeoPointConvertionToCLLocationCoordinate2D() {
+        let geopoint = GeoPoint(latitude: 40.74, longitude: -74.56)
+        let locationCoordinate2D = CLLocationCoordinate2D(geoPoint: geopoint)
+        XCTAssertEqual(geopoint.latitude, locationCoordinate2D.latitude)
+        XCTAssertEqual(geopoint.longitude, locationCoordinate2D.longitude)
+    }
+    
+    func testCLLocationCoordinate2DConvertionToGeoPoint() {
+        let locationCoordinate2D = CLLocationCoordinate2D(latitude: 40.74, longitude: -74.56)
+        let geopoint = GeoPoint(coordinate: locationCoordinate2D)
+        XCTAssertEqual(geopoint.latitude, locationCoordinate2D.latitude)
+        XCTAssertEqual(geopoint.longitude, locationCoordinate2D.longitude)
+    }
+    
 }

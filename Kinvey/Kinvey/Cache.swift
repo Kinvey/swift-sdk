@@ -10,8 +10,6 @@ import Foundation
 
 internal protocol CacheType: class {
     
-    var persistenceId: String { get }
-    var collectionName: String { get }
     var ttl: TimeInterval? { get set }
     
     associatedtype `Type`: Persistable
@@ -26,8 +24,6 @@ internal protocol CacheType: class {
     
     func findIdsLmts(byQuery query: Query) -> [String : String]
     
-    func findAll() -> [Type]
-    
     func count(query: Query?) -> Int
     
     @discardableResult
@@ -39,13 +35,9 @@ internal protocol CacheType: class {
     @discardableResult
     func remove(byQuery query: Query) -> Int
     
-    func removeAll()
-    
     func clear(query: Query?)
     
     func detach(entities: [Type], query: Query?) -> [Type]
-    
-    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary]
     
 }
 
@@ -75,14 +67,6 @@ internal class Cache<T: Persistable> where T: NSObject {
 
 class AnyCache<T: Persistable>: CacheType {
     
-    var persistenceId: String {
-        return _getPersistenceId()
-    }
-    
-    var collectionName: String {
-        return _getCollectionName()
-    }
-    
     var ttl: TimeInterval? {
         get {
             return _getTTL()
@@ -92,8 +76,6 @@ class AnyCache<T: Persistable>: CacheType {
         }
     }
     
-    private let _getPersistenceId: () -> String
-    private let _getCollectionName: () -> String
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
@@ -101,21 +83,16 @@ class AnyCache<T: Persistable>: CacheType {
     private let _findById: (String) -> T?
     private let _findByQuery: (Query) -> [T]
     private let _findIdsLmtsByQuery: (Query) -> [String : String]
-    private let _findAll: () -> [T]
     private let _count: (Query?) -> Int
     private let _removeEntity: (T) -> Bool
     private let _removeEntities: ([T]) -> Bool
     private let _removeByQuery: (Query) -> Int
-    private let _removeAll: () -> Void
     private let _clear: (Query?) -> Void
     private let _detach: ([T], Query?) -> [T]
-    private let _group: (Aggregation, NSPredicate?) -> [JsonDictionary]
     
     typealias `Type` = T
 
     init<Cache: CacheType>(_ cache: Cache) where Cache.`Type` == T {
-        _getPersistenceId = { return cache.persistenceId }
-        _getCollectionName = { return cache.collectionName }
         _getTTL = { return cache.ttl }
         _setTTL = { cache.ttl = $0 }
         _saveEntity = cache.save(entity:)
@@ -123,15 +100,12 @@ class AnyCache<T: Persistable>: CacheType {
         _findById = cache.find(byId:)
         _findByQuery = cache.find(byQuery:)
         _findIdsLmtsByQuery = cache.findIdsLmts(byQuery:)
-        _findAll = cache.findAll
         _count = cache.count(query:)
         _removeEntity = cache.remove(entity:)
         _removeEntities = cache.remove(entities:)
         _removeByQuery = cache.remove(byQuery:)
-        _removeAll = cache.removeAll
         _clear = cache.clear(query:)
         _detach = cache.detach(entities: query:)
-        _group = cache.group(aggregation: predicate:)
     }
     
     func save(entity: T) {
@@ -154,10 +128,6 @@ class AnyCache<T: Persistable>: CacheType {
         return _findIdsLmtsByQuery(query)
     }
     
-    func findAll() -> [T] {
-        return _findAll()
-    }
-    
     func count(query: Query?) -> Int {
         return _count(query)
     }
@@ -177,20 +147,12 @@ class AnyCache<T: Persistable>: CacheType {
         return _removeByQuery(query)
     }
     
-    func removeAll() {
-        _removeAll()
-    }
-    
     func clear(query: Query?) {
         _clear(query)
     }
     
     func detach(entities: [T], query: Query?) -> [T] {
         return _detach(entities, query)
-    }
-    
-    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
-        return _group(aggregation, predicate)
     }
     
 }
