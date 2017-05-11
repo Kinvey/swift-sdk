@@ -32,13 +32,45 @@ public protocol Persistable: Mappable {
     
 }
 
+struct AnyTransform: TransformType {
+    
+    private let _transformFromJSON: (Any?) -> Any?
+    private let _transformToJSON: (Any?) -> Any?
+    
+    init<Transform: TransformType>(_ transform: Transform) {
+        _transformFromJSON = { transform.transformFromJSON($0) }
+        _transformToJSON = { transform.transformToJSON($0 as? Transform.Object) }
+    }
+    
+    func transformFromJSON(_ value: Any?) -> Any? {
+        return _transformFromJSON(value)
+    }
+    
+    func transformToJSON(_ value: Any?) -> Any? {
+        return _transformToJSON(value)
+    }
+
+}
+
 internal func kinveyMappingType(left: String, right: String) {
     let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
     {
-        classMapping[left] = right
+        classMapping[left] = (right, nil)
+        kinveyMappingType[className] = classMapping
+        currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
+    }
+}
+
+internal func kinveyMappingType<Transform: TransformType>(left: String, right: String, transform: Transform) {
+    let currentThread = Thread.current
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
+        let className = kinveyMappingType.first?.0,
+        var classMapping = kinveyMappingType[className]
+    {
+        classMapping[left] = (right, AnyTransform(transform))
         kinveyMappingType[className] = classMapping
         currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
     }
@@ -89,21 +121,47 @@ public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+// MARK: Default Date Transform
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date?, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date!, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
   
@@ -338,7 +396,7 @@ internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     
     typealias Key = String
-    typealias Value = String
+    typealias Value = (String, AnyTransform?)
     typealias Element = (Key, Value)
     
     private var map = [Key : Value]()
@@ -380,7 +438,7 @@ extension Persistable {
     
     static func propertyMappingReverse() -> [String : [String]] {
         var results = [String : [String]]()
-        for (key, value) in propertyMapping() {
+        for (key, (value, _)) in propertyMapping() {
             var properties = results[value]
             if properties == nil {
                 properties = [String]()
@@ -417,7 +475,7 @@ extension Persistable {
         return [:]
     }
     
-    static func propertyMapping(_ propertyName: String) -> String? {
+    static func propertyMapping(_ propertyName: String) -> PropertyMap.Value? {
         return propertyMapping()[propertyName]
     }
     
