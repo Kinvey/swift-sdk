@@ -145,5 +145,6 @@ Pod::Spec.new do |s|
   s.dependency "RealmSwift", "~> 2.0"
   s.dependency "ObjectMapper", "~> 2.0"
   s.dependency "XCGLogger", "~> 4.0.0"
+  s.dependency "PubNub", "~> 4.0"
 
 end

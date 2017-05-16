@@ -12,6 +12,7 @@ VALID_ARCHS[sdk=iphoneos*] = arm64 armv7 armv7s
 VALID_ARCHS[sdk=appletvos*] = arm64
 VALID_ARCHS[sdk=watchos*] = armv7k
 
+OTHER_LDFLAGS = $(inherited) -framework PubNub
 OTHER_LDFLAGS[sdk=macosx*] = $(inherited) -framework SafariServices
 OTHER_LDFLAGS[sdk=iphoneos*] = $(inherited) -framework SafariServices
 

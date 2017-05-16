@@ -25,6 +25,9 @@ protocol RequestFactory {
     func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email: String) -> HttpRequest
     
+    func buildUserRegisterRealtime(user: User, deviceId: String) -> HttpRequest
+    func buildUserUnregisterRealtime(user: User, deviceId: String) -> HttpRequest
+    
     func buildAppDataPing() -> HttpRequest
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest
     func buildAppDataFindByQuery(collectionName: String, query: Query) -> HttpRequest
@@ -33,6 +36,8 @@ protocol RequestFactory {
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest
     func buildAppDataRemoveByQuery(collectionName: String, query: Query) -> HttpRequest
     func buildAppDataRemoveById(collectionName: String, objectId: String) -> HttpRequest
+    func buildAppDataSubscribe(collectionName: String, deviceId: String) -> HttpRequest
+    func buildAppDataUnSubscribe(collectionName: String, deviceId: String) -> HttpRequest
     
     func buildPushRegisterDevice(_ deviceToken: Data) -> HttpRequest
     func buildPushUnRegisterDevice(_ deviceToken: Data) -> HttpRequest

@@ -279,6 +279,12 @@ class KinveyTestCase: XCTestCase {
     
     static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
     static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
+    static let hostUrl: URL? = {
+        guard let hostUrl = ProcessInfo.processInfo.environment["KINVEY_HOST_URL"] else {
+            return nil
+        }
+        return URL(string: hostUrl)
+    }()
     
     typealias AppInitialize = (appKey: String, appSecret: String)
     static let appInitializeDevelopment = AppInitialize(appKey: "kid_Wy35WH6X9e", appSecret: "d85f81cad5a649baaa6fdcd99a108ab1")
@@ -301,6 +307,7 @@ class KinveyTestCase: XCTestCase {
             Kinvey.sharedClient.initialize(
                 appKey: KinveyTestCase.appKey ?? KinveyTestCase.appInitializeProduction.appKey,
                 appSecret: KinveyTestCase.appSecret ?? KinveyTestCase.appInitializeProduction.appSecret,
+                apiHostName: KinveyTestCase.hostUrl ?? Client.defaultApiHostName,
                 encrypted: encrypted
             )
         }

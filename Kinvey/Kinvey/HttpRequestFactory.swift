@@ -390,5 +390,39 @@ class HttpRequestFactory: RequestFactory {
         )
         return request
     }
+    
+    // MARK: Realtime
+    
+    func buildUserRegisterRealtime(user: User, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.userRegisterRealtime(client: client, user: user), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildUserUnregisterRealtime(user: User, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.userUnregisterRealtime(client: client, user: user), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildAppDataSubscribe(collectionName: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataSubscribe(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildAppDataUnSubscribe(collectionName: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataUnSubscribe(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
 
 }

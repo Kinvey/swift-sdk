@@ -13,8 +13,15 @@ class Keychain {
     
     private let appKey: String?
     private let accessGroup: String?
-    private let keychain: KeychainAccess.Keychain
-    private let client: Client
+    private let client: Client?
+    internal let keychain: KeychainAccess.Keychain
+    
+    init() {
+        self.appKey = nil
+        self.accessGroup = nil
+        self.client = nil
+        self.keychain = KeychainAccess.Keychain().accessibility(.afterFirstUnlockThisDeviceOnly)
+    }
     
     init(appKey: String, client: Client) {
         self.appKey = appKey
@@ -37,39 +44,40 @@ class Keychain {
         case clientId = "client_id"
         case kinveyAuth = "kinveyAuth"
         case defaultEncryptionKey = "defaultEncryptionKey"
+        case deviceId = "deviceId"
         
     }
     
     var deviceToken: Data? {
         get {
-            return keychain[data: Key.deviceToken]
+            return keychain[data: .deviceToken]
         }
         set {
-            keychain[data: Key.deviceToken] = newValue
+            keychain[data: .deviceToken] = newValue
         }
     }
     
     var user: User? {
         get {
-            return client.responseParser.parseUser(keychain[Key.user]?.data(using: .utf8))
+            return client?.responseParser.parseUser(keychain[.user]?.data(using: .utf8))
         }
         set {
-            keychain[Key.user] = newValue?.toJSONString()
+            keychain[.user] = newValue?.toJSONString()
         }
     }
     
     var clientId: String? {
         get {
-            return keychain[Key.clientId]
+            return keychain[.clientId]
         }
         set {
-            keychain[Key.clientId] = newValue
+            keychain[.clientId] = newValue
         }
     }
     
     var kinveyAuth: [String : Any]? {
         get {
-            if let jsonString = keychain[Key.kinveyAuth],
+            if let jsonString = keychain[.kinveyAuth],
                 let data = jsonString.data(using: .utf8),
                 let jsonObject = try? JSONSerialization.jsonObject(with: data)
             {
@@ -81,19 +89,19 @@ class Keychain {
             if let newValue = newValue,
                 let data = try? JSONSerialization.data(withJSONObject: newValue)
             {
-                keychain[Key.kinveyAuth] = String(data: data, encoding: .utf8)
+                keychain[.kinveyAuth] = String(data: data, encoding: .utf8)
             } else {
-                keychain[Key.kinveyAuth] = nil
+                keychain[.kinveyAuth] = nil
             }
         }
     }
     
     var defaultEncryptionKey: Data? {
         get {
-            return keychain[data: Key.defaultEncryptionKey]
+            return keychain[data: .defaultEncryptionKey]
         }
         set {
-            keychain[data: Key.defaultEncryptionKey] = newValue
+            keychain[data: .defaultEncryptionKey] = newValue
         }
     }
     
