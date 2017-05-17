@@ -123,9 +123,9 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     func reduceToIdsLmts(_ jsonArray: [JsonDictionary]) -> [String : String] {
         var items = [String : String](minimumCapacity: jsonArray.count)
         for json in jsonArray {
-            if let id = json[PersistableIdKey] as? String,
-                let kmd = json[PersistableMetadataKey] as? JsonDictionary,
-                let lmt = kmd[Metadata.LmtKey] as? String
+            if let id = json[Entity.Key.entityId] as? String,
+                let kmd = json[Entity.Key.metadata] as? JsonDictionary,
+                let lmt = kmd[Metadata.Key.lastModifiedTime] as? String
             {
                 items[id] = lmt
             }

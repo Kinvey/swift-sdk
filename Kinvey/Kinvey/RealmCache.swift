@@ -35,9 +35,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
-            let message = "\(T.self) needs to be a Entity"
-            log.severe(message)
-            fatalError(message)
+            fatalError("\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -266,10 +264,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
         
         return AnyRandomAccessCollection(realmResults)
-    }
-    
-    fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
-        return type.init()
     }
 
     fileprivate func detach(_ entity: Object, props: [String]) -> Object {
@@ -568,7 +562,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     convenience init(request: URLRequest, collectionName: String, objectId: String?) {
         self.init()
         
-        requestId = request.value(forHTTPHeaderField: .requestId)!
+        requestId = request.value(forHTTPHeaderField: KinveyHeaderField.requestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.httpMethod ?? "GET"

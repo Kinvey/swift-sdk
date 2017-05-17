@@ -38,7 +38,7 @@ class QueryTest: XCTestCase {
             } else if let value = value as? [String : Any] {
                 result[key] = String(data: try! JSONSerialization.data(withJSONObject: value), encoding: .utf8)!
             } else {
-                fatalError()
+                Swift.fatalError()
             }
         }
         return result
@@ -189,23 +189,23 @@ class QueryTest: XCTestCase {
     }
     
     func testSortAscending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "query=%7B%7D&sort=\(encodeURL(["name" : 1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "sort=\(encodeURL(["name" : 1]))")
     }
     
     func testSortDescending() {
-        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "query=%7B%7D&sort=\(encodeURL(["name" : -1]))")
+        XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "sort=\(encodeURL(["name" : -1]))")
     }
     
     func testSkip() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "query=%7B%7D&skip=100")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100 }), "skip=100")
     }
     
     func testLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "query=%7B%7D&limit=100")
+        XCTAssertEqual(encodeQuery(Query { $0.limit = 100 }), "limit=100")
     }
     
     func testSkipAndLimit() {
-        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "query=%7B%7D&skip=100&limit=300")
+        XCTAssertEqual(encodeQuery(Query { $0.skip = 100; $0.limit = 300 }), "skip=100&limit=300")
     }
     
     func testPredicateSortSkipAndLimit() {
@@ -334,7 +334,7 @@ class QueryTest: XCTestCase {
         let queryItems = query.urlQueryItems
         
         XCTAssertNotNil(queryItems)
-        XCTAssertEqual(queryItems?.count, 2)
+        XCTAssertEqual(queryItems?.count, 1)
         XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":1}")
     }
     
@@ -344,7 +344,7 @@ class QueryTest: XCTestCase {
         let queryItems = query.urlQueryItems
         
         XCTAssertNotNil(queryItems)
-        XCTAssertEqual(queryItems?.count, 2)
+        XCTAssertEqual(queryItems?.count, 1)
         XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":-1}")
     }
     
@@ -368,6 +368,37 @@ class QueryTest: XCTestCase {
         let geopoint = GeoPoint(coordinate: locationCoordinate2D)
         XCTAssertEqual(geopoint.latitude, locationCoordinate2D.latitude)
         XCTAssertEqual(geopoint.longitude, locationCoordinate2D.longitude)
+    }
+    
+    func testMKPolyline() {
+        let locationCoordinate2D = CLLocationCoordinate2D(latitude: 40.74, longitude: -74.56)
+        let locationCoordinate2DArray = [locationCoordinate2D]
+        let polyline = MKPolyline(coordinates: locationCoordinate2DArray, count: 1)
+        let query = Query(format: "location == %@", polyline)
+        guard let result = query.predicate?.mongoDBQuery else {
+            XCTAssertNotNil(query.predicate?.mongoDBQuery)
+            return
+        }
+        
+        XCTAssertEqual(result.count, 1)
+        
+        guard let location = result["location"] as? [String : Any] else {
+            XCTAssertNotNil(result["location"] as? [String : Any])
+            return
+        }
+        
+        XCTAssertEqual(location.count, 1)
+        guard let geoWithin = location["$geoWithin"] else {
+            XCTAssertNotNil(location["$geoWithin"])
+            return
+        }
+        XCTAssertEqual("\(geoWithin)", "nil")
+    }
+    
+    func testInvalidGeoPointParse() {
+        XCTAssertNil(GeoPointTransform().transformFromJSON([-74.56]))
+        XCTAssertNil(GeoPointTransform().transformFromJSON([]))
+        XCTAssertNil(GeoPointTransform().transformFromJSON([-74.56, 40.74, 5.22]))
     }
     
 }

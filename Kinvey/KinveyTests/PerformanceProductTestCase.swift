@@ -8,7 +8,7 @@
 
 import XCTest
 import RealmSwift
-@testable import Kinvey
+import Kinvey
 import PromiseKit
 
 class Product: Entity {

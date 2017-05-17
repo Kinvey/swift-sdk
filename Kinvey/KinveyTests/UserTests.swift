@@ -12,6 +12,7 @@ import KinveyApp
 @testable import Kinvey
 import ObjectMapper
 import SafariServices
+import Nimble
 
 typealias MICLoginViewController = KinveyApp.MICLoginViewController
 
@@ -1084,6 +1085,10 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testUserQueryMapping() {
+        XCTAssertNotNil(UserQuery(JSON: [:]))
+    }
+    
     func testLogoutLogin() {
         guard !useMockData else {
             return
@@ -2079,7 +2084,7 @@ class UserTests: KinveyTestCase {
             case 1:
                 return HttpResponse(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil))
             default:
-                fatalError()
+                Swift.fatalError()
             }
         }
         defer {
@@ -3520,7 +3525,7 @@ class UserTests: KinveyTestCase {
                     ]
                 ])
             default:
-                fatalError()
+                Swift.fatalError()
             }
         }
         defer {
@@ -3697,6 +3702,83 @@ class UserTests: KinveyTestCase {
     
     func testUserWithoutUserID() {
         XCTAssertNil(User(JSON: ["username" : "Test"]))
+    }
+    
+    func testUserMicViewControllerCoding() {
+        expect { () -> Void in
+            let _ = Kinvey.MICLoginViewController(coder: NSKeyedArchiver())
+        }.to(throwAssertion())
+    }
+    
+    func testMICTimeoutAction() {
+        mockResponse { (request) -> HttpResponse in
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 10))
+            return HttpResponse(error: timeoutError)
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let redirectURI = URL(string: "throwAnError://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 3, forceUIWebView: true) { (user, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTrue(error is Kinvey.Error)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .requestTimeout:
+                    break
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
+        }
+    }
+    
+    func testMICCancelUserAction() {
+        mockResponse { (request) -> HttpResponse in
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 10))
+            DispatchQueue.main.async {
+                self.tester().tapView(withAccessibilityLabel: " X ")
+            }
+            return HttpResponse(error: timeoutError)
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let redirectURI = URL(string: "throwAnError://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTrue(error is Kinvey.Error)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .requestCancelled:
+                    break
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
+        }
     }
 
 }

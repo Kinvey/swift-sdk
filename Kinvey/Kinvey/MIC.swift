@@ -342,8 +342,6 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
             wkWebView(webView)
         } else if let webView = webView as? UIWebView {
             uiWebView(webView)
-        } else {
-            fatalError()
         }
     }
     

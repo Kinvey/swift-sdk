@@ -11,6 +11,18 @@ import Realm
 import RealmSwift
 import ObjectMapper
 
+/// Key to map the `_id` column in your Persistable implementation class.
+@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.entityId instead")
+public let PersistableIdKey = "_id"
+
+/// Key to map the `_acl` column in your Persistable implementation class.
+@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.acl instead")
+public let PersistableAclKey = "_acl"
+
+/// Key to map the `_kmd` column in your Persistable implementation class.
+@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.metadata instead")
+public let PersistableMetadataKey = "_kmd"
+
 public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
 public typealias Object = RealmSwift.Object
 
@@ -30,6 +42,19 @@ internal func StringFromClass(cls: AnyClass) -> String {
 /// Base class for entity classes that are mapped to a collection in Kinvey.
 open class Entity: Object, Persistable {
     
+    public struct Key {
+        
+        /// Key to map the `_id` column in your Persistable implementation class.
+        public static let entityId = "_id"
+        
+        /// Key to map the `_acl` column in your Persistable implementation class.
+        public static let acl = "_acl"
+        
+        /// Key to map the `_kmd` column in your Persistable implementation class.
+        public static let metadata = "_kmd"
+        
+    }
+    
     /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
     public required init?(map: Map) {
         super.init()
@@ -37,9 +62,7 @@ open class Entity: Object, Persistable {
     
     /// Override this method and return the name of the collection for Kinvey.
     open class func collectionName() -> String {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
+        fatalError("Method \(#function) must be overridden")
     }
     
     /// The `_id` property mapped in the Kinvey backend.
@@ -74,9 +97,9 @@ open class Entity: Object, Persistable {
     
     /// Override this method to tell how to map your own objects.
     open func propertyMapping(_ map: Map) {
-        entityId <- ("entityId", map[PersistableIdKey])
-        metadata <- ("metadata", map[PersistableMetadataKey])
-        acl <- ("acl", map[PersistableAclKey])
+        entityId <- ("entityId", map[Key.entityId])
+        metadata <- ("metadata", map[Key.metadata])
+        acl <- ("acl", map[Key.acl])
     }
     
     /**
@@ -140,8 +163,6 @@ open class StringValue: Object, ExpressibleByStringLiteral {
     
     public dynamic var value = ""
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    
     public convenience required init(unicodeScalarLiteral value: String) {
         self.init()
         self.value = value
@@ -168,8 +189,6 @@ open class IntValue: Object, ExpressibleByIntegerLiteral {
     
     public dynamic var value = 0
     
-    public typealias IntegerLiteralType = Int
-    
     public convenience required init(integerLiteral value: Int) {
         self.init()
         self.value = value
@@ -185,8 +204,6 @@ open class IntValue: Object, ExpressibleByIntegerLiteral {
 open class FloatValue: Object, ExpressibleByFloatLiteral {
     
     public dynamic var value = Float(0)
-    
-    public typealias FloatLiteralType = Float
     
     public convenience required init(floatLiteral value: Float) {
         self.init()
@@ -204,8 +221,6 @@ open class DoubleValue: Object, ExpressibleByFloatLiteral {
     
     public dynamic var value = 0.0
     
-    public typealias FloatLiteralType = Double
-    
     public convenience required init(floatLiteral value: Double) {
         self.init()
         self.value = value
@@ -221,8 +236,6 @@ open class DoubleValue: Object, ExpressibleByFloatLiteral {
 open class BoolValue: Object, ExpressibleByBooleanLiteral {
     
     public dynamic var value = false
-    
-    public typealias FloatLiteralType = BooleanLiteralType
     
     public convenience required init(booleanLiteral value: Bool) {
         self.init()

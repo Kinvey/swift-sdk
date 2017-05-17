@@ -38,6 +38,9 @@ before_script:
 - if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
     carthage build --platform iOS KIF;
   fi
+- if [ ! -d "Carthage/Build/iOS/Nimble.framework" ]; then
+    carthage build --platform iOS Nimble;
+  fi
 - date
 script:
 - travis_retry make test

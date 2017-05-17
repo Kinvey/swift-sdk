@@ -10,12 +10,9 @@ import Foundation
 
 internal class RemoveByQueryOperation<T: Persistable>: RemoveOperation<T> where T: NSObject {
     
-    override init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
-        super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
-    }
-    
-    override func buildRequest() -> HttpRequest {
-        return client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.collectionName(), query: query)
+    init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+        let httpRequest = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.collectionName(), query: query)
+        super.init(query: query, httpRequest: httpRequest, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
 }

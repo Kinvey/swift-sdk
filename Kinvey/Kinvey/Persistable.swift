@@ -30,9 +30,6 @@ public protocol Persistable: Mappable {
     /// Default Constructor.
     init()
     
-    /// Override this method to tell how to map your own objects.
-    mutating func propertyMapping(_ map: Map)
-    
 }
 
 internal func kinveyMappingType(left: String, right: String) {
@@ -391,15 +388,17 @@ extension Persistable {
             properties!.append(key)
             results[value] = properties
         }
-        guard
-            results[PersistableIdKey] != nil,
-            results[PersistableMetadataKey] != nil
-        else {
+        let entityIdMapped = results[Entity.Key.entityId] != nil
+        let metadataMapped = results[Entity.Key.metadata] != nil
+        if !(entityIdMapped && metadataMapped) {
             let isEntity = self is Entity.Type
             let hintMessage = isEntity ? "Please call super.propertyMapping() inside your propertyMapping() method." : "Please add properties in your Persistable model class to map the missing properties."
-            precondition(results[PersistableIdKey] != nil, "Property \(PersistableIdKey) (PersistableIdKey) is missing in the propertyMapping() method. \(hintMessage)")
-            precondition(results[PersistableMetadataKey] != nil, "Property \(PersistableMetadataKey) (PersistableMetadataKey) is missing in the propertyMapping() method. \(hintMessage)")
-            fatalError(hintMessage)
+            guard entityIdMapped else {
+                fatalError("Property \(Entity.Key.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
+            }
+            guard metadataMapped else {
+                fatalError("Property \(Entity.Key.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
+            }
         }
         return results
     }
@@ -423,15 +422,15 @@ extension Persistable {
     }
     
     internal static func entityIdProperty() -> String {
-        return propertyMappingReverse()[PersistableIdKey]!.last!
+        return propertyMappingReverse()[Entity.Key.entityId]!.last!
     }
     
     internal static func aclProperty() -> String? {
-        return propertyMappingReverse()[PersistableAclKey]?.last
+        return propertyMappingReverse()[Entity.Key.acl]?.last
     }
     
     internal static func metadataProperty() -> String? {
-        return propertyMappingReverse()[PersistableMetadataKey]?.last
+        return propertyMappingReverse()[Entity.Key.metadata]?.last
     }
     
 }

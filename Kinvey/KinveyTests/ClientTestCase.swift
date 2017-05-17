@@ -8,6 +8,7 @@
 
 import XCTest
 import Kinvey
+import Nimble
 
 class ClientTestCase: KinveyTestCase {
     
@@ -117,6 +118,19 @@ class ClientTestCase: KinveyTestCase {
     
     func testEmptyEnvironmentInfo() {
         XCTAssertNil(EnvironmentInfo(JSON: [:]))
+    }
+    
+    func testClientAppKeyAndAppSecretEmpty() {
+        expect { () -> Void in
+            let _ = Client(appKey: "", appSecret: "")
+        }.to(throwAssertion())
+    }
+    
+    func testDataStoreWithoutInitilizeClient() {
+        expect { () -> Void in
+            let client = Client()
+            let _ = DataStore<Person>.collection(client: client)
+        }.to(throwAssertion())
     }
     
 }

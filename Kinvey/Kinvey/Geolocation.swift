@@ -12,17 +12,10 @@ import ObjectMapper
 import CoreLocation
 import MapKit
 
-open class GeoPoint: Object, Mappable {
+public final class GeoPoint: Object {
     
     open dynamic var latitude: CLLocationDegrees = 0.0
     open dynamic var longitude: CLLocationDegrees = 0.0
-    
-    public convenience required init?(map: Map) {
-        guard let _: Double = map["latitude"].value(), let _: Double = map["longitude"].value() else {
-            return nil
-        }
-        self.init()
-    }
     
     public convenience init(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
         self.init()
@@ -36,6 +29,17 @@ open class GeoPoint: Object, Mappable {
     
     convenience init(_ array: [CLLocationDegrees]) {
         self.init(latitude: array[1], longitude: array[0])
+    }
+    
+}
+
+extension GeoPoint: Mappable {
+    
+    public convenience init?(map: Map) {
+        guard let _: Double = map["latitude"].value(), let _: Double = map["longitude"].value() else {
+            return nil
+        }
+        self.init()
     }
     
     public func mapping(map: Map) {

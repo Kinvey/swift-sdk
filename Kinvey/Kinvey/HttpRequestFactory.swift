@@ -169,7 +169,7 @@ class HttpRequestFactory: RequestFactory {
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
         var bodyObject = persistable.toJSON()
-        let objId = bodyObject[PersistableIdKey] as? String
+        let objId = bodyObject[Entity.Key.entityId] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
             httpMethod: isNewObj ? .post : .put,
@@ -181,7 +181,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         if (isNewObj) {
-            bodyObject[PersistableIdKey] = nil
+            bodyObject[Entity.Key.entityId] = nil
         }
         
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])

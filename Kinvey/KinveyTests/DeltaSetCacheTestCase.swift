@@ -1413,4 +1413,344 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testFindOneRecordDeltaSetTimeoutError2ndRequest() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            let person = Person()
+            person.name = "Victor"
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person) { (person, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationSave = nil
+            }
+        }
+        
+        var count = 0
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "_kmd" : [
+                            "lmt" : Date().toString()
+                        ]
+                    ]
+                ])
+            case 1:
+                return HttpResponse(error: timeoutError)
+            default:
+                Swift.fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { (persons, error) in
+            XCTAssertNil(persons)
+            XCTAssertNotNil(error)
+            
+            XCTAssertTimeoutError(error)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
+    func testFind201RecordsDeltaSet() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) { (person, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationSave = nil
+        }
+        
+        do {
+            mockResponse(statusCode: 201, json: [
+                "_id" : UUID().uuidString,
+                "name" : "Victor",
+                "age" : 0,
+                "_acl" : [
+                    "creator" : client.activeUser?.userId
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ])
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
+        }
+        
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        var jsonArray = [JsonDictionary]()
+        for _ in 1...201 {
+            jsonArray.append([
+                "_id" : UUID().uuidString,
+                "name" : UUID().uuidString,
+                "age" : 0,
+                "_acl" : [
+                    "creator" : self.client.activeUser!.userId
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ])
+        }
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            
+            if let fieldsString = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first?.value {
+                let fields = fieldsString.components(separatedBy: ",")
+                let mockResponse = jsonArray.map { (item: [String : Any]) -> [String : Any] in
+                    var json = [String : Any]()
+                    for field in fields {
+                        switch field {
+                        case "_id":
+                            json[field] = item[field]
+                        case "_kmd.lmt":
+                            let itemKmd = item["_kmd"] as! [String : Any]
+                            let kmd = ["lmt" : itemKmd["lmt"]]
+                            json["_kmd"] = kmd
+                        default:
+                            Swift.fatalError()
+                        }
+                    }
+                    return json
+                }
+                return HttpResponse(json: mockResponse)
+            }
+            
+            guard let queryString = urlComponents?.queryItems?.filter({ $0.name == "query" }).first?.value,
+                let data = queryString.data(using: .utf8),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                let queryDict = jsonObject as? [String : Any]
+            else {
+                    Swift.fatalError()
+            }
+            
+            if let idFilter = queryDict["_id"] as? [String : Any],
+                let ids = idFilter["$in"] as? [String]
+            {
+                let mockResponse = jsonArray.filter {
+                    let id = $0["_id"] as! String
+                    return ids.contains(id)
+                }
+                return HttpResponse(json: mockResponse)
+            }
+            
+            Swift.fatalError()
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(results?.count, 201)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
+    func testFind201RecordsDeltaSetTimeoutOn2ndRequest() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) { (person, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationSave = nil
+        }
+        
+        do {
+            mockResponse(statusCode: 201, json: [
+                "_id" : UUID().uuidString,
+                "name" : "Victor",
+                "age" : 0,
+                "_acl" : [
+                    "creator" : client.activeUser?.userId
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+                ])
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
+        }
+        
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        var jsonArray = [JsonDictionary]()
+        for _ in 1...201 {
+            jsonArray.append([
+                "_id" : UUID().uuidString,
+                "name" : UUID().uuidString,
+                "age" : 0,
+                "_acl" : [
+                    "creator" : self.client.activeUser!.userId
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+                ])
+        }
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            
+            if let fieldsString = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first?.value {
+                let fields = fieldsString.components(separatedBy: ",")
+                let mockResponse = jsonArray.map { (item: [String : Any]) -> [String : Any] in
+                    var json = [String : Any]()
+                    for field in fields {
+                        switch field {
+                        case "_id":
+                            json[field] = item[field]
+                        case "_kmd.lmt":
+                            let itemKmd = item["_kmd"] as! [String : Any]
+                            let kmd = ["lmt" : itemKmd["lmt"]]
+                            json["_kmd"] = kmd
+                        default:
+                            Swift.fatalError()
+                        }
+                    }
+                    return json
+                }
+                return HttpResponse(json: mockResponse)
+            }
+            
+            guard let queryString = urlComponents?.queryItems?.filter({ $0.name == "query" }).first?.value,
+                let data = queryString.data(using: .utf8),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                let queryDict = jsonObject as? [String : Any]
+                else {
+                    Swift.fatalError()
+            }
+            
+            if let idFilter = queryDict["_id"] as? [String : Any],
+                let ids = idFilter["$in"] as? [String]
+            {
+                defer {
+                    count += 1
+                }
+                switch count {
+                case 0:
+                    let mockResponse = jsonArray.filter {
+                        let id = $0["_id"] as! String
+                        return ids.contains(id)
+                    }
+                    return HttpResponse(json: mockResponse)
+                default:
+                    return HttpResponse(error: timeoutError)
+                }
+            }
+            
+            Swift.fatalError()
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { results, error in
+            XCTAssertNil(results)
+            XCTAssertNotNil(error)
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
 }

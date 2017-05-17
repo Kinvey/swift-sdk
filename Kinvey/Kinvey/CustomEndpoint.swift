@@ -52,7 +52,7 @@ open class CustomEndpoint {
                 request.request.httpBody = try! JSONSerialization.data(withJSONObject: object.toJSON().toJson(), options: [])
             }
         }
-        request.request.setValue(nil, forHTTPHeaderField: Header.requestId)
+        request.request.setValue(nil, forHTTPHeaderField: KinveyHeaderField.requestId)
         request.execute(completionHandler)
         return request
     }
