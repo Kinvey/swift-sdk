@@ -77,6 +77,24 @@ class PushTestCase: KinveyTestCase {
         }
     }
     
+    func testUnregisterDeviceToken() {
+        let client = Client(appKey: "_appKey_", appSecret: "_appSecret_")
+        
+        weak var expectaionUnRegister = expectation(description: "UnRegister")
+        
+        client.push.unRegisterDeviceToken { (success, error) in
+            XCTAssertFalse(success)
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error?.localizedDescription, "Device token not found")
+            
+            expectaionUnRegister?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectaionUnRegister = nil
+        }
+    }
+    
     func testBadgeNumber() {
         UIApplication.shared.applicationIconBadgeNumber = 1
         
