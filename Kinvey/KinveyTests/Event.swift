@@ -7,7 +7,6 @@
 //
 
 import Kinvey
-import ObjectMapper
 
 /// Event.swift - an entity in the 'Events' collection
 class Event : Entity {
@@ -24,7 +23,7 @@ class Event : Entity {
         super.propertyMapping(map)
         
         name <- ("name", map["name"])
-        publishDate <- ("date", map["date"], ISO8601DateTransform())
+        publishDate <- ("publishDate", map["date"])
         location <- ("location", map["location"])
     }
     

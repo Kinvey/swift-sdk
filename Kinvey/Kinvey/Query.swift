@@ -47,7 +47,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Impose a limit of records in the results of the query.
     open var limit: Int?
     
-    internal func translate(expression: NSExpression) -> NSExpression {
+    internal func translate(expression: NSExpression, otherSideExpression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
             var keyPath = expression.keyPath
@@ -55,16 +55,28 @@ public final class Query: NSObject, BuilderType, Mappable {
             if keyPath.contains(".") {
                 var keyPaths = [String]()
                 for item in keyPath.components(separatedBy: ".") {
-                    keyPaths.append(persistableType?.propertyMapping(item) ?? item)
+                    if let (keyPath, _) = persistableType?.propertyMapping(item) {
+                        keyPaths.append(keyPath)
+                    } else {
+                        keyPaths.append(item)
+                    }
                     if let persistableTypeTmp = persistableType {
                         persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
                 keyPath = keyPaths.joined(separator: ".")
-            } else if let translatedKeyPath = persistableType?.propertyMapping(keyPath) {
+            } else if let (translatedKeyPath, _) = persistableType?.propertyMapping(keyPath) {
                 keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
+        case .constantValue:
+            if otherSideExpression.expressionType == .keyPath,
+                let (_, optionalTransform) = persistableType?.propertyMapping(otherSideExpression.keyPath),
+                let transform = optionalTransform
+            {
+                return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
+            }
+            return expression
         default:
             return expression
         }
@@ -73,8 +85,8 @@ public final class Query: NSObject, BuilderType, Mappable {
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
-                leftExpression: translate(expression: predicate.leftExpression),
-                rightExpression: translate(expression: predicate.rightExpression),
+                leftExpression: translate(expression: predicate.leftExpression, otherSideExpression: predicate.rightExpression),
+                rightExpression: translate(expression: predicate.rightExpression, otherSideExpression: predicate.leftExpression),
                 modifier: predicate.comparisonPredicateModifier,
                 type: predicate.predicateOperatorType,
                 options: predicate.options

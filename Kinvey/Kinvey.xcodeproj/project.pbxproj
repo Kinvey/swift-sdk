@@ -998,7 +998,6 @@
 				5759854D1CC833930054DF08 /* LongData.swift */,
 				5759854F1CC834FE0054DF08 /* MedData.swift */,
 				57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */,
-				5754DDBC1EAEBC4A00122A7A /* DateTestCase.swift */,
 			);
 			path = KinveyApp;
 			sourceTree = "<group>";
@@ -1206,6 +1205,7 @@
 				57373ABE1ECE1849002842CE /* LogTestCase.swift */,
 				5771CD6F1ECF6D440057E505 /* ForgotToCallSuper.swift */,
 				5771CD741ECFE9B60057E505 /* MetadataTestCase.swift */,
+				5754DDBC1EAEBC4A00122A7A /* DateTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
