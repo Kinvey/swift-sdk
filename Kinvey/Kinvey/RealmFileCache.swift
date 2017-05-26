@@ -9,7 +9,9 @@
 import Foundation
 import RealmSwift
 
-class RealmFileCache: FileCache {
+class RealmFileCache<T: File>: FileCache {
+    
+    typealias FileType = T
     
     let persistenceId: String
     let realm: Realm
@@ -39,7 +41,7 @@ class RealmFileCache: FileCache {
         executor = Executor()
     }
     
-    func save(_ file: File, beforeSave: (() -> Void)?) {
+    func save(_ file: FileType, beforeSave: (() -> Void)?) {
         executor.executeAndWait {
             try! self.realm.write {
                 beforeSave?()
@@ -48,7 +50,7 @@ class RealmFileCache: FileCache {
         }
     }
     
-    func remove(_ file: File) {
+    func remove(_ file: FileType) {
         executor.executeAndWait {
             try! self.realm.write {
                 if let fileId = file.fileId, let file = self.realm.object(ofType: File.self, forPrimaryKey: fileId) {
@@ -69,11 +71,11 @@ class RealmFileCache: FileCache {
         }
     }
     
-    func get(_ fileId: String) -> File? {
-        var file: File? = nil
+    func get(_ fileId: String) -> FileType? {
+        var file: FileType? = nil
         
         executor.executeAndWait {
-            file = self.realm.object(ofType: File.self, forPrimaryKey: fileId)
+            file = self.realm.object(ofType: FileType.self, forPrimaryKey: fileId)
         }
         
         return file

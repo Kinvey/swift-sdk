@@ -36,8 +36,8 @@ internal class CacheManager: NSObject {
         return AnyCache(RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion))
     }
     
-    func fileCache(fileURL: URL? = nil) -> FileCache? {
-        return RealmFileCache(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    func fileCache<FileType: File>(fileURL: URL? = nil) -> AnyFileCache<FileType>? {
+        return AnyFileCache(RealmFileCache<FileType>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion))
     }
     
     func clearAll(_ tag: String? = nil) {

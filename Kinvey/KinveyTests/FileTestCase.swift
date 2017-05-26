@@ -10,11 +10,28 @@ import XCTest
 @testable import Kinvey
 import Nimble
 
+class MyFile: File {
+    
+    dynamic var label: String?
+    
+    public convenience required init?(map: Map) {
+        self.init()
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        
+        label <- ("label", map["label"])
+    }
+    
+}
+
 class FileTestCase: StoreTestCase {
     
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
     let caminandes3TrailerImageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.jpg")
     var file: File?
+    var myFile: MyFile?
     var caminandes3TrailerFileSize: UInt64 {
         return try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerURL.path).filter { $0.key == .size }.first!.value as! UInt64
     }
@@ -528,11 +545,13 @@ class FileTestCase: StoreTestCase {
             client.logNetworkEnabled = originalLogNetworkEnabled
         }
         
-        var file = File() {
-            $0.publicAccessible = true
-        }
+        var file = MyFile()
+        file.label = "trailer"
+        file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
+        
+        let fileStore = FileStore.getInstance(fileType: MyFile.self)
         
         var uploadProgressCount = 0
         
@@ -638,7 +657,8 @@ class FileTestCase: StoreTestCase {
                                 "lmt": "2016-12-03T08:52:19.204Z",
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
-                            "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/2a37d253-752f-42cd-987e-db319a626077/a2f88ffc-e7fe-4d17-aa69-063088cb24fa"
+                            "label" : "trailer",
+                            "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/aae29e81-1930-43a5-97e9-bae7964d3820/715dcece-2a05-4d88-a771-d6c7c5cac197"
                         ])
                     default:
                         Swift.fatalError()
@@ -724,8 +744,12 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
                 
+                if let file = file {
+                    XCTAssertEqual(file.label, "trailer")
+                }
+                
                 if let data = data {
-                    XCTAssertEqual(data.count, 10899706)
+                    XCTAssertEqual(data.count, 8578265)
                 }
                 
                 expectationDownload?.fulfill()
@@ -1548,11 +1572,13 @@ class FileTestCase: StoreTestCase {
     func testDownloadAndResume() {
         signUp()
         
-        let file = File() {
-            $0.publicAccessible = true
-        }
+        let file = MyFile()
+        file.label = "trailer"
+        file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
+        
+        let fileStore: FileStore<MyFile> = FileStore.getInstance()
         
         do {
             if useMockData {
@@ -1641,6 +1667,7 @@ class FileTestCase: StoreTestCase {
                                 "lmt": Date().toString(),
                                 "ect": Date().toString()
                             ],
+                            "label": "trailer",
                             "_downloadURL": "https://storage.googleapis.com/\(UUID().uuidString)/\(UUID().uuidString)/\(UUID().uuidString)"
                         ])
                     default:
@@ -1658,7 +1685,7 @@ class FileTestCase: StoreTestCase {
             
             fileStore.upload(file, path: path) { (file, error) in
                 XCTAssertNotNil(file)
-                self.file = file
+                self.myFile = file
                 XCTAssertNil(error)
                 
                 expectationUpload?.fulfill()
@@ -1669,7 +1696,7 @@ class FileTestCase: StoreTestCase {
             }
         }
         
-        XCTAssertNotNil(self.file?.fileId)
+        XCTAssertNotNil(self.myFile?.fileId)
         
         if useMockData {
             let url = caminandes3TrailerURL
@@ -1699,8 +1726,8 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            let request = fileStore.download(self.file!) { (file, data: Data?, error) in
-                self.file = file
+            let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
+                self.myFile = file
                 XCTFail()
             }
             
@@ -1722,18 +1749,22 @@ class FileTestCase: StoreTestCase {
             }
         }
         
-        XCTAssertNotNil(self.file?.resumeDownloadData)
-        if let resumeData = self.file?.resumeDownloadData {
+        XCTAssertNotNil(self.myFile?.resumeDownloadData)
+        if let resumeData = self.myFile?.resumeDownloadData {
             XCTAssertGreaterThan(resumeData.count, 0)
         }
         
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(self.file!) { (file, data: Data?, error) in
+            fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
+                
+                if let file = file {
+                    XCTAssertEqual(file.label, "trailer")
+                }
                 
                 if let data = data {
                     XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
@@ -2356,9 +2387,9 @@ class FileTestCase: StoreTestCase {
     func testGetInstance() {
         let appKey = "file-get_instance-\(UUID().uuidString)"
         let client = Client(appKey: appKey, appSecret: "unit-test")
-        let fileStore = FileStore.getInstance(client)
+        let fileStore = FileStore.getInstance(client: client)
         
-        let fileCache = fileStore.cache as? RealmFileCache
+        let fileCache = fileStore.cache?.cache as? RealmFileCache<File>
         XCTAssertNotNil(fileCache)
         if let fileCache = fileCache {
             let fileURL = fileCache.realm.configuration.fileURL
