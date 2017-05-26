@@ -267,4 +267,108 @@ class CacheStoreTests: StoreTestCase {
         }
     }
     
+    func testFindCache() {
+        let book = Book()
+        book.title = "Swift for the win!"
+        book.authorNames.append("Victor Barros")
+        
+        if useMockData {
+            var mockJson: JsonDictionary? = nil
+            var count = 0
+            mockResponse { request in
+                defer {
+                    count += 1
+                }
+                switch count {
+                case 0:
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json += [
+                        "_id" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ]
+                    mockJson = json
+                    return HttpResponse(json: json)
+                case 1:
+                    return HttpResponse(json: [mockJson!])
+                default:
+                    Swift.fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            weak var expectationSaveNetwork = expectation(description: "Save Network")
+            weak var expectationSaveLocal = expectation(description: "Save Local")
+            
+            let store = DataStore<Book>.collection(.cache)
+            store.save(book) { book, error in
+                XCTAssertNotNil(book)
+                XCTAssertNil(error)
+                
+                if let book = book {
+                    XCTAssertEqual(book.title, "Swift for the win!")
+                    
+                    XCTAssertEqual(book.authorNames.count, 1)
+                    XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
+                }
+                
+                if expectationSaveLocal != nil {
+                    expectationSaveLocal?.fulfill()
+                    expectationSaveLocal = nil
+                } else {
+                    expectationSaveNetwork?.fulfill()
+                }
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSaveNetwork = nil
+                expectationSaveLocal = nil
+            }
+        }
+        
+        do {
+            weak var expectationFindLocal = expectation(description: "Save Local")
+            weak var expectationFindNetwork = expectation(description: "Save Network")
+            
+            let store = DataStore<Book>.collection(.cache)
+            store.find { books, error in
+                XCTAssertNotNil(books)
+                XCTAssertNil(error)
+                
+                if let books = books {
+                    if expectationFindLocal != nil {
+                        expectationFindLocal?.fulfill()
+                        expectationFindLocal = nil
+                    } else {
+                        expectationFindNetwork?.fulfill()
+                    }
+                    
+                    XCTAssertEqual(books.count, 1)
+                    if let book = books.first {
+                        XCTAssertEqual(book.title, "Swift for the win!")
+                        
+                        XCTAssertEqual(book.authorNames.count, 1)
+                        XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
+                    }
+                }
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFindLocal = nil
+                expectationFindNetwork = nil
+            }
+        }
+    }
+    
 }

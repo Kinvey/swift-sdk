@@ -252,8 +252,11 @@ class DataType: Entity {
     dynamic var fullName2: FullName2?
     
     dynamic var objectValue: NSObject?
-    
-    //dynamic var dateValue: Date?
+    dynamic var stringValueNotOptional: String! = ""
+    dynamic var fullName2DefaultValue = FullName2()
+    dynamic var fullName2DefaultValueNotOptional: FullName2! = FullName2()
+    dynamic var fullName2DefaultValueTransformed = FullName2()
+    dynamic var fullName2DefaultValueNotOptionalTransformed: FullName2! = FullName2()
     
     fileprivate dynamic var colorValueString: String?
     dynamic var colorValue: UIColor? {
@@ -289,12 +292,24 @@ class DataType: Entity {
         boolValue <- map["boolValue"]
         colorValue <- (map["colorValue"], UIColorTransformType())
         fullName <- map["fullName"]
-        fullName2 <- (map["fullName2"], FullName2TransformType())
-        //dateValue <- (map["date"], KinveyDateTransform())
+        fullName2 <- ("fullName2", map["fullName2"], FullName2TransformType())
+        stringValueNotOptional <- ("stringValueNotOptional", map["stringValueNotOptional"])
+        fullName2DefaultValue <- ("fullName2DefaultValue", map["fullName2DefaultValue"])
+        fullName2DefaultValueNotOptional <- ("fullName2DefaultValueNotOptional", map["fullName2DefaultValueNotOptional"])
+        fullName2DefaultValueTransformed <- ("fullName2DefaultValueTransformed", map["fullName2DefaultValueTransformed"], FullName2TransformType())
+        fullName2DefaultValueNotOptionalTransformed <- ("fullName2DefaultValueNotOptionalTransformed", map["fullName2DefaultValueNotOptionalTransformed"], FullName2TransformType())
     }
     
     override class func ignoredProperties() -> [String] {
-        return ["objectValue", "colorValue", "fullName2"]
+        return [
+            "objectValue",
+            "colorValue",
+            "fullName2",
+            "fullName2DefaultValue",
+            "fullName2DefaultValueNotOptional",
+            "fullName2DefaultValueTransformed",
+            "fullName2DefaultValueNotOptionalTransformed"
+        ]
     }
     
 }

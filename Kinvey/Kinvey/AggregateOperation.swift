@@ -72,8 +72,6 @@ enum Aggregation {
     
     var resultKey: String {
         switch self {
-        case .custom(_, _, _):
-            fatalError("Custom does not have a resultKey")
         case .count:
             return "count"
         case .sum:
@@ -84,6 +82,8 @@ enum Aggregation {
             return "min"
         case .max:
             return "max"
+        case .custom(_, _, _):
+            fatalError("Custom does not have a resultKey")
         }
     }
     

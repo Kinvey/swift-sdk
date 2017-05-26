@@ -9,16 +9,6 @@
 import Foundation
 import XCGLogger
 
-/// Key to map the `_id` column in your Persistable implementation class.
-public let PersistableIdKey = "_id"
-
-/// Key to map the `_acl` column in your Persistable implementation class.
-public let PersistableAclKey = "_acl"
-
-/// Key to map the `_kmd` column in your Persistable implementation class.
-public let PersistableMetadataKey = "_kmd"
-
-let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
@@ -58,8 +48,14 @@ extension XCGLogger.Level {
 
 let log = XCGLogger.default
 
+func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) -> Never  {
+    let message = message()
+    log.severe(message)
+    Swift.fatalError(message, file: file, line: line)
+}
+
 /// Level of logging used to log messages inside the Kinvey library
-public var logLevel: LogLevel = .warning {
+public var logLevel: LogLevel = log.outputLevel.logLevel {
     didSet {
         log.outputLevel = logLevel.outputLevel
     }

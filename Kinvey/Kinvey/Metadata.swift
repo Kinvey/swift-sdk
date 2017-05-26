@@ -15,16 +15,32 @@ import ObjectMapper
 public class Metadata: Object, Mappable {
     
     /// Last Modification Time Key.
+    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.lastModifiedTime instead")
     open static let LmtKey = "lmt"
     
     /// Entity Creation Time Key.
+    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.entityCreationTime instead")
     open static let EctKey = "ect"
     
-    /// Last Read Time Key.
-    internal static let LrtKey = "lrt"
-    
     /// Authentication Token Key.
+    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.authToken instead")
     open static let AuthTokenKey = "authtoken"
+    
+    public struct Key {
+        
+        /// Last Modification Time Key.
+        public static let lastModifiedTime = "lmt"
+        
+        /// Entity Creation Time Key.
+        public static let entityCreationTime = "ect"
+        
+        /// Authentication Token Key.
+        public static let authtoken = "authtoken"
+        
+        /// Last Read Time Key.
+        internal static let lastReadTime = "lrt"
+    
+    }
     
     internal dynamic var lmt: String?
     internal dynamic var ect: String?
@@ -34,9 +50,6 @@ public class Metadata: Object, Mappable {
     open var lastReadTime: Date {
         get {
             return self.lrt
-        }
-        set {
-            lrt = newValue
         }
     }
     
@@ -63,15 +76,34 @@ public class Metadata: Object, Mappable {
     /// Authentication Token.
     open internal(set) dynamic var authtoken: String?
     
-    /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(map: Map) {
-        super.init()
-    }
-
     /// Default Constructor.
     public required init() {
         super.init()
     }
+    
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
+    open override class func ignoredProperties() -> [String] {
+        return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
+    }
+    
+    // MARK: Mappable
+    
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    public required init?(map: Map) {
+        super.init()
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        lmt <- map[Key.lastModifiedTime]
+        ect <- map[Key.entityCreationTime]
+        authtoken <- map[Key.authtoken]
+    }
+    
+    // MARK: Realm
     
     /**
      WARNING: This is an internal initializer not intended for public use.
@@ -87,21 +119,6 @@ public class Metadata: Object, Mappable {
      */
     public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
-    }
-    
-    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
-        lmt <- map[Metadata.LmtKey]
-        ect <- map[Metadata.EctKey]
-        authtoken <- map[Metadata.AuthTokenKey]
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    open override class func ignoredProperties() -> [String] {
-        return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
     }
 
 }
@@ -112,7 +129,7 @@ public final class UserMetadata: Metadata {
     open internal(set) var passwordReset: PasswordReset?
     open internal(set) var userStatus: UserStatus?
     
-    open override func mapping(map: Map) {
+    public override func mapping(map: Map) {
         super.mapping(map: map)
         
         emailVerification <- map["emailVerification"]
@@ -122,29 +139,20 @@ public final class UserMetadata: Metadata {
 
 }
 
-public final class EmailVerification: Object, Mappable {
+public final class EmailVerification: Object {
     
     open internal(set) var status: String?
-    open internal(set) var lastStateChangeAt:Date?
-    open internal(set) var lastConfirmedAt:Date?
-    open internal(set) var emailAddress:String?
+    open internal(set) var lastStateChangeAt: Date?
+    open internal(set) var lastConfirmedAt: Date?
+    open internal(set) var emailAddress: String?
+    
+}
+
+extension EmailVerification: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(map: Map) {
-        super.init()
-    }
-    
-    /// Default Constructor.
-    public required init() {
-        super.init()
-    }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
+    public convenience init?(map: Map) {
+        self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
@@ -154,29 +162,21 @@ public final class EmailVerification: Object, Mappable {
         lastConfirmedAt <- (map["lastConfirmedAt"], KinveyDateTransform())
         emailAddress <- map["emailAddress"]
     }
+    
 }
 
-public final class PasswordReset: Object, Mappable {
+public final class PasswordReset: Object {
     
     open internal(set) var status: String?
     open internal(set) var lastStateChangeAt: Date?
     
+}
+
+extension PasswordReset: Mappable {
+    
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(map: Map) {
-        super.init()
-    }
-    
-    /// Default Constructor.
-    public required init() {
-        super.init()
-    }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
+    public convenience init?(map: Map) {
+        self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
@@ -184,29 +184,21 @@ public final class PasswordReset: Object, Mappable {
         status <- map["status"]
         lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
     }
+    
 }
 
-public final class UserStatus: Object, Mappable {
+public final class UserStatus: Object {
     
     open internal(set) var value: String?
     open internal(set) var lastChange: Date?
     
+}
+
+extension UserStatus: Mappable {
+    
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(map: Map) {
-        super.init()
-    }
-    
-    /// Default Constructor.
-    public required init() {
-        super.init()
-    }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
+    public convenience init?(map: Map) {
+        self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
@@ -214,5 +206,5 @@ public final class UserStatus: Object, Mappable {
         value <- map["val"]
         lastChange <- (map["lastChange"], KinveyDateTransform())
     }
-
+    
 }

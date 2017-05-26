@@ -23,9 +23,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
-            let message = "\(T.self) needs to be a Entity"
-            log.severe(message)
-            fatalError(message)
+            fatalError("\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -40,12 +38,6 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         executor = Executor()
         self.persistenceId = persistenceId
         log.debug("Sync File: \(self.realm.configuration.fileURL!.path)")
-    }
-
-    required init(persistenceId: String) {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
     }
     
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType {
@@ -67,15 +59,11 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         }
     }
     
-    func pendingOperations(_ objectId: String?) -> AnyCollection<PendingOperationType> {
-        log.verbose("Fetching pending operations by object id: \(String(describing: objectId))")
+    func pendingOperations() -> AnyCollection<PendingOperationType> {
+        log.verbose("Fetching pending operations")
         var results: [PendingOperationType]?
         executor.executeAndWait {
-            var realmResults = self.realm.objects(RealmPendingOperation.self)
-            if let objectId = objectId {
-                realmResults = realmResults.filter("objectId == %@", objectId)
-            }
-            results = realmResults.map {
+            results = self.realm.objects(RealmPendingOperation.self).map {
                 return RealmPendingOperationThreadSafeReference($0)
             }
         }

@@ -1,1 +1,2 @@
 github "kif-framework/KIF" ~> 3.5
+github "Quick/Nimble" ~> 7.0

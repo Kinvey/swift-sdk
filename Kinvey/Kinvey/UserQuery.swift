@@ -64,7 +64,8 @@ public final class UserQuery: Mappable, BuilderType {
     }
     
     /// Constructor for object mapping.
-    public init?(map: Map) {
+    public convenience init?(map: Map) {
+        self.init()
     }
     
     /// Performs the object mapping.

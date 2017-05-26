@@ -15,7 +15,6 @@ import ObjectMapper
 
 class Person: Entity {
     
-    dynamic var personId: String?
     dynamic var firstName: String?
     dynamic var lastName: String?
     
@@ -26,7 +25,6 @@ class Person: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        personId <- map[PersistableIdKey]
         firstName <- map["firstName"]
         lastName <- map["lastName"]
     }

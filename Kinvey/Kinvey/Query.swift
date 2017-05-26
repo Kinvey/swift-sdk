@@ -90,22 +90,24 @@ public final class Query: NSObject, BuilderType, Mappable {
     }
     
     var isEmpty: Bool {
-        return predicate == nil && sortDescriptors == nil && skip == nil && limit == nil
+        return predicate == nil &&
+            (sortDescriptors == nil || sortDescriptors!.isEmpty) &&
+            skip == nil &&
+            limit == nil &&
+            (fields == nil || fields!.isEmpty)
     }
     
     fileprivate var queryStringEncoded: String? {
-        get {
-            if let predicate = predicate {
-                let translatedPredicate = translate(predicate: predicate)
-                let queryObj = translatedPredicate.mongoDBQuery!
-                
-                let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
-                let queryStr = String(data: data, encoding: String.Encoding.utf8)!
-                return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
-            }
-            
-            return "{}"
+        guard let predicate = predicate else {
+            return nil
         }
+        
+        let translatedPredicate = translate(predicate: predicate)
+        let queryObj = translatedPredicate.mongoDBQuery!
+        
+        let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
+        let queryStr = String(data: data, encoding: String.Encoding.utf8)!
+        return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
     }
     
     internal var urlQueryItems: [URLQueryItem]? {

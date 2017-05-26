@@ -11,6 +11,7 @@ import Foundation
 @testable import Kinvey
 import CoreLocation
 import MapKit
+import Nimble
 
 class NetworkStoreTests: StoreTestCase {
     
@@ -2084,6 +2085,21 @@ class NetworkStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
+    }
+    
+    func testGroupCustomResultKey() {
+        expect { () -> Void in
+            let _ = Aggregation.custom(keys: [], initialObject: [:], reduceJSFunction: "").resultKey
+        }.to(throwAssertion())
+    }
+    
+    func testRemoveByEmptyId() {
+        let store = DataStore<Person>.collection(.network)
+        expect { () -> Void in
+            store.remove(byId: "") { count, error in
+                XCTFail()
+            }
+        }.to(throwAssertion())
     }
     
 }

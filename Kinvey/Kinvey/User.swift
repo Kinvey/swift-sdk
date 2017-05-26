@@ -525,21 +525,21 @@ open class User: NSObject, Credential, Mappable {
         var acl: Acl?
         var metadata: UserMetadata?
         
-        userId <- map[PersistableIdKey]
+        userId <- map[Entity.Key.entityId]
         guard let userIdValue = userId else {
             return nil
         }
         
-        acl <- map[PersistableAclKey]
-        metadata <- map[PersistableMetadataKey]
+        acl <- map[Entity.Key.acl]
+        metadata <- map[Entity.Key.metadata]
         self.init(userId: userIdValue, acl: acl, metadata: metadata)
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        _userId <- map[PersistableIdKey]
-        acl <- map[PersistableAclKey]
-        metadata <- map[PersistableMetadataKey]
+        _userId <- map[Entity.Key.entityId]
+        acl <- map[Entity.Key.acl]
+        metadata <- map[Entity.Key.metadata]
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]

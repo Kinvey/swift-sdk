@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import Kinvey
+import Nimble
 
 class SyncStoreTests: StoreTestCase {
     
@@ -261,7 +262,7 @@ class SyncStoreTests: StoreTestCase {
                 case 1:
                     return HttpResponse(json: persons.toJSON())
                 default:
-                    fatalError()
+                    Swift.fatalError()
                 }
             })
         }
@@ -400,7 +401,7 @@ class SyncStoreTests: StoreTestCase {
                 case 1:
                     return HttpResponse(json: persons.toJSON())
                 default:
-                    fatalError()
+                    Swift.fatalError()
                 }
             })
         }
@@ -501,7 +502,7 @@ class SyncStoreTests: StoreTestCase {
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                     json[PersistableIdKey] = UUID().uuidString
                     json[PersistableAclKey] = [
-                        Acl.CreatorKey : self.client.activeUser!.userId
+                        Acl.Key.creator : self.client.activeUser!.userId
                     ]
                     json[PersistableMetadataKey] = [
                         Metadata.LmtKey : Date().toString(),
@@ -514,7 +515,7 @@ class SyncStoreTests: StoreTestCase {
                     XCTAssertNotNil(personMockJson)
                     return HttpResponse(statusCode: 200, json: [personMockJson!])
                 default:
-                    fatalError()
+                    Swift.fatalError()
                 }
             }
         }
@@ -560,7 +561,7 @@ class SyncStoreTests: StoreTestCase {
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                     json[PersistableIdKey] = UUID().uuidString
                     json[PersistableAclKey] = [
-                        Acl.CreatorKey : self.client.activeUser!.userId
+                        Acl.Key.creator : self.client.activeUser!.userId
                     ]
                     json[PersistableMetadataKey] = [
                         Metadata.LmtKey : Date().toString(),
@@ -571,7 +572,7 @@ class SyncStoreTests: StoreTestCase {
                 case 1:
                     return HttpResponse(error: timeoutError)
                 default:
-                    fatalError()
+                    Swift.fatalError()
                 }
             }
         }
@@ -677,7 +678,7 @@ class SyncStoreTests: StoreTestCase {
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                 json[PersistableIdKey] = UUID().uuidString
                 json[PersistableAclKey] = [
-                    Acl.CreatorKey : self.client.activeUser!.userId
+                    Acl.Key.creator : self.client.activeUser!.userId
                 ]
                 json[PersistableMetadataKey] = [
                     Metadata.LmtKey : Date().toString(),
@@ -990,8 +991,8 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(results)
             XCTAssertNotNil(error)
             
-            if let error = error as? NSError? {
-                XCTAssertEqual(error, Kinvey.Error.invalidDataStoreType as NSError)
+            if let error = error {
+                XCTAssertEqual(error as NSError, Kinvey.Error.invalidDataStoreType as NSError)
             }
             
             expectationPull?.fulfill()
@@ -1586,7 +1587,7 @@ class SyncStoreTests: StoreTestCase {
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                     json[PersistableIdKey] = UUID().uuidString
                     json[PersistableAclKey] = [
-                        Acl.CreatorKey : self.client.activeUser!.userId
+                        Acl.Key.creator : self.client.activeUser!.userId
                     ]
                     json[PersistableMetadataKey] = [
                         Metadata.LmtKey : Date().toString(),
@@ -1598,7 +1599,7 @@ class SyncStoreTests: StoreTestCase {
                     XCTAssertNotNil(personMockJson)
                     return HttpResponse(statusCode: 200, json: [personMockJson!])
                 default:
-                    fatalError()
+                    Swift.fatalError()
                 }
             }
         }
@@ -1968,6 +1969,78 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
+    }
+    
+    func testRealmCacheNotEntity() {
+        class NotEntityPersistable: NSObject, Persistable {
+            
+            static func collectionName() -> String {
+                return "NotEntityPersistable"
+            }
+            
+            required override init() {
+            }
+            
+            required init?(map: Map) {
+            }
+            
+            func mapping(map: Map) {
+            }
+            
+        }
+        
+        expect { () -> Void in
+            let _ = RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
+        }.to(throwAssertion())
+    }
+    
+    func testRealmSyncNotEntity() {
+        class NotEntityPersistable: NSObject, Persistable {
+            
+            static func collectionName() -> String {
+                return "NotEntityPersistable"
+            }
+            
+            required override init() {
+            }
+            
+            required init?(map: Map) {
+            }
+            
+            func mapping(map: Map) {
+            }
+            
+        }
+        
+        expect { () -> Void in
+            let _ = RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
+        }.to(throwAssertion())
+    }
+    
+    func testCancelLocalRequest() {
+        let query = Query(format: "propertyNotMapped == %@", 10)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let request = store.find(query) { persons, error in
+            XCTAssertNotNil(persons)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(persons?.count, 0)
+            
+            expectationFind?.fulfill()
+            expectationFind = nil
+        }
+        request.cancel()
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testNewTypeDataStore() {
+        var store = DataStore<Person>.getInstance()
+        store = store.collection(newType: Book.self).collection(newType: Person.self)
     }
     
 }

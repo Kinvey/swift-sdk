@@ -15,26 +15,6 @@ import ObjectMapper
     import UIKit
 #endif
 
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
 public enum ImageRepresentation {
     
     case png
@@ -232,8 +212,8 @@ open class FileStore {
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK,
                         let json = self.client.responseParser.parse(data),
-                        let newFile = File(JSON: json) {
-                        
+                        let newFile = File(JSON: json)
+                    {
                         fulfill((file: newFile, skip: nil))
                     } else {
                         reject(buildError(data, response, error, self.client))
@@ -499,27 +479,21 @@ open class FileStore {
     
     /// Returns the cached file, if exists.
     open func cachedFile(_ entityId: String) -> File? {
-        if let cache = cache {
-            return cache.get(entityId)
-        }
-        return nil
+        return cache?.get(entityId)
     }
     
     /// Returns the cached file, if exists.
-    open func cachedFile(_ file: inout File) {
-        guard let entityId = file.fileId else {
-            fatalError("fileId is required")
-        }
-        
-        if let cachedFile = cachedFile(entityId) {
-            file = cachedFile
-        }
+    open func cachedFile(_ file: File) -> File? {
+        let entityId = crashIfInvalid(file: file)
+        return cachedFile(entityId)
     }
     
-    fileprivate func crashIfInvalid(file: File) {
-        guard let _ = file.fileId else {
+    @discardableResult
+    fileprivate func crashIfInvalid(file: File) -> String {
+        guard let fileId = file.fileId else {
             fatalError("fileId is required")
         }
+        return fileId
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
@@ -557,7 +531,7 @@ open class FileStore {
         if storeType == .cache || storeType == .network {
             let multiRequest = MultiRequest()
             Promise<(File, URL)> { fulfill, reject in
-                if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
+                if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
                     fulfill((file, downloadURL))
                 } else {
                     let (request, promise) = getFileMetadata(file, ttl: ttl)
@@ -607,27 +581,33 @@ open class FileStore {
         }
     }
     
+    private enum DownloadStage {
+        
+        case downloadURL(URL)
+        case data(Data)
+        
+    }
+    
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
     open func download(_ file: File, ttl: TTL? = nil, completionHandler: ((Result<(File, Data), Swift.Error>) -> Void)? = nil) -> Request {
         crashIfInvalid(file: file)
         
-        if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-            DispatchQueue.main.async {
-                completionHandler?(.success(cachedFile, data))
-            }
-        }
-        
         let multiRequest = MultiRequest()
-        Promise<(File, URL)> { fulfill, reject in
-            if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                fulfill((file, downloadURL))
+        Promise<(File, DownloadStage)> { fulfill, reject in
+            if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+                fulfill((cachedFile, .data(data)))
+                return
+            }
+            
+            if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
+                fulfill((file, .downloadURL(downloadURL)))
             } else {
                 let (request, promise) = getFileMetadata(file, ttl: ttl)
                 multiRequest += request
                 promise.then { file -> Void in
-                    if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                        fulfill(file, downloadURL)
+                    if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
+                        fulfill((file, .downloadURL(downloadURL)))
                     } else {
                         throw Error.invalidResponse(httpResponse: nil, data: nil)
                     }
@@ -635,10 +615,17 @@ open class FileStore {
                     reject(error)
                 }
             }
-        }.then { (file, downloadURL) -> Promise<Data> in
-            let (request, promise) = self.downloadFileData(file, downloadURL: downloadURL)
-            multiRequest += (request, addProgress: true)
-            return promise
+        }.then { (file, downloadStage) -> Promise<Data> in
+            switch downloadStage {
+            case .downloadURL(let downloadURL):
+                let (request, promise) = self.downloadFileData(file, downloadURL: downloadURL)
+                multiRequest += (request, addProgress: true)
+                return promise
+            case .data(let data):
+                return Promise<Data> { fulfill, reject in
+                    fulfill(data)
+                }
+            }
         }.then { data in
             completionHandler?(.success(file, data))
         }.catch { error in
