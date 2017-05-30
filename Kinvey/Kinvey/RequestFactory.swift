@@ -44,10 +44,10 @@ protocol RequestFactory {
     
     func buildCustomEndpoint(_ name: String) -> HttpRequest
     
-    func buildOAuthToken(redirectURI: URL, code: String) -> HttpRequest
+    func buildOAuthToken(redirectURI: URL, code: String, clientId: String?) -> HttpRequest
     
-    func buildOAuthGrantAuth(redirectURI: URL) -> HttpRequest
-    func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String) -> HttpRequest
-    func buildOAuthGrantRefreshToken(refreshToken: String) -> HttpRequest
+    func buildOAuthGrantAuth(redirectURI: URL, clientId: String?) -> HttpRequest
+    func buildOAuthGrantAuthenticate(redirectURI: URL, clientId: String?, tempLoginUri: URL, username: String, password: String) -> HttpRequest
+    func buildOAuthGrantRefreshToken(refreshToken: String, clientId: String?) -> HttpRequest
     
 }

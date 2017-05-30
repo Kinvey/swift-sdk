@@ -44,15 +44,15 @@ open class MIC {
         return code
     }
     
-    open class func urlForLogin(redirectURI: URL, loginPage: Bool = true, client: Client = sharedClient) -> URL {
-        return Endpoint.oauthAuth(client: client, redirectURI: redirectURI, loginPage: loginPage).url
+    open class func urlForLogin(redirectURI: URL, loginPage: Bool = true, clientId: String? = nil, client: Client = sharedClient) -> URL {
+        return Endpoint.oauthAuth(client: client, clientId: clientId, redirectURI: redirectURI, loginPage: loginPage).url
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, code: String, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
+    class func login<U: User>(redirectURI: URL, code: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
         let requests = MultiRequest()
         Promise<U> { fulfill, reject in
-            let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code)
+            let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code, clientId: clientId)
             request.execute { (data, response, error) in
                 if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                     requests += User.login(authSource: .kinvey, authData, client: client) { (result: Result<U, Swift.Error>) in
@@ -77,9 +77,9 @@ open class MIC {
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, username: String, password: String, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
+    class func login<U: User>(redirectURI: URL, username: String, password: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantAuth(redirectURI: redirectURI)
+        let request = client.networkRequestFactory.buildOAuthGrantAuth(redirectURI: redirectURI, clientId: clientId)
         Promise<URL> { fulfill, reject in
             request.execute { (data, response, error) in
                 if let response = response,
@@ -96,7 +96,7 @@ open class MIC {
             requests += request
         }.then { tempLoginUrl in
             return Promise<U> { fulfill, reject in
-                let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(redirectURI: redirectURI, tempLoginUri: tempLoginUrl, username: username, password: password)
+                let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(redirectURI: redirectURI, clientId: clientId, tempLoginUri: tempLoginUrl, username: username, password: password)
                 let urlSession = URLSession(configuration: client.urlSession.configuration, delegate: URLSessionDelegateAdapter(), delegateQueue: nil)
                 request.execute(urlSession: urlSession) { (data, response, error) in
                     if let response = response,
@@ -130,9 +130,9 @@ open class MIC {
     }
     
     @discardableResult
-    class func login<U: User>(refreshToken: String, client: Client = sharedClient, completionHandler: User.UserHandler<U>? = nil) -> Request {
+    class func login<U: User>(refreshToken: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: User.UserHandler<U>? = nil) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken)
+        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: clientId)
         request.execute { (data, response, error) in
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
