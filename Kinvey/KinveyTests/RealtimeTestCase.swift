@@ -9,6 +9,7 @@
 import XCTest
 @testable import Kinvey
 import PubNub
+import ObjectMapper
 
 class RealmtimeTestCase: KinveyTestCase {
     
@@ -795,6 +796,173 @@ class RealmtimeTestCase: KinveyTestCase {
         }
     }
     
+    var tearDownHandler: (() -> Void)? = nil
+    
+    override func tearDown() {
+        super.tearDown()
+        tearDownHandler?()
+    }
+    
+    func testStream() {
+        let deleteUserDuringTearDown = self.deleteUserDuringTearDown
+        if !useMockData {
+            self.deleteUserDuringTearDown = false
+        }
+        tearDownHandler = {
+            if !self.useMockData {
+                self.deleteUserDuringTearDown = deleteUserDuringTearDown
+            }
+            self.tearDownHandler = nil
+        }
+        
+        login(username: "realtime-test", password: "realtime-test")
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        guard let user = client.activeUser else {
+            return
+        }
+        
+        var registered = false
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    "subscribeKey" : UUID().uuidString,
+                    "publishKey" : UUID().uuidString,
+                    "userChannelGroup" : UUID().uuidString
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRegister = self.expectation(description: "Register")
+            
+            user.registerForRealtime() {
+                switch $0 {
+                case .success:
+                    registered = true
+                    XCTAssertNotNil(user.realtimeRouter)
+                    if self.useMockData {
+                        let pubNubRealtimeRouter = user.realtimeRouter as! PubNubRealtimeRouter
+                        user.realtimeRouter = PubNubRealtimeRouter(
+                            user: pubNubRealtimeRouter.user,
+                            subscribeKey: pubNubRealtimeRouter.subscribeKey,
+                            publishKey: pubNubRealtimeRouter.publishKey,
+                            userChannelGroup: pubNubRealtimeRouter.userChannelGroup,
+                            pubNubType: MockPubNub.self
+                        )
+                    }
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationRegister?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationRegister = nil
+            }
+        }
+        
+        XCTAssertTrue(registered)
+        
+        guard registered else {
+            return
+        }
+        
+        do {
+            let stream = LiveStream<SongRecommendation>(name: "SongRecommendation")
+            
+            weak var expectationLookup = self.expectation(description: "Lookup")
+            weak var expectationGrantAccess = self.expectation(description: "Grant Access")
+            weak var expectationSend = self.expectation(description: "Send")
+            
+            let query = Query(format: "_id != %@", user.userId)
+            query.limit = 2
+            user.find(query: query) {
+                switch $0 {
+                case .success(let users):
+                    XCTAssertEqual(users.count, 2)
+                    if let first = users.first, let last = users.last, first.userId != last.userId {
+                        var acl = LiveStreamAcl()
+                        acl.publishers.append(user.userId)
+                        acl.subscribers.append(user.userId)
+                        
+                        acl.publishers.append(first.userId)
+                        acl.subscribers.append(last.userId)
+                        
+                        stream.grantStreamAccess(userId: last.userId, acl: acl) {
+                            switch $0 {
+                            case .success:
+                                let songrec1 = SongRecommendation(name: "Imagine", artist: "John Lennon", rating: 100)
+                                stream.send(userId: last.userId, message: songrec1) {
+                                    switch $0 {
+                                    case .success:
+                                        break
+                                    case .failure(let error):
+                                        XCTFail()
+                                    }
+                                    expectationSend?.fulfill()
+                                }
+                            case .failure(let error):
+                                XCTFail()
+                            }
+                            
+                            expectationGrantAccess?.fulfill()
+                        }
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationLookup?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+                expectationLookup = nil
+                expectationGrantAccess = nil
+                expectationSend = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(completionHandler: { (request) -> HttpResponse in
+                    DispatchQueue.main.async {
+                        MockPubNub.default.status(category: .PNDisconnectedCategory)
+                    }
+                    return HttpResponse(statusCode: 204, data: Data())
+                })
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationUnregister = self.expectation(description: "Unregister")
+            
+            user.unregisterForRealtime() {
+                switch $0 {
+                case .success:
+                    XCTAssertNil(user.realtimeRouter)
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationUnregister?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationUnregister = nil
+            }
+        }
+    }
+    
 }
 
 final class MockPubNub: PubNubType {
@@ -923,6 +1091,24 @@ class MockErrorData: PNErrorData {
     
     override var information: String {
         return mockInformation
+    }
+    
+}
+
+struct SongRecommendation: StaticMappable {
+    
+    var name: String?
+    var artist: String?
+    var rating: Int?
+    
+    static func objectForMapping(map: Map) -> BaseMappable? {
+        return SongRecommendation()
+    }
+    
+    mutating func mapping(map: Map) {
+        name <- map["song_name"]
+        artist <- map["song_artist"]
+        rating <- map["rating"]
     }
     
 }

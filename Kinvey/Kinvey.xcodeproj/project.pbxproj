@@ -7,10 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5705B1BB1EDF823F0006980A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BA1EDF823F0006980A /* AppDelegate.swift */; };
+		5705B1BD1EDF823F0006980A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BC1EDF823F0006980A /* ViewController.swift */; };
+		5705B1BF1EDF823F0006980A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1BE1EDF823F0006980A /* Assets.xcassets */; };
+		5705B1C21EDF823F0006980A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1C01EDF823F0006980A /* Main.storyboard */; };
+		5705B1CD1EDF823F0006980A /* KinveyMacAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */; };
+		5705B1D81EDF82400006980A /* KinveyMacAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */; };
+		5705B1E51EDF83DB0006980A /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5706D9981DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
+		5706E3FA1EE080AB00938EF6 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		5706E3FB1EE0816100938EF6 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; };
 		57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57089DD61D5CE80D00A36035 /* PullOperation.swift */; };
 		570BD2FD1E845E7A000341C9 /* AggregateOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */; };
 		5711E1221E979EEF003351F0 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
@@ -27,7 +36,10 @@
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
 		572C457B1C86690700A41935 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* Date.swift */; };
+		572F12E41EDF909B006E5D2B /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
+		57340DF21EE07F3100DE22D2 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		57340DF31EE07F6800DE22D2 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57373AB21ECCD8C6002842CE /* EntityTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57373AB11ECCD8C6002842CE /* EntityTestCase.swift */; };
 		57373ABF1ECE1849002842CE /* LogTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57373ABE1ECE1849002842CE /* LogTestCase.swift */; };
 		57375F901E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */; };
@@ -238,6 +250,8 @@
 		57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57D643411CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		57D643421CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		57D925C41EDF8D67005ABD74 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		57D925C51EDF8DA1005ABD74 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E71CDCE88900492D6C /* Realm.framework */; };
 		57DB87E81C62B0F6002BA684 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* Data.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
@@ -277,6 +291,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5705B1C91EDF823F0006980A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5705B1B71EDF823F0006980A;
+			remoteInfo = KinveyMacApp;
+		};
+		5705B1D41EDF82400006980A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5705B1B71EDF823F0006980A;
+			remoteInfo = KinveyMacApp;
+		};
 		5771CD3C1ECF6CDC0057E505 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
@@ -587,6 +615,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5705B1B81EDF823F0006980A /* KinveyMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5705B1BA1EDF823F0006980A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5705B1BC1EDF823F0006980A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5705B1BE1EDF823F0006980A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5705B1C11EDF823F0006980A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5705B1C31EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyMacAppTests.swift; sourceTree = "<group>"; };
+		5705B1CE1EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyMacAppUITests.swift; sourceTree = "<group>"; };
+		5705B1D91EDF82400006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AggregateOperation.swift; sourceTree = "<group>"; };
@@ -802,6 +842,32 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5705B1B51EDF823F0006980A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57D925C41EDF8D67005ABD74 /* Kinvey.framework in Frameworks */,
+				57D925C51EDF8DA1005ABD74 /* Realm.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1C51EDF823F0006980A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5705B1E51EDF83DB0006980A /* Kinvey.framework in Frameworks */,
+				5706E3FB1EE0816100938EF6 /* RealmSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1D01EDF82400006980A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				572F12E41EDF909B006E5D2B /* Kinvey.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5765B8411C9771BC00080FFA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -964,6 +1030,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5705B1B91EDF823F0006980A /* KinveyMacApp */ = {
+			isa = PBXGroup;
+			children = (
+				5705B1BA1EDF823F0006980A /* AppDelegate.swift */,
+				5705B1BC1EDF823F0006980A /* ViewController.swift */,
+				5705B1BE1EDF823F0006980A /* Assets.xcassets */,
+				5705B1C01EDF823F0006980A /* Main.storyboard */,
+				5705B1C31EDF823F0006980A /* Info.plist */,
+			);
+			path = KinveyMacApp;
+			sourceTree = "<group>";
+		};
+		5705B1CB1EDF823F0006980A /* KinveyMacAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */,
+				5705B1CE1EDF823F0006980A /* Info.plist */,
+			);
+			path = KinveyMacAppTests;
+			sourceTree = "<group>";
+		};
+		5705B1D61EDF82400006980A /* KinveyMacAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */,
+				5705B1D91EDF82400006980A /* Info.plist */,
+			);
+			path = KinveyMacAppUITests;
+			sourceTree = "<group>";
+		};
 		572C458C1C86A6C800A41935 /* Transformers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1078,6 +1174,9 @@
 				578870A61DD52EC80087FE78 /* SSOApp1Tests */,
 				578870B51DD52ECF0087FE78 /* SSOApp2 */,
 				578870CA1DD52ECF0087FE78 /* SSOApp2Tests */,
+				5705B1B91EDF823F0006980A /* KinveyMacApp */,
+				5705B1CB1EDF823F0006980A /* KinveyMacAppTests */,
+				5705B1D61EDF82400006980A /* KinveyMacAppUITests */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
@@ -1101,6 +1200,9 @@
 				578D9FF01E8DE53900C2B280 /* PushMissingConfiguration.xctest */,
 				578DA0271E8EC3CB00C2B280 /* UserUpgradeFromOldVersion.xctest */,
 				5771CD6D1ECF6CDC0057E505 /* KinveyTests Forgot To Call Super.xctest */,
+				5705B1B81EDF823F0006980A /* KinveyMacApp.app */,
+				5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */,
+				5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1357,6 +1459,60 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		5705B1B71EDF823F0006980A /* KinveyMacApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5705B1DA1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacApp" */;
+			buildPhases = (
+				5705B1B41EDF823F0006980A /* Sources */,
+				5705B1B51EDF823F0006980A /* Frameworks */,
+				5705B1B61EDF823F0006980A /* Resources */,
+				57D925C81EDF8E5C005ABD74 /* Carthage Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KinveyMacApp;
+			productName = KinveyMacApp;
+			productReference = 5705B1B81EDF823F0006980A /* KinveyMacApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5705B1C71EDF823F0006980A /* KinveyMacAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5705B1DD1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacAppTests" */;
+			buildPhases = (
+				5705B1C41EDF823F0006980A /* Sources */,
+				5705B1C51EDF823F0006980A /* Frameworks */,
+				5705B1C61EDF823F0006980A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5705B1CA1EDF823F0006980A /* PBXTargetDependency */,
+			);
+			name = KinveyMacAppTests;
+			productName = KinveyMacAppTests;
+			productReference = 5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		5705B1D21EDF82400006980A /* KinveyMacAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5705B1E01EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacAppUITests" */;
+			buildPhases = (
+				5705B1CF1EDF82400006980A /* Sources */,
+				5705B1D01EDF82400006980A /* Frameworks */,
+				5705B1D11EDF82400006980A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5705B1D51EDF82400006980A /* PBXTargetDependency */,
+			);
+			name = KinveyMacAppUITests;
+			productName = KinveyMacAppUITests;
+			productReference = 5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		5765B8431C9771BC00080FFA /* KinveyApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5765B8621C9771BD00080FFA /* Build configuration list for PBXNativeTarget "KinveyApp" */;
@@ -1663,10 +1819,27 @@
 		57A27C781C178F17000DF951 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0810;
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
+					5705B1B71EDF823F0006980A = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+					};
+					5705B1C71EDF823F0006980A = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5705B1B71EDF823F0006980A;
+					};
+					5705B1D21EDF82400006980A = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5705B1B71EDF823F0006980A;
+					};
 					5765B8431C9771BC00080FFA = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 5W7CYNR7UE;
@@ -1788,11 +1961,37 @@
 				578870B31DD52ECF0087FE78 /* SSOApp2 */,
 				578870C61DD52ECF0087FE78 /* SSOApp2Tests */,
 				578D9FF81E8EC3CB00C2B280 /* UserUpgradeFromOldVersion */,
+				5705B1B71EDF823F0006980A /* KinveyMacApp */,
+				5705B1C71EDF823F0006980A /* KinveyMacAppTests */,
+				5705B1D21EDF82400006980A /* KinveyMacAppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5705B1B61EDF823F0006980A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5705B1BF1EDF823F0006980A /* Assets.xcassets in Resources */,
+				5705B1C21EDF823F0006980A /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1C61EDF823F0006980A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1D11EDF82400006980A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5765B8421C9771BC00080FFA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2064,9 +2263,58 @@
 			shellPath = /bin/sh;
 			shellScript = "carthage copy-frameworks";
 		};
+		57D925C81EDF8E5C005ABD74 /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/Mac/Realm.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/PubNub.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/KeychainAccess.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/ObjectMapper.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/PromiseKit.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/RealmSwift.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/XCGLogger.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5705B1B41EDF823F0006980A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5705B1BD1EDF823F0006980A /* ViewController.swift in Sources */,
+				5705B1BB1EDF823F0006980A /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1C41EDF823F0006980A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5705B1CD1EDF823F0006980A /* KinveyMacAppTests.swift in Sources */,
+				57340DF31EE07F6800DE22D2 /* MockKinveyBackend.swift in Sources */,
+				5706E3FA1EE080AB00938EF6 /* Person.swift in Sources */,
+				57340DF21EE07F3100DE22D2 /* KinveyTestCase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5705B1CF1EDF82400006980A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5705B1D81EDF82400006980A /* KinveyMacAppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5765B8401C9771BC00080FFA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2339,6 +2587,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5705B1CA1EDF823F0006980A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5705B1B71EDF823F0006980A /* KinveyMacApp */;
+			targetProxy = 5705B1C91EDF823F0006980A /* PBXContainerItemProxy */;
+		};
+		5705B1D51EDF82400006980A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5705B1B71EDF823F0006980A /* KinveyMacApp */;
+			targetProxy = 5705B1D41EDF82400006980A /* PBXContainerItemProxy */;
+		};
 		5771CD3B1ECF6CDC0057E505 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -2447,6 +2705,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		5705B1C01EDF823F0006980A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5705B1C11EDF823F0006980A /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		5765B84A1C9771BC00080FFA /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2502,6 +2768,139 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5705B1DB1EDF82400006980A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				INFOPLIST_FILE = KinveyMacApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		5705B1DC1EDF82400006980A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				INFOPLIST_FILE = KinveyMacApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		5705B1DE1EDF82400006980A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyMacApp.app/Contents/MacOS/KinveyMacApp";
+			};
+			name = Debug;
+		};
+		5705B1DF1EDF82400006980A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyMacApp.app/Contents/MacOS/KinveyMacApp";
+			};
+			name = Release;
+		};
+		5705B1E11EDF82400006980A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				INFOPLIST_FILE = KinveyMacAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = KinveyMacApp;
+			};
+			name = Debug;
+		};
+		5705B1E21EDF82400006980A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				INFOPLIST_FILE = KinveyMacAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyMacAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = KinveyMacApp;
+			};
+			name = Release;
+		};
 		5765B85E1C9771BD00080FFA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3250,6 +3649,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5705B1DA1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5705B1DB1EDF82400006980A /* Debug */,
+				5705B1DC1EDF82400006980A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5705B1DD1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5705B1DE1EDF82400006980A /* Debug */,
+				5705B1DF1EDF82400006980A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5705B1E01EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5705B1E11EDF82400006980A /* Debug */,
+				5705B1E21EDF82400006980A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5765B8621C9771BD00080FFA /* Build configuration list for PBXNativeTarget "KinveyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

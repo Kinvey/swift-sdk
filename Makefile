@@ -39,12 +39,15 @@ archive: archive-ios
 archive-ios:
 	carthage archive Kinvey
 
-test: test-ios
+test: test-ios test-macos
 
 	
 test-ios:
 	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test | xcpretty
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test
+
+test-macos:
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS -enableCodeCoverage YES test
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)

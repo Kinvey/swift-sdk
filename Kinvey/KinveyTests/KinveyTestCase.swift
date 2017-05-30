@@ -386,7 +386,8 @@ class KinveyTestCase: XCTestCase {
         
     }
     
-    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+        let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
@@ -428,6 +429,46 @@ class KinveyTestCase: XCTestCase {
             XCTAssertNotNil(client.activeUser)
         }
     }
+    
+    func login<UserType: User>(username: String, password: String, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+        let client = client ?? self.client
+        if let user = client.activeUser {
+            user.logout()
+        }
+        
+        if useMockData {
+            setURLProtocol(MockKinveyBackend.self)
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let handler: (UserType?, Swift.Error?) -> Void = { user, error in
+            if let completionHandler = completionHandler {
+                completionHandler(user, error)
+            } else {
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        User.login(username: username, password: password, client: client, completionHandler: handler)
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
+        }
+        
+        if mustHaveAValidUserInTheEnd {
+            XCTAssertNotNil(client.activeUser)
+        }
+    }
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
         let store = DataStore<T>.collection()
@@ -436,10 +477,12 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
+    var deleteUserDuringTearDown = true
+    
     override func tearDown() {
         setURLProtocol(nil)
         
-        if let user = client.activeUser {
+        if deleteUserDuringTearDown, let user = client.activeUser {
             if useMockData {
                 setURLProtocol(MockKinveyBackend.self)
             }

@@ -24,6 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return URL(string: hostUrl)
     }()
+    static let username = ProcessInfo.processInfo.environment["KINVEY_USERNAME"]
+    static let password = ProcessInfo.processInfo.environment["KINVEY_PASSWORD"]
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
         // Override point for customization after application launch.
@@ -38,6 +40,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             ) { user, error in
                 if let user = user {
                     print("user: \(user)")
+                }
+                if let username = AppDelegate.username, let password = AppDelegate.password {
+                    User.login(username: username, password: password) { user, error in
+                        if let user = user {
+                            print("user: \(user)")
+                        }
+                    }
                 }
             }
         }

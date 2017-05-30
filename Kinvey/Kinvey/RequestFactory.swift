@@ -19,6 +19,7 @@ protocol RequestFactory {
     func buildUserLogin(username: String, password: String) -> HttpRequest
     func buildUserExists(username: String) -> HttpRequest
     func buildUserGet(userId: String) -> HttpRequest
+    func buildUserFind(query: Query) -> HttpRequest
     func buildUserSave(user: User, newPassword: String?) -> HttpRequest
     func buildUserLookup(user: User, userQuery: UserQuery) -> HttpRequest
     func buildSendEmailConfirmation(forUsername: String) -> HttpRequest
@@ -54,5 +55,8 @@ protocol RequestFactory {
     func buildOAuthGrantAuth(redirectURI: URL, clientId: String?) -> HttpRequest
     func buildOAuthGrantAuthenticate(redirectURI: URL, clientId: String?, tempLoginUri: URL, username: String, password: String) -> HttpRequest
     func buildOAuthGrantRefreshToken(refreshToken: String, clientId: String?) -> HttpRequest
+    
+    func buildLiveStreamGrantAccess(streamName: String, userId: String, acl: LiveStreamAcl) -> HttpRequest
+    func buildLiveStreamPublish(streamName: String, userId: String) -> HttpRequest
     
 }
