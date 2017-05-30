@@ -49,4 +49,8 @@ extension String {
         return self[startIndex..<endIndex]
     }
     
+    func substring(with range: NSRange) -> String {
+        return substring(with: range.location ..< range.location + range.length)
+    }
+    
 }

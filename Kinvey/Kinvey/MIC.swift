@@ -44,12 +44,28 @@ open class MIC {
         return code
     }
     
-    open class func urlForLogin(redirectURI: URL, loginPage: Bool = true, clientId: String? = nil, client: Client = sharedClient) -> URL {
-        return Endpoint.oauthAuth(client: client, clientId: clientId, redirectURI: redirectURI, loginPage: loginPage).url
+    open class func urlForLogin(
+        redirectURI: URL,
+        loginPage: Bool = true,
+        clientId: String? = nil,
+        client: Client = sharedClient
+    ) -> URL {
+        return Endpoint.oauthAuth(
+            client: client,
+            clientId: clientId,
+            redirectURI: redirectURI,
+            loginPage: loginPage
+        ).url
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, code: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
+    class func login<U: User>(
+        redirectURI: URL,
+        code: String,
+        clientId: String?,
+        client: Client = sharedClient,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> Request {
         let requests = MultiRequest()
         Promise<U> { fulfill, reject in
             let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code, clientId: clientId)
@@ -77,7 +93,14 @@ open class MIC {
     }
     
     @discardableResult
-    class func login<U: User>(redirectURI: URL, username: String, password: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
+    class func login<U: User>(
+        redirectURI: URL,
+        username: String,
+        password: String,
+        clientId: String?,
+        client: Client = sharedClient,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> Request {
         let requests = MultiRequest()
         let request = client.networkRequestFactory.buildOAuthGrantAuth(redirectURI: redirectURI, clientId: clientId)
         Promise<URL> { fulfill, reject in
@@ -106,7 +129,7 @@ open class MIC {
                         let url = URL(string: location),
                         let code = parseCode(redirectURI: redirectURI, url: url)
                     {
-                        requests += login(redirectURI: redirectURI, code: code, client: client) { result in
+                        requests += login(redirectURI: redirectURI, code: code, clientId: clientId, client: client) { result in
                             switch result {
                             case .success(let user):
                                 fulfill(user as! U)
@@ -130,9 +153,13 @@ open class MIC {
     }
     
     @discardableResult
-    class func login<U: User>(refreshToken: String, clientId: String? = nil, client: Client = sharedClient, completionHandler: User.UserHandler<U>? = nil) -> Request {
+    class func login<U: User>(
+        refreshToken: String,
+        client: Client = sharedClient,
+        completionHandler: User.UserHandler<U>? = nil
+    ) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: clientId)
+        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: nil)
         request.execute { (data, response, error) in
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
@@ -188,6 +215,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     let redirectURI: URL
     let timeout: TimeInterval?
     let forceUIWebView: Bool
+    let clientId: String?
     let client: Client
     let completionHandler: UserHandler<User>
     
@@ -200,10 +228,11 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
-    init<UserType: User>(redirectURI: URL, userType: UserType.Type, timeout: TimeInterval? = nil, forceUIWebView: Bool = false, client: Client = sharedClient, completionHandler: @escaping UserHandler<UserType>) {
+    init<UserType: User>(redirectURI: URL, userType: UserType.Type, timeout: TimeInterval? = nil, forceUIWebView: Bool = false, clientId: String?, client: Client = sharedClient, completionHandler: @escaping UserHandler<UserType>) {
         self.redirectURI = redirectURI
         self.timeout = timeout
         self.forceUIWebView = forceUIWebView
+        self.clientId = clientId
         self.client = client
         self.completionHandler = {
             switch $0 {
@@ -319,7 +348,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let url = MIC.urlForLogin(redirectURI: redirectURI, client: client)
+        let url = MIC.urlForLogin(redirectURI: redirectURI, clientId: clientId, client: client)
         let request = URLRequest(url: url)
         webView(
             wkWebView: { $0.load(request) },
@@ -370,7 +399,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     func success(code: String) {
         activityIndicatorView.startAnimating()
         
-        MIC.login(redirectURI: redirectURI, code: code, client: client) { result in
+        MIC.login(redirectURI: redirectURI, code: code, clientId: clientId, client: client) { result in
             self.activityIndicatorView.stopAnimating()
             
             self.closeViewControllerUserInteraction(result)

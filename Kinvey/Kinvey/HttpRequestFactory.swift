@@ -314,12 +314,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildOAuthToken(redirectURI: URL, code: String, clientId: String?) -> HttpRequest {
-        var params = [
-            "grant_type" : "authorization_code",
-            "redirect_uri" : redirectURI.absoluteString,
-            "code" : code
-        ]
+    func set(_ params: inout [String : String], clientId: String?) {
         if let appKey = client.appKey {
             if let clientId = clientId {
                 params["client_id"] = "\(appKey):\(clientId)"
@@ -327,6 +322,15 @@ class HttpRequestFactory: RequestFactory {
                 params["client_id"] = appKey
             }
         }
+    }
+    
+    func buildOAuthToken(redirectURI: URL, code: String, clientId: String?) -> HttpRequest {
+        var params = [
+            "grant_type" : "authorization_code",
+            "redirect_uri" : redirectURI.absoluteString,
+            "code" : code
+        ]
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
@@ -342,13 +346,7 @@ class HttpRequestFactory: RequestFactory {
             "redirect_uri" : redirectURI.absoluteString,
             "response_type" : "code"
         ]
-        if let appKey = client.appKey {
-            if let clientId = clientId {
-                json["client_id"] = "\(appKey):\(clientId)"
-            } else {
-                json["client_id"] = appKey
-            }
-        }
+        set(&json, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthAuth(client: client, clientId: clientId, redirectURI: redirectURI, loginPage: false),
@@ -366,13 +364,7 @@ class HttpRequestFactory: RequestFactory {
             "username" : username,
             "password" : password
         ]
-        if let appKey = client.appKey {
-            if let clientId = clientId {
-                params["client_id"] = "\(appKey):\(clientId)"
-            } else {
-                params["client_id"] = appKey
-            }
-        }
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.url(url: tempLoginUri),
@@ -388,13 +380,7 @@ class HttpRequestFactory: RequestFactory {
             "grant_type" : "refresh_token",
             "refresh_token" : refreshToken
         ]
-        if let appKey = client.appKey {
-            if let clientId = clientId {
-                params["client_id"] = "\(appKey):\(clientId)"
-            } else {
-                params["client_id"] = appKey
-            }
-        }
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),

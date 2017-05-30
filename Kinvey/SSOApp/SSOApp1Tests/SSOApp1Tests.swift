@@ -64,6 +64,32 @@ class SSOApp1Tests: KinveyTestCase {
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [:])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                    XCTAssertNotNil(urlComponents.queryItems)
+                    if let queryItems = urlComponents.queryItems {
+                        let clientId = queryItems.filter { $0.name == "client_id" }.first?.value
+                        XCTAssertNotNil(clientId)
+                        if let clientId = clientId {
+                            XCTAssertTrue(clientId.contains(":"))
+                            let regex = try? NSRegularExpression(pattern: "([^:]+):([^:]+)")
+                            XCTAssertNotNil(regex)
+                            if let regex = regex {
+                                let match = regex.firstMatch(in: clientId, range: NSMakeRange(0, clientId.characters.count))
+                                XCTAssertNotNil(match)
+                                if let match = match {
+                                    XCTAssertEqual(match.numberOfRanges, 3)
+                                    let appKey = clientId.substring(with: match.rangeAt(1))
+                                    XCTAssertNotNil(appKey)
+                                    XCTAssertFalse(appKey.isEmpty)
+                                    
+                                    let clientIdValue = clientId.substring(with: match.rangeAt(1))
+                                    XCTAssertNotNil(clientIdValue)
+                                    XCTAssertFalse(clientIdValue.isEmpty)
+                                }
+                            }
+                        }
+                    }
+                    
                     let url = Bundle(for: SSOApp1Tests.self).url(forResource: "auth", withExtension: "html")!
                     let data = try! Data(contentsOf: url)
                     var html = String(data: data, encoding: .utf8)!
