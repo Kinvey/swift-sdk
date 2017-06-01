@@ -144,7 +144,8 @@ open class MIC {
                 }
                 requests += request
             }
-        }.then { user in
+        }.then { user -> Void in
+            user.clientId = clientId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -155,11 +156,12 @@ open class MIC {
     @discardableResult
     class func login<U: User>(
         refreshToken: String,
+        clientId: String?,
         client: Client = sharedClient,
         completionHandler: User.UserHandler<U>? = nil
     ) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: nil)
+        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: clientId)
         request.execute { (data, response, error) in
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)

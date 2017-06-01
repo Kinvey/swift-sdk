@@ -388,7 +388,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
                     let kinveyAuthToken = socialIdentity.kinvey,
                     let refreshToken = kinveyAuthToken["refresh_token"] as? String
                 {
-                    MIC.login(refreshToken: refreshToken) { user, error in
+                    MIC.login(refreshToken: refreshToken, clientId: user.clientId) { user, error in
                         if let user = user {
                             self.credential = user
                             self.execute(urlSession: urlSession, completionHandler)

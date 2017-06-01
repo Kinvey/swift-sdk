@@ -41,6 +41,8 @@ open class User: NSObject, Credential, Mappable {
     /// `_socialIdentity` property of the user.
     open fileprivate(set) var socialIdentity: UserSocialIdentity?
     
+    internal var clientId: String?
+    
     /// `username` property of the user.
     open var username: String?
     
@@ -543,6 +545,7 @@ open class User: NSObject, Credential, Mappable {
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
+        clientId <- map["client_id"]
     }
     
     /// Sign out the current active user.
@@ -862,7 +865,8 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
             viewController?.present(micVC, animated: true)
-        }.then { user in
+        }.then { user -> Void in
+            user.clientId = clientId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
