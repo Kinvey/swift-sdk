@@ -273,6 +273,7 @@ open class Client: Credential {
         if let user = keychain.user {
             user.client = self
             activeUser = user
+            clientId = keychain.clientId
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
