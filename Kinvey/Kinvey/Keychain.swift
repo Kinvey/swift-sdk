@@ -30,30 +30,46 @@ class Keychain {
         self.keychain = KeychainAccess.Keychain(service: accessGroup, accessGroup: accessGroup).accessibility(.afterFirstUnlockThisDeviceOnly)
     }
     
-    fileprivate static let deviceTokenKey = "deviceToken"
+    enum Key: String {
+        
+        case deviceToken = "deviceToken"
+        case user = "user"
+        case clientId = "client_id"
+        case kinveyAuth = "kinveyAuth"
+        case defaultEncryptionKey = "defaultEncryptionKey"
+        
+    }
+    
     var deviceToken: Data? {
         get {
-            return keychain[data: Keychain.deviceTokenKey]
+            return keychain[data: Key.deviceToken]
         }
         set {
-            keychain[data: Keychain.deviceTokenKey] = newValue
+            keychain[data: Key.deviceToken] = newValue
         }
     }
     
-    fileprivate static let userKey = "user"
     var user: User? {
         get {
-            return client.responseParser.parseUser(keychain[Keychain.userKey]?.data(using: .utf8))
+            return client.responseParser.parseUser(keychain[Key.user]?.data(using: .utf8))
         }
         set {
-            keychain[Keychain.userKey] = newValue?.toJSONString()
+            keychain[Key.user] = newValue?.toJSONString()
         }
     }
     
-    fileprivate static let kinveyAuthKey = AuthSource.kinvey.rawValue
+    var clientId: String? {
+        get {
+            return keychain[Key.clientId]
+        }
+        set {
+            keychain[Key.clientId] = newValue
+        }
+    }
+    
     var kinveyAuth: [String : Any]? {
         get {
-            if let jsonString = keychain[Keychain.kinveyAuthKey],
+            if let jsonString = keychain[Key.kinveyAuth],
                 let data = jsonString.data(using: .utf8),
                 let jsonObject = try? JSONSerialization.jsonObject(with: data)
             {
@@ -65,25 +81,46 @@ class Keychain {
             if let newValue = newValue,
                 let data = try? JSONSerialization.data(withJSONObject: newValue)
             {
-                keychain[Keychain.kinveyAuthKey] = String(data: data, encoding: .utf8)
+                keychain[Key.kinveyAuth] = String(data: data, encoding: .utf8)
             } else {
-                keychain[Keychain.kinveyAuthKey] = nil
+                keychain[Key.kinveyAuth] = nil
             }
         }
     }
     
-    fileprivate static let defaultEncryptionKeyKey = "defaultEncryptionKey"
     var defaultEncryptionKey: Data? {
         get {
-            return keychain[data: Keychain.defaultEncryptionKeyKey]
+            return keychain[data: Key.defaultEncryptionKey]
         }
         set {
-            keychain[data: Keychain.defaultEncryptionKeyKey] = newValue
+            keychain[data: Key.defaultEncryptionKey] = newValue
         }
     }
     
     func removeAll() throws {
         try keychain.removeAll()
+    }
+    
+}
+
+extension KeychainAccess.Keychain {
+    
+    subscript(key: Keychain.Key) -> String? {
+        get {
+            return self[key.rawValue]
+        }
+        set {
+            self[key.rawValue] = newValue
+        }
+    }
+    
+    subscript(data key: Keychain.Key) -> Data? {
+        get {
+            return self[data: key.rawValue]
+        }
+        set {
+            self[data: key.rawValue] = newValue
+        }
     }
     
 }

@@ -3104,7 +3104,7 @@ class UserTests: KinveyTestCase {
                         "_acl" : [
                             "creator" : "57c788d168d976c525ee4602"
                         ]
-                        ] as [String : Any]
+                    ] as [String : Any]
                     let data = try! JSONSerialization.data(withJSONObject: json, options: [])
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
@@ -3392,7 +3392,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234") { result in
+        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234", clientId: nil) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -3470,7 +3470,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234") { result in
+        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234", clientId: nil) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -3557,7 +3557,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString) { result in
+        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -3627,7 +3627,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString) { result in
+        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -3680,7 +3680,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString) { result in
+        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {

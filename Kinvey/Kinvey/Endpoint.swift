@@ -39,7 +39,7 @@ internal enum Endpoint {
     case url(url: URL)
     case customEndpooint(client: Client, name: String)
     
-    case oauthAuth(client: Client, redirectURI: URL, loginPage: Bool)
+    case oauthAuth(client: Client, clientId: String?, redirectURI: URL, loginPage: Bool)
     case oauthToken(client: Client)
     
     var url: URL {
@@ -144,7 +144,7 @@ internal enum Endpoint {
             return url
         case .customEndpooint(let client, let name):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")
-        case .oauthAuth(let client, let redirectURI, let loginPage):
+        case .oauthAuth(let client, let clientId, let redirectURI, let loginPage):
             var url = client.authHostName
             if let micApiVersion = client.micApiVersion {
                 url.appendPathComponent(micApiVersion.rawValue)
@@ -153,7 +153,13 @@ internal enum Endpoint {
             if loginPage {
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 var queryItems = [URLQueryItem]()
-                queryItems.append(URLQueryItem(name: "client_id", value: client.appKey!))
+                if let appKey = client.appKey {
+                    if let clientId = clientId {
+                        queryItems.append(URLQueryItem(name: "client_id", value: "\(appKey):\(clientId)"))
+                    } else {
+                        queryItems.append(URLQueryItem(name: "client_id", value: appKey))
+                    }
+                }
                 queryItems.append(URLQueryItem(name: "redirect_uri", value: redirectURI.absoluteString))
                 queryItems.append(URLQueryItem(name: "response_type", value: "code"))
                 if let micApiVersion = client.micApiVersion, micApiVersion == .v3 {

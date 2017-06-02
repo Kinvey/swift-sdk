@@ -47,6 +47,12 @@ open class Client: Credential {
         }
     }
     
+    internal var clientId: String? {
+        willSet {
+            keychain.clientId = clientId
+        }
+    }
+    
     private var accessGroup: String?
     
     private var keychain: Keychain {
@@ -267,6 +273,7 @@ open class Client: Credential {
         if let user = keychain.user {
             user.client = self
             activeUser = user
+            clientId = keychain.clientId
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
