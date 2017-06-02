@@ -71,7 +71,7 @@ open class MIC {
             let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code, clientId: clientId)
             request.execute { (data, response, error) in
                 if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
-                    requests += User.login(authSource: .kinvey, authData, client: client) { (result: Result<U, Swift.Error>) in
+                    requests += User.login(authSource: .kinvey, authData, clientId: clientId, client: client) { (result: Result<U, Swift.Error>) in
                         switch result {
                         case .success(let user):
                             fulfill(user)
@@ -145,7 +145,6 @@ open class MIC {
                 requests += request
             }
         }.then { user -> Void in
-            user.clientId = clientId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))

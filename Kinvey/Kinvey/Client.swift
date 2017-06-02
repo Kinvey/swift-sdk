@@ -47,6 +47,12 @@ open class Client: Credential {
         }
     }
     
+    internal var clientId: String? {
+        willSet {
+            keychain.clientId = clientId
+        }
+    }
+    
     private var accessGroup: String?
     
     private var keychain: Keychain {

@@ -41,8 +41,6 @@ open class User: NSObject, Credential, Mappable {
     /// `_socialIdentity` property of the user.
     open fileprivate(set) var socialIdentity: UserSocialIdentity?
     
-    internal var clientId: String?
-    
     /// `username` property of the user.
     open var username: String?
     
@@ -134,7 +132,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    open class func login<U: User>(authSource: AuthSource, _ authData: [String : Any], createIfNotExists: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
+    open class func login<U: User>(authSource: AuthSource, _ authData: [String : Any], createIfNotExists: Bool = true, clientId: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler<U>? = nil) -> Request {
         return login(
             authSource: authSource,
             authData,
@@ -158,7 +156,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    open class func login<U: User>(authSource: AuthSource, _ authData: [String : Any], createIfNotExists: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
+    open class func login<U: User>(authSource: AuthSource, _ authData: [String : Any], createIfNotExists: Bool = true, clientId: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil) -> Request {
         if let error = client.validate() {
             DispatchQueue.main.async {
                 completionHandler?(.failure(error))
@@ -172,13 +170,11 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response {
                     if response.isOK, let user = client.responseParser.parseUser(data) as? U {
-                        client.activeUser = user
                         fulfill(user)
                     } else if response.isNotFound, createIfNotExists {
                         let request = client.networkRequestFactory.buildUserSocialCreate(authSource, authData: authData)
                         request.execute { (data, response, error) in
                             if let response = response, response.isOK, let user = client.responseParser.parseUser(data) as? U {
-                                client.activeUser = user
                                 fulfill(user)
                             } else {
                                 reject(buildError(data, response, error, client))
@@ -193,7 +189,9 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
             requests += request
-        }.then { user in
+        }.then { user -> Void in
+            client.activeUser = user
+            client.clientId = clientId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -545,7 +543,6 @@ open class User: NSObject, Credential, Mappable {
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
-        clientId <- map["client_id"]
     }
     
     /// Sign out the current active user.
@@ -866,7 +863,6 @@ open class User: NSObject, Credential, Mappable {
             }
             viewController?.present(micVC, animated: true)
         }.then { user -> Void in
-            user.clientId = clientId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
