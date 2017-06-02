@@ -20,28 +20,28 @@ before_script:
 - if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
     carthage checkout --no-use-binaries;
   fi
-- if [ ! -d "Carthage/Build/iOS/Realm.framework" ] || [ ! -d "Carthage/Build/iOS/RealmSwift.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
     carthage checkout realm-cocoa;
   fi
-- if [ ! -d "Carthage/Build/iOS/KeychainAccess.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/KeychainAccess.framework" ]; then
     carthage checkout KeychainAccess;
   fi
-- if [ ! -d "Carthage/Build/iOS/PromiseKit.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/PromiseKit.framework" ]; then
     carthage build --platform $PLATFORM PromiseKit;
   fi
-- if [ ! -d "Carthage/Build/iOS/ObjectMapper.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/ObjectMapper.framework" ]; then
     carthage build --platform $PLATFORM ObjectMapper;
   fi
-- if [ ! -d "Carthage/Build/iOS/XCGLogger.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/XCGLogger.framework" ]; then
     carthage build --platform $PLATFORM XCGLogger;
   fi
-- if [ ! -d "Carthage/Build/iOS/PubNub.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/PubNub.framework" ]; then
     carthage build --platform $PLATFORM objective-c;
   fi
-- if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/KIF.framework" ]; then
     carthage build --platform $PLATFORM KIF;
   fi
-- if [ ! -d "Carthage/Build/iOS/Nimble.framework" ]; then
+- if [ ! -d "Carthage/Build/$PLATFORM/Nimble.framework" ]; then
     carthage build --platform $PLATFORM Nimble;
   fi
 - date
@@ -50,7 +50,7 @@ script:
   case $PLATFORM in
   iOS)
     travis_retry make test-ios | xcpretty;;
-  macOS)
+  Mac)
     travis_retry make test-macos | xcpretty;;
   esac
 after_script:
@@ -64,5 +64,5 @@ env:
     - secure: IW9jgSdH76Rgp4Hf45+7saqTYslau7K/KgnRtizVZnQwI31b/dMrimMuQj3m6R80ymetz1ZhLk5dX83g+Y5A4XAJjspk2vaAE3ZIZUo6mqdtkRxzxkomN5HZEzEAj8SdjQ4GZxLHX2skATP78SWKJrr7vBbfigPm/Pp8gt4AfKzmfVnBGiN8niU6q/qSUNq67j+F0J/bB2hhOQjIO4mbHRAPW+AygGV9/o+25k+fL4yXWpsDoKzMFTsWHp9H9NkevGFXwK7crGX/Bgo8QESOvVZT4JEnHapEKnT8tAkT3wUCNKiPp60lAo9r/eggASU2a8Oq03wSZMv1F88ORzBVKQfSlNHcV0XOylYL2JZqtzznPmTRx2biHncB8xSg/DBh4MtUKuuProsq+/KIy067pITYCudEqjqL7YjaLlDEUl+YiahOY4DJ391GaCkCklUbHv1TW3vdDpBSvjtC4Ny7anNqK5Mo/cwscPGBTgkQkFyzRf48WLf79wH1sonIVQXv5wKxJAAn08K48dUfhK7yuePjHKmXsKpSjJJbPPlcAEvOknGQnG9OQ6MWb2A/Wk01ki29CENRFbVZCWG2CcM8bPTLGxz07Dp6VH3nxQoQHgsH/J4j1hWfnL1DGacFrDzC/SFhB78v65FxheV5ZOEx+Es/eSRiPEdX8gdjZnqOb3Y=
     - secure: nawAGSUbPzyAH/SllDj9q6IOLGaF91DQsudQYx4AJs+swwFhAvAe3hM6vWdGVuDLxqVHQ4+4AAQFecXq/mDi5WtRISPbGHWVtOx7Q6szL8Y54uZKVmKV06wnAo4nrwu8pp1+TbRLYwG+/oJIfabW2yuMgNn7nWFm5SdE0GuduVI7Ho9p0/SeaE7DCtaNKgyCLfspAA8svCYMK0N9NzBVhkTPzWRiIF174k5VE28lZox/fjN5x4j1aaMBUhElkJELjcWKdTX11MnCyybWjJZ1YTMK/A4vBtZCFmHIFuhtQiqWCQIWxeo8axRDBZEMzZ5U+9zSfaz0w0wovWI/cvtRFS0j/7UQ4o6alO7EOMdhH5rRl8atOxSS+Rl81Oz1kZiLhjJa/feAN5QGQ423L4CyfDeEBV6t1D8Cmb1jlficswFeX2rQw82qFnI2ua9p8HrpUJydDsGR6AoOI+KUamwi53OC+hsG/M1sA4MOAPEJoMGT6dyER5UVE63JB45All9TDJWV2EZz+11FQIp6P/62/QXJBQhqxu+W0u/3q7KqoSgmxFx/QSbv8hpK9aJWDQNf5cv02bT+vJnMv4Lrf+XcSVOWH0TwpL5nVcRJXyq2A6FCGdE2S0Xa0+KkgZdF7p3qk4jN32CryHImRp8T3qbkA6Q9nNdxATt7P9OjYl/XqDA=
   matrix:
-    - PLATFORM=macOS
+    - PLATFORM=Mac
     - PLATFORM=iOS
