@@ -47,6 +47,12 @@ open class Client: Credential {
         }
     }
     
+    internal var clientId: String? {
+        willSet {
+            keychain.clientId = clientId
+        }
+    }
+    
     private var accessGroup: String?
     
     private var keychain: Keychain {
@@ -145,9 +151,7 @@ open class Client: Credential {
     
     private func validateInitialize(appKey: String, appSecret: String) {
         if appKey.isEmpty || appSecret.isEmpty {
-            let message = "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console."
-            log.severe(message)
-            fatalError(message)
+            fatalError("Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         }
     }
     
@@ -269,6 +273,7 @@ open class Client: Credential {
         if let user = keychain.user {
             user.client = self
             activeUser = user
+            clientId = keychain.clientId
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {

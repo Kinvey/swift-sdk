@@ -11,23 +11,19 @@ import Foundation
 class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
-    lazy var request: HttpRequest = self.buildRequest()
+    private let httpRequest: () -> HttpRequest
+    lazy var request: HttpRequest = self.httpRequest()
     
-    init(query: Query, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    init(query: Query, httpRequest: @autoclosure @escaping () -> HttpRequest, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
         self.query = query
+        self.httpRequest = httpRequest
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
-    }
-    
-    func buildRequest() -> HttpRequest {
-        let message = "Method \(#function) must be overridden"
-        log.severe(message)
-        fatalError(message)
     }
     
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            var count: Int?
+            var count = 0
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
                 count = realmObjects.count
@@ -43,15 +39,9 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                             }
                         }
                     }
-                } else {
-                    count = 0
                 }
             }
-            if let count = count {
-                completionHandler?(.success(count))
-            } else {
-                completionHandler?(.failure(buildError(client: client)))
-            }
+            completionHandler?(.success(count))
         }
         return request
     }

@@ -47,7 +47,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Impose a limit of records in the results of the query.
     open var limit: Int?
     
-    internal func translate(expression: NSExpression) -> NSExpression {
+    internal func translate(expression: NSExpression, otherSideExpression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
             var keyPath = expression.keyPath
@@ -55,16 +55,28 @@ public final class Query: NSObject, BuilderType, Mappable {
             if keyPath.contains(".") {
                 var keyPaths = [String]()
                 for item in keyPath.components(separatedBy: ".") {
-                    keyPaths.append(persistableType?.propertyMapping(item) ?? item)
+                    if let (keyPath, _) = persistableType?.propertyMapping(item) {
+                        keyPaths.append(keyPath)
+                    } else {
+                        keyPaths.append(item)
+                    }
                     if let persistableTypeTmp = persistableType {
                         persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
                 keyPath = keyPaths.joined(separator: ".")
-            } else if let translatedKeyPath = persistableType?.propertyMapping(keyPath) {
+            } else if let (translatedKeyPath, _) = persistableType?.propertyMapping(keyPath) {
                 keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
+        case .constantValue:
+            if otherSideExpression.expressionType == .keyPath,
+                let (_, optionalTransform) = persistableType?.propertyMapping(otherSideExpression.keyPath),
+                let transform = optionalTransform
+            {
+                return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
+            }
+            return expression
         default:
             return expression
         }
@@ -73,8 +85,8 @@ public final class Query: NSObject, BuilderType, Mappable {
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
-                leftExpression: translate(expression: predicate.leftExpression),
-                rightExpression: translate(expression: predicate.rightExpression),
+                leftExpression: translate(expression: predicate.leftExpression, otherSideExpression: predicate.rightExpression),
+                rightExpression: translate(expression: predicate.rightExpression, otherSideExpression: predicate.leftExpression),
                 modifier: predicate.comparisonPredicateModifier,
                 type: predicate.predicateOperatorType,
                 options: predicate.options
@@ -90,22 +102,24 @@ public final class Query: NSObject, BuilderType, Mappable {
     }
     
     var isEmpty: Bool {
-        return predicate == nil && sortDescriptors == nil && skip == nil && limit == nil
+        return predicate == nil &&
+            (sortDescriptors == nil || sortDescriptors!.isEmpty) &&
+            skip == nil &&
+            limit == nil &&
+            (fields == nil || fields!.isEmpty)
     }
     
     fileprivate var queryStringEncoded: String? {
-        get {
-            if let predicate = predicate {
-                let translatedPredicate = translate(predicate: predicate)
-                let queryObj = translatedPredicate.mongoDBQuery!
-                
-                let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
-                let queryStr = String(data: data, encoding: String.Encoding.utf8)!
-                return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
-            }
-            
-            return "{}"
+        guard let predicate = predicate else {
+            return nil
         }
+        
+        let translatedPredicate = translate(predicate: predicate)
+        let queryObj = translatedPredicate.mongoDBQuery!
+        
+        let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
+        let queryStr = String(data: data, encoding: String.Encoding.utf8)!
+        return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
     }
     
     internal var urlQueryItems: [URLQueryItem]? {

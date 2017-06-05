@@ -45,7 +45,7 @@ internal class MultiRequest: NSObject, Request {
         }
     }
     
-    var _cancelled = false
+    private var _cancelled = false
     internal var cancelled: Bool {
         get {
             for request in requests {

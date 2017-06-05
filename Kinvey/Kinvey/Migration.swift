@@ -75,15 +75,13 @@ open class Migration: NSObject {
         if let oldObjectSchema = oldObjectSchema {
             let oldProperties = oldObjectSchema.properties.map { $0.name }
             realmMigration.enumerateObjects(ofType: oldSchemaClassName) { (oldObject, newObject) in
-                if let oldObject = oldObject {
+                if let oldObject = oldObject, let newObject = newObject {
                     let oldDictionary = oldObject.dictionaryWithValues(forKeys: oldProperties)
                     
-                    let newDictionary = migrationObjectHandler?(oldDictionary)
-                    if let newObject = newObject {
+                    if let newDictionary = migrationObjectHandler?(oldDictionary) {
+                        newObject.setValuesForKeys(newDictionary)
+                    } else {
                         self.realmMigration.delete(newObject)
-                    }
-                    if let newDictionary = newDictionary {
-                        self.realmMigration.create(className, value: newDictionary)
                     }
                 }
             }

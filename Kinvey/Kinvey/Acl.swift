@@ -40,13 +40,7 @@ class AclTransformType: TransformType {
 }
 
 /// This class represents the ACL (Access Control List) for a record.
-public final class Acl: Object, Mappable, BuilderType {
-    
-    static let CreatorKey = "creator"
-    static let GlobalReadKey = "gr"
-    static let GlobalWriteKey = "gw"
-    static let ReadersKey = "r"
-    static let WritersKey = "w"
+public final class Acl: Object, BuilderType {
     
     /// The `userId` of the `User` used to create the record.
     open dynamic var creator: String?
@@ -100,63 +94,19 @@ public final class Acl: Object, Mappable, BuilderType {
     }
     
     /// Constructs an Acl instance with the `userId` of the `User` used to create the record.
-    public init(
+    public convenience init(
         creator: String,
         globalRead: Bool? = nil,
         globalWrite: Bool? = nil,
         readers: [String]? = nil,
         writers: [String]? = nil
     ) {
+        self.init()
         self.creator = creator
         self.globalRead.value = globalRead
         self.globalWrite.value = globalWrite
-        super.init()
         self.readers = readers
         self.writers = writers
-    }
-    
-    /// Constructor that validates if the map contains at least the creator.
-    public required convenience init?(map: Map) {
-        var creator: String?
-        
-        creator <- map[Acl.CreatorKey]
-        
-        guard let creatorValue = creator else {
-            self.init()
-            return nil
-        }
-        
-        self.init(creator: creatorValue)
-    }
-    
-    /// Default Constructor.
-    public required init() {
-        super.init()
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
-        creator <- ("creator", map[Acl.CreatorKey])
-        globalRead.value <- ("globalRead", map[Acl.GlobalReadKey])
-        globalWrite.value <- ("globalWrite", map[Acl.GlobalWriteKey])
-        readers <- ("readers", map[Acl.ReadersKey])
-        writers <- ("writers", map[Acl.WritersKey])
     }
     
     /**
@@ -167,4 +117,41 @@ public final class Acl: Object, Mappable, BuilderType {
         return ["readers", "writers"]
     }
 
+}
+
+extension Acl: Mappable {
+    
+    /// Constructor that validates if the map contains at least the creator.
+    public convenience init?(map: Map) {
+        guard let _: String = map[Acl.Key.creator].value() else {
+            self.init()
+            return nil
+        }
+        
+        self.init()
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    open func mapping(map: Map) {
+        creator <- ("creator", map[Acl.Key.creator])
+        globalRead.value <- ("globalRead", map[Acl.Key.globalRead])
+        globalWrite.value <- ("globalWrite", map[Acl.Key.globalWrite])
+        readers <- ("readers", map[Acl.Key.readers])
+        writers <- ("writers", map[Acl.Key.writers])
+    }
+    
+}
+
+extension Acl {
+    
+    public struct Key {
+        
+        static let creator = "creator"
+        static let globalRead = "gr"
+        static let globalWrite = "gw"
+        static let readers = "r"
+        static let writers = "w"
+        
+    }
+    
 }

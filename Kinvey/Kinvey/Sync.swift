@@ -10,14 +10,11 @@ import Foundation
 
 internal protocol SyncType {
     
-    var persistenceId: String { get }
-    var collectionName: String { get }
-    
     //Create
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType
     
     //Read
-    func pendingOperations(_ objectId: String?) -> AnyCollection<PendingOperationType>
+    func pendingOperations() -> AnyCollection<PendingOperationType>
     
     //Update
     func savePendingOperation(_ pendingOperation: PendingOperationType)
@@ -31,25 +28,13 @@ internal protocol SyncType {
 
 internal final class AnySync: SyncType {
     
-    var persistenceId: String {
-        return _getPersistenceId()
-    }
-    
-    var collectionName: String {
-        return _getCollectionName()
-    }
-    
-    private let _getPersistenceId: () -> String
-    private let _getCollectionName: () -> String
     private let _createPendingOperation: (URLRequest, String?) -> PendingOperationType
-    private let _pendingOperations: (String?) -> AnyCollection<PendingOperationType>
+    private let _pendingOperations: () -> AnyCollection<PendingOperationType>
     private let _savePendingOperation: (PendingOperationType) -> Void
     private let _removePendingOperation: (PendingOperationType) -> Void
     private let _removeAllPendingOperations: (String?, [String]?) -> Void
     
     init<Sync: SyncType>(_ sync: Sync) {
-        _getPersistenceId = { return sync.persistenceId }
-        _getCollectionName = { return sync.collectionName }
         _createPendingOperation = sync.createPendingOperation
         _pendingOperations = sync.pendingOperations
         _savePendingOperation = sync.savePendingOperation
@@ -61,8 +46,8 @@ internal final class AnySync: SyncType {
         return _createPendingOperation(request, objectId)
     }
     
-    func pendingOperations(_ objectId: String? = nil) -> AnyCollection<PendingOperationType> {
-        return _pendingOperations(objectId)
+    func pendingOperations() -> AnyCollection<PendingOperationType> {
+        return _pendingOperations()
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationType) {

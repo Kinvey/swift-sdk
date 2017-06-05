@@ -104,9 +104,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         if !client.isInitialized() {
-            let message = "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore."
-            log.severe(message)
-            fatalError(message)
+            fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
@@ -172,9 +170,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     private func validate(id: String) {
         if id.isEmpty {
-            let message = "id cannot be an empty string"
-            log.severe(message)
-            fatalError(message)
+            fatalError("id cannot be an empty string")
         }
     }
     

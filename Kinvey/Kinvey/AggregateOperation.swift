@@ -22,9 +22,8 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            if let cache = self.cache {
-                let result = cache.group(aggregation: aggregation, predicate: predicate)
-                completionHandler?(.success(result))
+            if let _ = self.cache {
+                completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
             } else {
                 completionHandler?(.success([]))
             }
@@ -73,8 +72,6 @@ enum Aggregation {
     
     var resultKey: String {
         switch self {
-        case .custom(_, _, _):
-            fatalError("Custom does not have a resultKey")
         case .count:
             return "count"
         case .sum:
@@ -85,6 +82,8 @@ enum Aggregation {
             return "min"
         case .max:
             return "max"
+        case .custom(_, _, _):
+            fatalError("Custom does not have a resultKey")
         }
     }
     

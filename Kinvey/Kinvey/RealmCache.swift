@@ -35,9 +35,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
-            let message = "\(T.self) needs to be a Entity"
-            log.severe(message)
-            fatalError(message)
+            fatalError("\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -267,10 +265,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         
         return AnyRandomAccessCollection(realmResults)
     }
-    
-    fileprivate func newInstance<P:Persistable>(_ type: P.Type) -> P {
-        return type.init()
-    }
 
     fileprivate func detach(_ entity: Object, props: [String]) -> Object {
         log.verbose("Detaching object: \(entity)")
@@ -384,15 +378,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return results
     }
     
-    func findAll() -> [T] {
-        log.verbose("Finding All")
-        var results = [T]()
-        executor.executeAndWait {
-            results = self.detach(AnyRandomAccessCollection(self.realm.objects(self.entityType)), query: nil)
-        }
-        return results
-    }
-    
     func count(query: Query? = nil) -> Int {
         log.verbose("Counting by query: \(String(describing: query))")
         var result = 0
@@ -454,15 +439,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return result
     }
     
-    func removeAll() {
-        log.verbose("Removing all objects")
-        executor.executeAndWait {
-            try! self.realm.write {
-                self.realm.delete(self.realm.objects(self.entityType))
-            }
-        }
-    }
-    
     func clear(query: Query? = nil) {
         log.verbose("Clearing cache")
         executor.executeAndWait {
@@ -484,10 +460,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
             }
         }
-    }
-    
-    func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
-        fatalError("Custom Aggregation not supported against local cache")
     }
     
 }
@@ -590,7 +562,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     convenience init(request: URLRequest, collectionName: String, objectId: String?) {
         self.init()
         
-        requestId = request.value(forHTTPHeaderField: .requestId)!
+        requestId = request.value(forHTTPHeaderField: KinveyHeaderField.requestId)!
         self.collectionName = collectionName
         self.objectId = objectId
         method = request.httpMethod ?? "GET"

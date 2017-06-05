@@ -15,26 +15,6 @@ import ObjectMapper
     import UIKit
 #endif
 
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
 public enum ImageRepresentation {
     
     case png
@@ -61,23 +41,30 @@ public enum ImageRepresentation {
 }
 
 /// Class to interact with the `Files` collection in the backend.
-open class FileStore {
+open class FileStore<FileType: File> {
     
-    public typealias FileCompletionHandler = (File?, Swift.Error?) -> Void
-    public typealias FileDataCompletionHandler = (File?, Data?, Swift.Error?) -> Void
-    public typealias FilePathCompletionHandler = (File?, URL?, Swift.Error?) -> Void
+    public typealias FileCompletionHandler = (FileType?, Swift.Error?) -> Void
+    public typealias FileDataCompletionHandler = (FileType?, Data?, Swift.Error?) -> Void
+    public typealias FilePathCompletionHandler = (FileType?, URL?, Swift.Error?) -> Void
     public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
-    public typealias FileArrayCompletionHandler = ([File]?, Swift.Error?) -> Void
+    public typealias FileArrayCompletionHandler = ([FileType]?, Swift.Error?) -> Void
     
     internal let client: Client
-    internal let cache: FileCache?
+    internal let cache: AnyFileCache<FileType>?
     
     /// Factory method that returns a `FileStore`.
-    open class func getInstance(_ client: Client = sharedClient) -> FileStore {
-        return FileStore(client: client)
+    @available(*, deprecated: 3.5.2, message: "Please use the constructor instead")
+    open class func getInstance<FileType: File>(client: Client = sharedClient) -> FileStore<FileType> {
+        return FileStore<FileType>(client: client)
     }
     
-    fileprivate init(client: Client) {
+    /// Factory method that returns a `FileStore`.
+    @available(*, deprecated: 3.5.2, message: "Please use the constructor instead")
+    open class func getInstance<FileType: File>(fileType: FileType.Type, client: Client = sharedClient) -> FileStore<FileType> {
+        return FileStore<FileType>(client: client)
+    }
+    
+    public init(client: Client = sharedClient) {
         self.client = client
         self.cache = client.cacheManager.fileCache(fileURL: client.fileURL())
     }
@@ -85,13 +72,13 @@ open class FileStore {
 #if !os(macOS)
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
-    open func upload(_ file: File, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    open func upload(_ file: FileType, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(
             file,
             image: image,
             imageRepresentation: imageRepresentation,
             ttl: ttl
-        ) { (result: Result<File, Swift.Error>) in
+        ) { (result: Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -103,7 +90,7 @@ open class FileStore {
     
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
-    open func upload(_ file: File, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    open func upload(_ file: FileType, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
@@ -112,12 +99,12 @@ open class FileStore {
     
     /// Uploads a file using the file path.
     @discardableResult
-    open func upload(_ file: File, path: String, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    open func upload(_ file: FileType, path: String, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(
             file,
             path: path,
             ttl: ttl
-        ) { (result: Result<File, Swift.Error>) in
+        ) { (result: Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -129,18 +116,18 @@ open class FileStore {
     
     /// Uploads a file using the file path.
     @discardableResult
-    open func upload(_ file: File, path: String, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    open func upload(_ file: FileType, path: String, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .url(URL(fileURLWithPath: path)), ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Uploads a file using a input stream.
     @discardableResult
-    open func upload(_ file: File, stream: InputStream, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    open func upload(_ file: FileType, stream: InputStream, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(
             file,
             stream: stream,
             ttl: ttl
-        ) { (result: Result<File, Swift.Error>) in
+        ) { (result: Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -152,17 +139,17 @@ open class FileStore {
     
     /// Uploads a file using a input stream.
     @discardableResult
-    open func upload(_ file: File, stream: InputStream, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    open func upload(_ file: FileType, stream: InputStream, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .stream(stream), ttl: ttl, completionHandler: completionHandler)
     }
 
-    fileprivate func getFileMetadata(_ file: File, ttl: TTL? = nil) -> (request: Request, promise: Promise<File>) {
+    fileprivate func getFileMetadata(_ file: FileType, ttl: TTL? = nil) -> (request: Request, promise: Promise<FileType>) {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(file, ttl: ttl)
-        let promise = Promise<File> { fulfill, reject in
+        let promise = Promise<FileType> { fulfill, reject in
             request.execute() { (data, response, error) -> Void in
                 if let response = response, response.isOK,
                     let json = self.client.responseParser.parse(data),
-                    let newFile = File(JSON: json) {
+                    let newFile = FileType(JSON: json) {
                     newFile.path = file.path
                     if let cache = self.cache {
                         cache.save(newFile, beforeSave: nil)
@@ -179,12 +166,12 @@ open class FileStore {
     
     /// Uploads a file using a `NSData`.
     @discardableResult
-    open func upload(_ file: File, data: Data, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    open func upload(_ file: FileType, data: Data, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(
             file,
             data: data,
             ttl: ttl
-        ) { (result: Result<File, Swift.Error>) in
+        ) { (result: Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -196,7 +183,7 @@ open class FileStore {
     
     /// Uploads a file using a `NSData`.
     @discardableResult
-    open func upload(_ file: File, data: Data, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    open func upload(_ file: FileType, data: Data, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         return upload(file, fromSource: .data(data), ttl: ttl, completionHandler: completionHandler)
     }
     
@@ -209,7 +196,7 @@ open class FileStore {
     }
     
     /// Uploads a file using a `NSData`.
-    fileprivate func upload(_ file: File, fromSource source: InputSource, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    fileprivate func upload(_ file: FileType, fromSource source: InputSource, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         if file.size.value == nil {
             switch source {
             case let .data(data):
@@ -225,15 +212,15 @@ open class FileStore {
             }
         }
         let requests = MultiRequest()
-        Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
+        Promise<(file: FileType, skip: Int?)> { fulfill, reject in //creating bucket
             let createUpdateFileEntry = {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file)
                 requests += request
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK,
                         let json = self.client.responseParser.parse(data),
-                        let newFile = File(JSON: json) {
-                        
+                        let newFile = FileType(JSON: json)
+                    {
                         fulfill((file: newFile, skip: nil))
                     } else {
                         reject(buildError(data, response, error, self.client))
@@ -305,7 +292,7 @@ open class FileStore {
                 createUpdateFileEntry()
             }
         }.then { file, skip in //uploading data
-            return Promise<File> { fulfill, reject in
+            return Promise<FileType> { fulfill, reject in
                 var request = URLRequest(url: file.uploadURL!)
                 request.httpMethod = "PUT"
                 if let uploadHeaders = file.uploadHeaders {
@@ -399,11 +386,11 @@ open class FileStore {
     
     /// Refresh a `File` instance.
     @discardableResult
-    open func refresh(_ file: File, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+    open func refresh(_ file: FileType, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         return refresh(
             file,
             ttl: ttl
-        ) { (result: Result<File, Swift.Error>) in
+        ) { (result: Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -415,7 +402,7 @@ open class FileStore {
     
     /// Refresh a `File` instance.
     @discardableResult
-    open func refresh(_ file: File, ttl: TTL? = nil, completionHandler: ((Result<File, Swift.Error>) -> Void)? = nil) -> Request {
+    open func refresh(_ file: FileType, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
         let (request, promise) = getFileMetadata(file, ttl: ttl)
         promise.then { file in
             completionHandler?(.success(file))
@@ -426,7 +413,7 @@ open class FileStore {
     }
     
     @discardableResult
-    fileprivate func downloadFileURL(_ file: File, storeType: StoreType = .cache, downloadURL: URL) -> (request: URLSessionTaskRequest, promise: Promise<URL>) {
+    fileprivate func downloadFileURL(_ file: FileType, storeType: StoreType = .cache, downloadURL: URL) -> (request: URLSessionTaskRequest, promise: Promise<URL>) {
         let downloadTaskRequest = URLSessionTaskRequest(client: client, url: downloadURL)
         let promise = Promise<URL> { fulfill, reject in
             let executor = Executor()
@@ -487,7 +474,7 @@ open class FileStore {
     }
     
     @discardableResult
-    fileprivate func downloadFileData(_ file: File, downloadURL: URL) -> (request: URLSessionTaskRequest, promise: Promise<Data>) {
+    fileprivate func downloadFileData(_ file: FileType, downloadURL: URL) -> (request: URLSessionTaskRequest, promise: Promise<Data>) {
         let downloadTaskRequest = URLSessionTaskRequest(client: client, url: downloadURL)
         let promise = downloadTaskRequest.downloadTaskWithURL(file).then { data, response -> Promise<Data> in
             return Promise<Data> { fulfill, reject in
@@ -498,38 +485,32 @@ open class FileStore {
     }
     
     /// Returns the cached file, if exists.
-    open func cachedFile(_ entityId: String) -> File? {
-        if let cache = cache {
-            return cache.get(entityId)
-        }
-        return nil
+    open func cachedFile(_ entityId: String) -> FileType? {
+        return cache?.get(entityId)
     }
     
     /// Returns the cached file, if exists.
-    open func cachedFile(_ file: inout File) {
-        guard let entityId = file.fileId else {
-            fatalError("fileId is required")
-        }
-        
-        if let cachedFile = cachedFile(entityId) {
-            file = cachedFile
-        }
+    open func cachedFile(_ file: FileType) -> FileType? {
+        let entityId = crashIfInvalid(file: file)
+        return cachedFile(entityId)
     }
     
-    fileprivate func crashIfInvalid(file: File) {
-        guard let _ = file.fileId else {
+    @discardableResult
+    fileprivate func crashIfInvalid(file: FileType) -> String {
+        guard let fileId = file.fileId else {
             fatalError("fileId is required")
         }
+        return fileId
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
-    open func download(_ file: File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+    open func download(_ file: FileType, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         return download(
             file,
             storeType: storeType,
             ttl: ttl
-        ) { (result: Result<(File, URL), Swift.Error>) in
+        ) { (result: Result<(FileType, URL), Swift.Error>) in
             switch result {
             case .success(let file, let url):
                 completionHandler?(file, url, nil)
@@ -541,7 +522,7 @@ open class FileStore {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
-    open func download(_ file: File, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: ((Result<(File, URL), Swift.Error>) -> Void)? = nil) -> Request {
+    open func download(_ file: FileType, storeType: StoreType = .cache, ttl: TTL? = nil, completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil) -> Request {
         crashIfInvalid(file: file)
         
         if storeType == .sync || storeType == .cache,
@@ -556,8 +537,8 @@ open class FileStore {
         
         if storeType == .cache || storeType == .network {
             let multiRequest = MultiRequest()
-            Promise<(File, URL)> { fulfill, reject in
-                if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
+            Promise<(FileType, URL)> { fulfill, reject in
+                if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
                     fulfill((file, downloadURL))
                 } else {
                     let (request, promise) = getFileMetadata(file, ttl: ttl)
@@ -572,11 +553,11 @@ open class FileStore {
                         reject(error)
                     }
                 }
-            }.then { (file, downloadURL) -> Promise<(File, URL)> in
+            }.then { (file, downloadURL) -> Promise<(FileType, URL)> in
                 let (request, promise) = self.downloadFileURL(file, storeType: storeType, downloadURL: downloadURL)
                 multiRequest += (request, true)
                 return promise.then { localUrl in
-                    return Promise<(File, URL)> { fulfill, reject in
+                    return Promise<(FileType, URL)> { fulfill, reject in
                         fulfill((file, localUrl))
                     }
                 }
@@ -593,11 +574,11 @@ open class FileStore {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
-    open func download(_ file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
+    open func download(_ file: FileType, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
         return download(
             file,
             ttl: ttl
-        ) { (result: Result<(File, Data), Swift.Error>) in
+        ) { (result: Result<(FileType, Data), Swift.Error>) in
             switch result {
             case .success(let file, let data):
                 completionHandler?(file, data, nil)
@@ -607,27 +588,33 @@ open class FileStore {
         }
     }
     
+    private enum DownloadStage {
+        
+        case downloadURL(URL)
+        case data(Data)
+        
+    }
+    
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
-    open func download(_ file: File, ttl: TTL? = nil, completionHandler: ((Result<(File, Data), Swift.Error>) -> Void)? = nil) -> Request {
+    open func download(_ file: FileType, ttl: TTL? = nil, completionHandler: ((Result<(FileType, Data), Swift.Error>) -> Void)? = nil) -> Request {
         crashIfInvalid(file: file)
         
-        if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-            DispatchQueue.main.async {
-                completionHandler?(.success(cachedFile, data))
-            }
-        }
-        
         let multiRequest = MultiRequest()
-        Promise<(File, URL)> { fulfill, reject in
-            if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                fulfill((file, downloadURL))
+        Promise<(FileType, DownloadStage)> { fulfill, reject in
+            if let entityId = file.fileId, let cachedFile = cachedFile(entityId), let path = file.path, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+                fulfill((cachedFile, .data(data)))
+                return
+            }
+            
+            if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
+                fulfill((file, .downloadURL(downloadURL)))
             } else {
                 let (request, promise) = getFileMetadata(file, ttl: ttl)
                 multiRequest += request
                 promise.then { file -> Void in
-                    if let downloadURL = file.downloadURL, file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
-                        fulfill(file, downloadURL)
+                    if let downloadURL = file.downloadURL, file.publicAccessible || (file.expiresAt != nil && file.expiresAt!.timeIntervalSinceNow > 0) {
+                        fulfill((file, .downloadURL(downloadURL)))
                     } else {
                         throw Error.invalidResponse(httpResponse: nil, data: nil)
                     }
@@ -635,10 +622,17 @@ open class FileStore {
                     reject(error)
                 }
             }
-        }.then { (file, downloadURL) -> Promise<Data> in
-            let (request, promise) = self.downloadFileData(file, downloadURL: downloadURL)
-            multiRequest += (request, addProgress: true)
-            return promise
+        }.then { (file, downloadStage) -> Promise<Data> in
+            switch downloadStage {
+            case .downloadURL(let downloadURL):
+                let (request, promise) = self.downloadFileData(file, downloadURL: downloadURL)
+                multiRequest += (request, addProgress: true)
+                return promise
+            case .data(let data):
+                return Promise<Data> { fulfill, reject in
+                    fulfill(data)
+                }
+            }
         }.then { data in
             completionHandler?(.success(file, data))
         }.catch { error in
@@ -649,7 +643,7 @@ open class FileStore {
     
     /// Deletes a file instance in the backend.
     @discardableResult
-    open func remove(_ file: File, completionHandler: UIntCompletionHandler? = nil) -> Request {
+    open func remove(_ file: FileType, completionHandler: UIntCompletionHandler? = nil) -> Request {
         return remove(file) { (result: Result<UInt, Swift.Error>) in
             switch result {
             case .success(let count):
@@ -662,7 +656,7 @@ open class FileStore {
     
     /// Deletes a file instance in the backend.
     @discardableResult
-    open func remove(_ file: File, completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil) -> Request {
+    open func remove(_ file: FileType, completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
@@ -693,7 +687,7 @@ open class FileStore {
         return find(
             query,
             ttl: ttl
-        ) { (result: Result<[File], Swift.Error>) in
+        ) { (result: Result<[FileType], Swift.Error>) in
             switch result {
             case .success(let files):
                 completionHandler?(files, nil)
@@ -705,14 +699,14 @@ open class FileStore {
     
     /// Gets a list of files that matches with the query passed by parameter.
     @discardableResult
-    open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: ((Result<[File], Swift.Error>) -> Void)? = nil) -> Request {
+    open func find(_ query: Query = Query(), ttl: TTL? = nil, completionHandler: ((Result<[FileType], Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
-        Promise<[File]> { fulfill, reject in
+        Promise<[FileType]> { fulfill, reject in
             request.execute { (data, response, error) -> Void in
                 if let response = response,
                     response.isOK,
                     let jsonArray = self.client.responseParser.parseArray(data),
-                    let files = [File](JSONArray: jsonArray)
+                    let files = [FileType](JSONArray: jsonArray)
                 {
                     fulfill(files)
                 } else {

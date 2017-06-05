@@ -30,9 +30,26 @@ public protocol Persistable: Mappable {
     /// Default Constructor.
     init()
     
-    /// Override this method to tell how to map your own objects.
-    mutating func propertyMapping(_ map: Map)
+}
+
+struct AnyTransform: TransformType {
     
+    private let _transformFromJSON: (Any?) -> Any?
+    private let _transformToJSON: (Any?) -> Any?
+    
+    init<Transform: TransformType>(_ transform: Transform) {
+        _transformFromJSON = { transform.transformFromJSON($0) }
+        _transformToJSON = { transform.transformToJSON($0 as? Transform.Object) }
+    }
+    
+    func transformFromJSON(_ value: Any?) -> Any? {
+        return _transformFromJSON(value)
+    }
+    
+    func transformToJSON(_ value: Any?) -> Any? {
+        return _transformToJSON(value)
+    }
+
 }
 
 internal func kinveyMappingType(left: String, right: String) {
@@ -41,7 +58,19 @@ internal func kinveyMappingType(left: String, right: String) {
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
     {
-        classMapping[left] = right
+        classMapping[left] = (right, nil)
+        kinveyMappingType[className] = classMapping
+        currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
+    }
+}
+
+internal func kinveyMappingType<Transform: TransformType>(left: String, right: String, transform: Transform) {
+    let currentThread = Thread.current
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
+        let className = kinveyMappingType.first?.0,
+        var classMapping = kinveyMappingType[className]
+    {
+        classMapping[left] = (right, AnyTransform(transform))
         kinveyMappingType[className] = classMapping
         currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
     }
@@ -92,21 +121,47 @@ public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
     let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+// MARK: Default Date Transform
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date?, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date!, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
   
@@ -341,7 +396,7 @@ internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     
     typealias Key = String
-    typealias Value = String
+    typealias Value = (String, AnyTransform?)
     typealias Element = (Key, Value)
     
     private var map = [Key : Value]()
@@ -383,7 +438,7 @@ extension Persistable {
     
     static func propertyMappingReverse() -> [String : [String]] {
         var results = [String : [String]]()
-        for (key, value) in propertyMapping() {
+        for (key, (value, _)) in propertyMapping() {
             var properties = results[value]
             if properties == nil {
                 properties = [String]()
@@ -391,15 +446,17 @@ extension Persistable {
             properties!.append(key)
             results[value] = properties
         }
-        guard
-            results[PersistableIdKey] != nil,
-            results[PersistableMetadataKey] != nil
-        else {
+        let entityIdMapped = results[Entity.Key.entityId] != nil
+        let metadataMapped = results[Entity.Key.metadata] != nil
+        if !(entityIdMapped && metadataMapped) {
             let isEntity = self is Entity.Type
             let hintMessage = isEntity ? "Please call super.propertyMapping() inside your propertyMapping() method." : "Please add properties in your Persistable model class to map the missing properties."
-            precondition(results[PersistableIdKey] != nil, "Property \(PersistableIdKey) (PersistableIdKey) is missing in the propertyMapping() method. \(hintMessage)")
-            precondition(results[PersistableMetadataKey] != nil, "Property \(PersistableMetadataKey) (PersistableMetadataKey) is missing in the propertyMapping() method. \(hintMessage)")
-            fatalError(hintMessage)
+            guard entityIdMapped else {
+                fatalError("Property \(Entity.Key.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
+            }
+            guard metadataMapped else {
+                fatalError("Property \(Entity.Key.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
+            }
         }
         return results
     }
@@ -418,20 +475,20 @@ extension Persistable {
         return [:]
     }
     
-    static func propertyMapping(_ propertyName: String) -> String? {
+    static func propertyMapping(_ propertyName: String) -> PropertyMap.Value? {
         return propertyMapping()[propertyName]
     }
     
     internal static func entityIdProperty() -> String {
-        return propertyMappingReverse()[PersistableIdKey]!.last!
+        return propertyMappingReverse()[Entity.Key.entityId]!.last!
     }
     
     internal static func aclProperty() -> String? {
-        return propertyMappingReverse()[PersistableAclKey]?.last
+        return propertyMappingReverse()[Entity.Key.acl]?.last
     }
     
     internal static func metadataProperty() -> String? {
-        return propertyMappingReverse()[PersistableMetadataKey]?.last
+        return propertyMappingReverse()[Entity.Key.metadata]?.last
     }
     
 }

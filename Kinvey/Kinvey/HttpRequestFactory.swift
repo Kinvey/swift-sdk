@@ -169,7 +169,7 @@ class HttpRequestFactory: RequestFactory {
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
         var bodyObject = persistable.toJSON()
-        let objId = bodyObject[PersistableIdKey] as? String
+        let objId = bodyObject[Entity.Key.entityId] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest(
             httpMethod: isNewObj ? .post : .put,
@@ -181,7 +181,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         if (isNewObj) {
-            bodyObject[PersistableIdKey] = nil
+            bodyObject[Entity.Key.entityId] = nil
         }
         
         request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
@@ -314,13 +314,23 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildOAuthToken(redirectURI: URL, code: String) -> HttpRequest {
-        let params = [
-            "client_id" : client.appKey!,
+    func set(_ params: inout [String : String], clientId: String?) {
+        if let appKey = client.appKey {
+            if let clientId = clientId {
+                params["client_id"] = "\(appKey):\(clientId)"
+            } else {
+                params["client_id"] = appKey
+            }
+        }
+    }
+    
+    func buildOAuthToken(redirectURI: URL, code: String, clientId: String?) -> HttpRequest {
+        var params = [
             "grant_type" : "authorization_code",
             "redirect_uri" : redirectURI.absoluteString,
             "code" : code
         ]
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
@@ -331,15 +341,15 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildOAuthGrantAuth(redirectURI: URL) -> HttpRequest {
-        let json = [
-            "client_id" : client.appKey!,
+    func buildOAuthGrantAuth(redirectURI: URL, clientId: String?) -> HttpRequest {
+        var json = [
             "redirect_uri" : redirectURI.absoluteString,
             "response_type" : "code"
         ]
+        set(&json, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.oauthAuth(client: client, redirectURI: redirectURI, loginPage: false),
+            endpoint: Endpoint.oauthAuth(client: client, clientId: clientId, redirectURI: redirectURI, loginPage: false),
             credential: client,
             body: Body.json(json: json),
             client: client
@@ -347,14 +357,14 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String) -> HttpRequest {
-        let params = [
-            "client_id" : client.appKey!,
+    func buildOAuthGrantAuthenticate(redirectURI: URL, clientId: String?, tempLoginUri: URL, username: String, password: String) -> HttpRequest {
+        var params = [
             "response_type" : "code",
             "redirect_uri" : redirectURI.absoluteString,
             "username" : username,
             "password" : password
         ]
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.url(url: tempLoginUri),
@@ -365,12 +375,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildOAuthGrantRefreshToken(refreshToken: String) -> HttpRequest {
-        let params = [
-            "client_id" : client.appKey!,
+    func buildOAuthGrantRefreshToken(refreshToken: String, clientId: String?) -> HttpRequest {
+        var params = [
             "grant_type" : "refresh_token",
             "refresh_token" : refreshToken
         ]
+        set(&params, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),

@@ -215,25 +215,39 @@ open class Push {
     
     /// Unregister the current device to receive push notifications.
     open func unRegisterDeviceToken(_ completionHandler: BoolCompletionHandler? = nil) {
-        guard let deviceToken = deviceToken else {
-            log.error("Device token not found")
-            fatalError("Device token not found")
+        unRegisterDeviceToken { (result: Result<Void, Swift.Error>) in
+            switch result {
+            case .success:
+                completionHandler?(true, nil)
+            case .failure(let error):
+                completionHandler?(false, error)
+            }
         }
-        
-        Promise<Bool> { fulfill, reject in
+    }
+    
+    /// Unregister the current device to receive push notifications.
+    open func unRegisterDeviceToken(_ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+        Promise<Void> { fulfill, reject in
+            guard let deviceToken = deviceToken else {
+                reject(Error.invalidOperation(description: "Device token not found"))
+                return
+            }
+            
             let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(deviceToken)
-            request.execute({ (data, response, error) -> Void in
-                if let response = response, response.isOK {
+            request.execute { (data, response, error) -> Void in
+                if let response = response,
+                    response.isOK
+                {
                     self.deviceToken = nil
-                    fulfill(true)
+                    fulfill()
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
-            })
+            }
         }.then { success in
-            completionHandler?(success, nil)
+            completionHandler?(.success())
         }.catch { error in
-            completionHandler?(false, error)
+            completionHandler?(.failure(error))
         }
     }
     

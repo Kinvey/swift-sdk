@@ -135,7 +135,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
     /// Response Header `X-Kinvey-Request-Id`
     public var requestId: String? {
-        return httpResponse?.allHeaderFields[Header.requestId] as? String
+        return httpResponse?.allHeaderFields[KinveyHeaderField.requestId] as? String
     }
     
     /// Response Data Body object.

@@ -102,7 +102,7 @@ extension JSONSerialization {
             }
             return try jsonObject(with: inputStream, options: opt)
         } else {
-            fatalError()
+            Swift.fatalError()
         }
     }
     
@@ -128,7 +128,7 @@ extension URLRequest {
             } while read > 0
             return data
         } else {
-            fatalError()
+            Swift.fatalError()
         }
     }
     
@@ -307,8 +307,13 @@ class KinveyTestCase: XCTestCase {
         
     }
     
+    private var originalLogLevel: LogLevel!
+    
     override func setUp() {
         super.setUp()
+        
+        originalLogLevel = Kinvey.logLevel
+        Kinvey.logLevel = .verbose
         
         if KinveyTestCase.appInitialize == KinveyTestCase.appInitializeDevelopment {
             initializeDevelopment()
@@ -462,6 +467,8 @@ class KinveyTestCase: XCTestCase {
         client.cacheManager.clearAll()
         removeAll(Person.self)
         
+        Kinvey.logLevel = originalLogLevel
+        
         super.tearDown()
     }
     
@@ -470,7 +477,7 @@ class KinveyTestCase: XCTestCase {
         var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
         json[PersistableIdKey] = UUID().uuidString
         json[PersistableAclKey] = [
-            Acl.CreatorKey : self.client.activeUser!.userId
+            Acl.Key.creator : self.client.activeUser!.userId
         ]
         json[PersistableMetadataKey] = [
             Metadata.LmtKey : Date().toString(),

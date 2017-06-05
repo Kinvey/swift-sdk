@@ -14,22 +14,18 @@ import Foundation
     import WatchKit
 #endif
 
-enum Header: String {
+struct HeaderField {
     
-    case requestId = "X-Kinvey-Request-Id"
-    case clientAppVersion = "X-Kinvey-Client-App-Version"
+    static let userAgent = "User-Agent"
     
 }
 
-extension URLRequest {
+struct KinveyHeaderField {
     
-    mutating func setValue(_ value: String?, forHTTPHeaderField field: Header) {
-        setValue(value, forHTTPHeaderField: field.rawValue)
-    }
-    
-    func value(forHTTPHeaderField field: Header) -> String? {
-        return value(forHTTPHeaderField: field.rawValue)
-    }
+    static let requestId = "X-Kinvey-Request-Id"
+    static let clientAppVersion = "X-Kinvey-Client-App-Version"
+    static let apiVersion = "X-Kinvey-API-Version"
+    static let deviceInformation = "X-Kinvey-Device-Information"
     
 }
 
@@ -108,13 +104,13 @@ enum HttpHeader {
             case .authorization:
                 return HttpHeaderKey.authorization.rawValue
             case .apiVersion:
-                return "X-Kinvey-API-Version"
+                return KinveyHeaderField.apiVersion
             case .requestId:
-                return Header.requestId.rawValue
+                return KinveyHeaderField.requestId
             case .userAgent:
-                return "User-Agent"
+                return HeaderField.userAgent
             case .deviceInfo:
-                return "X-Kinvey-Device-Information"
+                return KinveyHeaderField.deviceInformation
             }
         }
     }
@@ -320,7 +316,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
     }
     
     init(
@@ -345,7 +341,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let body = body {
             body.attachTo(request: &request)
         }
-        self.request.setValue(UUID().uuidString, forHTTPHeaderField: .requestId)
+        self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
     }
     
     func prepareRequest() {
@@ -360,7 +356,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
         if let clientAppVersion = client.clientAppVersion {
-            request.setValue(clientAppVersion, forHTTPHeaderField: .clientAppVersion)
+            request.setValue(clientAppVersion, forHTTPHeaderField: KinveyHeaderField.clientAppVersion)
         }
     }
     
@@ -392,7 +388,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
                     let kinveyAuthToken = socialIdentity.kinvey,
                     let refreshToken = kinveyAuthToken["refresh_token"] as? String
                 {
-                    MIC.login(refreshToken: refreshToken) { user, error in
+                    MIC.login(refreshToken: refreshToken, clientId: self.client.clientId) { user, error in
                         if let user = user {
                             self.credential = user
                             self.execute(urlSession: urlSession, completionHandler)
