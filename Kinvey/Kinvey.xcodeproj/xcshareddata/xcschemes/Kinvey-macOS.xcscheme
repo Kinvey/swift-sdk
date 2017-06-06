@@ -38,6 +38,14 @@
                BlueprintName = "KinveyMacAppTests"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "PerformanceProductTestCase">
+               </Test>
+               <Test
+                  Identifier = "PerformanceTestCase">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

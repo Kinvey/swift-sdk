@@ -11,7 +11,9 @@ import PromiseKit
 import ObjectMapper
 
 
-#if !os(macOS)
+#if os(macOS)
+    import AppKit
+#else
     import UIKit
 #endif
 
@@ -20,7 +22,29 @@ public enum ImageRepresentation {
     case png
     case jpeg(compressionQuality: Float)
 
-#if !os(macOS)
+#if os(macOS)
+    
+    func data(image: NSImage) -> Data? {
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+        let newRep = NSBitmapImageRep(cgImage: cgImage)
+        newRep.size = image.size
+        var fileType: NSBitmapImageFileType!
+        var properties: [String : Any]!
+        switch self {
+        case .png:
+            fileType = NSPNGFileType
+            properties = [:]
+        case .jpeg(let compressionQuality):
+            fileType = NSJPEGFileType
+            properties = [NSImageCompressionFactor : compressionQuality]
+        }
+        return newRep.representation(using: fileType, properties: properties)
+    }
+    
+#else
+
     func data(image: UIImage) -> Data? {
         switch self {
         case .png:
@@ -29,6 +53,7 @@ public enum ImageRepresentation {
             return UIImageJPEGRepresentation(image, CGFloat(compressionQuality))
         }
     }
+    
 #endif
     
     var mimeType: String {
@@ -69,7 +94,36 @@ open class FileStore<FileType: File> {
         self.cache = client.cacheManager.fileCache(fileURL: client.fileURL())
     }
 
-#if !os(macOS)
+#if os(macOS)
+    
+    /// Uploads a `UIImage` in a PNG or JPEG format.
+    @discardableResult
+    open func upload(_ file: FileType, image: NSImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(
+            file,
+            image: image,
+            imageRepresentation: imageRepresentation,
+            ttl: ttl
+        ) { (result: Result<FileType, Swift.Error>) in
+            switch result {
+            case .success(let file):
+                completionHandler?(file, nil)
+            case .failure(let error):
+                completionHandler?(nil, error)
+            }
+        }
+    }
+    
+    /// Uploads a `UIImage` in a PNG or JPEG format.
+    @discardableResult
+    open func upload(_ file: FileType, image: NSImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil) -> Request {
+        let data = imageRepresentation.data(image: image)!
+        file.mimeType = imageRepresentation.mimeType
+        return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
+    }
+    
+#else
+
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
     open func upload(_ file: FileType, image: UIImage, imageRepresentation: ImageRepresentation = .png, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
@@ -95,6 +149,7 @@ open class FileStore<FileType: File> {
         file.mimeType = imageRepresentation.mimeType
         return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
     }
+
 #endif
     
     /// Uploads a file using the file path.

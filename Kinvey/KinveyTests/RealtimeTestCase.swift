@@ -805,9 +805,8 @@ class RealmtimeTestCase: KinveyTestCase {
     
     func testStream() {
         let deleteUserDuringTearDown = self.deleteUserDuringTearDown
-        if !useMockData {
-            self.deleteUserDuringTearDown = false
-        }
+        let realtimeTestUserId = UUID().uuidString
+        self.deleteUserDuringTearDown = false
         tearDownHandler = {
             if !self.useMockData {
                 self.deleteUserDuringTearDown = deleteUserDuringTearDown
@@ -815,7 +814,20 @@ class RealmtimeTestCase: KinveyTestCase {
             self.tearDownHandler = nil
         }
         
-        login(username: "realtime-test", password: "realtime-test")
+        login(username: "realtime-test", password: "realtime-test", mockCompletionHandler: { (request) -> HttpResponse in
+            return HttpResponse(json: [
+                "_id" : UUID().uuidString,
+                "username" : "realtime-test",
+                "_kmd": [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString(),
+                    "authtoken" : UUID().uuidString
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ]
+            ])
+        })
         
         XCTAssertNotNil(client.activeUser)
         
@@ -874,47 +886,50 @@ class RealmtimeTestCase: KinveyTestCase {
             return
         }
         
+        var usersArray: [User]? = nil
+        let stream = LiveStream<SongRecommendation>(name: "SongRecommendation")
+        
         do {
-            let stream = LiveStream<SongRecommendation>(name: "SongRecommendation")
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : UUID().uuidString,
+                        "username" : UUID().uuidString,
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ]
+                    ],
+                    [
+                        "_id" : UUID().uuidString,
+                        "username" : UUID().uuidString,
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
             
             weak var expectationLookup = self.expectation(description: "Lookup")
-            weak var expectationGrantAccess = self.expectation(description: "Grant Access")
-            weak var expectationSend = self.expectation(description: "Send")
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
             user.find(query: query) {
                 switch $0 {
                 case .success(let users):
-                    XCTAssertEqual(users.count, 2)
-                    if let first = users.first, let last = users.last, first.userId != last.userId {
-                        var acl = LiveStreamAcl()
-                        acl.publishers.append(user.userId)
-                        acl.subscribers.append(user.userId)
-                        
-                        acl.publishers.append(first.userId)
-                        acl.subscribers.append(last.userId)
-                        
-                        stream.grantStreamAccess(userId: last.userId, acl: acl) {
-                            switch $0 {
-                            case .success:
-                                let songrec1 = SongRecommendation(name: "Imagine", artist: "John Lennon", rating: 100)
-                                stream.send(userId: last.userId, message: songrec1) {
-                                    switch $0 {
-                                    case .success:
-                                        break
-                                    case .failure(let error):
-                                        XCTFail()
-                                    }
-                                    expectationSend?.fulfill()
-                                }
-                            case .failure(let error):
-                                XCTFail()
-                            }
-                            
-                            expectationGrantAccess?.fulfill()
-                        }
-                    }
+                    usersArray = users
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
@@ -924,7 +939,96 @@ class RealmtimeTestCase: KinveyTestCase {
             
             waitForExpectations(timeout: defaultTimeout * 3) { (error) in
                 expectationLookup = nil
-                expectationGrantAccess = nil
+            }
+        }
+        
+        XCTAssertNotNil(usersArray)
+        
+        guard let users = usersArray else {
+            return
+        }
+        
+        var granted = false
+        
+        do {
+            XCTAssertEqual(users.count, 2)
+            if let first = users.first, let last = users.last, first.userId != last.userId {
+                var acl = LiveStreamAcl()
+                acl.publishers.append(user.userId)
+                acl.subscribers.append(user.userId)
+                
+                acl.publishers.append(first.userId)
+                acl.subscribers.append(last.userId)
+                
+                if useMockData {
+                    mockResponse { (request) -> HttpResponse in
+                        var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                        json["_id"] = UUID().uuidString
+                        return HttpResponse(json: json)
+                    }
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
+                weak var expectationGrantAccess = self.expectation(description: "Grant Access")
+                
+                stream.grantStreamAccess(userId: last.userId, acl: acl) {
+                    switch $0 {
+                    case .success:
+                        granted = true
+                    case .failure(let error):
+                        XCTFail()
+                    }
+                    
+                    expectationGrantAccess?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+                    expectationGrantAccess = nil
+                }
+            }
+        }
+        
+        XCTAssertTrue(granted)
+        
+        guard granted else {
+            return
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: [
+                    "substreamChannelName" : "\(client.appKey!).s-SongRecommendation.u-\(UUID().uuidString)"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let first = users.first!
+            let last = users.last!
+            
+            client.logNetworkEnabled = true
+            
+            weak var expectationSend = self.expectation(description: "Send")
+            
+            let songrec1 = SongRecommendation(name: "Imagine", artist: "John Lennon", rating: 100)
+            stream.send(userId: last.userId, message: songrec1) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail()
+                }
+                expectationSend?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout * 3) { (error) in
                 expectationSend = nil
             }
         }
@@ -1004,6 +1108,12 @@ final class MockPubNub: PubNubType {
         let messageResult = MockMessageResult(messageData: messageData)
         for listener in listeners {
             listener.client!(pubNub, didReceiveMessage: messageResult)
+        }
+        
+        if let block = block {
+            let publishData = MockPublishData()
+            let publishStatus = MockPublishStatus(data: publishData)
+            block(publishStatus)
         }
     }
     
@@ -1110,5 +1220,23 @@ struct SongRecommendation: StaticMappable {
         artist <- map["song_artist"]
         rating <- map["rating"]
     }
+    
+}
+
+class MockPublishStatus: PNPublishStatus {
+    
+    private let mockData: PNPublishData
+    
+    init(data: PNPublishData) {
+        mockData = data
+    }
+    
+    override var data: PNPublishData {
+        return mockData
+    }
+    
+}
+
+class MockPublishData: PNPublishData {
     
 }

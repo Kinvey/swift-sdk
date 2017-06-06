@@ -13,6 +13,12 @@ import CoreLocation
 import MapKit
 import Nimble
 
+#if os(macOS)
+    typealias BezierPath = NSBezierPath
+#else
+    typealias BezierPath = UIBezierPath
+#endif
+
 class NetworkStoreTests: StoreTestCase {
     
     override func setUp() {
@@ -1167,15 +1173,19 @@ class NetworkStoreTests: StoreTestCase {
                 let userAgent = request.allHTTPHeaderFields?["User-Agent"]
                 XCTAssertNotNil(userAgent)
                 if let userAgent = userAgent {
-                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)", options: [])
-                    XCTAssertEqual(regex.matches(in: userAgent, options: [], range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
+                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)")
+                    XCTAssertEqual(regex.matches(in: userAgent, range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
                 }
                 
                 let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
                 XCTAssertNotNil(deviceInfo)
                 if let deviceInfo = deviceInfo {
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)", options: [])
-                    XCTAssertEqual(regex.matches(in: deviceInfo, options: [], range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
+                    #if os(macOS)
+                        let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
+                    #else
+                        let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
+                    #endif
+                    XCTAssertEqual(regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
                 }
                 
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [:])!
@@ -1446,13 +1456,17 @@ class NetworkStoreTests: StoreTestCase {
                 }
                 XCTAssertEqual(polygonCoordinates.first!, polygonCoordinates.last!)
                 let polygon = MKPolygon(coordinates: locationCoordinates, count: locationCoordinates.count)
-                let path = UIBezierPath()
+                let path = BezierPath()
                 for (i, locationCoordinate) in locationCoordinates.dropLast().enumerated() {
                     let point = CGPoint(x: locationCoordinate.latitude, y: locationCoordinate.longitude)
                     if i == 0 {
                         path.move(to: point)
                     } else {
-                        path.addLine(to: point)
+                        #if os(macOS)
+                            path.line(to: point)
+                        #else
+                            path.addLine(to: point)
+                        #endif
                     }
                 }
                 path.close()

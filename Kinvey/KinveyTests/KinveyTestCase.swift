@@ -430,14 +430,18 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
-    func login<UserType: User>(username: String, password: String, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+    func login<UserType: User>(username: String, password: String, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, mockCompletionHandler: ((URLRequest) -> HttpResponse)? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
         let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
         
         if useMockData {
-            setURLProtocol(MockKinveyBackend.self)
+            if let mockCompletionHandler = mockCompletionHandler {
+                mockResponse(completionHandler: mockCompletionHandler)
+            } else {
+                setURLProtocol(MockKinveyBackend.self)
+            }
         }
         defer {
             if useMockData {

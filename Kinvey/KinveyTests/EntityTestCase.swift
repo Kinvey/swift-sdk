@@ -95,7 +95,8 @@ class EntityTestCase: XCTestCase {
         XCTAssertNotNil(clazz)
         if let clazz = clazz {
             let clazzName = NSStringFromClass(clazz)
-            XCTAssertEqual(clazzName, "KinveyTests.Address")
+            let testBundleName = type(of: self).description().components(separatedBy: ".").first!
+            XCTAssertEqual(clazzName, "\(testBundleName).Address")
         }
         
         clazz = ObjCRuntime.typeForPropertyName(Person.self, propertyName: "age")
