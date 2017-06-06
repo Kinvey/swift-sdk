@@ -57,7 +57,7 @@ after_script:
 - date
 - security delete-keychain ios-build.keychain
 after_success:
-- bash <(curl -s https://codecov.io/bash) -J '^Kinvey$'
+- bash <(curl -s https://codecov.io/bash) -J '^Kinvey$' -F $PLATFORM
 env:
   global:
     - secure: a8tGuJggBK0qyY9oOEp1Y0zeA0zTu8safu34t7RNE3IPRj116rIKf1e/y9FxYRKu5BWmc62K8KTM0mPwsPgef7fizleHqPEE6brUJ3hiysNh92gDLHjqHKq6XK3WuMCDTKmgtbdJQbIBGGfAq+xkLCrhDMkm++88p1vmNbR2k2flpvHIV8opnIBsny62pMmgt8prEtsAT5NCVelVSlyRkwiVqvWk+zR9+Wi4jRWr24cv7WBjKgGO/LcxYi/zQEaLK3Ya38TFX29Ky6thNySHpikqDOiAzUwk6byZ05z8GiQ+TJ4P1+nzpKj4ZFg75v0A1wGkssOznuzZeRjl2GOyfqSsdoFflem9mLF97W3h0jUmzI6X3rP050gYgnjklacT9yk36IfsHdr1d6VTsU1Tx/z4yg8fDXTdY5SFIGZ/GReBwmvyVpbaR3yGbyKkaVSRSU8ixW1zq7BGZGSnMj+doKT5231wf1Be8M5PBtorBh/arOynZPOhpxzAFsoRKL9GRSgxuQIzFOdE/u56PfxjDhTCzuJu0F0ynlR6fIX2PWdrhejfvDpWx/dJWr9x85BKL3rGO8JaXAXlbils+CoEY/Pyfs2UoAaV8TGJR12FJbyl70VZ1hq/qimbFJ6z8TF435LrAA1/VO7qkDLgIJeqPnVnmKiPP3qNHBCNZA1vgzY=
