@@ -180,6 +180,7 @@
 		578B80711EE746D5004D92A6 /* RealtimeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E6BD451EC64D1D000E5C52 /* RealtimeTestCase.swift */; };
 		578B80721EE746EF004D92A6 /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		578B80741EE74E46004D92A6 /* PubNub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BD001EC51F80000E5C52 /* PubNub.framework */; };
+		578B80761EE876C5004D92A6 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AC1C17EC9500578974 /* UserTests.swift */; };
 		578D9FE41E8DE53900C2B280 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		578D9FE51E8DE53900C2B280 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		578D9FE61E8DE53900C2B280 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
@@ -2378,6 +2379,7 @@
 				578B80691EE746B2004D92A6 /* LogTestCase.swift in Sources */,
 				578B80681EE74677004D92A6 /* RefProject.swift in Sources */,
 				578B805E1EE74328004D92A6 /* Event.swift in Sources */,
+				578B80761EE876C5004D92A6 /* UserTests.swift in Sources */,
 				578B80661EE7465E004D92A6 /* JsonTestCase.swift in Sources */,
 				578B80671EE74669004D92A6 /* DirectoryEntry.swift in Sources */,
 				578B806B1EE746C1004D92A6 /* NetworkStoreTests.swift in Sources */,
