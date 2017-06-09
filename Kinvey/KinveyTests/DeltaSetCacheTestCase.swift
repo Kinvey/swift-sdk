@@ -1260,7 +1260,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: object, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: object)
                 client!.urlProtocol(self, didLoad: data)
                 
                 client!.urlProtocolDidFinishLoading(self)

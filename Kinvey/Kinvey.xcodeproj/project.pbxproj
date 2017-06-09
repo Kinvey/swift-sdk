@@ -11,7 +11,7 @@
 		5705B1BD1EDF823F0006980A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BC1EDF823F0006980A /* ViewController.swift */; };
 		5705B1BF1EDF823F0006980A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1BE1EDF823F0006980A /* Assets.xcassets */; };
 		5705B1C21EDF823F0006980A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1C01EDF823F0006980A /* Main.storyboard */; };
-		5705B1CD1EDF823F0006980A /* KinveyMacAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */; };
+		5705B1CD1EDF823F0006980A /* RealtimeMacAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */; };
 		5705B1D81EDF82400006980A /* KinveyMacAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */; };
 		5705B1E51EDF83DB0006980A /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
@@ -31,6 +31,8 @@
 		571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
+		5726321E1EE99C940082A1A8 /* SongRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5726321D1EE99C940082A1A8 /* SongRecommendation.swift */; };
+		572632251EE9A2A10082A1A8 /* SongRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5726321D1EE99C940082A1A8 /* SongRecommendation.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
@@ -202,6 +204,12 @@
 		578DA02A1E8EC56A00C2B280 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		578DA02B1E8EC57D00C2B280 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		578DA02C1E8EC58E00C2B280 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		578E795E1EEB0B10002BBF9C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578E795D1EEB0B10002BBF9C /* AppDelegate.swift */; };
+		578E79601EEB0B10002BBF9C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578E795F1EEB0B10002BBF9C /* ViewController.swift */; };
+		578E79621EEB0B10002BBF9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 578E79611EEB0B10002BBF9C /* Assets.xcassets */; };
+		578E79651EEB0B10002BBF9C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 578E79631EEB0B10002BBF9C /* Main.storyboard */; };
+		578E796A1EEB0D02002BBF9C /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		578E796D1EEB0EFF002BBF9C /* SongRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5726321D1EE99C940082A1A8 /* SongRecommendation.swift */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
@@ -405,6 +413,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
 			remoteInfo = KinveyApp;
+		};
+		578E796B1EEB0D07002BBF9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A27C801C178F17000DF951;
+			remoteInfo = Kinvey;
+		};
+		578E796E1EEB1071002BBF9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 578E795A1EEB0B0F002BBF9C;
+			remoteInfo = "Realtime Sender";
 		};
 		5793B86E1D2306A60088B5F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -653,7 +675,7 @@
 		5705B1C11EDF823F0006980A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5705B1C31EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyMacAppTests.swift; sourceTree = "<group>"; };
+		5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeMacAppTests.swift; sourceTree = "<group>"; };
 		5705B1CE1EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyMacAppUITests.swift; sourceTree = "<group>"; };
@@ -667,6 +689,7 @@
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		5726321D1EE99C940082A1A8 /* SongRecommendation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongRecommendation.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionTaskRequest.swift; sourceTree = "<group>"; };
@@ -765,6 +788,12 @@
 		578D9FF01E8DE53900C2B280 /* PushMissingConfiguration.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PushMissingConfiguration.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		578D9FF71E8EC3A200C2B280 /* UserUpgradeFromOldVersionTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpgradeFromOldVersionTestCase.swift; sourceTree = "<group>"; };
 		578DA0271E8EC3CB00C2B280 /* UserUpgradeFromOldVersion.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UserUpgradeFromOldVersion.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Realtime Sender.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		578E795D1EEB0B10002BBF9C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		578E795F1EEB0B10002BBF9C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		578E79611EEB0B10002BBF9C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		578E79641EEB0B10002BBF9C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		578E79661EEB0B10002BBF9C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -990,6 +1019,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		578E79581EEB0B0F002BBF9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578E796A1EEB0D02002BBF9C /* Kinvey.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5793B88B1D2306A60088B5F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1079,7 +1116,7 @@
 		5705B1CB1EDF823F0006980A /* KinveyMacAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				5705B1CC1EDF823F0006980A /* KinveyMacAppTests.swift */,
+				5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */,
 				5705B1CE1EDF823F0006980A /* Info.plist */,
 			);
 			path = KinveyMacAppTests;
@@ -1197,6 +1234,18 @@
 			path = SSOApp/SSOApp2Tests;
 			sourceTree = "<group>";
 		};
+		578E795C1EEB0B10002BBF9C /* Realtime Sender */ = {
+			isa = PBXGroup;
+			children = (
+				578E795D1EEB0B10002BBF9C /* AppDelegate.swift */,
+				578E795F1EEB0B10002BBF9C /* ViewController.swift */,
+				578E79611EEB0B10002BBF9C /* Assets.xcassets */,
+				578E79631EEB0B10002BBF9C /* Main.storyboard */,
+				578E79661EEB0B10002BBF9C /* Info.plist */,
+			);
+			path = "Realtime Sender";
+			sourceTree = "<group>";
+		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
@@ -1211,6 +1260,7 @@
 				5705B1B91EDF823F0006980A /* KinveyMacApp */,
 				5705B1CB1EDF823F0006980A /* KinveyMacAppTests */,
 				5705B1D61EDF82400006980A /* KinveyMacAppUITests */,
+				578E795C1EEB0B10002BBF9C /* Realtime Sender */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
@@ -1237,6 +1287,7 @@
 				5705B1B81EDF823F0006980A /* KinveyMacApp.app */,
 				5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */,
 				5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */,
+				578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1378,6 +1429,7 @@
 				57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */,
 				57A9609E1CC6D6A9005E52A8 /* RefProject.swift */,
 				572005C91D342B2800AE9AC5 /* Book.swift */,
+				5726321D1EE99C940082A1A8 /* SongRecommendation.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1524,6 +1576,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				578E796F1EEB1071002BBF9C /* PBXTargetDependency */,
 				5705B1CA1EDF823F0006980A /* PBXTargetDependency */,
 			);
 			name = KinveyMacAppTests;
@@ -1706,6 +1759,24 @@
 			productName = KinveyTests;
 			productReference = 578DA0271E8EC3CB00C2B280 /* UserUpgradeFromOldVersion.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		578E795A1EEB0B0F002BBF9C /* Realtime Sender */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "Realtime Sender" */;
+			buildPhases = (
+				578E79571EEB0B0F002BBF9C /* Sources */,
+				578E79581EEB0B0F002BBF9C /* Frameworks */,
+				578E79591EEB0B0F002BBF9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				578E796C1EEB0D07002BBF9C /* PBXTargetDependency */,
+			);
+			name = "Realtime Sender";
+			productName = "Realtime Sender";
+			productReference = 578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */;
+			productType = "com.apple.product-type.application";
 		};
 		5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */ = {
 			isa = PBXNativeTarget;
@@ -1931,6 +2002,11 @@
 					578D9FF81E8EC3CB00C2B280 = {
 						DevelopmentTeam = 5W7CYNR7UE;
 					};
+					578E795A1EEB0B0F002BBF9C = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+					};
 					5793B86C1D2306A60088B5F9 = {
 						DevelopmentTeam = 5W7CYNR7UE;
 						LastSwiftMigration = 0800;
@@ -2000,6 +2076,7 @@
 				5705B1B71EDF823F0006980A /* KinveyMacApp */,
 				5705B1C71EDF823F0006980A /* KinveyMacAppTests */,
 				5705B1D21EDF82400006980A /* KinveyMacAppUITests */,
+				578E795A1EEB0B0F002BBF9C /* Realtime Sender */,
 			);
 		};
 /* End PBXProject section */
@@ -2094,6 +2171,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				578DA0201E8EC3CB00C2B280 /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		578E79591EEB0B0F002BBF9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578E79621EEB0B10002BBF9C /* Assets.xcassets in Resources */,
+				578E79651EEB0B10002BBF9C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2355,12 +2441,13 @@
 				578B80711EE746D5004D92A6 /* RealtimeTestCase.swift in Sources */,
 				578B80551EE73AD3004D92A6 /* Book.swift in Sources */,
 				578B80501EE73A77004D92A6 /* Person.swift in Sources */,
-				5705B1CD1EDF823F0006980A /* KinveyMacAppTests.swift in Sources */,
+				5705B1CD1EDF823F0006980A /* RealtimeMacAppTests.swift in Sources */,
 				578B80511EE73A84004D92A6 /* MockKinveyBackend.swift in Sources */,
 				578B805C1EE73BF2004D92A6 /* DataTypeTestCase.swift in Sources */,
 				578B806A1EE746B9004D92A6 /* MetadataTestCase.swift in Sources */,
 				578B80641EE74510004D92A6 /* FileTestCase.swift in Sources */,
 				578B80531EE73AA6004D92A6 /* StoreTestCase.swift in Sources */,
+				572632251EE9A2A10082A1A8 /* SongRecommendation.swift in Sources */,
 				578B80631EE744E1004D92A6 /* ErrorTestCase.swift in Sources */,
 				578B804F1EE73A63004D92A6 /* KinveyTestCase.swift in Sources */,
 				578B80541EE73AC1004D92A6 /* CacheStoreTests.swift in Sources */,
@@ -2486,6 +2573,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		578E79571EEB0B0F002BBF9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				578E79601EEB0B10002BBF9C /* ViewController.swift in Sources */,
+				578E795E1EEB0B10002BBF9C /* AppDelegate.swift in Sources */,
+				578E796D1EEB0EFF002BBF9C /* SongRecommendation.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5793B8711D2306A60088B5F9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2590,6 +2687,7 @@
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */,
 				5711E1221E979EEF003351F0 /* MemoryCache.swift in Sources */,
+				5726321E1EE99C940082A1A8 /* SongRecommendation.swift in Sources */,
 				576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */,
 				57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */,
 				57E6BD461EC64D1D000E5C52 /* RealtimeTestCase.swift in Sources */,
@@ -2728,6 +2826,16 @@
 			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
 			targetProxy = 578D9FFC1E8EC3CB00C2B280 /* PBXContainerItemProxy */;
 		};
+		578E796C1EEB0D07002BBF9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A27C801C178F17000DF951 /* Kinvey */;
+			targetProxy = 578E796B1EEB0D07002BBF9C /* PBXContainerItemProxy */;
+		};
+		578E796F1EEB1071002BBF9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 578E795A1EEB0B0F002BBF9C /* Realtime Sender */;
+			targetProxy = 578E796E1EEB1071002BBF9C /* PBXContainerItemProxy */;
+		};
 		5793B86D1D2306A60088B5F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -2844,6 +2952,14 @@
 			);
 			name = LaunchScreen.storyboard;
 			path = ../Sources;
+			sourceTree = "<group>";
+		};
+		578E79631EEB0B10002BBF9C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				578E79641EEB0B10002BBF9C /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -3341,6 +3457,47 @@
 			};
 			name = Release;
 		};
+		578E79671EEB0B10002BBF9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				INFOPLIST_FILE = "Realtime Sender/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Realtime-Sender";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		578E79681EEB0B10002BBF9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				INFOPLIST_FILE = "Realtime Sender/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Realtime-Sender";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		5793B8971D2306A60088B5F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
@@ -3828,6 +3985,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "Realtime Sender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				578E79671EEB0B10002BBF9C /* Debug */,
+				578E79681EEB0B10002BBF9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		5793B8961D2306A60088B5F9 /* Build configuration list for PBXNativeTarget "KinveyTests Encrypted" */ = {
 			isa = XCConfigurationList;

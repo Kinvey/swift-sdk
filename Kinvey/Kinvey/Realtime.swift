@@ -41,7 +41,9 @@ public class LiveStream<Type: BaseMappable> {
     private let name: String
     private let client: Client
     
-    private var channelName: String?
+    private var substreamChannelNameMap = [String : String]()
+    
+    fileprivate let uuid = UUID()
     
     public init(name: String, client: Client = sharedClient) {
         self.name = name
@@ -89,13 +91,13 @@ public class LiveStream<Type: BaseMappable> {
         return request
     }
     
-    public func send(userId: String? = nil, message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    public func send(userId: String, message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
-                if let channelName = self.channelName {
+                if let channelName = self.substreamChannelNameMap[userId] {
                     fulfill(realtimeRouter, channelName)
                 } else {
-                    let request = self.client.networkRequestFactory.buildLiveStreamPublish(streamName: self.name, userId: userId ?? activeUser.userId)
+                    let request = self.client.networkRequestFactory.buildLiveStreamPublish(streamName: self.name, userId: userId)
                     request.execute() { (data, response, error) in
                         if let response = response,
                             response.isOK,
@@ -104,7 +106,7 @@ public class LiveStream<Type: BaseMappable> {
                             let jsonDict = jsonObject as? [String : String],
                             let substreamChannelName = jsonDict["substreamChannelName"]
                         {
-                            self.channelName = substreamChannelName
+                            self.substreamChannelNameMap[userId] = substreamChannelName
                             fulfill(realtimeRouter, substreamChannelName)
                         } else {
                             reject(buildError(data, response, error, self.client))
@@ -135,13 +137,55 @@ public class LiveStream<Type: BaseMappable> {
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
     ) {
-        //TODO: not implemented yet
-        fatalError()
+        realtimeRouterPromise.then { activeUser, realtimeRouter in
+            return Promise<(RealtimeRouter, String)> { fulfill, reject in
+                if let channelName = self.substreamChannelNameMap[activeUser.userId] {
+                    fulfill(realtimeRouter, channelName)
+                } else {
+                    let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(streamName: self.name, userId: activeUser.userId, deviceId: deviceId)
+                    request.execute() { (data, response, error) in
+                        if let response = response,
+                            response.isOK,
+                            let data = data,
+                            let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                            let jsonDict = jsonObject as? [String : String],
+                            let substreamChannelName = jsonDict["substreamChannelName"]
+                        {
+                            fulfill(realtimeRouter, substreamChannelName)
+                        } else {
+                            reject(buildError(data, response, error, self.client))
+                        }
+                    }
+                }
+            }
+        }.then { realtimeRouter, channelName in
+            realtimeRouter.subscribe(
+                channel: channelName,
+                context: self,
+                onNext: { msg in
+                    if let dict = msg as? [String : Any], let obj = Type(JSON: dict) {
+                        onNext(obj)
+                    }
+                },
+                onStatus: onStatus,
+                onError: onError
+            )
+        }.catch { error in
+            onError(error)
+        }
     }
     
     public func stopListening() {
         //TODO: not implemented yet
         fatalError()
+    }
+    
+    public func post(message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+        realtimeRouterPromise.then { activeUser, _ in
+            self.send(userId: activeUser.userId, message: message, completionHandler: completionHandler)
+            }.catch { error in
+                completionHandler?(.failure(error))
+        }
     }
     
     public func follow(
@@ -191,6 +235,18 @@ public struct LiveStreamAclGroups: StaticMappable {
     public mutating func mapping(map: Map) {
         subscribers <- map["subscribe"]
         publishers <- map["publish"]
+    }
+    
+}
+
+extension LiveStream: Hashable {
+    
+    public var hashValue: Int {
+        return uuid.hashValue
+    }
+    
+    public static func ==(lhs: LiveStream<Type>, rhs: LiveStream<Type>) -> Bool {
+        return lhs.uuid == rhs.uuid
     }
     
 }

@@ -563,7 +563,7 @@ class NetworkStoreTests: StoreTestCase {
                 "debug": MethodNotAllowedError.debugValue,
                 "description": MethodNotAllowedError.descriptionValue
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
             
             client!.urlProtocolDidFinishLoading(self)
@@ -593,7 +593,7 @@ class NetworkStoreTests: StoreTestCase {
                 "debug": "Error: Not Found",
                 "description": "The data link could not find this entity"
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
             
             client!.urlProtocolDidFinishLoading(self)
@@ -1192,7 +1192,7 @@ class NetworkStoreTests: StoreTestCase {
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 
                 let responseBody = [[String : Any]]()
-                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
                 client!.urlProtocol(self, didLoad: responseBodyData)
                 
                 client!.urlProtocolDidFinishLoading(self)

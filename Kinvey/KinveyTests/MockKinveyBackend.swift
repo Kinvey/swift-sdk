@@ -20,7 +20,7 @@ class MockKinveyBackend: URLProtocol {
     var requestJsonBody: [String : Any]? {
         if
             let httpBody = request.httpBody,
-            let obj = try? JSONSerialization.jsonObject(with: httpBody, options: []),
+            let obj = try? JSONSerialization.jsonObject(with: httpBody),
             let json = obj as? [String : Any]
         {
             return json
@@ -62,7 +62,7 @@ class MockKinveyBackend: URLProtocol {
                         }
                         if let queryParamStr = queryParams["query"]?.removingPercentEncoding,
                             let data = queryParamStr.data(using: String.Encoding.utf8),
-                            let json = try? JSONSerialization.jsonObject(with: data, options: []),
+                            let json = try? JSONSerialization.jsonObject(with: data),
                             let query = json as? [String : Any]
                         {
                             array = collection.filter({ (entity) -> Bool in
@@ -82,7 +82,7 @@ class MockKinveyBackend: URLProtocol {
                     } else {
                         array = collection
                     }
-                    let data = try! JSONSerialization.data(withJSONObject: array, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: array)
                     client?.urlProtocol(self, didLoad: data)
                     
                     client?.urlProtocolDidFinishLoading(self)
@@ -174,7 +174,7 @@ class MockKinveyBackend: URLProtocol {
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         
-        let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+        let data = try! JSONSerialization.data(withJSONObject: json)
         client?.urlProtocol(self, didLoad: data)
         
         client?.urlProtocolDidFinishLoading(self)

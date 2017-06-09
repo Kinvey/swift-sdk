@@ -50,6 +50,8 @@ internal enum Endpoint {
     
     case liveStreamByUser(client: Client, streamName: String, userId: String)
     case liveStreamPublish(client: Client, streamName: String, userId: String)
+    case liveStreamSubscribe(client: Client, streamName: String, userId: String)
+    case liveStreamUnsubscribe(client: Client, streamName: String, userId: String)
     
     var url: URL {
         switch self {
@@ -207,6 +209,11 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)")
         case .liveStreamPublish(let client, let streamName, let userId):
             return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/publish")
+        case .liveStreamSubscribe(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/subscribe")
+        case .liveStreamUnsubscribe(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/unsubscribe")
+
         }
     }
     

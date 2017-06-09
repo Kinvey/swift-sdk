@@ -1259,7 +1259,7 @@ class UserTests: KinveyTestCase {
                 override func startLoading() {
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                     client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    let data = try! JSONSerialization.data(withJSONObject: ["userId":"123"], options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: ["userId":"123"])
                     client!.urlProtocol(self, didLoad: data)
                     client!.urlProtocolDidFinishLoading(self)
                 }
@@ -2282,7 +2282,7 @@ class UserTests: KinveyTestCase {
                     let json = [
                         "temp_login_uri" : tempLoginUri
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 1:
@@ -2315,7 +2315,7 @@ class UserTests: KinveyTestCase {
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 3:
@@ -2326,7 +2326,7 @@ class UserTests: KinveyTestCase {
                         "description" : "This user does not exist for this app backend",
                         "debug" : ""
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 4:
@@ -2353,7 +2353,7 @@ class UserTests: KinveyTestCase {
                             "creator" : "57c788d168d976c525ee4602"
                         ]
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 5:
@@ -2364,7 +2364,7 @@ class UserTests: KinveyTestCase {
                         "description" : "Invalid credentials. Please retry your request with correct credentials",
                         "debug" : "Error encountered authenticating against kinveyAuth: {\"error\":\"server_error\",\"error_description\":\"Access Token not found\"}"
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 6:
@@ -2376,7 +2376,7 @@ class UserTests: KinveyTestCase {
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
                         ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 7:
@@ -2403,14 +2403,14 @@ class UserTests: KinveyTestCase {
                             "creator" : "57c788d168d976c525ee4602"
                         ]
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 8:
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [[:]]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 default:
@@ -2503,7 +2503,7 @@ class UserTests: KinveyTestCase {
                     let json = [
                         "temp_login_uri" : tempLoginUri
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 1:
@@ -2536,7 +2536,7 @@ class UserTests: KinveyTestCase {
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 3:
@@ -2547,7 +2547,7 @@ class UserTests: KinveyTestCase {
                         "description" : "This user does not exist for this app backend",
                         "debug" : ""
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 4:
@@ -2574,7 +2574,7 @@ class UserTests: KinveyTestCase {
                             "creator" : "57c788d168d976c525ee4602"
                         ]
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 default:
@@ -2587,7 +2587,7 @@ class UserTests: KinveyTestCase {
                         "description" : "Invalid credentials. Please retry your request with correct credentials",
                         "debug" : "Error encountered authenticating against kinveyAuth: {\"error\":\"server_error\",\"error_description\":\"Access Token not found\"}"
                     ]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 }

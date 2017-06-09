@@ -25,7 +25,7 @@ class SSOApp1Tests: KinveyTestCase {
     func testLogin() {
         class MockURLProtocol: URLProtocol {
             
-            static let regexRedirectUri = try! NSRegularExpression(pattern: "redirect_uri=([^&]*)", options: [])
+            static let regexRedirectUri = try! NSRegularExpression(pattern: "redirect_uri=([^&]*)")
             let regexRedirectUri: NSRegularExpression = MockURLProtocol.regexRedirectUri
             
             static var appKey: String?
@@ -41,7 +41,7 @@ class SSOApp1Tests: KinveyTestCase {
                 switch request.url!.path {
                 case "/v3/oauth/login":
                     let requestBody = String(data: request.httpBody!, encoding: .utf8)!
-                    let textCheckingResult = regexRedirectUri.matches(in: requestBody, options: [], range: NSMakeRange(0, requestBody.characters.count)).first!
+                    let textCheckingResult = regexRedirectUri.matches(in: requestBody, range: NSMakeRange(0, requestBody.characters.count)).first!
                     let range = textCheckingResult.rangeAt(1)
                     let redirectUri = requestBody[requestBody.index(requestBody.startIndex, offsetBy: range.location)...requestBody.index(requestBody.startIndex, offsetBy: range.location + range.length - 1)].removingPercentEncoding!
                     let url = URL(string: "\(redirectUri)?code=\(UUID().uuidString)")!
@@ -94,7 +94,7 @@ class SSOApp1Tests: KinveyTestCase {
                     let data = try! Data(contentsOf: url)
                     var html = String(data: data, encoding: .utf8)!
                     let requestUrlQuery = request.url!.query!
-                    let textCheckingResult = regexRedirectUri.matches(in: requestUrlQuery, options: [], range: NSMakeRange(0, requestUrlQuery.characters.count)).first!
+                    let textCheckingResult = regexRedirectUri.matches(in: requestUrlQuery, range: NSMakeRange(0, requestUrlQuery.characters.count)).first!
                     let range = textCheckingResult.rangeAt(1)
                     let redirectUri = requestUrlQuery[requestUrlQuery.index(requestUrlQuery.startIndex, offsetBy: range.location)...requestUrlQuery.index(requestUrlQuery.startIndex, offsetBy: range.location + range.length - 1)].removingPercentEncoding!
                     html = html.replacingOccurrences(of: "@redirect_uri@", with: redirectUri)
@@ -111,7 +111,7 @@ class SSOApp1Tests: KinveyTestCase {
                         "expires_in" : 3599,
                         "refresh_token" : UUID().uuidString
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     
                     client?.urlProtocolDidFinishLoading(self)
@@ -138,7 +138,7 @@ class SSOApp1Tests: KinveyTestCase {
                             "authtoken" : UUID().uuidString
                         ]
                     ] as [String : Any]
-                    let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     
                     client?.urlProtocolDidFinishLoading(self)

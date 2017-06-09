@@ -321,13 +321,13 @@ open class FileStore<FileType: File> {
                         }
                     }
                     
-                    let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
+                    let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)")
                     if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
                         createUpdateFileEntry()
                     } else if let response = response as? HTTPURLResponse,
                         response.statusCode == 308,
                         let rangeString = response.allHeaderFields["Range"] as? String,
-                        let textCheckingResult = regexRange.matches(in: rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first,
+                        let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.characters.count)).first,
                         textCheckingResult.numberOfRanges == 3
                     {
                         let rangeNSString = rangeString as NSString

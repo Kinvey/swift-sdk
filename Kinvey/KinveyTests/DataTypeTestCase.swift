@@ -275,7 +275,7 @@ class DataType: Entity {
         get {
             if let colorValueString = colorValueString,
                 let data = colorValueString.data(using: String.Encoding.utf8),
-                let json = try? JSONSerialization.jsonObject(with: data, options: [])
+                let json = try? JSONSerialization.jsonObject(with: data)
             {
                 return ColorTransformType().transformFromJSON(json as AnyObject?)
             }
