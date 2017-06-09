@@ -138,11 +138,40 @@ public class LiveStream<Type: BaseMappable> {
         onError: @escaping (Swift.Error) -> Void
     ) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
+            self.follow(userId: activeUser.userId, onNext: onNext, onStatus: onStatus, onError: onError)
+        }.catch { error in
+            onError(error)
+        }
+    }
+    
+    public func stopListening(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+        realtimeRouterPromise.then { activeUser, _ in
+            self.unfollow(userId: activeUser.userId, completionHandler: completionHandler)
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+    }
+    
+    public func post(message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+        realtimeRouterPromise.then { activeUser, _ in
+            self.send(userId: activeUser.userId, message: message, completionHandler: completionHandler)
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+    }
+    
+    public func follow(
+        userId: String,
+        onNext: @escaping (Type) -> Void,
+        onStatus: @escaping (RealtimeStatus) -> Void,
+        onError: @escaping (Swift.Error) -> Void
+    ) {
+        realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
-                if let channelName = self.substreamChannelNameMap[activeUser.userId] {
+                if let channelName = self.substreamChannelNameMap[userId] {
                     fulfill(realtimeRouter, channelName)
                 } else {
-                    let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(streamName: self.name, userId: activeUser.userId, deviceId: deviceId)
+                    let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(streamName: self.name, userId: userId, deviceId: deviceId)
                     request.execute() { (data, response, error) in
                         if let response = response,
                             response.isOK,
@@ -151,6 +180,7 @@ public class LiveStream<Type: BaseMappable> {
                             let jsonDict = jsonObject as? [String : String],
                             let substreamChannelName = jsonDict["substreamChannelName"]
                         {
+                            self.substreamChannelNameMap[userId] = substreamChannelName
                             fulfill(realtimeRouter, substreamChannelName)
                         } else {
                             reject(buildError(data, response, error, self.client))
@@ -175,32 +205,27 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
-    public func stopListening() {
-        //TODO: not implemented yet
-        fatalError()
-    }
-    
-    public func post(message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
-        realtimeRouterPromise.then { activeUser, _ in
-            self.send(userId: activeUser.userId, message: message, completionHandler: completionHandler)
-            }.catch { error in
-                completionHandler?(.failure(error))
+    public func unfollow(userId: String, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+        realtimeRouterPromise.then { activeUser, realtimeRouter in
+            return Promise<RealtimeRouter> { fulfill, reject in
+                let request = self.client.networkRequestFactory.buildLiveStreamUnsubscribe(streamName: self.name, userId: userId, deviceId: deviceId)
+                request.execute() { (data, response, error) in
+                    if let response = response, response.isOK {
+                        fulfill(realtimeRouter)
+                    } else {
+                        reject(buildError(data, response, error, self.client))
+                    }
+                }
+            }
+        }.then { realtimeRouter -> Void in
+            if let channel = self.substreamChannelNameMap[userId] {
+                realtimeRouter.unsubscribe(channel: channel, context: self)
+            }
+        }.then {
+            completionHandler?(.success())
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
-    }
-    
-    public func follow(
-        userId: String,
-        onNext: @escaping (Type) -> Void,
-        onStatus: @escaping (RealtimeStatus) -> Void,
-        onError: @escaping (Swift.Error) -> Void
-    ) {
-        //TODO: not implemented yet
-        fatalError()
-    }
-    
-    public func unfollow(userId: String) {
-        //TODO: not implemented yet
-        fatalError()
     }
     
 }

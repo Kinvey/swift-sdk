@@ -236,8 +236,36 @@ class RealtimeMacAppTests: KinveyTestCase {
                 }
             }
             
-            waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationListen = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(statusCode: 204, data: Data())
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationStopListening = self.expectation(description: "Stop Listening")
+            
+            stream.stopListening {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail()
+                }
+                
+                expectationStopListening?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationStopListening = nil
             }
         }
         

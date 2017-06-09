@@ -788,7 +788,7 @@
 		578D9FF01E8DE53900C2B280 /* PushMissingConfiguration.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PushMissingConfiguration.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		578D9FF71E8EC3A200C2B280 /* UserUpgradeFromOldVersionTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpgradeFromOldVersionTestCase.swift; sourceTree = "<group>"; };
 		578DA0271E8EC3CB00C2B280 /* UserUpgradeFromOldVersion.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UserUpgradeFromOldVersion.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Realtime Sender.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		578E795B1EEB0B0F002BBF9C /* RealtimeSender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealtimeSender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		578E795D1EEB0B10002BBF9C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		578E795F1EEB0B10002BBF9C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		578E79611EEB0B10002BBF9C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -1234,7 +1234,7 @@
 			path = SSOApp/SSOApp2Tests;
 			sourceTree = "<group>";
 		};
-		578E795C1EEB0B10002BBF9C /* Realtime Sender */ = {
+		578E795C1EEB0B10002BBF9C /* RealtimeSender */ = {
 			isa = PBXGroup;
 			children = (
 				578E795D1EEB0B10002BBF9C /* AppDelegate.swift */,
@@ -1243,7 +1243,7 @@
 				578E79631EEB0B10002BBF9C /* Main.storyboard */,
 				578E79661EEB0B10002BBF9C /* Info.plist */,
 			);
-			path = "Realtime Sender";
+			path = RealtimeSender;
 			sourceTree = "<group>";
 		};
 		57A27C771C178F17000DF951 = {
@@ -1260,7 +1260,7 @@
 				5705B1B91EDF823F0006980A /* KinveyMacApp */,
 				5705B1CB1EDF823F0006980A /* KinveyMacAppTests */,
 				5705B1D61EDF82400006980A /* KinveyMacAppUITests */,
-				578E795C1EEB0B10002BBF9C /* Realtime Sender */,
+				578E795C1EEB0B10002BBF9C /* RealtimeSender */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
@@ -1287,7 +1287,7 @@
 				5705B1B81EDF823F0006980A /* KinveyMacApp.app */,
 				5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */,
 				5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */,
-				578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */,
+				578E795B1EEB0B0F002BBF9C /* RealtimeSender.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1760,9 +1760,9 @@
 			productReference = 578DA0271E8EC3CB00C2B280 /* UserUpgradeFromOldVersion.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		578E795A1EEB0B0F002BBF9C /* Realtime Sender */ = {
+		578E795A1EEB0B0F002BBF9C /* RealtimeSender */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "Realtime Sender" */;
+			buildConfigurationList = 578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "RealtimeSender" */;
 			buildPhases = (
 				578E79571EEB0B0F002BBF9C /* Sources */,
 				578E79581EEB0B0F002BBF9C /* Frameworks */,
@@ -1773,9 +1773,9 @@
 			dependencies = (
 				578E796C1EEB0D07002BBF9C /* PBXTargetDependency */,
 			);
-			name = "Realtime Sender";
+			name = RealtimeSender;
 			productName = "Realtime Sender";
-			productReference = 578E795B1EEB0B0F002BBF9C /* Realtime Sender.app */;
+			productReference = 578E795B1EEB0B0F002BBF9C /* RealtimeSender.app */;
 			productType = "com.apple.product-type.application";
 		};
 		5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */ = {
@@ -2076,7 +2076,7 @@
 				5705B1B71EDF823F0006980A /* KinveyMacApp */,
 				5705B1C71EDF823F0006980A /* KinveyMacAppTests */,
 				5705B1D21EDF82400006980A /* KinveyMacAppUITests */,
-				578E795A1EEB0B0F002BBF9C /* Realtime Sender */,
+				578E795A1EEB0B0F002BBF9C /* RealtimeSender */,
 			);
 		};
 /* End PBXProject section */
@@ -2833,7 +2833,7 @@
 		};
 		578E796F1EEB1071002BBF9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 578E795A1EEB0B0F002BBF9C /* Realtime Sender */;
+			target = 578E795A1EEB0B0F002BBF9C /* RealtimeSender */;
 			targetProxy = 578E796E1EEB1071002BBF9C /* PBXContainerItemProxy */;
 		};
 		5793B86D1D2306A60088B5F9 /* PBXTargetDependency */ = {
@@ -3467,7 +3467,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				INFOPLIST_FILE = "Realtime Sender/Info.plist";
+				INFOPLIST_FILE = RealtimeSender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Realtime-Sender";
@@ -3488,7 +3488,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
-				INFOPLIST_FILE = "Realtime Sender/Info.plist";
+				INFOPLIST_FILE = RealtimeSender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Realtime-Sender";
@@ -3986,7 +3986,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "Realtime Sender" */ = {
+		578E79691EEB0B10002BBF9C /* Build configuration list for PBXNativeTarget "RealtimeSender" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				578E79671EEB0B10002BBF9C /* Debug */,
