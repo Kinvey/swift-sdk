@@ -14,8 +14,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        let processInfo = ProcessInfo.processInfo
-        print("\(processInfo.environment.map({ "\t\($0.key)=\"\($0.value)\" \\\n" }).joined(separator: " ")) \(processInfo.arguments.map({ "\"\($0)\"" }).joined(separator: " "))")
+//        let processInfo = ProcessInfo.processInfo
+//        print("\(processInfo.environment.map({ "\t\($0.key)=\"\($0.value)\" \\\n" }).joined(separator: " ")) \(processInfo.arguments.map({ "\"\($0)\"" }).joined(separator: " "))")
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
