@@ -78,7 +78,10 @@ open class Migration: NSObject {
                 if let oldObject = oldObject, let newObject = newObject {
                     let oldDictionary = oldObject.dictionaryWithValues(forKeys: oldProperties)
                     
-                    if let newDictionary = migrationObjectHandler?(oldDictionary) {
+                    if var newDictionary = migrationObjectHandler?(oldDictionary) {
+                        if let primaryKeyProperty = oldObjectSchema.primaryKeyProperty {
+                            newDictionary.removeValue(forKey: primaryKeyProperty.name)
+                        }
                         newObject.setValuesForKeys(newDictionary)
                     } else {
                         self.realmMigration.delete(newObject)
