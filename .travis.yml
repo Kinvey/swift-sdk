@@ -43,7 +43,7 @@ before_script:
   fi
 - date
 script:
-- travis_retry make test
+- set -o pipefail; travis_retry make test
 after_script:
 - date
 - security delete-keychain ios-build.keychain

@@ -1,6 +1,6 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
-IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.3)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
+IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.3.1)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 
 all: build archive pack docs
 
