@@ -121,7 +121,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         self.executeLocal(completionHandler)
                     }
                 } else {
-                    let entities = [T](JSONArray: jsonArray)!
+                    let entities = [T](JSONArray: jsonArray)
                     if let cache = self.cache {
                         if self.mustRemoveCachedRecords {
                             let refObjs = self.reduceToIdsLmts(jsonArray)

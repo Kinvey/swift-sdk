@@ -705,9 +705,9 @@ open class FileStore<FileType: File> {
             request.execute { (data, response, error) -> Void in
                 if let response = response,
                     response.isOK,
-                    let jsonArray = self.client.responseParser.parseArray(data),
-                    let files = [FileType](JSONArray: jsonArray)
+                    let jsonArray = self.client.responseParser.parseArray(data)
                 {
+                    let files = [FileType](JSONArray: jsonArray)
                     fulfill(files)
                 } else {
                     reject(buildError(data, response, error, self.client))
