@@ -176,9 +176,13 @@ class RealtimeMacAppTests: KinveyTestCase {
                 }
             }
             
+            var listening = false
+            
             weak var expectationListen = self.expectation(description: "Listen")
             
-            stream.listen(onNext: { (songRecommendation) in
+            stream.listen(listening: {
+                listening = true
+            }, onNext: { (songRecommendation) in
                 XCTAssertEqual(songRecommendation.name, songName)
                 XCTAssertEqual(songRecommendation.artist, songArtist)
                 XCTAssertEqual(songRecommendation.rating, songRating)
@@ -239,6 +243,8 @@ class RealtimeMacAppTests: KinveyTestCase {
             waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationListen = nil
             }
+            
+            XCTAssertTrue(listening)
         }
         
         do {

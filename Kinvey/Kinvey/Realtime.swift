@@ -133,12 +133,13 @@ public class LiveStream<Type: BaseMappable> {
     }
     
     public func listen(
+        listening: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
     ) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
-            self.follow(userId: activeUser.userId, onNext: onNext, onStatus: onStatus, onError: onError)
+            self.follow(userId: activeUser.userId, following: listening, onNext: onNext, onStatus: onStatus, onError: onError)
         }.catch { error in
             onError(error)
         }
@@ -162,6 +163,7 @@ public class LiveStream<Type: BaseMappable> {
     
     public func follow(
         userId: String,
+        following: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
@@ -188,7 +190,7 @@ public class LiveStream<Type: BaseMappable> {
                     }
                 }
             }
-        }.then { realtimeRouter, channelName in
+        }.then { (realtimeRouter, channelName) -> Void in
             realtimeRouter.subscribe(
                 channel: channelName,
                 context: self,
@@ -200,6 +202,8 @@ public class LiveStream<Type: BaseMappable> {
                 onStatus: onStatus,
                 onError: onError
             )
+        }.then {
+            following()
         }.catch { error in
             onError(error)
         }

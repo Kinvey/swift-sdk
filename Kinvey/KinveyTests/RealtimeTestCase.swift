@@ -318,13 +318,10 @@ class RealtimeTestCase: KinveyTestCase {
                     }
                 }
                 
+                var subscribed = false
+                
                 dataStoreSync.subscribe(subscription: {
-                    switch $0 {
-                    case .success:
-                        break
-                    case .failure:
-                        XCTFail()
-                    }
+                    subscribed = true
                 }, onNext: {
                     XCTAssertEqual($0.name, person.name)
                     
@@ -380,6 +377,8 @@ class RealtimeTestCase: KinveyTestCase {
                     expectationStatusReconnected = nil
                     expectationStatusUnexpectedDisconnected = nil
                 }
+                
+                XCTAssertTrue(subscribed)
             }
             
             do {
@@ -451,18 +450,13 @@ class RealtimeTestCase: KinveyTestCase {
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
         dataStore.subscribe(subscription: {
-            switch $0 {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertEqual(error.localizedDescription, "Active User not found")
-            }
-            expectationSubscribe?.fulfill()
+            XCTFail()
         }, onNext: { _ in
             XCTFail()
         }, onStatus: { _ in
-        }, onError: { _ in
-            XCTFail()
+        }, onError: { error in
+            XCTAssertEqual(error.localizedDescription, "Active User not found")
+            expectationSubscribe?.fulfill()
         })
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
@@ -478,18 +472,13 @@ class RealtimeTestCase: KinveyTestCase {
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
         dataStore.subscribe(subscription: {
-            switch $0 {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertEqual(error.localizedDescription, "Active User not register for realtime")
-            }
-            expectationSubscribe?.fulfill()
+            XCTFail()
         }, onNext: { _ in
             XCTFail()
         }, onStatus: { _ in
-        }, onError: { _ in
-            XCTFail()
+        }, onError: { error in
+            XCTAssertEqual(error.localizedDescription, "Active User not register for realtime")
+            expectationSubscribe?.fulfill()
         })
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
@@ -563,18 +552,13 @@ class RealtimeTestCase: KinveyTestCase {
                 }
                 
                 dataStore.subscribe(subscription: {
-                    switch $0 {
-                    case .success:
-                        XCTFail()
-                    case .failure(let error):
-                        XCTAssertTimeoutError(error)
-                    }
-                    expectationSubscribe?.fulfill()
+                    XCTFail()
                 }, onNext: { _ in
                     XCTFail()
                 }, onStatus: { _ in
-                }, onError: { _ in
-                    XCTFail()
+                }, onError: { error in
+                    XCTAssertTimeoutError(error)
+                    expectationSubscribe?.fulfill()
                 })
                 
                 waitForExpectations(timeout: defaultTimeout) { (error) in
@@ -682,12 +666,6 @@ class RealtimeTestCase: KinveyTestCase {
                 weak var expectationSubscribe = self.expectation(description: "Subscribe")
                 
                 dataStore.subscribe(subscription: {
-                    switch $0 {
-                    case .success:
-                        break
-                    case .failure:
-                        XCTFail()
-                    }
                     expectationSubscribe?.fulfill()
                 }, onNext: { _ in
                     XCTFail()
