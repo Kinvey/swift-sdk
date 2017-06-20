@@ -25,6 +25,7 @@ protocol RequestFactory {
     func buildSendEmailConfirmation(forUsername: String) -> HttpRequest
     func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email: String) -> HttpRequest
+    func buildUserMe() -> HttpRequest
     
     func buildUserRegisterRealtime(user: User, deviceId: String) -> HttpRequest
     func buildUserUnregisterRealtime(user: User, deviceId: String) -> HttpRequest
