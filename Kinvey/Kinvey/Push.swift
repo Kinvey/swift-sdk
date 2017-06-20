@@ -70,7 +70,10 @@ open class Push {
     private static let lock = NSLock()
     private static var appDelegateMethodsNeedsToRun = true
     
-    private func replaceAppDelegateMethods(_ completionHandler: ((Result<Bool, Swift.Error>) -> Void)?) {
+    private func replaceAppDelegateMethods(
+        options: Options?,
+        completionHandler: ((Result<Bool, Swift.Error>) -> Void)?
+    ) {
         func replaceAppDelegateMethods(_ completionHandler: ((Result<Bool, Swift.Error>) -> Void)?) {
             let app = UIApplication.shared
             let appDelegate = app.delegate!
@@ -83,7 +86,12 @@ open class Push {
             let originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod = class_getInstanceMethod(appDelegateType, applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector)
             
             let applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock: @convention(block) (NSObject, UIApplication, Data) -> Void = { obj, application, deviceToken in
-                self.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken, completionHandler: completionHandler)
+                self.application(
+                    application,
+                    didRegisterForRemoteNotificationsWithDeviceToken: deviceToken,
+                    options: options,
+                    completionHandler: completionHandler
+                )
                 
                 if let originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = self.originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation {
                     let implementation = unsafeBitCast(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation, to: ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation.self)
@@ -141,7 +149,11 @@ open class Push {
      ```
      */
     @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
-    open func registerForPush(forTypes types: UIUserNotificationType = [.alert, .badge, .sound], categories: Set<UIUserNotificationCategory>? = nil, completionHandler: BoolCompletionHandler? = nil) {
+    open func registerForPush(
+        forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
+        categories: Set<UIUserNotificationCategory>? = nil,
+        completionHandler: BoolCompletionHandler? = nil
+    ) {
         registerForPush(
             forTypes: types,
             categories: categories
@@ -166,8 +178,17 @@ open class Push {
      ```
      */
     @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
-    open func registerForPush(forTypes types: UIUserNotificationType = [.alert, .badge, .sound], categories: Set<UIUserNotificationCategory>? = nil, completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil) {
-        replaceAppDelegateMethods(completionHandler)
+    open func registerForPush(
+        forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
+        categories: Set<UIUserNotificationCategory>? = nil,
+        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+    ) {
+        replaceAppDelegateMethods(
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
         
         let app = UIApplication.shared
         let userNotificationSettings = UIUserNotificationSettings(
@@ -179,10 +200,17 @@ open class Push {
     }
     
     @available(iOS 10.0, *)
-    open func registerForNotifications(authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay], categories: Set<UNNotificationCategory>? = nil, completionHandler: BoolCompletionHandler? = nil) {
+    open func registerForNotifications(
+        authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
+        categories: Set<UNNotificationCategory>? = nil,
+        completionHandler: BoolCompletionHandler? = nil
+    ) {
         registerForNotifications(
             authorizationOptions: authorizationOptions,
-            categories: categories
+            categories: categories,
+            options: Options(
+                client: client
+            )
         ) { (result: Result<Bool, Swift.Error>) in
             switch result {
             case .success(let granted):
@@ -194,13 +222,37 @@ open class Push {
     }
     
     @available(iOS 10.0, *)
-    open func registerForNotifications(authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay], categories: Set<UNNotificationCategory>? = nil, completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil) {
+    open func registerForNotifications(
+        authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
+        categories: Set<UNNotificationCategory>? = nil,
+        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+    ) {
+        return registerForNotifications(
+            authorizationOptions: authorizationOptions,
+            categories: categories,
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    @available(iOS 10.0, *)
+    open func registerForNotifications(
+        authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
+        categories: Set<UNNotificationCategory>? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+    ) {
         UNUserNotificationCenter.current().requestAuthorization(options: authorizationOptions) { granted, error in
             if granted {
                 if let categories = categories {
                     UNUserNotificationCenter.current().setNotificationCategories(categories)
                 }
-                self.replaceAppDelegateMethods(completionHandler)
+                self.replaceAppDelegateMethods(
+                    options: options,
+                    completionHandler: completionHandler
+                )
                 UIApplication.shared.registerForRemoteNotifications()
             } else {
                 if let error = error {
@@ -214,8 +266,14 @@ open class Push {
 #endif
     
     /// Unregister the current device to receive push notifications.
-    open func unRegisterDeviceToken(_ completionHandler: BoolCompletionHandler? = nil) {
-        unRegisterDeviceToken { (result: Result<Void, Swift.Error>) in
+    open func unRegisterDeviceToken(
+        _ completionHandler: BoolCompletionHandler? = nil
+    ) {
+        unRegisterDeviceToken(
+            options: Options(
+                client: client
+            )
+        ) { (result: Result<Void, Swift.Error>) in
             switch result {
             case .success:
                 completionHandler?(true, nil)
@@ -226,14 +284,32 @@ open class Push {
     }
     
     /// Unregister the current device to receive push notifications.
-    open func unRegisterDeviceToken(_ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    open func unRegisterDeviceToken(
+        _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
+        return unRegisterDeviceToken(
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Unregister the current device to receive push notifications.
+    open func unRegisterDeviceToken(
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
         Promise<Void> { fulfill, reject in
             guard let deviceToken = deviceToken else {
                 reject(Error.invalidOperation(description: "Device token not found"))
                 return
             }
             
-            let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(deviceToken)
+            let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(
+                deviceToken,
+                options: options
+            )
             request.execute { (data, response, error) -> Void in
                 if let response = response,
                     response.isOK
@@ -253,18 +329,26 @@ open class Push {
     
     /// Call this method inside your App Delegate method `application(application:didRegisterForRemoteNotificationsWithDeviceToken:completionHandler:)`.
 #if os(iOS)
-    fileprivate func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data, completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil) {
+    fileprivate func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data,
+        options: Options?,
+        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+    ) {
         self.deviceToken = deviceToken
         let block: () -> Void = {
             Promise<Bool> { fulfill, reject in
-                let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
-                request.execute({ (data, response, error) -> Void in
+                let request = self.client.networkRequestFactory.buildPushRegisterDevice(
+                    deviceToken,
+                    options: options
+                )
+                request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK {
                         fulfill(true)
                     } else {
                         reject(buildError(data, response, error, self.client))
                     }
-                })
+                }
             }.then { success in
                 completionHandler?(.success(success))
             }.catch { error in

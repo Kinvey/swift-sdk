@@ -92,11 +92,7 @@ open class Client: Credential {
     /// Timeout interval for this client instance.
     open var timeoutInterval: TimeInterval = 60
     
-    /// App version for this client instance.
-    open var clientAppVersion: String?
-    
-    /// Custom request properties for this client instance.
-    open var customRequestProperties: [String : String] = [:]
+    open var options: Options?
     
     /// The default value for `apiHostName` variable.
     open static let defaultApiHostName = URL(string: "https://baas.kinvey.com/")!
@@ -356,7 +352,7 @@ open class Client: Credential {
             }
             return LocalRequest()
         }
-        let request = networkRequestFactory.buildAppDataPing()
+        let request = networkRequestFactory.buildAppDataPing(options: options)
         Promise<EnvironmentInfo> { fulfill, reject in
             request.execute() { data, response, error in
                 if let response = response,

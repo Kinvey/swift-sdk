@@ -12,11 +12,29 @@ internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> where T: 
     
     let objectId: String
     
-    internal init(objectId: String, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    internal init(
+        objectId: String,
+        writePolicy: WritePolicy,
+        sync: AnySync? = nil,
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.objectId = objectId
         let query = Query(format: "\(T.entityIdProperty()) == %@", objectId as Any)
-        let httpRequest = client.networkRequestFactory.buildAppDataRemoveById(collectionName: T.collectionName(), objectId: objectId)
-        super.init(query: query, httpRequest: httpRequest, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let client = options?.client ?? sharedClient
+        let httpRequest = client.networkRequestFactory.buildAppDataRemoveById(
+            collectionName: T.collectionName(),
+            objectId: objectId,
+            options: options
+        )
+        super.init(
+            query: query,
+            httpRequest: httpRequest,
+            writePolicy: writePolicy,
+            sync: sync,
+            cache: cache,
+            options: options
+        )
     }
     
 }

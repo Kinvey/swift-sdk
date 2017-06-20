@@ -28,12 +28,24 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, deltaSetCompletionHandler: (([T]) -> Void)? = nil, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(
+        query: Query,
+        deltaSet: Bool,
+        deltaSetCompletionHandler: (([T]) -> Void)? = nil,
+        readPolicy: ReadPolicy,
+        cache: AnyCache<T>?,
+        options: Options?,
+        resultsHandler: ResultsHandler? = nil
+    ) {
         self.query = query
         self.deltaSet = deltaSet
         self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.resultsHandler = resultsHandler
-        super.init(readPolicy: readPolicy, cache: cache, client: client)
+        super.init(
+            readPolicy: readPolicy,
+            cache: cache,
+            options: options
+        )
     }
     
     @discardableResult
@@ -56,7 +68,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: fields != nil ? Query(query) { $0.fields = fields } : query)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(
+            collectionName: T.collectionName(),
+            query: fields != nil ? Query(query) { $0.fields = fields } : query,
+            options: options
+        )
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
@@ -78,7 +94,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                             let allIds = Set<String>(allIds[offset...limit])
                             let promise = Promise<[T]> { fulfill, reject in
                                 let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
-                                let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .forceNetwork, cache: cache, client: self.client) { jsonArray in
+                                let operation = FindOperation<T>(
+                                    query: query,
+                                    deltaSet: false,
+                                    readPolicy: .forceNetwork,
+                                    cache: cache,
+                                    options: self.options
+                                ) { jsonArray in
                                     for (key, value) in self.reduceToIdsLmts(jsonArray) {
                                         newRefObjs[key] = value
                                     }
@@ -96,7 +118,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         }
                         when(fulfilled: promises).then { results -> Void in
                             if self.mustRemoveCachedRecords {
-                                self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                                self.removeCachedRecords(
+                                    cache,
+                                    keys: refObjs.keys,
+                                    deleted: deltaSet.deleted
+                                )
                             }
                             if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
                                 deltaSetCompletionHandler(results.flatMap { $0 })
@@ -108,14 +134,26 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                     } else if allIds.count > 0 {
                         let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
                         var newRefObjs: [String : String]? = nil
-                        let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .forceNetwork, cache: cache, client: self.client) { jsonArray in
+                        let operation = FindOperation<T>(
+                            query: query,
+                            deltaSet: false,
+                            readPolicy: .forceNetwork,
+                            cache: cache,
+                            options: self.options
+                        ) { jsonArray in
                             newRefObjs = self.reduceToIdsLmts(jsonArray)
                         }
                         operation.execute { (result) -> Void in
                             switch result {
                             case .success:
-                                if self.mustRemoveCachedRecords, let refObjs = newRefObjs {
-                                    self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                                if self.mustRemoveCachedRecords,
+                                    let refObjs = newRefObjs
+                                {
+                                    self.removeCachedRecords(
+                                        cache,
+                                        keys: refObjs.keys,
+                                        deleted: deltaSet.deleted
+                                    )
                                 }
                                 self.executeLocal(completionHandler)
                             case .failure(let error):
@@ -130,8 +168,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                     if let cache = self.cache {
                         if self.mustRemoveCachedRecords {
                             let refObjs = self.reduceToIdsLmts(jsonArray)
-                            let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
-                            self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                            let deltaSet = self.computeDeltaSet(
+                                self.query,
+                                refObjs: refObjs
+                            )
+                            self.removeCachedRecords(
+                                cache,
+                                keys: refObjs.keys,
+                                deleted: deltaSet.deleted
+                            )
                         }
                         cache.save(entities: entities)
                     }

@@ -14,9 +14,16 @@ internal class SyncOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
     
     let sync: AnySync?
     
-    internal init(sync: AnySync?, cache: AnyCache<T>?, client: Client) {
+    internal init(
+        sync: AnySync?,
+        cache: AnyCache<T>?,
+        options: Options?
+    ) {
         self.sync = sync
-        super.init(cache: cache, client: client)
+        super.init(
+            cache: cache,
+            options: options
+        )
     }
     
 }

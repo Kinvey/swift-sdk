@@ -13,10 +13,20 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     let aggregation: Aggregation
     let predicate: NSPredicate?
     
-    init(aggregation: Aggregation, condition predicate: NSPredicate? = nil, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client) {
+    init(
+        aggregation: Aggregation,
+        condition predicate: NSPredicate? = nil,
+        readPolicy: ReadPolicy,
+        cache: AnyCache<T>?,
+        options: Options?
+    ) {
         self.aggregation = aggregation
         self.predicate = predicate
-        super.init(readPolicy: readPolicy, cache: cache, client: client)
+        super.init(
+            readPolicy: readPolicy,
+            cache: cache,
+            options: options
+        )
     }
     
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
@@ -32,7 +42,14 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGroup(collectionName: T.collectionName(), keys: aggregation.keys, initialObject: aggregation.initialObject, reduceJSFunction: aggregation.reduceJSFunction, condition: predicate)
+        let request = client.networkRequestFactory.buildAppDataGroup(
+            collectionName: T.collectionName(),
+            keys: aggregation.keys,
+            initialObject: aggregation.initialObject,
+            reduceJSFunction: aggregation.reduceJSFunction,
+            condition: predicate,
+            options: options
+        )
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let data = data,
