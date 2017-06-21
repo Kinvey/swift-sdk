@@ -487,6 +487,26 @@ open class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /// Gets a `User` instance using the `userId` property.
+    @discardableResult
+    open func find<U: User>(query: Query = Query(), client: Client = sharedClient, completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserFind(query: query)
+        Promise<[U]> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response, response.isOK, let user = client.responseParser.parseUsers(data) as? [U] {
+                    fulfill(user)
+                } else {
+                    reject(buildError(data, response, error, client))
+                }
+            }
+        }.then { users in
+            completionHandler?(.success(users))
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+        return request
+    }
+    
     /// Refresh the user's data.
     @discardableResult
     open func refresh(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {

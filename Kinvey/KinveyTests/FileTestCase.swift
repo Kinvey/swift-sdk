@@ -10,6 +10,12 @@ import XCTest
 @testable import Kinvey
 import Nimble
 
+#if os(macOS)
+    typealias Image = NSImage
+#else
+    typealias Image = UIImage
+#endif
+
 class MyFile: File {
     
     dynamic var label: String?
@@ -456,7 +462,7 @@ class FileTestCase: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let image = UIImage(contentsOfFile: path)!
+        let image = Image(contentsOfFile: path)!
         
         weak var expectationUpload = expectation(description: "Upload")
         
@@ -1147,7 +1153,7 @@ class FileTestCase: StoreTestCase {
             let memoryBefore = reportMemory()
             XCTAssertNotNil(memoryBefore)
             
-            let image = UIImage(contentsOfFile: path)!
+            let image = Image(contentsOfFile: path)!
             
             let request = fileStore.upload(file, image: image) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
@@ -1384,7 +1390,7 @@ class FileTestCase: StoreTestCase {
             let memoryBefore = reportMemory()
             XCTAssertNotNil(memoryBefore)
             
-            let image = UIImage(contentsOfFile: path)!
+            let image = Image(contentsOfFile: path)!
             
             let request = fileStore.upload(file, image: image, imageRepresentation: .jpeg(compressionQuality: 0.8)) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)

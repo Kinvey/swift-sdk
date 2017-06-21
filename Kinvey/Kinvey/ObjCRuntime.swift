@@ -40,7 +40,7 @@ internal class ObjCRuntime: NSObject {
     
     /// Returns the properties of a class and their types and subtypes, if exists
     internal class func properties(forClass cls: AnyClass) -> [String : (String?, String?)] {
-        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)?(?:<(\\w+)>)?\"", options: [])
+        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)?(?:<(\\w+)>)?\"")
         var cls: AnyClass? = cls
         var results = [String : (String?, String?)]()
         while cls != nil {

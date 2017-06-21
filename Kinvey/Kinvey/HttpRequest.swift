@@ -237,7 +237,7 @@ enum Body {
         switch self {
         case .json(let json):
             request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try! JSONSerialization.data(withJSONObject: json, options: [])
+            request.httpBody = try! JSONSerialization.data(withJSONObject: json)
         case .formUrlEncoded(let params):
             request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
             var paramsKeyValue = [String]()
