@@ -20,6 +20,9 @@ internal enum Endpoint {
     case userResetPassword(usernameOrEmail: String, client: Client)
     case userForgotUsername(client: Client)
     
+    case userRegisterRealtime(client: Client, user: User)
+    case userUnregisterRealtime(client: Client, user: User)
+    
     case appDataPing(client: Client)
     
     case appData(client: Client, collectionName: String)
@@ -27,6 +30,9 @@ internal enum Endpoint {
     case appDataByQuery(client: Client, collectionName: String, query: Query?)
     case appDataCount(client: Client, collectionName: String, query: Query?)
     case appDataGroup(client: Client, collectionName: String)
+    
+    case appDataSubscribe(client: Client, collectionName: String)
+    case appDataUnSubscribe(client: Client, collectionName: String)
     
     case pushRegisterDevice(client: Client)
     case pushUnRegisterDevice(client: Client)
@@ -66,6 +72,10 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
         case .userForgotUsername(let client):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
+        case .userRegisterRealtime(let client, let user):
+            return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(user.userId)/register-realtime")
+        case .userUnregisterRealtime(let client, let user):
+            return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(user.userId)/unregister-realtime")
         case .appDataPing(let client):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)")
         case .appData(let client, let collectionName):
@@ -101,6 +111,10 @@ internal enum Endpoint {
             return URL(string: url)!
         case .appDataGroup(let client, let collectionName):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_group")
+        case .appDataSubscribe(let client, let collectionName):
+            return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_subscribe")
+        case .appDataUnSubscribe(let client, let collectionName):
+            return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_unsubscribe")
         case .pushRegisterDevice(let client):
             return client.apiHostName.appendingPathComponent("/push/\(client.appKey!)/register-device")
         case .pushUnRegisterDevice(let client):

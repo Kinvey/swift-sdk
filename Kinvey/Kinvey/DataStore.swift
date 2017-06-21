@@ -73,6 +73,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     fileprivate var deltaSet: Bool
     
+    fileprivate let uuid = UUID()
+    
     /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
     open var ttl: TTL? {
         didSet {
@@ -892,5 +894,101 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func clearCache(query: Query? = nil) {
         cache?.clear(query: query)
     }
+    
+    private lazy var channelName: String = {
+        return "\(self.client.appKey!).c-\(self.collectionName)"
+    }()
+    
+    private func realtimeRouter() throws -> RealtimeRouter {
+        guard let user = client.activeUser else {
+            throw Error.invalidOperation(description: "Active User not found")
+        }
+        
+        guard let realtimeRouter = user.realtimeRouter else {
+            throw Error.invalidOperation(description: "Active User not register for realtime")
+        }
+        
+        return realtimeRouter
+    }
+    
+    @discardableResult
+    open func subscribe(
+        subscription: @escaping (Result<Void, Swift.Error>) -> Void,
+        onNext: @escaping (T) -> Void,
+        onStatus: @escaping (RealtimeStatus) -> Void,
+        onError: @escaping (Swift.Error) -> Void
+    ) -> Request {
+        let request = client.networkRequestFactory.buildAppDataSubscribe(collectionName: collectionName, deviceId: deviceId)
+        Promise<RealtimeRouter> { fulfill, reject in
+            do {
+                let realtimeRouter = try self.realtimeRouter()
+                request.execute() { (data, response, error) in
+                    if let response = response, response.isOK {
+                        fulfill(realtimeRouter)
+                    } else {
+                        reject(buildError(data, response, error, self.client))
+                    }
+                }
+            } catch {
+                reject(error)
+            }
+        }.then { realtimeRouter in
+            realtimeRouter.subscribe(
+                channel: self.channelName,
+                context: self,
+                onNext: {
+                    if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
+                        self.cache?.save(entity: obj)
+                        onNext(obj)
+                    }
+                },
+                onStatus: onStatus,
+                onError: onError
+            )
+        }.then {
+            subscription(.success())
+        }.catch { error in
+            subscription(.failure(error))
+        }
+        return request
+    }
+    
+    @discardableResult
+    open func unsubscribe(completionHandler: @escaping (Result<Void, Swift.Error>) -> Void) -> Request {
+        let request = client.networkRequestFactory.buildAppDataUnSubscribe(collectionName: collectionName, deviceId: deviceId)
+        Promise<RealtimeRouter> { fulfill, reject in
+            do {
+                let realtimeRouter = try self.realtimeRouter()
+                request.execute() { (data, response, error) in
+                    if let response = response, response.isOK {
+                        fulfill(realtimeRouter)
+                    } else {
+                        reject(buildError(data, response, error, self.client))
+                    }
+                }
+            } catch {
+                reject(error)
+            }
+        }.then { realtimeRouter in
+            realtimeRouter.unsubscribe(channel: self.channelName, context: self)
+        }.then {
+            completionHandler(.success())
+        }.catch { error in
+            completionHandler(.failure(error))
+        }
+        return request
+    }
 
+}
+
+extension DataStore: Hashable {
+    
+    public var hashValue: Int {
+        return uuid.hashValue
+    }
+    
+    public static func ==(lhs: DataStore<T>, rhs: DataStore<T>) -> Bool {
+        return lhs.uuid == rhs.uuid
+    }
+    
 }

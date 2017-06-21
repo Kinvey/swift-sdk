@@ -19,6 +19,8 @@
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
 		571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
@@ -254,6 +256,9 @@
 		57E448071DF62E35003D1AFA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		57E4DB191C8A26CA0017B406 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB181C8A26CA0017B406 /* Keychain.swift */; };
 		57E516391E9C3BE600A2AAD3 /* ClientTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E516381E9C3BE600A2AAD3 /* ClientTestCase.swift */; };
+		57E6BD041EC63E68000E5C52 /* Realtime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E6BD031EC63E68000E5C52 /* Realtime.swift */; };
+		57E6BD441EC648F9000E5C52 /* PubNubRealtimeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E6BD431EC648F9000E5C52 /* PubNubRealtimeRouter.swift */; };
+		57E6BD461EC64D1D000E5C52 /* RealtimeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E6BD451EC64D1D000E5C52 /* RealtimeTestCase.swift */; };
 		57E7C7A51C504AC500848748 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A41C504AC500848748 /* Cache.swift */; };
 		57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A61C504B0900848748 /* CacheManager.swift */; };
 		57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A81C504E7B00848748 /* PendingOperation.swift */; };
@@ -465,6 +470,7 @@
 				578870DE1DD530210087FE78 /* ObjectMapper.framework in Embed Frameworks */,
 				578870D51DD52FE00087FE78 /* Kinvey.framework in Embed Frameworks */,
 				5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -482,6 +488,7 @@
 				578870EC1DD530540087FE78 /* PromiseKit.framework in Embed Frameworks */,
 				578870EE1DD530540087FE78 /* Realm.framework in Embed Frameworks */,
 				5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -770,6 +777,13 @@
 		57E448041DF62DC7003D1AFA /* KinveyTests No Cache.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests No Cache.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57E4DB181C8A26CA0017B406 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		57E516381E9C3BE600A2AAD3 /* ClientTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTestCase.swift; sourceTree = "<group>"; };
+		57E6BCFE1EC51F64000E5C52 /* PubNub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PubNub.framework; sourceTree = "<group>"; };
+		57E6BD001EC51F80000E5C52 /* PubNub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PubNub.framework; sourceTree = "<group>"; };
+		57E6BD011EC51F92000E5C52 /* PubNub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PubNub.framework; sourceTree = "<group>"; };
+		57E6BD021EC51F9C000E5C52 /* PubNub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PubNub.framework; sourceTree = "<group>"; };
+		57E6BD031EC63E68000E5C52 /* Realtime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Realtime.swift; sourceTree = "<group>"; };
+		57E6BD431EC648F9000E5C52 /* PubNubRealtimeRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubNubRealtimeRouter.swift; sourceTree = "<group>"; };
+		57E6BD451EC64D1D000E5C52 /* RealtimeTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealtimeTestCase.swift; sourceTree = "<group>"; };
 		57E7C7A41C504AC500848748 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		57E7C7A61C504B0900848748 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		57E7C7A81C504E7B00848748 /* PendingOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingOperation.swift; sourceTree = "<group>"; };
@@ -1157,6 +1171,8 @@
 				57C2F1721D5E5A68005A214B /* BuilderType.swift */,
 				57A526521E42A07900B33A51 /* Geolocation.swift */,
 				57F216AB1E9DA1640084AAF9 /* Result.swift */,
+				57E6BD031EC63E68000E5C52 /* Realtime.swift */,
+				57E6BD431EC648F9000E5C52 /* PubNubRealtimeRouter.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -1206,6 +1222,7 @@
 				5771CD6F1ECF6D440057E505 /* ForgotToCallSuper.swift */,
 				5771CD741ECFE9B60057E505 /* MetadataTestCase.swift */,
 				5754DDBC1EAEBC4A00122A7A /* DateTestCase.swift */,
+				57E6BD451EC64D1D000E5C52 /* RealtimeTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -1232,6 +1249,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
 				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
@@ -1248,6 +1266,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				57E6BD001EC51F80000E5C52 /* PubNub.framework */,
 				577751391DF8B908006C98F1 /* XCGLogger.framework */,
 				57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */,
 				57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */,
@@ -1262,6 +1281,7 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				57E6BD011EC51F92000E5C52 /* PubNub.framework */,
 				5777513A1DF8B914006C98F1 /* XCGLogger.framework */,
 				57B7687E1D10C0380086AA38 /* ObjectMapper.framework */,
 				57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */,
@@ -1276,6 +1296,7 @@
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				57E6BD021EC51F9C000E5C52 /* PubNub.framework */,
 				5777513B1DF8B921006C98F1 /* XCGLogger.framework */,
 				57B7687F1D10C0490086AA38 /* ObjectMapper.framework */,
 				57B0C2061CDCE88900492D6C /* KeychainAccess.framework */,
@@ -1927,6 +1948,7 @@
 				"$(SRCROOT)/../Carthage/Build/iOS/Realm.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/RealmSwift.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/XCGLogger.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -1943,6 +1965,7 @@
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -2179,6 +2202,7 @@
 				57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */,
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
+				57E6BD441EC648F9000E5C52 /* PubNubRealtimeRouter.swift in Sources */,
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
@@ -2208,6 +2232,7 @@
 				576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */,
 				572C457B1C86690700A41935 /* Date.swift in Sources */,
 				57E4DB191C8A26CA0017B406 /* Keychain.swift in Sources */,
+				57E6BD041EC63E68000E5C52 /* Realtime.swift in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				575792C01D412CD20065CC22 /* UserQuery.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
@@ -2238,6 +2263,7 @@
 				5711E1221E979EEF003351F0 /* MemoryCache.swift in Sources */,
 				576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */,
 				57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */,
+				57E6BD461EC64D1D000E5C52 /* RealtimeTestCase.swift in Sources */,
 				57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */,
 				5771CD751ECFE9B60057E505 /* MetadataTestCase.swift in Sources */,
 				57373AB21ECCD8C6002842CE /* EntityTestCase.swift in Sources */,
@@ -3033,11 +3059,6 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-framework",
-					IOKit,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -3055,11 +3076,6 @@
 				DEVELOPMENT_TEAM = 5W7CYNR7UE;
 				INFOPLIST_FILE = KinveyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-framework",
-					IOKit,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;

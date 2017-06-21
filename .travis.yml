@@ -35,6 +35,9 @@ before_script:
 - if [ ! -d "Carthage/Build/iOS/XCGLogger.framework" ]; then
     carthage build --platform iOS XCGLogger;
   fi
+- if [ ! -d "Carthage/Build/iOS/PubNub.framework" ]; then
+    carthage build --platform iOS objective-c;
+  fi
 - if [ ! -d "Carthage/Build/iOS/KIF.framework" ]; then
     carthage build --platform iOS KIF;
   fi

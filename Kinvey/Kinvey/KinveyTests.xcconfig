@@ -11,6 +11,8 @@ BUNDLE_LOADER[sdk=iphonesimulator*] = $(BUILT_PRODUCTS_DIR)/KinveyApp.app/Kinvey
 TEST_HOST[sdk=iphoneos*] = $(BUNDLE_LOADER)
 TEST_HOST[sdk=iphonesimulator*] = $(BUNDLE_LOADER)
 
+OTHER_LDFLAGS = $(inherited) -ObjC -framework IOKit -framework PubNub
+
 FRAMEWORK_SEARCH_PATHS[sdk=macosx*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/Mac
 FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/iOS
 FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/iOS

@@ -86,7 +86,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            user.destroy(client: client, completionHandler: {
+            user.destroy() {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -97,7 +97,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil

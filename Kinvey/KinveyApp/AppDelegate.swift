@@ -15,15 +15,27 @@ let redirectURI = URL(string: "kinveyAuthDemo://")!
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
+    static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
+    static let hostUrl: URL? = {
+        guard let hostUrl = ProcessInfo.processInfo.environment["KINVEY_HOST_URL"] else {
+            return nil
+        }
+        return URL(string: hostUrl)
+    }()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
         // Override point for customization after application launch.
         
-        if let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"],
-            let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
+        if let appKey = AppDelegate.appKey,
+            let appSecret = AppDelegate.appSecret
         {
-            Kinvey.sharedClient.initialize(appKey: appKey, appSecret: appSecret) { user, error in
+            Kinvey.sharedClient.initialize(
+                appKey: appKey,
+                appSecret: appSecret,
+                apiHostName: AppDelegate.hostUrl ?? Client.defaultApiHostName
+            ) { user, error in
                 if let user = user {
                     print("user: \(user)")
                 }
