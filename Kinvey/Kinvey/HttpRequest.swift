@@ -358,6 +358,16 @@ internal class HttpRequest: TaskProgressRequest, Request {
         if let clientAppVersion = client.clientAppVersion {
             request.setValue(clientAppVersion, forHTTPHeaderField: KinveyHeaderField.clientAppVersion)
         }
+        if let url = request.url,
+            let query = url.query,
+            query.contains("+"),
+            let decodedQuery = query.removingPercentEncoding,
+            let newQuery = decodedQuery.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: "+"))),
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        {
+            urlComponents.percentEncodedQuery = newQuery
+            request.url = urlComponents.url
+        }
     }
     
     func execute(urlSession: URLSession? = nil, _ completionHandler: DataResponseCompletionHandler? = nil) {
