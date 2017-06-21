@@ -35,7 +35,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let data = data,
-                let json = try? JSONSerialization.jsonObject(with: data, options: []),
+                let json = try? JSONSerialization.jsonObject(with: data),
                 let result = json as? [String : Int],
                 let count = result["count"]
             {

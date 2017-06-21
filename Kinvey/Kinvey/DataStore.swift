@@ -913,7 +913,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     @discardableResult
     open func subscribe(
-        subscription: @escaping (Result<Void, Swift.Error>) -> Void,
+        subscription: @escaping () -> Void,
         onNext: @escaping (T) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
@@ -946,9 +946,9 @@ open class DataStore<T: Persistable> where T: NSObject {
                 onError: onError
             )
         }.then {
-            subscription(.success())
+            subscription()
         }.catch { error in
-            subscription(.failure(error))
+            onError(error)
         }
         return request
     }

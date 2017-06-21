@@ -65,6 +65,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when any operation is called but the client was not initiliazed yet.
     case clientNotInitialized
     
+    /// Error forbidden
+    case forbidden(description: String)
+    
     
     /// Error localized description.
     public var description: String {
@@ -76,7 +79,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unauthorized(_, _, _, let description),
              .invalidOperation(let description),
              .missingConfiguration(_, _, _, let description),
-             .appNotFound(let description):
+             .appNotFound(let description),
+             .forbidden(let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")

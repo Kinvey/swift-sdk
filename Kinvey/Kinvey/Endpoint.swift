@@ -10,7 +10,7 @@ import Foundation
 
 internal enum Endpoint {
     
-    case user(client: Client)
+    case user(client: Client, query: Query?)
     case userById(client: Client, userId: String)
     case userDelete(client: Client, userId: String, hard: Bool)
     case userLookup(client: Client)
@@ -48,10 +48,25 @@ internal enum Endpoint {
     case oauthAuth(client: Client, clientId: String?, redirectURI: URL, loginPage: Bool)
     case oauthToken(client: Client)
     
+    case liveStreamByUser(client: Client, streamName: String, userId: String)
+    case liveStreamPublish(client: Client, streamName: String, userId: String)
+    case liveStreamSubscribe(client: Client, streamName: String, userId: String)
+    case liveStreamUnsubscribe(client: Client, streamName: String, userId: String)
+    
     var url: URL {
         switch self {
-        case .user(let client):
-            return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)")
+        case .user(let client, let query):
+            let url = client.apiHostName.appendingPathComponent("/user/\(client.appKey!)")
+            
+            if let query = query,
+                let urlQueryItems = query.urlQueryItems,
+                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            {
+                urlComponents.queryItems = urlQueryItems
+                return urlComponents.url!
+            }
+            
+            return url
         case .userById(let client, let userId):
             return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(userId)")
         case .userDelete(let client, let userId, let hard):
@@ -190,6 +205,15 @@ internal enum Endpoint {
             }
             url.appendPathComponent("/oauth/token")
             return url
+        case .liveStreamByUser(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)")
+        case .liveStreamPublish(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/publish")
+        case .liveStreamSubscribe(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/subscribe")
+        case .liveStreamUnsubscribe(let client, let streamName, let userId):
+            return client.apiHostName.appendingPathComponent("/stream/\(client.appKey!)/\(streamName)/\(userId)/unsubscribe")
+
         }
     }
     

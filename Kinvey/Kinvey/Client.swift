@@ -295,7 +295,7 @@ open class Client: Credential {
         get {
             var authorization: String? = nil
             if let appKey = appKey, let appSecret = appSecret {
-                let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString(options: [])
+                let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString()
                 if let appKeySecret = appKeySecret {
                     authorization = "Basic \(appKeySecret)"
                 }
