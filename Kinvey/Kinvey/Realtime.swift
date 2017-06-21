@@ -91,7 +91,7 @@ public class LiveStream<Type: BaseMappable> {
         return request
     }
     
-    public func send(userId: String, message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    public func send(userId: String, message: Type, retry: Bool = true, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
                 if let channelName = self.substreamChannelNameMap[userId] {
@@ -121,7 +121,24 @@ public class LiveStream<Type: BaseMappable> {
                     case .success:
                         fulfill()
                     case .failure(let error):
-                        reject(error)
+                        if retry, let error = error as? Kinvey.Error {
+                            switch error {
+                            case .forbidden:
+                                self.substreamChannelNameMap.removeValue(forKey: userId)
+                                self.send(userId: userId, message: message, retry: false) {
+                                    switch $0 {
+                                    case .success:
+                                        fulfill()
+                                    case .failure(let error):
+                                        reject(error)
+                                    }
+                                }
+                            default:
+                                reject(error)
+                            }
+                        } else {
+                            reject(error)
+                        }
                     }
                 }
             }

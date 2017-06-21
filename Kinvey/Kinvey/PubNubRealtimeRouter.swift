@@ -109,7 +109,12 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
         Promise<Void> { fulfill, reject in
             pubNub.publish(message, toChannel: channel) { (publishStatus) in
                 if publishStatus.isError {
-                    reject(Error.unknownError(httpResponse: nil, data: nil, error: publishStatus.errorData.information))
+                    switch publishStatus.statusCode {
+                    case 403:
+                        reject(Error.forbidden(description: publishStatus.errorData.information))
+                    default:
+                        reject(Error.unknownError(httpResponse: nil, data: nil, error: publishStatus.errorData.information))
+                    }
                 } else {
                     fulfill()
                 }
