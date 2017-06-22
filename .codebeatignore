@@ -1,2 +1,5 @@
 Kinvey/KinveyTests/**
+Kinvey/KinveyApp/**
 Kinvey/RealtimeSender/**
+devtools/**
+Tools/**
