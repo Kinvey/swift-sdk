@@ -510,7 +510,7 @@ open class User: NSObject, Credential, Mappable {
     /// Refresh the user's data.
     @discardableResult
     open func refresh(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
-        let request = client.networkRequestFactory.buildUserGet(userId: userId)
+        let request = client.networkRequestFactory.buildUserMe()
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK, let json = self.client.responseParser.parse(data) {

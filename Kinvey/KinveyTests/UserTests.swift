@@ -636,14 +636,15 @@ class UserTests: KinveyTestCase {
         
         XCTAssertNotNil(client.activeUser)
         
-        if let user = client.activeUser {
+        guard let user = client.activeUser else {
+            return
+        }
+        
+        do {
             XCTAssertNil(user.email)
-            
-            let emailTest = "me@kinvey.com"
             
             if useMockData {
                 var json = user.toJSON()
-                json["email"] = emailTest
                 mockResponse(json: json)
             }
             defer {
@@ -659,14 +660,7 @@ class UserTests: KinveyTestCase {
                 
                 switch result {
                 case .success:
-                    XCTAssertEqual(user.email, emailTest)
-                    
-                    let keychain = Keychain(appKey: self.client.appKey!, client: self.client)
-                    let user = keychain.user
-                    XCTAssertNotNil(user)
-                    if let user = user {
-                        XCTAssertEqual(user.email, emailTest)
-                    }
+                    break
                 case .failure:
                     XCTFail()
                 }
@@ -676,6 +670,36 @@ class UserTests: KinveyTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRefresh = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: [])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let dataStore = DataStore<Person>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            dataStore.find() { (result: Result<[Person], Swift.Error>) in
+                switch result {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
             }
         }
     }

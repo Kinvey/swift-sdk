@@ -19,6 +19,7 @@ internal enum Endpoint {
     case sendEmailConfirmation(client: Client, username: String)
     case userResetPassword(usernameOrEmail: String, client: Client)
     case userForgotUsername(client: Client)
+    case userMe(client: Client)
     
     case userRegisterRealtime(client: Client, user: User)
     case userUnregisterRealtime(client: Client, user: User)
@@ -87,6 +88,8 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
         case .userForgotUsername(let client):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
+        case .userMe(let client):
+            return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/_me")
         case .userRegisterRealtime(let client, let user):
             return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(user.userId)/register-realtime")
         case .userUnregisterRealtime(let client, let user):

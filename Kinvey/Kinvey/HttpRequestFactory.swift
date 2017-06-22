@@ -137,6 +137,11 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserMe() -> HttpRequest {
+        let request = HttpRequest(endpoint: Endpoint.userMe(client: client), credential: client.activeUser, client: client)
+        return request
+    }
+    
     func buildAppDataPing() -> HttpRequest {
         let request = HttpRequest(httpMethod: .get, endpoint: Endpoint.appDataPing(client: client), client: client)
         return request
