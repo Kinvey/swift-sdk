@@ -1222,6 +1222,91 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testPlusSign() {
+        let person = Person()
+        person.name = "C++"
+        
+        var mockJson: JsonDictionary?
+        do {
+            if useMockData {
+                let personId = UUID().uuidString
+                mockResponse { (request) -> HttpResponse in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = personId
+                    mockJson = json
+                    return HttpResponse(json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person, writePolicy: .forceNetwork) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.name)
+                    if let name = person.name {
+                        XCTAssertEqual(name, "C++")
+                    }
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertNotNil(person.personId)
+        guard let personId = person.personId else {
+            return
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: [mockJson!])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let query = Query(format: "name == %@", "C++")
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, readPolicy: .forceNetwork) { persons, error in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertGreaterThan(persons.count, 0)
+                    XCTAssertNotNil(persons.first)
+                    if let person = persons.first {
+                        XCTAssertNotNil(person.name)
+                        if let name = person.name {
+                            XCTAssertEqual(name, "C++")
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
     func testGeolocationQuery() {
         let person = Person()
         person.name = "Victor Barros"
