@@ -11,8 +11,9 @@ While we transition from Objective C to the latest Swift versions, we will use t
 
 | Language / Version | Kinvey SDK Version | Development Branch |
 | ------------------ | ------------------ | --------------- |
-| Swift 2.3 | 3.2.x | 3.2 |
+| Swift 4 (Xcode 9 beta 2) | git branch | feature/MLIBZ-1921-swift4-xcode9-beta2 |
 | Swift 3.x | 3.3.x | master |
+| Swift 2.3 | 3.2.x | 3.2 |
 | Objective-C | 1.x | 1.x | 
 
 Note: 
