@@ -292,6 +292,15 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(result, expected)
     }
     
+    func testPredicatePlusSign() {
+        let result = encodeQuery(Query(format: "language == %@", "C++"))
+        let json = [
+            "language" : "C++"
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+    }
+    
     func testArrayContains() {
         let cache = RealmCache<Book>(persistenceId: "_kid_", schemaVersion: 0)
         let predicate = cache.translate(predicate: NSPredicate(format: "authorNames contains %@", "Victor"))

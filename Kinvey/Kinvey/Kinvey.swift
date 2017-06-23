@@ -14,6 +14,26 @@ let ObjectIdTmpPrefix = "tmp_"
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient
 
+public let deviceId = Keychain().deviceId
+
+fileprivate extension Keychain {
+    
+    var deviceId: String {
+        get {
+            guard let deviceId = keychain[.deviceId] else {
+                let uuid = UUID().uuidString
+                self.deviceId = uuid
+                return uuid
+            }
+            return deviceId
+        }
+        set {
+            keychain[.deviceId] = newValue
+        }
+    }
+    
+}
+
 public enum LogLevel {
     
     case verbose, debug, info, warning, error, severe, none

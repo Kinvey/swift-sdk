@@ -237,7 +237,7 @@ enum Body {
         switch self {
         case .json(let json):
             request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try! JSONSerialization.data(withJSONObject: json, options: [])
+            request.httpBody = try! JSONSerialization.data(withJSONObject: json)
         case .formUrlEncoded(let params):
             request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
             var paramsKeyValue = [String]()
@@ -357,6 +357,16 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
         if let clientAppVersion = client.clientAppVersion {
             request.setValue(clientAppVersion, forHTTPHeaderField: KinveyHeaderField.clientAppVersion)
+        }
+        if let url = request.url,
+            let query = url.query,
+            query.contains("+"),
+            let decodedQuery = query.removingPercentEncoding,
+            let newQuery = decodedQuery.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: "+"))),
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        {
+            urlComponents.percentEncodedQuery = newQuery
+            request.url = urlComponents.url
         }
     }
     

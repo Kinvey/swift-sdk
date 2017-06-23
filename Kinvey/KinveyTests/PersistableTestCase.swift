@@ -37,7 +37,7 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json)
                 
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)
@@ -155,7 +155,7 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+                let data = try! JSONSerialization.data(withJSONObject: json)
                 
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)

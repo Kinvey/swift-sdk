@@ -117,7 +117,7 @@ public final class Query: NSObject, BuilderType, Mappable {
         let translatedPredicate = translate(predicate: predicate)
         let queryObj = translatedPredicate.mongoDBQuery!
         
-        let data = try! JSONSerialization.data(withJSONObject: queryObj, options: [])
+        let data = try! JSONSerialization.data(withJSONObject: queryObj)
         let queryStr = String(data: data, encoding: String.Encoding.utf8)!
         return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
     }

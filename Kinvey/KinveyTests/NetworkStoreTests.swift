@@ -13,6 +13,12 @@ import CoreLocation
 import MapKit
 import Nimble
 
+#if os(macOS)
+    typealias BezierPath = NSBezierPath
+#else
+    typealias BezierPath = UIBezierPath
+#endif
+
 class NetworkStoreTests: StoreTestCase {
     
     override func setUp() {
@@ -557,7 +563,7 @@ class NetworkStoreTests: StoreTestCase {
                 "debug": MethodNotAllowedError.debugValue,
                 "description": MethodNotAllowedError.descriptionValue
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
             
             client!.urlProtocolDidFinishLoading(self)
@@ -587,7 +593,7 @@ class NetworkStoreTests: StoreTestCase {
                 "debug": "Error: Not Found",
                 "description": "The data link could not find this entity"
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
             
             client!.urlProtocolDidFinishLoading(self)
@@ -1167,22 +1173,26 @@ class NetworkStoreTests: StoreTestCase {
                 let userAgent = request.allHTTPHeaderFields?["User-Agent"]
                 XCTAssertNotNil(userAgent)
                 if let userAgent = userAgent {
-                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)", options: [])
-                    XCTAssertEqual(regex.matches(in: userAgent, options: [], range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
+                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)")
+                    XCTAssertEqual(regex.matches(in: userAgent, range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
                 }
                 
                 let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
                 XCTAssertNotNil(deviceInfo)
                 if let deviceInfo = deviceInfo {
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)", options: [])
-                    XCTAssertEqual(regex.matches(in: deviceInfo, options: [], range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
+                    #if os(macOS)
+                        let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
+                    #else
+                        let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
+                    #endif
+                    XCTAssertEqual(regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
                 }
                 
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [:])!
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 
                 let responseBody = [[String : Any]]()
-                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
                 client!.urlProtocol(self, didLoad: responseBodyData)
                 
                 client!.urlProtocolDidFinishLoading(self)
@@ -1209,6 +1219,91 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
+        }
+    }
+    
+    func testPlusSign() {
+        let person = Person()
+        person.name = "C++"
+        
+        var mockJson: JsonDictionary?
+        do {
+            if useMockData {
+                let personId = UUID().uuidString
+                mockResponse { (request) -> HttpResponse in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json[PersistableIdKey] = personId
+                    mockJson = json
+                    return HttpResponse(json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person, writePolicy: .forceNetwork) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.name)
+                    if let name = person.name {
+                        XCTAssertEqual(name, "C++")
+                    }
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertNotNil(person.personId)
+        guard let personId = person.personId else {
+            return
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: [mockJson!])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let query = Query(format: "name == %@", "C++")
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, readPolicy: .forceNetwork) { persons, error in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertGreaterThan(persons.count, 0)
+                    XCTAssertNotNil(persons.first)
+                    if let person = persons.first {
+                        XCTAssertNotNil(person.name)
+                        if let name = person.name {
+                            XCTAssertEqual(name, "C++")
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
         }
     }
     
@@ -1446,13 +1541,17 @@ class NetworkStoreTests: StoreTestCase {
                 }
                 XCTAssertEqual(polygonCoordinates.first!, polygonCoordinates.last!)
                 let polygon = MKPolygon(coordinates: locationCoordinates, count: locationCoordinates.count)
-                let path = UIBezierPath()
+                let path = BezierPath()
                 for (i, locationCoordinate) in locationCoordinates.dropLast().enumerated() {
                     let point = CGPoint(x: locationCoordinate.latitude, y: locationCoordinate.longitude)
                     if i == 0 {
                         path.move(to: point)
                     } else {
-                        path.addLine(to: point)
+                        #if os(macOS)
+                            path.line(to: point)
+                        #else
+                            path.addLine(to: point)
+                        #endif
                     }
                 }
                 path.close()

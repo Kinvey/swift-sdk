@@ -19,11 +19,16 @@ protocol RequestFactory {
     func buildUserLogin(username: String, password: String) -> HttpRequest
     func buildUserExists(username: String) -> HttpRequest
     func buildUserGet(userId: String) -> HttpRequest
+    func buildUserFind(query: Query) -> HttpRequest
     func buildUserSave(user: User, newPassword: String?) -> HttpRequest
     func buildUserLookup(user: User, userQuery: UserQuery) -> HttpRequest
     func buildSendEmailConfirmation(forUsername: String) -> HttpRequest
     func buildUserResetPassword(usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email: String) -> HttpRequest
+    func buildUserMe() -> HttpRequest
+    
+    func buildUserRegisterRealtime(user: User, deviceId: String) -> HttpRequest
+    func buildUserUnregisterRealtime(user: User, deviceId: String) -> HttpRequest
     
     func buildAppDataPing() -> HttpRequest
     func buildAppDataGetById(collectionName: String, id: String) -> HttpRequest
@@ -33,6 +38,8 @@ protocol RequestFactory {
     func buildAppDataSave<T: Persistable>(_ persistable: T) -> HttpRequest
     func buildAppDataRemoveByQuery(collectionName: String, query: Query) -> HttpRequest
     func buildAppDataRemoveById(collectionName: String, objectId: String) -> HttpRequest
+    func buildAppDataSubscribe(collectionName: String, deviceId: String) -> HttpRequest
+    func buildAppDataUnSubscribe(collectionName: String, deviceId: String) -> HttpRequest
     
     func buildPushRegisterDevice(_ deviceToken: Data) -> HttpRequest
     func buildPushUnRegisterDevice(_ deviceToken: Data) -> HttpRequest
@@ -49,5 +56,10 @@ protocol RequestFactory {
     func buildOAuthGrantAuth(redirectURI: URL, clientId: String?) -> HttpRequest
     func buildOAuthGrantAuthenticate(redirectURI: URL, clientId: String?, tempLoginUri: URL, username: String, password: String) -> HttpRequest
     func buildOAuthGrantRefreshToken(refreshToken: String, clientId: String?) -> HttpRequest
+    
+    func buildLiveStreamGrantAccess(streamName: String, userId: String, acl: LiveStreamAcl) -> HttpRequest
+    func buildLiveStreamPublish(streamName: String, userId: String) -> HttpRequest
+    func buildLiveStreamSubscribe(streamName: String, userId: String, deviceId: String) -> HttpRequest
+    func buildLiveStreamUnsubscribe(streamName: String, userId: String, deviceId: String) -> HttpRequest
     
 }

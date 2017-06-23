@@ -52,7 +52,7 @@ open class Migration: NSObject {
         }
         let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
         let fileManager = FileManager.default
-        if let allFilesURL = try? fileManager.contentsOfDirectory(at: baseFolderURL, includingPropertiesForKeys: nil, options: []) {
+        if let allFilesURL = try? fileManager.contentsOfDirectory(at: baseFolderURL, includingPropertiesForKeys: nil) {
             for realmFileURL in allFilesURL.filter({ $0.lastPathComponent.hasSuffix(".realm") }) {
                 var realmConfiguration = realmBaseConfiguration //copy
                 realmConfiguration.fileURL = realmFileURL

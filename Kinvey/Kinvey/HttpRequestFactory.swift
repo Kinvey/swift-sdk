@@ -20,7 +20,7 @@ class HttpRequestFactory: RequestFactory {
     typealias CompletionHandler = (Data?, URLResponse?, NSError?) -> Void
     
     func buildUserSignUp(username: String? = nil, password: String? = nil, user: User? = nil) -> HttpRequest {
-        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.user(client: client), client: client)
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.user(client: client, query: nil), client: client)
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -34,7 +34,7 @@ class HttpRequestFactory: RequestFactory {
         if let user = user {
             bodyObject += user.toJSON()
         }
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -63,7 +63,7 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any]) -> HttpRequest {
-        return buildUserSocial(authSource, authData: authData, endpoint: Endpoint.user(client: client))
+        return buildUserSocial(authSource, authData: authData, endpoint: Endpoint.user(client: client, query: nil))
     }
     
     func buildUserLogin(username: String, password: String) -> HttpRequest {
@@ -74,7 +74,7 @@ class HttpRequestFactory: RequestFactory {
             "username" : username,
             "password" : password
         ]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -85,12 +85,17 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["username" : username]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
     func buildUserGet(userId: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.userById(client: client, userId: userId), credential: client.activeUser, client: client)
+        return request
+    }
+    
+    func buildUserFind(query: Query) -> HttpRequest {
+        let request = HttpRequest(endpoint: Endpoint.user(client: client, query: query), credential: client.activeUser, client: client)
         return request
     }
     
@@ -104,7 +109,7 @@ class HttpRequestFactory: RequestFactory {
             bodyObject["password"] = newPassword
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -114,7 +119,7 @@ class HttpRequestFactory: RequestFactory {
         
         let bodyObject = userQuery.toJSON()
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -128,7 +133,12 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["email" : email]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        return request
+    }
+    
+    func buildUserMe() -> HttpRequest {
+        let request = HttpRequest(endpoint: Endpoint.userMe(client: client), credential: client.activeUser, client: client)
         return request
     }
     
@@ -184,7 +194,7 @@ class HttpRequestFactory: RequestFactory {
             bodyObject[Entity.Key.entityId] = nil
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -221,7 +231,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -238,7 +248,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -253,7 +263,7 @@ class HttpRequestFactory: RequestFactory {
         let bodyObject = file.toJSON()
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject, options: [])
+        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
         return request
     }
     
@@ -388,6 +398,67 @@ class HttpRequestFactory: RequestFactory {
             body: Body.formUrlEncoded(params: params),
             client: client
         )
+        return request
+    }
+    
+    // MARK: Realtime
+    
+    func buildUserRegisterRealtime(user: User, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.userRegisterRealtime(client: client, user: user), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildUserUnregisterRealtime(user: User, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.userUnregisterRealtime(client: client, user: user), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildAppDataSubscribe(collectionName: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataSubscribe(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildAppDataUnSubscribe(collectionName: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.appDataUnSubscribe(client: client, collectionName: collectionName), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildLiveStreamGrantAccess(streamName: String, userId: String, acl: LiveStreamAcl) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .put, endpoint: Endpoint.liveStreamByUser(client: client, streamName: streamName, userId: userId), credential: client.activeUser, client: client)
+        request.setBody(json: acl.toJSON())
+        return request
+    }
+    
+    func buildLiveStreamPublish(streamName: String, userId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.liveStreamPublish(client: client, streamName: streamName, userId: userId), credential: client.activeUser, client: client)
+        return request
+    }
+    
+    func buildLiveStreamSubscribe(streamName: String, userId: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.liveStreamSubscribe(client: client, streamName: streamName, userId: userId), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
+        return request
+    }
+    
+    func buildLiveStreamUnsubscribe(streamName: String, userId: String, deviceId: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .post, endpoint: Endpoint.liveStreamUnsubscribe(client: client, streamName: streamName, userId: userId), credential: client.activeUser, client: client)
+        request.setBody(json: [
+            "deviceId" : deviceId
+        ])
         return request
     }
 

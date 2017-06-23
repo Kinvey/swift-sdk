@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.5.3"
+  s.version      = "3.5.4"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -64,13 +64,13 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  s.platform     = :ios, "9.0"
+  # s.platform     = :ios, "9.0"
 
   #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-  # s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "9.0"
+  s.osx.deployment_target = "10.12"
+  s.watchos.deployment_target = "2.2"
+  s.tvos.deployment_target = "9.2"
 
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -123,7 +123,8 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  s.frameworks = "Accounts", "CoreGraphics", "CoreLocation", "MobileCoreServices", "Security", "Social", "SystemConfiguration"
+  s.frameworks = "Accounts", "CoreGraphics", "CoreLocation", "Security", "Social", "SystemConfiguration"
+  s.ios.frameworks = "MobileCoreServices"
   s.weak_framework = "WebKit"
 
   # s.libraries = 
@@ -145,5 +146,6 @@ Pod::Spec.new do |s|
   s.dependency "RealmSwift", "~> 2.0"
   s.dependency "ObjectMapper", "~> 2.0"
   s.dependency "XCGLogger", "~> 4.0.0"
+  s.dependency "PubNub", "~> 4.0"
 
 end

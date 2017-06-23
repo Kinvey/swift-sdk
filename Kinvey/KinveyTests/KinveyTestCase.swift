@@ -279,6 +279,12 @@ class KinveyTestCase: XCTestCase {
     
     static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
     static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
+    static let hostUrl: URL? = {
+        guard let hostUrl = ProcessInfo.processInfo.environment["KINVEY_HOST_URL"] else {
+            return nil
+        }
+        return URL(string: hostUrl)
+    }()
     
     typealias AppInitialize = (appKey: String, appSecret: String)
     static let appInitializeDevelopment = AppInitialize(appKey: "kid_Wy35WH6X9e", appSecret: "d85f81cad5a649baaa6fdcd99a108ab1")
@@ -301,6 +307,7 @@ class KinveyTestCase: XCTestCase {
             Kinvey.sharedClient.initialize(
                 appKey: KinveyTestCase.appKey ?? KinveyTestCase.appInitializeProduction.appKey,
                 appSecret: KinveyTestCase.appSecret ?? KinveyTestCase.appInitializeProduction.appSecret,
+                apiHostName: KinveyTestCase.hostUrl ?? Client.defaultApiHostName,
                 encrypted: encrypted
             )
         }
@@ -379,7 +386,8 @@ class KinveyTestCase: XCTestCase {
         
     }
     
-    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+        let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
@@ -408,13 +416,57 @@ class KinveyTestCase: XCTestCase {
         }
         
         if let username = username {
-            User.signup(username: username, user: user, completionHandler: handler)
+            User.signup(username: username, password: password, user: user, completionHandler: handler)
         } else {
             User.signup(user: user, completionHandler: handler)
         }
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSignUp = nil
+        }
+        
+        if mustHaveAValidUserInTheEnd {
+            XCTAssertNotNil(client.activeUser)
+        }
+    }
+    
+    func login<UserType: User>(username: String, password: String, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, mockHandler: ((URLRequest) -> HttpResponse)? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+        let client = client ?? self.client
+        if let user = client.activeUser {
+            user.logout()
+        }
+        
+        if useMockData {
+            if let mockHandler = mockHandler {
+                mockResponse(completionHandler: mockHandler)
+            } else {
+                setURLProtocol(MockKinveyBackend.self)
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        let handler: (UserType?, Swift.Error?) -> Void = { user, error in
+            if let completionHandler = completionHandler {
+                completionHandler(user, error)
+            } else {
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        User.login(username: username, password: password, client: client, completionHandler: handler)
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
         }
         
         if mustHaveAValidUserInTheEnd {
@@ -429,10 +481,12 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
+    var deleteUserDuringTearDown = true
+    
     override func tearDown() {
         setURLProtocol(nil)
         
-        if let user = client.activeUser {
+        if deleteUserDuringTearDown, let user = client.activeUser {
             if useMockData {
                 setURLProtocol(MockKinveyBackend.self)
             }
