@@ -10,8 +10,8 @@ import Foundation
 
 internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject {
     
-    override init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
-        super.init(query: query, deltaSet: deltaSet, readPolicy: readPolicy, cache: cache, client: client, resultsHandler: resultsHandler)
+    override init(query: Query, deltaSet: Bool, deltaSetCompletionHandler: (([T]) -> Void)?, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
+        super.init(query: query, deltaSet: deltaSet, deltaSetCompletionHandler: deltaSetCompletionHandler, readPolicy: readPolicy, cache: cache, client: client, resultsHandler: resultsHandler)
     }
     
     override var mustRemoveCachedRecords: Bool {

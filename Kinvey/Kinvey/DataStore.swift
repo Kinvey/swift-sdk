@@ -744,7 +744,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     @discardableResult
-    open func pull(_ query: Query = Query(), deltaSet: Bool? = nil, completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil) -> Request {
+    open func pull(_ query: Query = Query(), deltaSet: Bool? = nil, deltaSetCompletionHandler: (([T]) -> Void)? = nil, completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil) -> Request {
         var request: Request!
         Promise<[T]> { fulfill, reject in
             if type == .network {
@@ -755,7 +755,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                 reject(Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
             } else {
                 let deltaSet = deltaSet ?? self.deltaSet
-                let operation = PullOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .forceNetwork, cache: cache, client: client)
+                let operation = PullOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, deltaSetCompletionHandler: deltaSetCompletionHandler, readPolicy: .forceNetwork, cache: cache, client: client)
                 request = operation.execute { result in
                     switch result {
                     case .success(let array):

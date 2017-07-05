@@ -15,6 +15,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     
     let query: Query
     let deltaSet: Bool
+    let deltaSetCompletionHandler: (([T]) -> Void)?
     
     lazy var isEmptyQuery: Bool = {
         return (self.query.predicate == nil || self.query.predicate == NSPredicate()) && self.query.skip == nil && self.query.limit == nil
@@ -27,9 +28,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(query: Query, deltaSet: Bool, deltaSetCompletionHandler: (([T]) -> Void)? = nil, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
+        self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.resultsHandler = resultsHandler
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
@@ -69,12 +71,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                     allIds.formUnion(deltaSet.deleted)
                     if allIds.count > MaxIdsPerQuery {
                         let allIds = Array<String>(allIds)
-                        var promises = [Promise<[AnyObject]>]()
+                        var promises = [Promise<[T]>]()
                         var newRefObjs = [String : String]()
                         for offset in stride(from: 0, to: allIds.count, by: MaxIdsPerQuery) {
                             let limit = min(offset + MaxIdsPerQuery, allIds.count - 1)
                             let allIds = Set<String>(allIds[offset...limit])
-                            let promise = Promise<[AnyObject]> { fulfill, reject in
+                            let promise = Promise<[T]> { fulfill, reject in
                                 let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
                                 let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .forceNetwork, cache: cache, client: self.client) { jsonArray in
                                     for (key, value) in self.reduceToIdsLmts(jsonArray) {
@@ -95,6 +97,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         when(fulfilled: promises).then { results -> Void in
                             if self.mustRemoveCachedRecords {
                                 self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                            }
+                            if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
+                                deltaSetCompletionHandler(results.flatMap { $0 })
                             }
                             self.executeLocal(completionHandler)
                         }.catch { error in
