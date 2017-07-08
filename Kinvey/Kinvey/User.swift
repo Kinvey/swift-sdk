@@ -648,6 +648,7 @@ open class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /// Register the user to start performing realtime / live calls
     @discardableResult
     open func registerForRealtime(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserRegisterRealtime(user: self, deviceId: deviceId)
@@ -675,6 +676,7 @@ open class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /// Unregister the user to stop performing realtime / live calls
     @discardableResult
     open func unregisterForRealtime(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserUnregisterRealtime(user: self, deviceId: deviceId)
@@ -939,6 +941,7 @@ open class User: NSObject, Credential, Mappable {
 
 }
 
+/// Holds the Social Identities attached to a specific User
 public struct UserSocialIdentity : StaticMappable {
     
     /// Facebook social identity

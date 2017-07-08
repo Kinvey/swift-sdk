@@ -20,18 +20,22 @@ open class CustomEndpoint {
         
     }
     
+    /// Parameter Wrapper
     open class Params {
         
         internal let value: ParamsEnum
         
+        /// Constructor that takes a JSON Dictionary
         public init(_ json: JsonDictionary) {
             value = ParamsEnum.json(json)
         }
         
+        /// Constructor that takes any type that implements Mappable
         public init(_ object: Mappable) {
             value = ParamsEnum.object(object)
         }
         
+        /// Constructor that takes any type that implements StaticMappable
         public init(_ object: StaticMappable) {
             value = ParamsEnum.object(object)
         }

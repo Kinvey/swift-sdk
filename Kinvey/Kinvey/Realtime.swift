@@ -10,9 +10,20 @@ import Foundation
 import ObjectMapper
 import PromiseKit
 
+/// Tells the current status for the realtime connection
 public enum RealtimeStatus {
     
-    case connected, disconnected, reconnected, unexpectedDisconnect
+    /// Connection is stablished
+    case connected
+    
+    /// Connection used to be on, but is now off
+    case disconnected
+    
+    /// Connection used to be `disconnected`, but is now on again
+    case reconnected
+    
+    /// Connection used to be on, but is now off for an unexpected reason
+    case unexpectedDisconnect
     
 }
 
@@ -36,6 +47,10 @@ protocol RealtimeRouter {
     
 }
 
+/**
+ Class that creates a live stream connection to be used in a peer-to-peer
+ communication
+ */
 public class LiveStream<Type: BaseMappable> {
     
     private let name: String
@@ -45,6 +60,10 @@ public class LiveStream<Type: BaseMappable> {
     
     fileprivate let uuid = UUID()
     
+    /**
+     Constructor that takes the name of the stream and an (optional) `Client`
+     instance
+     */
     public init(name: String, client: Client = sharedClient) {
         self.name = name
         self.client = client
@@ -72,6 +91,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// Grant access to a user for the `LiveStream`
     @discardableResult
     public func grantStreamAccess(userId: String, acl: LiveStreamAcl, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
         let request = client.networkRequestFactory.buildLiveStreamGrantAccess(streamName: name, userId: userId, acl: acl)
@@ -91,6 +111,7 @@ public class LiveStream<Type: BaseMappable> {
         return request
     }
     
+    /// Sends a message to an specific user
     public func send(userId: String, message: Type, retry: Bool = true, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
@@ -149,6 +170,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// Start listening messages sent to the current active user
     public func listen(
         listening: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
@@ -162,6 +184,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// /// Stop listening messages sent to the current active user
     public func stopListening(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, _ in
             self.unfollow(userId: activeUser.userId, completionHandler: completionHandler)
@@ -170,6 +193,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// Sends a message to the current active user
     public func post(message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, _ in
             self.send(userId: activeUser.userId, message: message, completionHandler: completionHandler)
@@ -178,6 +202,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// Start listening messages sent to an specific user
     public func follow(
         userId: String,
         following: @escaping () -> Void,
@@ -226,6 +251,7 @@ public class LiveStream<Type: BaseMappable> {
         }
     }
     
+    /// Stop listening messages sent to an specific user
     public func unfollow(userId: String, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<RealtimeRouter> { fulfill, reject in
@@ -251,10 +277,16 @@ public class LiveStream<Type: BaseMappable> {
     
 }
 
+/// Access Control Level (Acl) for `LiveStream` objects
 public struct LiveStreamAcl: StaticMappable {
     
+    /// List of `userId`s that are allowed to subscribe
     public var subscribers = [String]()
+    
+    /// List of `userId`s that are allowed to publish
     public var publishers = [String]()
+    
+    /// Group Acl
     public var groups = LiveStreamAclGroups()
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
@@ -269,9 +301,13 @@ public struct LiveStreamAcl: StaticMappable {
     
 }
 
+/// Group Access Control Level (Group Acl) for `LiveStream` objects
 public struct LiveStreamAclGroups: StaticMappable {
     
+    /// List of groups that are allowed to publish
     public var publishers = [String]()
+    
+    /// List of groups that are allowed to subscribe
     public var subscribers = [String]()
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
@@ -285,6 +321,10 @@ public struct LiveStreamAclGroups: StaticMappable {
     
 }
 
+/**
+ Makes the `LiveStream` to conforms to `Hashable`, so they can be stored in
+ Dictionaries for example
+ */
 extension LiveStream: Hashable {
     
     public var hashValue: Int {

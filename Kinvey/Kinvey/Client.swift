@@ -327,6 +327,10 @@ open class Client: Credential {
         return Client.fileURL(appKey: self.appKey!, tag: tag)
     }
     
+    /**
+     Check if the `appKey` and `appSecret` properties are correct doing a ping
+     call to the server.
+     */
     @discardableResult
     public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
@@ -339,6 +343,10 @@ open class Client: Credential {
         }
     }
     
+    /**
+     Check if the `appKey` and `appSecret` properties are correct doing a ping
+     call to the server.
+     */
     @discardableResult
     public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
         guard let _ = appKey, let _ = appSecret else {
@@ -371,11 +379,19 @@ open class Client: Credential {
     }
 }
 
+/// Environment Information for a specific `appKey` and `appSecret`
 public struct EnvironmentInfo: StaticMappable {
     
+    /// Version of the backend
     public let version: String
+    
+    /// Hello message from Kinvey
     public let kinvey: String
+    
+    /// Application Name
     public let appName: String
+    
+    /// Environment Name
     public let environmentName: String
     
     public static func objectForMapping(map: Map) -> BaseMappable? {

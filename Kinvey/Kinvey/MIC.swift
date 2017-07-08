@@ -17,11 +17,15 @@ class URLSessionDelegateAdapter : NSObject, URLSessionTaskDelegate {
     
 }
 
+/// Class that handles Mobile Identity Connect (MIC) calls
 open class MIC {
     
     private init() {
     }
     
+    /**
+     Validate if a URL matches for a redirect URI and also contains a code value
+     */
     open class func isValid(redirectURI: URL, url: URL) -> Bool {
         return parseCode(redirectURI: redirectURI, url: url) != nil
     }
@@ -44,6 +48,7 @@ open class MIC {
         return code
     }
     
+    /// Returns a URL that must be used for login with MIC
     open class func urlForLogin(
         redirectURI: URL,
         loginPage: Bool = true,

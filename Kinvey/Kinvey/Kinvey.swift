@@ -11,9 +11,13 @@ import XCGLogger
 
 let ObjectIdTmpPrefix = "tmp_"
 
-/// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
+/**
+ Shared client instance for simplicity. Use this instance if *you don't need* to
+ handle with multiple Kinvey environments.
+ */
 public let sharedClient = Client.sharedClient
 
+/// A once-per-installation value generated to give an ID for the running device
 public let deviceId = Keychain().deviceId
 
 fileprivate extension Keychain {
@@ -34,9 +38,36 @@ fileprivate extension Keychain {
     
 }
 
+/**
+ Define how detailed operations should be logged. Here's the asceding order
+ (from the less detailed to the most detailed level): none, severe, error,
+ warning, info, debug, verbose
+ */
 public enum LogLevel {
     
-    case verbose, debug, info, warning, error, severe, none
+    /**
+     Log operations that are useful if you are debugging giving aditional
+     information. Most detailed level
+     */
+    case verbose
+    
+    /// Log operations that are useful if you are debugging
+    case debug
+    
+    /// Log operations giving aditional information for basic operations
+    case info
+    
+    /// Only log warning messages when needed
+    case warning
+    
+    /// Only log error messages when needed
+    case error
+    
+    /// Only log severe error messages when needed
+    case severe
+    
+    /// Log is turned off
+    case none
     
     internal var outputLevel: XCGLogger.Level {
         switch self {
