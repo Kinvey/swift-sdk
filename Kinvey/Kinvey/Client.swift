@@ -344,8 +344,9 @@ open class Client: Credential {
     }
     
     /**
-     Check if the `appKey` and `appSecret` properties are correct doing a ping
-     call to the server.
+     Checks connectivity to your backend. A successful response returns a
+     summary of your backend environment and confirms that the app can talk to
+     the backend.
      */
     @discardableResult
     public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {

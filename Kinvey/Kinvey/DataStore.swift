@@ -165,7 +165,9 @@ open class DataStore<T: Persistable> where T: NSObject {
     /**
      Gets a single record using the `_id` of the record.
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -184,7 +186,9 @@ open class DataStore<T: Persistable> where T: NSObject {
     /**
      Gets a single record using the `_id` of the record.
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -204,7 +208,9 @@ open class DataStore<T: Persistable> where T: NSObject {
      
      PS: This method is just a shortcut for `findById()`
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -225,7 +231,9 @@ open class DataStore<T: Persistable> where T: NSObject {
      
      PS: This method is just a shortcut for `findById()`
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -247,7 +255,9 @@ open class DataStore<T: Persistable> where T: NSObject {
      Gets a list of records that matches with the query passed by parameter.
      - parameter query: The query used to filter the results
      - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -267,7 +277,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      Gets a list of records that matches with the query passed by parameter.
      - parameter query: The query used to filter the results
      - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use the `ReadPolicy` inferred from the store's type. Default value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
@@ -285,10 +295,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Gets a count of how many records that matches with the (optional) query passed by parameter.
-     - parameter query: The query used to filter the results
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the response returns
+     Count of records that matches with the (optional) query parameter.
+     - parameter query: (Optional) The query used to filter the results. When
+     query is nil, gets the total count of the collection. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use the `ReadPolicy` inferred from the store's type. Default value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the
+     response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -304,12 +316,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Gets a count of how many records that matches with the (optional) query
-     passed by parameter.
-     - parameter query: (Optional) The query used to filter the results. Default
-     value: `nil`
+     Count of records that matches with the (optional) query parameter.
+     - parameter query: (Optional) The query used to filter the results. When
+     query is nil, gets the total count of the collection. Default value: `nil`
      - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
-     otherwise use the client's `ReadPolicy`. Default value: `nil`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
      - parameter completionHandler: Completion handler to be called once the
      response returns
      - returns: A `Request` instance which will allow cancel the request later
@@ -327,10 +339,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Custom aggregation function performed in the backend.
+     Custom aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
      - parameter keys: (Optional) Property names that should be grouped. Default
      value: `nil`
-     - parameter initialObject: Sets an initial object that contain initial
+     - parameter initialObject: Sets an initial object that contains initial
      values needed for the reduce function
      - parameter reduceJSFunction: JavaScript reduce function that performs the
      aggregation
@@ -368,10 +382,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Custom aggregation function performed in the backend.
+     Custom aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
      - parameter keys: (Optional) Property names that should be grouped. Default
      value: `nil`
-     - parameter initialObject: Sets an initial object that contain initial
+     - parameter initialObject: Sets an initial object that contains initial
      values needed for the reduce function
      - parameter reduceJSFunction: JavaScript reduce function that performs the
      aggregation
@@ -425,7 +441,19 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Count aggregation function performed in the backend.
+     Count aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - countType: Integer type to be return as a result count
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Count: CountType>(
@@ -451,7 +479,19 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Count aggregation function performed in the backend.
+     Count aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - countType: Integer type to be return as a result count
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Count: CountType>(
@@ -492,7 +532,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Sum aggregation function performed in the backend.
+     Sum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - sum: Property name used in the sum operation
+       - sumType: Integer type to be return as a result sum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Sum: AddableType>(
@@ -520,7 +573,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Sum aggregation function performed in the backend.
+     Sum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - sum: Property name used in the sum operation
+       - sumType: Integer type to be return as a result sum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Sum: AddableType>(
@@ -562,7 +628,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Average aggregation function performed in the backend.
+     Average aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - avg: Property name used in the average operation
+       - avgType: Integer type to be return as a result average
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Avg: AddableType>(
@@ -590,7 +669,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Average aggregation function performed in the backend.
+     Average aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - avg: Property name used in the average operation
+       - avgType: Integer type to be return as a result average
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Avg: AddableType>(
@@ -632,7 +724,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Minimum aggregation function performed in the backend.
+     Minimum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - min: Property name used in the minimum operation
+       - minType: Integer type to be return as a result minimum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Min: MinMaxType>(
@@ -660,7 +765,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Minimum aggregation function performed in the backend.
+     Minimum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - min: Property name used in the minimum operation
+       - minType: Integer type to be return as a result minimum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Min: MinMaxType>(
@@ -702,7 +820,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Maximum aggregation function performed in the backend.
+     Maximum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - max: Property name used in the maximum operation
+       - maxType: Integer type to be return as a result maximum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Max: MinMaxType>(
@@ -730,7 +861,20 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Maximum aggregation function performed in the backend.
+     Maximum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - max: Property name used in the maximum operation
+       - maxType: Integer type to be return as a result maximum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
     open func group<Max: MinMaxType>(
@@ -1183,7 +1327,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Subscribe and start listening changes in the collection
+     Subscribe and start listening to changes in the collection
      */
     @discardableResult
     open func subscribe(

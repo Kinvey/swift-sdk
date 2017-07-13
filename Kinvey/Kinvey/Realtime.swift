@@ -13,7 +13,7 @@ import PromiseKit
 /// Tells the current status for the realtime connection
 public enum RealtimeStatus {
     
-    /// Connection is stablished
+    /// Connection is established
     case connected
     
     /// Connection used to be on, but is now off

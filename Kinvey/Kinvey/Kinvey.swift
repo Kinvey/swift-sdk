@@ -12,8 +12,10 @@ import XCGLogger
 let ObjectIdTmpPrefix = "tmp_"
 
 /**
- Shared client instance for simplicity. Use this instance if *you don't need* to
- handle with multiple Kinvey environments.
+ Shared client instance for simplicity. All methods that use a client will
+ default to this instance. If you intend to use multiple backend apps or
+ environments, you should override this default by providing a separate Client
+ instance.
  */
 public let sharedClient = Client.sharedClient
 
@@ -39,7 +41,7 @@ fileprivate extension Keychain {
 }
 
 /**
- Define how detailed operations should be logged. Here's the asceding order
+ Define how detailed operations should be logged. Here's the ascending order
  (from the less detailed to the most detailed level): none, severe, error,
  warning, info, debug, verbose
  */
