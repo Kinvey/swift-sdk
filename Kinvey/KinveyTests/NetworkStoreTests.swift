@@ -389,6 +389,43 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testCountTranslateQuery() {
+        let store = DataStore<Event>.collection(.network)
+        
+        if useMockData {
+            mockResponse { (request) -> HttpResponse in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let queryString = urlComponents.queryItems!.filter { $0.name == "query" }.first!.value!
+                let query = try! JSONSerialization.jsonObject(with: queryString.data(using: .utf8)!) as! JsonDictionary
+                XCTAssertNil(query["publishDate"])
+                XCTAssertNotNil(query["date"])
+                return HttpResponse(json: ["count" : 85])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationCount = expectation(description: "Count")
+        
+        let query = Query(format: "publishDate >= %@", Date())
+        
+        store.count(query) { (count, error) in
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(count, 85)
+            
+            expectationCount?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCount = nil
+        }
+    }
+    
     func testCountTimeoutError() {
         let store = DataStore<Event>.collection(.network)
         
