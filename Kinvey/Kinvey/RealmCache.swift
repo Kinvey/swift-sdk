@@ -332,14 +332,18 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func save(entities: [T]) {
+        let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
-            try! self.realm.write {
+            let realm = self.realm
+            let entityType = self.entityType
+            try! realm.write {
                 for entity in entities {
-                    self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
+                    realm.create(entityType, value: entity, update: true)
                 }
             }
         }
+        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func find(byId objectId: String) -> T? {

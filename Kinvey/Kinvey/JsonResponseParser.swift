@@ -28,13 +28,16 @@ class JsonResponseParser: ResponseParser {
     }
     
     func parseArray(_ data: Data?) -> [JsonDictionary]? {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        var result: [JsonDictionary]? = nil
         if let data = data, data.count > 0,
-            let result = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary],
-            let json = result
+            let jsonObject = try? JSONSerialization.jsonObject(with: data),
+            let json = jsonObject as? [JsonDictionary]
         {
-            return json
+            result = json
         }
-        return nil
+        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+        return result
     }
     
     func parse<T: BaseMappable>(_ data: Data?) -> T? {

@@ -164,7 +164,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         self.executeLocal(completionHandler)
                     }
                 } else {
-                    let entities = [T](JSONArray: jsonArray)
+                    func convert(_ jsonArray: [JsonDictionary]) -> [T] {
+                        let startTime = CFAbsoluteTimeGetCurrent()
+                        let entities = [T](JSONArray: jsonArray)
+                        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+                        return entities
+                    }
+                    let entities = convert(jsonArray)
                     if let cache = self.cache {
                         if self.mustRemoveCachedRecords {
                             let refObjs = self.reduceToIdsLmts(jsonArray)
