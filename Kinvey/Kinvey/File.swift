@@ -45,7 +45,8 @@ open class File: Object, Mappable {
         }
     }
     
-    open dynamic var upload:String?
+    /// Temporary upload URL String of the file.
+    open dynamic var upload: String?
     
     /// Temporary upload URL of the file.
     open dynamic var uploadURL: URL? {
@@ -65,8 +66,10 @@ open class File: Object, Mappable {
     /// Expiration data of the `downloadURL`.
     open dynamic var expiresAt: Date?
     
+    /// ETag header used for validate the local cache
     open internal(set) dynamic var etag: String?
     
+    /// Local path URL String for the cached file
     open internal(set) dynamic var path: String? {
         didSet {
             if let path = path,
@@ -81,6 +84,7 @@ open class File: Object, Mappable {
         }
     }
     
+    /// Local path URL for the cached file
     open internal(set) dynamic var pathURL: URL? {
         get {
             if let path = path {

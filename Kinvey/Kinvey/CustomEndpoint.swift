@@ -20,18 +20,31 @@ open class CustomEndpoint {
         
     }
     
+    /// Parameter Wrapper
     open class Params {
         
         internal let value: ParamsEnum
         
+        /**
+         Sets the `value` enumeration to a JSON dictionary.
+         - parameter json: JSON dictionary to be used as a parameter value
+         */
         public init(_ json: JsonDictionary) {
             value = ParamsEnum.json(json)
         }
         
+        /**
+         Sets the `value` enumeration to any Mappable object.
+         - parameter object: Mappable object to be used as a parameter value
+         */
         public init(_ object: Mappable) {
             value = ParamsEnum.object(object)
         }
         
+        /**
+         Sets the `value` enumeration to any StaticMappable struct.
+         - parameter object: StaticMappable struct to be used as a parameter value
+         */
         public init(_ object: StaticMappable) {
             value = ParamsEnum.object(object)
         }

@@ -125,6 +125,10 @@ enum Aggregation {
 
 public typealias AggregationCustomResult<T: Persistable> = (value: T, custom: JsonDictionary)
 
+/**
+ Protocol that marks all types that are compatible as a Count type such as Int,
+ Int8, Int16, Int32 and Int64
+ */
 public protocol CountType {}
 extension Int: CountType {}
 extension Int8: CountType {}
@@ -134,6 +138,10 @@ extension Int64: CountType {}
 
 public typealias AggregationCountResult<T: Persistable, Count: CountType> = (value: T, count: Count)
 
+/**
+ Protocol that marks all types that are compatible as a Add type such as
+ NSNumber, Double, Float, Int, Int8, Int16, Int32 and Int64
+ */
 public protocol AddableType {}
 extension NSNumber: AddableType {}
 extension Double: AddableType {}
@@ -147,6 +155,10 @@ extension Int64: AddableType {}
 public typealias AggregationSumResult<T: Persistable, Sum: AddableType> = (value: T, sum: Sum)
 public typealias AggregationAvgResult<T: Persistable, Avg: AddableType> = (value: T, avg: Avg)
 
+/**
+ Protocol that marks all types that are compatible as a Min type such as
+ NSNumber, Double, Float, Int, Int8, Int16, Int32, Int64, Date and NSDate
+ */
 public protocol MinMaxType {}
 extension NSNumber: MinMaxType {}
 extension Double: MinMaxType {}

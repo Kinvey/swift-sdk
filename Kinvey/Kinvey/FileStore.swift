@@ -17,9 +17,13 @@ import ObjectMapper
     import UIKit
 #endif
 
+/// Enumeration to describe which format an image should be represented
 public enum ImageRepresentation {
     
+    /// PNG Format
     case png
+    
+    /// JPEG Format with a compression quality value
     case jpeg(compressionQuality: Float)
 
 #if os(macOS)
@@ -89,6 +93,10 @@ open class FileStore<FileType: File> {
         return FileStore<FileType>(client: client)
     }
     
+    /**
+     Constructor that takes a specific `Client` instance or use the
+     `sharedClient` instance
+     */
     public init(client: Client = sharedClient) {
         self.client = client
         self.cache = client.cacheManager.fileCache(fileURL: client.fileURL())

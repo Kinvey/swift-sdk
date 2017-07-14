@@ -26,6 +26,7 @@ public class Metadata: Object, Mappable {
     @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.authToken instead")
     open static let AuthTokenKey = "authtoken"
     
+    /// Property names for `Metadata`
     public struct Key {
         
         /// Last Modification Time Key.
@@ -123,10 +124,16 @@ public class Metadata: Object, Mappable {
 
 }
 
+/// Metadata information for each `User`
 public final class UserMetadata: Metadata {
     
+    /// Status of the email verification process
     open internal(set) var emailVerification: EmailVerification?
+    
+    /// Status of the password reset process
     open internal(set) var passwordReset: PasswordReset?
+    
+    /// Status of the activation process
     open internal(set) var userStatus: UserStatus?
     
     public override func mapping(map: Map) {
@@ -139,15 +146,24 @@ public final class UserMetadata: Metadata {
 
 }
 
+/// Status of the email verification process for each `User`
 public final class EmailVerification: Object {
     
+    /// Current Status
     open internal(set) var status: String?
+    
+    /// Date of the last Status change
     open internal(set) var lastStateChangeAt: Date?
+    
+    /// Date of the last email confirmation
     open internal(set) var lastConfirmedAt: Date?
+    
+    /// Email Address
     open internal(set) var emailAddress: String?
     
 }
 
+/// Allows serialization and deserialization of EmailVerification
 extension EmailVerification: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -165,13 +181,18 @@ extension EmailVerification: Mappable {
     
 }
 
+/// Status of the password reset process for each `User`
 public final class PasswordReset: Object {
     
+    /// Current Status
     open internal(set) var status: String?
+    
+    /// Date of the last Status change
     open internal(set) var lastStateChangeAt: Date?
     
 }
 
+/// Allows serialization and deserialization of PasswordReset
 extension PasswordReset: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -187,13 +208,18 @@ extension PasswordReset: Mappable {
     
 }
 
+/// Status of activation process for each `User`
 public final class UserStatus: Object {
     
+    /// Current Status
     open internal(set) var value: String?
+    
+    /// Date of the last Status change
     open internal(set) var lastChange: Date?
     
 }
 
+/// Allows serialization and deserialization of UserStatus
 extension UserStatus: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.

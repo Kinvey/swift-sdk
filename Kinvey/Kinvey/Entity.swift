@@ -42,6 +42,7 @@ internal func StringFromClass(cls: AnyClass) -> String {
 /// Base class for entity classes that are mapped to a collection in Kinvey.
 open class Entity: Object, Persistable {
     
+    /// Property names for the `Entity` class
     public struct Key {
         
         /// Key to map the `_id` column in your Persistable implementation class.
@@ -159,25 +160,31 @@ open class Entity: Object, Persistable {
     
 }
 
+/// Wrapper type for string values that needs to be stored locally in the device
 open class StringValue: Object, ExpressibleByStringLiteral {
     
+    /// String value for the wrapper
     public dynamic var value = ""
     
+    /// Constructor for the `ExpressibleByUnicodeScalarLiteral` protocol
     public convenience required init(unicodeScalarLiteral value: String) {
         self.init()
         self.value = value
     }
     
+    /// Constructor for the `ExpressibleByExtendedGraphemeClusterLiteral` protocol
     public convenience required init(extendedGraphemeClusterLiteral value: String) {
         self.init()
         self.value = value
     }
     
+    /// Constructor for the `ExpressibleByStringLiteral` protocol
     public convenience required init(stringLiteral value: String) {
         self.init()
         self.value = value
     }
     
+    /// Constructor that takes a string value to wrap
     public convenience init(_ value: String) {
         self.init()
         self.value = value
@@ -185,15 +192,21 @@ open class StringValue: Object, ExpressibleByStringLiteral {
     
 }
 
+/**
+ Wrapper type for integer values that needs to be stored locally in the device
+ */
 open class IntValue: Object, ExpressibleByIntegerLiteral {
     
+    /// Integer value for the wrapper
     public dynamic var value = 0
     
+    /// Constructor for the `ExpressibleByIntegerLiteral` protocol
     public convenience required init(integerLiteral value: Int) {
         self.init()
         self.value = value
     }
     
+    /// Constructor that takes an integer value to wrap
     public convenience init(_ value: Int) {
         self.init()
         self.value = value
@@ -201,15 +214,21 @@ open class IntValue: Object, ExpressibleByIntegerLiteral {
     
 }
 
+/**
+ Wrapper type for float values that needs to be stored locally in the device
+ */
 open class FloatValue: Object, ExpressibleByFloatLiteral {
     
+    /// Float value for the wrapper
     public dynamic var value = Float(0)
     
+    /// Constructor for the `ExpressibleByFloatLiteral` protocol
     public convenience required init(floatLiteral value: Float) {
         self.init()
         self.value = value
     }
     
+    /// Constructor that takes a float value to wrap
     public convenience init(_ value: Float) {
         self.init()
         self.value = value
@@ -217,15 +236,21 @@ open class FloatValue: Object, ExpressibleByFloatLiteral {
     
 }
 
+/**
+ Wrapper type for double values that needs to be stored locally in the device
+ */
 open class DoubleValue: Object, ExpressibleByFloatLiteral {
     
+    /// Double value for the wrapper
     public dynamic var value = 0.0
     
+    /// Constructor for the `ExpressibleByFloatLiteral` protocol
     public convenience required init(floatLiteral value: Double) {
         self.init()
         self.value = value
     }
     
+    /// Constructor that takes a double value to wrap
     public convenience init(_ value: Double) {
         self.init()
         self.value = value
@@ -233,15 +258,21 @@ open class DoubleValue: Object, ExpressibleByFloatLiteral {
     
 }
 
+/**
+ Wrapper type for boolean values that needs to be stored locally in the device
+ */
 open class BoolValue: Object, ExpressibleByBooleanLiteral {
     
+    /// Boolean value for the wrapper
     public dynamic var value = false
     
+    /// Constructor for the `ExpressibleByBooleanLiteral` protocol
     public convenience required init(booleanLiteral value: Bool) {
         self.init()
         self.value = value
     }
     
+    /// Constructor that takes a boolean value to wrap
     public convenience init(_ value: Bool) {
         self.init()
         self.value = value

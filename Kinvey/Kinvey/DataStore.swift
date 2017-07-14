@@ -90,6 +90,15 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /**
      Deprecated method. Please use `collection()` instead.
+     - Parameters:
+       - type: (Optional) Type for the new DataStore instance. Default value:
+     `.cache`
+       - deltaSet: (Optional) Enables delta set cache. Default value: `nil`
+       - client: (Optional) `Client` instance to be used for all requests.
+     Default value: `sharedClient`
+       - tag: (Optional) Tag the store and separate stores in different tags.
+     Default value: `defaultTag`
+     - Returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
     open class func getInstance(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
@@ -118,8 +127,22 @@ open class DataStore<T: Persistable> where T: NSObject {
         return dataStore!
     }
     
-    open func collection<NewType: Persistable>(newType: NewType.Type) -> DataStore<NewType> where NewType: NSObject {
-        return DataStore<NewType>(type: type, deltaSet: deltaSet, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
+    /**
+     Factory method that returns a new instance of a DataStore copying all the
+     current configuration but for a new type.
+     - parameter newType: Type for the new DataStore instance
+     - returns: A new DataStore instance for the type specified
+     */
+    open func collection<NewType: Persistable>(
+        newType: NewType.Type
+    ) -> DataStore<NewType> where NewType: NSObject {
+        return DataStore<NewType>(
+            type: type,
+            deltaSet: deltaSet,
+            client: client,
+            fileURL: fileURL,
+            encryptionKey: client.encryptionKey
+        )
     }
     
     fileprivate init(type: StoreType, deltaSet: Bool, client: Client, fileURL: URL?, encryptionKey: Data?) {
@@ -142,8 +165,10 @@ open class DataStore<T: Persistable> where T: NSObject {
     /**
      Gets a single record using the `_id` of the record.
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -161,8 +186,10 @@ open class DataStore<T: Persistable> where T: NSObject {
     /**
      Gets a single record using the `_id` of the record.
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -181,8 +208,10 @@ open class DataStore<T: Persistable> where T: NSObject {
      
      PS: This method is just a shortcut for `findById()`
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -202,8 +231,10 @@ open class DataStore<T: Persistable> where T: NSObject {
      
      PS: This method is just a shortcut for `findById()`
      - parameter id: The `_id` value of the entity to be find
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -224,8 +255,10 @@ open class DataStore<T: Persistable> where T: NSObject {
      Gets a list of records that matches with the query passed by parameter.
      - parameter query: The query used to filter the results
      - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -244,8 +277,8 @@ open class DataStore<T: Persistable> where T: NSObject {
      Gets a list of records that matches with the query passed by parameter.
      - parameter query: The query used to filter the results
      - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use the `ReadPolicy` inferred from the store's type. Default value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -262,10 +295,12 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Gets a count of how many records that matches with the (optional) query passed by parameter.
-     - parameter query: The query used to filter the results
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     Count of records that matches with the (optional) query parameter.
+     - parameter query: (Optional) The query used to filter the results. When
+     query is nil, gets the total count of the collection. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use the `ReadPolicy` inferred from the store's type. Default value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the
+     response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -281,10 +316,14 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /**
-     Gets a count of how many records that matches with the (optional) query passed by parameter.
-     - parameter query: The query used to filter the results
-     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
-     - parameter completionHandler: Completion handler to be called once the respose returns
+     Count of records that matches with the (optional) query parameter.
+     - parameter query: (Optional) The query used to filter the results. When
+     query is nil, gets the total count of the collection. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the `ReadPolicy` inferred from the store's type. Default
+     value: `ReadPolicy` inferred from the store's type
+     - parameter completionHandler: Completion handler to be called once the
+     response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
     @discardableResult
@@ -299,9 +338,40 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Custom aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - parameter keys: (Optional) Property names that should be grouped. Default
+     value: `nil`
+     - parameter initialObject: Sets an initial object that contains initial
+     values needed for the reduce function
+     - parameter reduceJSFunction: JavaScript reduce function that performs the
+     aggregation
+     - parameter condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group(keys: [String]? = nil, initialObject: JsonDictionary, reduceJSFunction: String, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationCustomResult<T>]?, Swift.Error?) -> Void) -> Request {
-        return group(keys: keys, initialObject: initialObject, reduceJSFunction: reduceJSFunction, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationCustomResult<T>], Swift.Error>) in
+    open func group(
+        keys: [String]? = nil,
+        initialObject: JsonDictionary,
+        reduceJSFunction: String,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationCustomResult<T>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            keys: keys,
+            initialObject: initialObject,
+            reduceJSFunction: reduceJSFunction,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationCustomResult<T>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -311,16 +381,53 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Custom aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - parameter keys: (Optional) Property names that should be grouped. Default
+     value: `nil`
+     - parameter initialObject: Sets an initial object that contains initial
+     values needed for the reduce function
+     - parameter reduceJSFunction: JavaScript reduce function that performs the
+     aggregation
+     - parameter condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+     - parameter readPolicy: (Optional) Enforces a different `ReadPolicy`
+     otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group(keys: [String]? = nil, initialObject: JsonDictionary, reduceJSFunction: String, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<[AggregationCustomResult<T>], Swift.Error>) -> Void) -> Request {
+    open func group(
+        keys: [String]? = nil,
+        initialObject: JsonDictionary,
+        reduceJSFunction: String,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationCustomResult<T>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let keys = keys ?? []
-        let aggregation: Aggregation = .custom(keys: keys, initialObject: initialObject, reduceJSFunction: reduceJSFunction)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let aggregation: Aggregation = .custom(
+            keys: keys,
+            initialObject: initialObject,
+            reduceJSFunction: reduceJSFunction
+        )
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationCustomResult<T>(value: T(JSON: $0)!, custom: $0) }
+                let array = results.map {
+                    AggregationCustomResult<T>(value: T(JSON: $0)!, custom: $0)
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -333,10 +440,35 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Count aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - countType: Integer type to be return as a result count
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Count: CountType>(count keys: [String], countType: Count.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping
-        ([AggregationCountResult<T, Count>]?, Swift.Error?) -> Void) -> Request {
-        return group(count: keys, countType: countType, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationCountResult<T, Count>], Swift.Error>) in
+    open func group<Count: CountType>(
+        count keys: [String],
+        countType: Count.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationCountResult<T, Count>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            count: keys,
+            countType: countType,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationCountResult<T, Count>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -346,16 +478,47 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Count aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - countType: Integer type to be return as a result count
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Count: CountType>(count keys: [String], countType: Count.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping
-        (Result<[AggregationCountResult<T, Count>], Swift.Error>) -> Void) -> Request {
+    open func group<Count: CountType>(
+        count keys: [String],
+        countType: Count.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationCountResult<T, Count>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .count(keys: keys)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationCountResult<T, Count>(value: T(JSON: $0)!, count: $0[aggregation.resultKey] as! Count) }
+                let array = results.map {
+                    AggregationCountResult<T, Count>(
+                        value: T(JSON: $0)!,
+                        count: $0[aggregation.resultKey] as! Count
+                    )
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -368,9 +531,38 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Sum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - sum: Property name used in the sum operation
+       - sumType: Integer type to be return as a result sum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Sum: AddableType>(keys: [String], sum: String, sumType: Sum.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationSumResult<T, Sum>]?, Swift.Error?) -> Void) -> Request {
-        return group(keys: keys, sum: sum, sumType: sumType, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationSumResult<T, Sum>], Swift.Error>) in
+    open func group<Sum: AddableType>(
+        keys: [String],
+        sum: String,
+        sumType: Sum.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationSumResult<T, Sum>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            keys: keys,
+            sum: sum,
+            sumType: sumType,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationSumResult<T, Sum>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -380,15 +572,49 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Sum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - sum: Property name used in the sum operation
+       - sumType: Integer type to be return as a result sum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Sum: AddableType>(keys: [String], sum: String, sumType: Sum.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<[AggregationSumResult<T, Sum>], Swift.Error>) -> Void) -> Request {
+    open func group<Sum: AddableType>(
+        keys: [String],
+        sum: String,
+        sumType: Sum.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationSumResult<T, Sum>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .sum(keys: keys, sum: sum)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationSumResult<T, Sum>(value: T(JSON: $0)!, sum: $0[aggregation.resultKey] as! Sum) }
+                let array = results.map {
+                    AggregationSumResult<T, Sum>(
+                        value: T(JSON: $0)!,
+                        sum: $0[aggregation.resultKey] as! Sum
+                    )
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -401,9 +627,38 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Average aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - avg: Property name used in the average operation
+       - avgType: Integer type to be return as a result average
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Avg: AddableType>(keys: [String], avg: String, avgType: Avg.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationAvgResult<T, Avg>]?, Swift.Error?) -> Void) -> Request {
-        return group(keys: keys, avg: avg, avgType: avgType, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationAvgResult<T, Avg>], Swift.Error>) in
+    open func group<Avg: AddableType>(
+        keys: [String],
+        avg: String,
+        avgType: Avg.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationAvgResult<T, Avg>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            keys: keys,
+            avg: avg,
+            avgType: avgType,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationAvgResult<T, Avg>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -413,15 +668,49 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Average aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - avg: Property name used in the average operation
+       - avgType: Integer type to be return as a result average
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Avg: AddableType>(keys: [String], avg: String, avgType: Avg.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<[AggregationAvgResult<T, Avg>], Swift.Error>) -> Void) -> Request {
+    open func group<Avg: AddableType>(
+        keys: [String],
+        avg: String,
+        avgType: Avg.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationAvgResult<T, Avg>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .avg(keys: keys, avg: avg)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationAvgResult<T, Avg>(value: T(JSON: $0)!, avg: $0[aggregation.resultKey] as! Avg) }
+                let array = results.map {
+                    AggregationAvgResult<T, Avg>(
+                        value: T(JSON: $0)!,
+                        avg: $0[aggregation.resultKey] as! Avg
+                    )
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -434,9 +723,38 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Minimum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - min: Property name used in the minimum operation
+       - minType: Integer type to be return as a result minimum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Min: MinMaxType>(keys: [String], min: String, minType: Min.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationMinResult<T, Min>]?, Swift.Error?) -> Void) -> Request {
-        return group(keys: keys, min: min, minType: minType, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationMinResult<T, Min>], Swift.Error>) in
+    open func group<Min: MinMaxType>(
+        keys: [String],
+        min: String,
+        minType: Min.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationMinResult<T, Min>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            keys: keys,
+            min: min,
+            minType: minType,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationMinResult<T, Min>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -446,15 +764,49 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Minimum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - min: Property name used in the minimum operation
+       - minType: Integer type to be return as a result minimum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Min: MinMaxType>(keys: [String], min: String, minType: Min.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<[AggregationMinResult<T, Min>], Swift.Error>) -> Void) -> Request {
+    open func group<Min: MinMaxType>(
+        keys: [String],
+        min: String,
+        minType: Min.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationMinResult<T, Min>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .min(keys: keys, min: min)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationMinResult<T, Min>(value: T(JSON: $0)!, min: $0[aggregation.resultKey] as! Min) }
+                let array = results.map {
+                    AggregationMinResult<T, Min>(
+                        value: T(JSON: $0)!,
+                        min: $0[aggregation.resultKey] as! Min
+                    )
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -467,9 +819,38 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Maximum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - max: Property name used in the maximum operation
+       - maxType: Integer type to be return as a result maximum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Max: MinMaxType>(keys: [String], max: String, maxType: Max.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ([AggregationMaxResult<T, Max>]?, Swift.Error?) -> Void) -> Request {
-        return group(keys: keys, max: max, maxType: maxType, condition: condition, readPolicy: readPolicy) { (result: Result<[AggregationMaxResult<T, Max>], Swift.Error>) in
+    open func group<Max: MinMaxType>(
+        keys: [String],
+        max: String,
+        maxType: Max.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping ([AggregationMaxResult<T, Max>]?, Swift.Error?) -> Void
+    ) -> Request {
+        return group(
+            keys: keys,
+            max: max,
+            maxType: maxType,
+            condition: condition,
+            readPolicy: readPolicy
+        ) { (result: Result<[AggregationMaxResult<T, Max>], Swift.Error>) in
             switch result {
             case .success(let results):
                 completionHandler(results, nil)
@@ -479,15 +860,49 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
     }
     
+    /**
+     Maximum aggregation function.
+     Note: this function does not work on local data. It must be run against the
+     backend.
+     - Parameters:
+       - keys: Property names that should be grouped
+       - max: Property name used in the maximum operation
+       - maxType: Integer type to be return as a result maximum
+       - condition: (Optional) Predicate that filter the records to be
+     considered during the reduce function. Default value: `nil`
+       - readPolicy: (Optional) Enforces a different `ReadPolicy` otherwise use
+     the client's `ReadPolicy`. Default value: `nil`
+       - completionHandler: Completion handler to be called once the
+     response returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     @discardableResult
-    open func group<Max: MinMaxType>(keys: [String], max: String, maxType: Max.Type? = nil, condition: NSPredicate? = nil, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<[AggregationMaxResult<T, Max>], Swift.Error>) -> Void) -> Request {
+    open func group<Max: MinMaxType>(
+        keys: [String],
+        max: String,
+        maxType: Max.Type? = nil,
+        condition: NSPredicate? = nil,
+        readPolicy: ReadPolicy? = nil,
+        completionHandler: @escaping (Result<[AggregationMaxResult<T, Max>], Swift.Error>) -> Void
+    ) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .max(keys: keys, max: max)
-        let operation = AggregateOperation<T>(aggregation: aggregation, condition: condition, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = AggregateOperation<T>(
+            aggregation: aggregation,
+            condition: condition,
+            readPolicy: readPolicy,
+            cache: cache,
+            client: client
+        )
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map { AggregationMaxResult<T, Max>(value: T(JSON: $0)!, max: $0[aggregation.resultKey] as! Max) }
+                let array = results.map {
+                    AggregationMaxResult<T, Max>(
+                        value: T(JSON: $0)!,
+                        max: $0[aggregation.resultKey] as! Max
+                    )
+                }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
                 }
@@ -911,6 +1326,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         return realtimeRouter
     }
     
+    /**
+     Subscribe and start listening to changes in the collection
+     */
     @discardableResult
     open func subscribe(
         subscription: @escaping () -> Void,
@@ -953,6 +1371,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /**
+     Unsubscribe and stop listening changes in the collection
+     */
     @discardableResult
     open func unsubscribe(completionHandler: @escaping (Result<Void, Swift.Error>) -> Void) -> Request {
         let request = client.networkRequestFactory.buildAppDataUnSubscribe(collectionName: collectionName, deviceId: deviceId)
