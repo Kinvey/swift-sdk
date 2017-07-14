@@ -1161,7 +1161,7 @@ class NetworkStoreTests: StoreTestCase {
                 readPolicy: .forceNetwork,
                 clientAppVersion: "1.0.0"
             )
-        ) { result in
+        ) { (result: Result<[Person], Swift.Error>) in
             switch result {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
@@ -1195,7 +1195,7 @@ class NetworkStoreTests: StoreTestCase {
                     "someKey" : "someValue"
                 ]
             )
-        ) { result in
+        ) { (result: Result<[Person], Swift.Error>) in
             switch result {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
@@ -1230,7 +1230,7 @@ class NetworkStoreTests: StoreTestCase {
         )
         store.find(
             options: options
-        ) { result in
+        ) { (result: Result<[Person], Swift.Error>) in
             switch result {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)

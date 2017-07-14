@@ -361,11 +361,36 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handler")
     @discardableResult
     open func find(
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
+    ) -> Request {
+        return find(query, options: options) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                completionHandler(.success(Array(results)))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+    }
+    
+    /**
+     Gets a list of records that matches with the query passed by parameter.
+     - parameter query: The query used to filter the results
+     - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
+     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the respose returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
+    @discardableResult
+    open func find(
+        _ query: Query = Query(),
+        options: Options? = nil,
+        completionHandler: @escaping (Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void
     ) -> Request {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let deltaSet = options?.deltaSet ?? self.deltaSet
@@ -1704,6 +1729,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handlers")
     @discardableResult
     open func pull(
         _ query: Query = Query(),
@@ -1713,23 +1739,40 @@ open class DataStore<T: Persistable> where T: NSObject {
     ) -> Request {
         return pull(
             query,
+        deltaSetCompletionHandler: {
+            guard let deltaSetCompletionHandler = deltaSetCompletionHandler else {
+                return
+            }
+            
+            deltaSetCompletionHandler(Array($0))
+        },
             options: Options(
                 deltaSet: deltaSet
-            ),
-            completionHandler: completionHandler
-        )
+            )
+        ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
+            guard let completionHandler = completionHandler else {
+                return
+            }
+            
+            switch result {
+            case .success(let results):
+                completionHandler(.success(Array(results)))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
     }
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSetCompletionHandler: (([T]) -> Void)? = nil,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
+        completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
     ) -> Request {
         var request: Request!
-        Promise<[T]> { fulfill, reject in
+        Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             if type == .network {
                 request = LocalRequest()
                 reject(Error.invalidDataStoreType)
@@ -1805,14 +1848,39 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handler")
     @discardableResult
     open func sync(
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> Request {
+        return sync(
+            query,
+            options: options
+        ) { (result: Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) in
+            guard let completionHandler = completionHandler else {
+                return
+            }
+            
+            switch result {
+            case .success(let count, let results):
+                completionHandler(.success(count, Array(results)))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+    }
+    
+    /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
+    @discardableResult
+    open func sync(
+        _ query: Query = Query(),
+        options: Options? = nil,
+        completionHandler: ((Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) -> Void)? = nil
+    ) -> Request {
         let requests = MultiRequest()
-        Promise<(UInt, [T])> { fulfill, reject in
+        Promise<(UInt, AnyRandomAccessCollection<T>)> { fulfill, reject in
             if type == .network {
                 requests += LocalRequest()
                 reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
@@ -1825,7 +1893,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                         let request = self.pull(
                             query,
                             options: options
-                        ) { (result: Result<[T], Swift.Error>) in
+                        ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                             switch result {
                             case .success(let array):
                                 fulfill(count, array)
@@ -1897,7 +1965,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                             self.pull(
                                 query,
                                 options: options
-                            ) { (result: Result<[T], Swift.Error>) in
+                            ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                                 switch result {
                                 case .success:
                                     fulfill(count)

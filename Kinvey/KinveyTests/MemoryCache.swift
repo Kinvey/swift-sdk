@@ -15,6 +15,10 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
     var memory = [String : T]()
     
+    var dynamic: DynamicCacheType? {
+        return nil
+    }
+    
     init() {
         super.init(persistenceId: "")
     }
@@ -24,7 +28,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory[objId] = entity
     }
     
-    func save(entities: [T]) {
+    func save(entities: AnyRandomAccessCollection<T>) {
         for entity in entities {
             save(entity: entity)
         }
@@ -34,15 +38,15 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         return memory[objectId]
     }
     
-    func find(byQuery query: Query) -> [T] {
+    func find(byQuery query: Query) -> AnyRandomAccessCollection<T> {
         guard let predicate = query.predicate else {
-            return memory.values.map({ (json) -> Type in
+            return AnyRandomAccessCollection(memory.values.map { (json) -> Type in
                 return json
             })
         }
-        return memory.filter({ (key, obj) -> Bool in
+        return AnyRandomAccessCollection(memory.filter { (key, obj) -> Bool in
             return predicate.evaluate(with: obj)
-        }).map({ (key, obj) -> Type in
+        }.map { (key, obj) -> Type in
             return obj
         })
     }
@@ -59,13 +63,13 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         return results
     }
     
-    func findAll() -> [T] {
+    func findAll() -> AnyRandomAccessCollection<T> {
         return find(byQuery: Query())
     }
     
     func count(query: Query? = nil) -> Int {
         if let query = query {
-            return find(byQuery: query).count
+            return Int(find(byQuery: query).count)
         }
         return memory.count
     }
@@ -77,7 +81,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     }
     
     @discardableResult
-    func remove(entities: [T]) -> Bool {
+    func remove(entities: AnyRandomAccessCollection<T>) -> Bool {
         for entity in entities {
             if !remove(entity: entity) {
                 return false
@@ -92,7 +96,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         for obj in objs {
             remove(entity: obj)
         }
-        return objs.count
+        return Int(objs.count)
     }
     
     func removeAll() {
@@ -103,7 +107,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory.removeAll()
     }
     
-    func detach(entities: [T], query: Query?) -> [T] {
+    func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
         return entities
     }
     
