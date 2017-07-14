@@ -712,6 +712,41 @@ class SyncStoreTests: StoreTestCase {
         XCTAssertEqual(store.syncCount(), 0)
     }
     
+    func testPushError401EmptyBody() {
+        save()
+        
+        defer {
+            store.clearCache()
+            
+            XCTAssertEqual(store.syncCount(), 0)
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            mockResponse(statusCode: 401, json: [:])
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
+        
+        weak var expectationPush = expectation(description: "Push")
+        
+        store.push() { count, error in
+            self.assertThread()
+            XCTAssertNil(count)
+            XCTAssertNotNil(error)
+            
+            expectationPush?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationPush = nil
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+    }
+    
     func testPushInvalidDataStoreType() {
         save()
         

@@ -114,9 +114,16 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             }
                         } else if let response = response, response.isUnauthorized,
                             let data = data,
-                            let json = self.client.responseParser.parse(data) as? [String : String]
+                            let json = self.client.responseParser.parse(data) as? [String : String],
+                            let error = json["error"],
+                            let description = json["description"]
                         {
-                            let error = Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
+                            let error = Error.buildUnauthorized(
+                                httpResponse: response.httpResponse,
+                                data: data,
+                                error: error,
+                                description: description
+                            )
                             switch error {
                             case .unauthorized(_, _, let error, _):
                                 if error == Error.InsufficientCredentials {

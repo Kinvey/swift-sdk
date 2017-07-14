@@ -179,16 +179,46 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         return unknownJsonError(httpResponse: httpResponse, data: data, json: json)
     }
     
-    static func buildDataLinkEntityNotFound(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
-        return dataLinkEntityNotFound(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    static func buildDataLinkEntityNotFound(
+        httpResponse: HTTPURLResponse?,
+        data: Data?,
+        debug: String,
+        description: String
+    ) -> Error {
+        return dataLinkEntityNotFound(
+            httpResponse: httpResponse,
+            data: data,
+            debug: debug,
+            description: description
+        )
     }
     
-    static func buildMethodNotAllowed(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
-        return methodNotAllowed(httpResponse: httpResponse, data: data, debug: json["debug"]!, description: json["description"]!)
+    static func buildMethodNotAllowed(
+        httpResponse: HTTPURLResponse?,
+        data: Data?,
+        debug: String,
+        description: String
+    ) -> Error {
+        return methodNotAllowed(
+            httpResponse: httpResponse,
+            data: data,
+            debug: debug,
+            description: description
+        )
     }
     
-    static func buildUnauthorized(httpResponse: HTTPURLResponse?, data: Data?, json: [String : String]) -> Error {
-        return unauthorized(httpResponse: httpResponse, data: data, error: json["error"]!, description: json["description"]!)
+    static func buildUnauthorized(
+        httpResponse: HTTPURLResponse?,
+        data: Data?,
+        error: String,
+        description: String
+    ) -> Error {
+        return unauthorized(
+            httpResponse: httpResponse,
+            data: data,
+            error: error,
+            description: description
+        )
     }
     
 }
