@@ -329,7 +329,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func count(_ query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ((Result<Int, Swift.Error>) -> Void)?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = CountOperation<T>(query: query, readPolicy: readPolicy, cache: cache, client: client)
+        let operation = CountOperation<T>(query: Query(query: query ?? Query(), persistableType: T.self), readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute { result in
             DispatchQueue.main.async {
                 completionHandler?(result)
