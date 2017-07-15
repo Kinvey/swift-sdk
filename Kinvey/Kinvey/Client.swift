@@ -92,6 +92,9 @@ open class Client: Credential {
     /// Timeout interval for this client instance.
     open var timeoutInterval: TimeInterval = 60
     
+    /**
+     Hold default optional values for all calls made by this `Client` instance
+     */
     open var options: Options?
     
     /// The default value for `apiHostName` variable.

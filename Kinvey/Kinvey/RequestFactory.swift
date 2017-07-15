@@ -64,15 +64,28 @@ protocol RequestFactory {
     
 }
 
-//Allow to set a per request
+/// Allow override custom values whenever the default value is not desired.
 public struct Options {
     
+    /// Custom `Client` instance
     public var client: Client?
+    
+    /// Custom `clientId` value used for MIC
     public var clientId: String?
+    
+    /// Custom `TTL` value used for cases where time-to-live value is present
     public var ttl: TTL?
+    
+    /// Enables / disables delta set
     public var deltaSet: Bool?
+    
+    /// Custom read policy for read operations
     public var readPolicy: ReadPolicy?
+    
+    /// Custom write policy for write operations
     public var writePolicy: WritePolicy?
+    
+    /// Custom timeout interval for network requests
     public var timeout: TimeInterval?
     
     /// App version for this client instance.
@@ -81,6 +94,10 @@ public struct Options {
     /// Custom request properties for this client instance.
     public var customRequestProperties: [String : Any]?
     
+    /**
+     Constructor that takes the values that need to be specified and assign
+     default values for all the other properties
+     */
     public init(
         client: Client? = nil,
         clientId: String? = nil,

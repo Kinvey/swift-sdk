@@ -171,6 +171,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> Request {
         return find(byId: id, readPolicy: readPolicy) { (result: Result<T, Swift.Error>) in
@@ -192,6 +193,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<T, Swift.Error>) -> Void) -> Request {
         return find(id, readPolicy: readPolicy, completionHandler: completionHandler)
@@ -214,6 +216,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(
         _ id: String,
@@ -244,6 +247,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(
         _ id: String,
@@ -301,6 +305,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(
         _ query: Query = Query(),
@@ -330,6 +335,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func find(
         _ query: Query = Query(),
@@ -387,6 +393,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func count(
         _ query: Query? = nil,
@@ -417,6 +424,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
     open func count(
         _ query: Query? = nil,
@@ -478,6 +486,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:initialObject:reduceJSFunction:condition:options:completionHandler:)")
     @discardableResult
     open func group(
         keys: [String]? = nil,
@@ -521,6 +530,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:initialObject:reduceJSFunction:condition:options:completionHandler:)")
     @discardableResult
     open func group(
         keys: [String]? = nil,
@@ -598,6 +608,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(count:countType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Count: CountType>(
         count keys: [String],
@@ -636,6 +647,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(count:countType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Count: CountType>(
         count keys: [String],
@@ -709,6 +721,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:sum:sumType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Sum: AddableType>(
         keys: [String],
@@ -750,6 +763,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:sum:sumType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Sum: AddableType>(
         keys: [String],
@@ -826,6 +840,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:avg:avgType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Avg: AddableType>(
         keys: [String],
@@ -867,6 +882,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:avg:avgType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Avg: AddableType>(
         keys: [String],
@@ -943,6 +959,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:min:minType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Min: MinMaxType>(
         keys: [String],
@@ -984,6 +1001,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:min:minType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Min: MinMaxType>(
         keys: [String],
@@ -1060,6 +1078,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:max:maxType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Max: MinMaxType>(
         keys: [String],
@@ -1101,6 +1120,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
+    @available(*, deprecated: 3.6.0, message: "Please use group(keys:max:maxType:condition:options:completionHandler:)")
     @discardableResult
     open func group<Max: MinMaxType>(
         keys: [String],
@@ -1223,6 +1243,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a record.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ persistable: T,
@@ -1243,6 +1264,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a record.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ persistable: T,
@@ -1277,6 +1299,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ array: [T],
@@ -1297,6 +1320,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ array: [T],
@@ -1348,6 +1372,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a record using the `_id` of the record.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(byId:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         byId id: String,
@@ -1368,6 +1393,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a record using the `_id` of the record.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(byId:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         byId id: String,
@@ -1424,6 +1450,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records using the `_id` of the records.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(byIds:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         byIds ids: [String],
@@ -1444,6 +1471,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records using the `_id` of the records.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(byIds:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         byIds ids: [String],
@@ -1482,6 +1510,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records that matches with the query passed by parameter.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ query: Query = Query(),
@@ -1502,6 +1531,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes a list of records that matches with the query passed by parameter.
+    @available(*, deprecated: 3.6.0, message: "Please use remove(_:options:completionHandler:) instead")
     @discardableResult
     open func remove(
         _ query: Query = Query(),
@@ -1541,6 +1571,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes all the records.
+    @available(*, deprecated: 3.6.0, message: "Please use removeAll(options:completionHandler:) instead")
     @discardableResult
     open func removeAll(
         _ writePolicy: WritePolicy? = nil,
@@ -1559,6 +1590,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Deletes all the records.
+    @available(*, deprecated: 3.6.0, message: "Please use removeAll(options:completionHandler:) instead")
     @discardableResult
     open func removeAll(
         _ writePolicy: WritePolicy? = nil,
