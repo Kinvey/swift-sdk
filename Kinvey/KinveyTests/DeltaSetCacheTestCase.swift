@@ -67,7 +67,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
             cache.save(entity: person)
         }
-        let operation = Operation(cache: AnyCache(cache), client: client)
+        let operation = Operation(
+            cache: AnyCache(cache),
+            options: Options(
+                client: client
+            )
+        )
         let query = Query()
         let refObjs: [JsonDictionary] = [
             [
@@ -186,7 +191,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationCreate = expectation(description: "Create")
             
-            let createOperation = SaveOperation<Person>(persistable: person, writePolicy: .forceNetwork, client: client)
+            let createOperation = SaveOperation<Person>(
+                persistable: person,
+                writePolicy: .forceNetwork,
+                options: Options(
+                    client: client
+                )
+            )
             createOperation.execute { result in
                 switch result {
                 case .success:
@@ -376,7 +387,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationUpdate = expectation(description: "Update")
             
-            let updateOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: client)
+            let updateOperation = SaveOperation(
+                persistable: person,
+                writePolicy: .forceNetwork,
+                options: Options(
+                    client: client
+                )
+            )
             updateOperation.execute { result in
                 switch result {
                 case .success:
@@ -537,7 +554,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let query = Query(format: "personId == %@", personId)
             query.persistableType = Person.self
-            let createRemove = RemoveByQueryOperation<Person>(query: query, writePolicy: .forceNetwork, client: client)
+            let createRemove = RemoveByQueryOperation<Person>(
+                query: query,
+                writePolicy: .forceNetwork,
+                options: Options(
+                    client: client
+                )
+            )
             createRemove.execute { result in
                 switch result {
                 case .success(let count):
@@ -642,7 +665,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationCreate = self.expectation(description: "Create")
             
-            let createOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: self.client)
+            let createOperation = SaveOperation(
+                persistable: person,
+                writePolicy: .forceNetwork,
+                options: Options(
+                    client: self.client
+                )
+            )
             createOperation.execute { result in
                 switch result {
                 case .success:
@@ -962,7 +991,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 weak var expectationCreate = self.expectation(description: "Create")
                 
-                let createOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: self.client)
+                let createOperation = SaveOperation(
+                    persistable: person,
+                    writePolicy: .forceNetwork,
+                    options: Options(
+                        client: self.client
+                    )
+                )
                 createOperation.execute { result in
                     switch result {
                     case .success:

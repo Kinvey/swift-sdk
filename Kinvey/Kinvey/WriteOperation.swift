@@ -15,10 +15,18 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
     let writePolicy: WritePolicy
     let sync: AnySync?
     
-    init(writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    init(
+        writePolicy: WritePolicy,
+        sync: AnySync? = nil,
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.writePolicy = writePolicy
         self.sync = sync
-        super.init(cache: cache, client: client)
+        super.init(
+            cache: cache,
+            options: options
+        )
     }
     
 }

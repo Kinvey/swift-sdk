@@ -93,11 +93,24 @@ public class LiveStream<Type: BaseMappable> {
     
     /// Grant access to a user for the `LiveStream`
     @discardableResult
-    public func grantStreamAccess(userId: String, acl: LiveStreamAcl, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) -> Request {
-        let request = client.networkRequestFactory.buildLiveStreamGrantAccess(streamName: name, userId: userId, acl: acl)
+    public func grantStreamAccess(
+        userId: String,
+        acl: LiveStreamAcl,
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let request = client.networkRequestFactory.buildLiveStreamGrantAccess(
+            streamName: name,
+            userId: userId,
+            acl: acl,
+            options: options
+        )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response, response.isOK, let _ = data {
+                if let response = response,
+                    response.isOK,
+                    let _ = data
+                {
                     fulfill()
                 } else {
                     reject(buildError(data, response, error, self.client))
@@ -112,13 +125,23 @@ public class LiveStream<Type: BaseMappable> {
     }
     
     /// Sends a message to an specific user
-    public func send(userId: String, message: Type, retry: Bool = true, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    public func send(
+        userId: String,
+        message: Type,
+        retry: Bool = true,
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
                 if let channelName = self.substreamChannelNameMap[userId] {
                     fulfill(realtimeRouter, channelName)
                 } else {
-                    let request = self.client.networkRequestFactory.buildLiveStreamPublish(streamName: self.name, userId: userId)
+                    let request = self.client.networkRequestFactory.buildLiveStreamPublish(
+                        streamName: self.name,
+                        userId: userId,
+                        options: options
+                    )
                     request.execute() { (data, response, error) in
                         if let response = response,
                             response.isOK,
@@ -172,31 +195,55 @@ public class LiveStream<Type: BaseMappable> {
     
     /// Start listening messages sent to the current active user
     public func listen(
+        options: Options? = nil,
         listening: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
     ) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
-            self.follow(userId: activeUser.userId, following: listening, onNext: onNext, onStatus: onStatus, onError: onError)
+            self.follow(
+                userId: activeUser.userId,
+                options: options,
+                following: listening,
+                onNext: onNext,
+                onStatus: onStatus,
+                onError: onError
+            )
         }.catch { error in
             onError(error)
         }
     }
     
-    /// /// Stop listening messages sent to the current active user
-    public func stopListening(completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    /// Stop listening messages sent to the current active user
+    public func stopListening(
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
         realtimeRouterPromise.then { activeUser, _ in
-            self.unfollow(userId: activeUser.userId, completionHandler: completionHandler)
+            self.unfollow(
+                userId: activeUser.userId,
+                options: options,
+                completionHandler: completionHandler
+            )
         }.catch { error in
             completionHandler?(.failure(error))
         }
     }
     
     /// Sends a message to the current active user
-    public func post(message: Type, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    public func post(
+        message: Type,
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
         realtimeRouterPromise.then { activeUser, _ in
-            self.send(userId: activeUser.userId, message: message, completionHandler: completionHandler)
+            self.send(
+                userId: activeUser.userId,
+                message: message,
+                options: options,
+                completionHandler: completionHandler
+            )
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -205,6 +252,7 @@ public class LiveStream<Type: BaseMappable> {
     /// Start listening messages sent to an specific user
     public func follow(
         userId: String,
+        options: Options? = nil,
         following: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
@@ -215,7 +263,12 @@ public class LiveStream<Type: BaseMappable> {
                 if let channelName = self.substreamChannelNameMap[userId] {
                     fulfill(realtimeRouter, channelName)
                 } else {
-                    let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(streamName: self.name, userId: userId, deviceId: deviceId)
+                    let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(
+                        streamName: self.name,
+                        userId: userId,
+                        deviceId: deviceId,
+                        options: options
+                    )
                     request.execute() { (data, response, error) in
                         if let response = response,
                             response.isOK,
@@ -252,10 +305,19 @@ public class LiveStream<Type: BaseMappable> {
     }
     
     /// Stop listening messages sent to an specific user
-    public func unfollow(userId: String, completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil) {
+    public func unfollow(
+        userId: String,
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<RealtimeRouter> { fulfill, reject in
-                let request = self.client.networkRequestFactory.buildLiveStreamUnsubscribe(streamName: self.name, userId: userId, deviceId: deviceId)
+                let request = self.client.networkRequestFactory.buildLiveStreamUnsubscribe(
+                    streamName: self.name,
+                    userId: userId,
+                    deviceId: deviceId,
+                    options: options
+                )
                 request.execute() { (data, response, error) in
                     if let response = response, response.isOK {
                         fulfill(realtimeRouter)

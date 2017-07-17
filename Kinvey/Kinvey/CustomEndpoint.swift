@@ -54,8 +54,17 @@ open class CustomEndpoint {
     /// Completion handler block for execute custom endpoints.
     public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
     
-    private static func callEndpoint(_ name: String, params: Params? = nil, client: Client, completionHandler: DataResponseCompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildCustomEndpoint(name)
+    private static func callEndpoint(
+        _ name: String,
+        params: Params? = nil,
+        options: Options?,
+        completionHandler: DataResponseCompletionHandler? = nil
+    ) -> Request {
+        let client = options?.client ?? sharedClient
+        let request = client.networkRequestFactory.buildCustomEndpoint(
+            name,
+            options: options
+        )
         if let params = params {
             request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             switch params.value {
@@ -73,11 +82,22 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
-    open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: JsonDictionary? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<JsonDictionary>? = nil
+    ) -> Request {
         let params = params != nil ? Params(params!) : nil
         var request: Request!
         Promise<JsonDictionary> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
+            request = callEndpoint(
+                name,
+                params: params,
+                options: Options(
+                    client: client
+                )
+            ) { data, response, error in
                 if let response = response, response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
                     fulfill(json)
                 } else {
@@ -95,11 +115,22 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
-    open static func execute(_ name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: JsonDictionary? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<[JsonDictionary]>? = nil
+    ) -> Request {
         let params = params != nil ? Params(params!) : nil
         var request: Request!
         Promise<[JsonDictionary]> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
+            request = callEndpoint(
+                name,
+                params: params,
+                options: Options(
+                    client: client
+                )
+            ) { data, response, error in
                 if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
                     fulfill(json)
                 } else {
@@ -116,7 +147,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<JsonDictionary>? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<JsonDictionary>? = nil
+    ) -> Request {
         return execute(
             name,
             params: params,
@@ -133,11 +169,42 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        return execute(
+            name,
+            params: params,
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let client = options?.client ?? sharedClient
         var request: Request!
         Promise<JsonDictionary> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response, response.isOK, let json = client.responseParser.parse(data) {
+            request = callEndpoint(
+                name,
+                params: params,
+                options: options
+            ) { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let json = client.responseParser.parse(data)
+                {
                     fulfill(json)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -153,7 +220,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[JsonDictionary]>? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<[JsonDictionary]>? = nil
+    ) -> Request {
         return execute(
             name,
             params: params,
@@ -170,11 +242,42 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil) -> Request {
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        return execute(
+            name,
+            params: params,
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute(
+        _ name: String,
+        params: Params? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let client = options?.client ?? sharedClient
         var request: Request!
         Promise<[JsonDictionary]> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
+            request = callEndpoint(
+                name,
+                params: params,
+                options: options
+            ) { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let json = client.responseParser.parseArray(data)
+                {
                     fulfill(json)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -192,7 +295,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<T>? = nil) -> Request {
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<T>? = nil
+    ) -> Request {
         return execute(
             name,
             params: params,
@@ -209,11 +317,42 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil) -> Request {
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        return execute(
+            name,
+            params: params,
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let client = options?.client ?? sharedClient
         var request: Request!
         Promise<T> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response, response.isOK, let obj: T = client.responseParser.parse(data) {
+            request = callEndpoint(
+                name,
+                params: params,
+                options: options
+            ) { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let obj: T = client.responseParser.parse(data)
+                {
                     fulfill(obj)
                 } else {
                     reject(buildError(data, response, error, client))
@@ -229,7 +368,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: CompletionHandler<[T]>? = nil) -> Request {
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: CompletionHandler<[T]>? = nil
+    ) -> Request {
         return execute(
             name,
             params: params,
@@ -246,11 +390,42 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(_ name: String, params: Params? = nil, client: Client = sharedClient, completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil) -> Request {
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        client: Client = sharedClient,
+        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        return execute(
+            name,
+            params: params,
+            options: Options(
+                client: client
+            ),
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T: BaseMappable>(
+        _ name: String,
+        params: Params? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let client = options?.client ?? sharedClient
         var request: Request!
         Promise<[T]> { fulfill, reject in
-            request = callEndpoint(name, params: params, client: client) { data, response, error in
-                if let response = response, response.isOK, let objArray: [T] = client.responseParser.parse(data) {
+            request = callEndpoint(
+                name,
+                params: params,
+                options: options
+            ) { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let objArray: [T] = client.responseParser.parse(data)
+                {
                     fulfill(objArray)
                 } else {
                     reject(buildError(data, response, error, client))

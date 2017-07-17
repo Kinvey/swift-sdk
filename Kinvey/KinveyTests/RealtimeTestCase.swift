@@ -357,7 +357,7 @@ class RealtimeTestCase: KinveyTestCase {
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                    dataStoreNetwork.save(person) { (result: Result<Person, Swift.Error>) in
+                    dataStoreNetwork.save(person, writePolicy: nil) { (result: Result<Person, Swift.Error>) in
                         switch result {
                         case .success:
                             break
@@ -904,7 +904,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query) {
+            user.find(query: query, client: client) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users
@@ -1166,7 +1166,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query) {
+            user.find(query: query, client: client) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users

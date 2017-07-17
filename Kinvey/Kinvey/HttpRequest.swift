@@ -24,6 +24,7 @@ struct KinveyHeaderField {
     
     static let requestId = "X-Kinvey-Request-Id"
     static let clientAppVersion = "X-Kinvey-Client-App-Version"
+    static let customRequestProperties = "X-Kinvey-Custom-Request-Properties"
     static let apiVersion = "X-Kinvey-API-Version"
     static let deviceInformation = "X-Kinvey-Device-Information"
     
@@ -290,6 +291,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
             }
         }
     }
+    let options: Options?
     let client: Client
     
     internal var executing: Bool {
@@ -304,16 +306,21 @@ internal class HttpRequest: TaskProgressRequest, Request {
         }
     }
     
-    init(request: URLRequest, timeout: TimeInterval? = nil, client: Client = sharedClient) {
+    init(
+        request: URLRequest,
+        options: Options?
+    ) {
         self.httpMethod = HttpMethod.parse(request.httpMethod!)
         self.endpoint = Endpoint.url(url: request.url!)
+        self.options = options
+        let client = options?.client ?? sharedClient
         self.client = client
         
         if request.value(forHTTPHeaderField: HttpHeaderKey.authorization.rawValue) == nil {
             self.credential = client.activeUser ?? client
         }
         self.request = request
-        if let timeout = timeout {
+        if let timeout = options?.timeout {
             self.request.timeoutInterval = timeout
         }
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
@@ -324,18 +331,19 @@ internal class HttpRequest: TaskProgressRequest, Request {
         endpoint: Endpoint,
         credential: Credential? = nil,
         body: Body? = nil,
-        timeout: TimeInterval? = nil,
-        client: Client = sharedClient
+        options: Options?
     ) {
         self.httpMethod = httpMethod
         self.endpoint = endpoint
+        self.options = options
+        let client = options?.client ?? sharedClient
         self.client = client
         self.credential = credential ?? client
         
         let url = endpoint.url
         request = URLRequest(url: url)
         request.httpMethod = httpMethod.stringValue
-        if let timeout = timeout {
+        if let timeout = options?.timeout {
             request.timeoutInterval = timeout
         }
         if let body = body {
@@ -355,9 +363,18 @@ internal class HttpRequest: TaskProgressRequest, Request {
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
-        if let clientAppVersion = client.clientAppVersion {
+        if let clientAppVersion = options?.clientAppVersion ?? client.options?.clientAppVersion {
             request.setValue(clientAppVersion, forHTTPHeaderField: KinveyHeaderField.clientAppVersion)
         }
+        
+        if let customRequestProperties = self.options?.customRequestProperties ?? client.options?.customRequestProperties,
+            customRequestProperties.count > 0,
+            let data = try? JSONSerialization.data(withJSONObject: customRequestProperties),
+            let customRequestPropertiesString = String(data: data, encoding: .utf8)
+        {
+            request.setValue(customRequestPropertiesString, forHTTPHeaderField: KinveyHeaderField.customRequestProperties)
+        }
+        
         if let url = request.url,
             let query = url.query,
             query.contains("+"),

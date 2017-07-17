@@ -14,10 +14,22 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
     private let httpRequest: () -> HttpRequest
     lazy var request: HttpRequest = self.httpRequest()
     
-    init(query: Query, httpRequest: @autoclosure @escaping () -> HttpRequest, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    init(
+        query: Query,
+        httpRequest: @autoclosure @escaping () -> HttpRequest,
+        writePolicy: WritePolicy,
+        sync: AnySync? = nil,
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.query = query
         self.httpRequest = httpRequest
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        super.init(
+            writePolicy: writePolicy,
+            sync: sync,
+            cache: cache,
+            options: options
+        )
     }
     
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
