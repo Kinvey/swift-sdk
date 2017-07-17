@@ -12,9 +12,18 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client) {
+    init(
+        id: String,
+        readPolicy: ReadPolicy,
+        cache: AnyCache<T>?,
+        options: Options?
+    ) {
         self.id = id
-        super.init(readPolicy: readPolicy, cache: cache, client: client)
+        super.init(
+            readPolicy: readPolicy,
+            cache: cache,
+            options: options
+        )
     }
     
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
@@ -30,7 +39,11 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.collectionName(), id: id)
+        let request = client.networkRequestFactory.buildAppDataGetById(
+            collectionName: T.collectionName(),
+            id: id,
+            options: options
+        )
         request.execute() { data, response, error in
             if let response = response,
                 response.isOK,

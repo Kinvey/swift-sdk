@@ -13,10 +13,20 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     let aggregation: Aggregation
     let predicate: NSPredicate?
     
-    init(aggregation: Aggregation, condition predicate: NSPredicate? = nil, readPolicy: ReadPolicy, cache: AnyCache<T>?, client: Client) {
+    init(
+        aggregation: Aggregation,
+        condition predicate: NSPredicate? = nil,
+        readPolicy: ReadPolicy,
+        cache: AnyCache<T>?,
+        options: Options?
+    ) {
         self.aggregation = aggregation
         self.predicate = predicate
-        super.init(readPolicy: readPolicy, cache: cache, client: client)
+        super.init(
+            readPolicy: readPolicy,
+            cache: cache,
+            options: options
+        )
     }
     
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
@@ -32,7 +42,14 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGroup(collectionName: T.collectionName(), keys: aggregation.keys, initialObject: aggregation.initialObject, reduceJSFunction: aggregation.reduceJSFunction, condition: predicate)
+        let request = client.networkRequestFactory.buildAppDataGroup(
+            collectionName: T.collectionName(),
+            keys: aggregation.keys,
+            initialObject: aggregation.initialObject,
+            reduceJSFunction: aggregation.reduceJSFunction,
+            condition: predicate,
+            options: options
+        )
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let data = data,
@@ -125,6 +142,10 @@ enum Aggregation {
 
 public typealias AggregationCustomResult<T: Persistable> = (value: T, custom: JsonDictionary)
 
+/**
+ Protocol that marks all types that are compatible as a Count type such as Int,
+ Int8, Int16, Int32 and Int64
+ */
 public protocol CountType {}
 extension Int: CountType {}
 extension Int8: CountType {}
@@ -134,6 +155,10 @@ extension Int64: CountType {}
 
 public typealias AggregationCountResult<T: Persistable, Count: CountType> = (value: T, count: Count)
 
+/**
+ Protocol that marks all types that are compatible as a Add type such as
+ NSNumber, Double, Float, Int, Int8, Int16, Int32 and Int64
+ */
 public protocol AddableType {}
 extension NSNumber: AddableType {}
 extension Double: AddableType {}
@@ -147,6 +172,10 @@ extension Int64: AddableType {}
 public typealias AggregationSumResult<T: Persistable, Sum: AddableType> = (value: T, sum: Sum)
 public typealias AggregationAvgResult<T: Persistable, Avg: AddableType> = (value: T, avg: Avg)
 
+/**
+ Protocol that marks all types that are compatible as a Min type such as
+ NSNumber, Double, Float, Int, Int8, Int16, Int32, Int64, Date and NSDate
+ */
 public protocol MinMaxType {}
 extension NSNumber: MinMaxType {}
 extension Double: MinMaxType {}

@@ -389,6 +389,43 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testCountTranslateQuery() {
+        let store = DataStore<Event>.collection(.network)
+        
+        if useMockData {
+            mockResponse { (request) -> HttpResponse in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let queryString = urlComponents.queryItems!.filter { $0.name == "query" }.first!.value!
+                let query = try! JSONSerialization.jsonObject(with: queryString.data(using: .utf8)!) as! JsonDictionary
+                XCTAssertNil(query["publishDate"])
+                XCTAssertNotNil(query["date"])
+                return HttpResponse(json: ["count" : 85])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationCount = expectation(description: "Count")
+        
+        let query = Query(format: "publishDate >= %@", Date())
+        
+        store.count(query) { (count, error) in
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            
+            XCTAssertEqual(count, 85)
+            
+            expectationCount?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCount = nil
+        }
+    }
+    
     func testCountTimeoutError() {
         let store = DataStore<Event>.collection(.network)
         
@@ -1109,45 +1146,96 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testClientAppVersion() {
-        class ClientAppVersionURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
-                
-                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                client!.urlProtocol(self, didLoad: "[]".data(using: .utf8)!)
-                client!.urlProtocolDidFinishLoading(self)
-            }
-            
-            override func stopLoading() {
-            }
-            
+        mockResponse { (request) -> HttpResponse in
+            XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
+            return HttpResponse(json: [])
         }
-        
-        setURLProtocol(ClientAppVersionURLProtocol.self)
-        client.clientAppVersion = "1.0.0"
         defer {
             setURLProtocol(nil)
-            client.clientAppVersion = nil
         }
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(
+            options: Options(
+                readPolicy: .forceNetwork,
+                clientAppVersion: "1.0.0"
+            )
+        ) { result in
+            switch result {
+            case .success(let results):
                 XCTAssertEqual(results.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testCustomRequestProperties() {
+        mockResponse { (request) -> HttpResponse in
+            XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Custom-Request-Properties"], "{\"someKey\":\"someValue\"}")
+            return HttpResponse(json: [])
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(
+            options: Options(
+                readPolicy: .forceNetwork,
+                customRequestProperties: [
+                    "someKey" : "someValue"
+                ]
+            )
+        ) { result in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testCustomRequestPropertiesPerRequest() {
+        mockResponse { (request) -> HttpResponse in
+            XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Custom-Request-Properties"], "{\"someKeyPerRequest\":\"someValuePerRequest\"}")
+            return HttpResponse(json: [])
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let options = Options(
+            readPolicy: .forceNetwork,
+            customRequestProperties: [
+                "someKeyPerRequest" : "someValuePerRequest"
+            ]
+        )
+        store.find(
+            options: options
+        ) { result in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()

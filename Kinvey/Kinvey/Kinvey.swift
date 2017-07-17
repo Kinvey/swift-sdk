@@ -11,9 +11,15 @@ import XCGLogger
 
 let ObjectIdTmpPrefix = "tmp_"
 
-/// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
+/**
+ Shared client instance for simplicity. All methods that use a client will
+ default to this instance. If you intend to use multiple backend apps or
+ environments, you should override this default by providing a separate Client
+ instance.
+ */
 public let sharedClient = Client.sharedClient
 
+/// A once-per-installation value generated to give an ID for the running device
 public let deviceId = Keychain().deviceId
 
 fileprivate extension Keychain {
@@ -34,9 +40,36 @@ fileprivate extension Keychain {
     
 }
 
+/**
+ Define how detailed operations should be logged. Here's the ascending order
+ (from the less detailed to the most detailed level): none, severe, error,
+ warning, info, debug, verbose
+ */
 public enum LogLevel {
     
-    case verbose, debug, info, warning, error, severe, none
+    /**
+     Log operations that are useful if you are debugging giving aditional
+     information. Most detailed level
+     */
+    case verbose
+    
+    /// Log operations that are useful if you are debugging
+    case debug
+    
+    /// Log operations giving aditional information for basic operations
+    case info
+    
+    /// Only log warning messages when needed
+    case warning
+    
+    /// Only log error messages when needed
+    case error
+    
+    /// Only log severe error messages when needed
+    case severe
+    
+    /// Log is turned off
+    case none
     
     internal var outputLevel: XCGLogger.Level {
         switch self {
@@ -93,17 +126,52 @@ func buildError(client: Client) -> Swift.Error {
     return buildError(data: nil, response: nil, error: nil, client: client)
 }
 
-func buildError(data: Data?, response: Response?, error: Swift.Error?, client: Client) -> Swift.Error {
+func buildError(
+    data: Data?,
+    response: Response?,
+    error: Swift.Error?,
+    client: Client
+) -> Swift.Error {
     if let error = error {
         return error
     } else if let response = response, response.isUnauthorized,
-        let json = client.responseParser.parse(data) as? [String : String]
+        let json = client.responseParser.parse(data) as? [String : String],
+        let error = json["error"],
+        let description = json["description"]
     {
-        return Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response, response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String], json["error"] == "MethodNotAllowed" {
-        return Error.buildMethodNotAllowed(httpResponse: response.httpResponse, data: data, json: json)
-    } else if let response = response, response.isNotFound, let json = client.responseParser.parse(data) as? [String : String], json["error"] == "DataLinkEntityNotFound" {
-        return Error.buildDataLinkEntityNotFound(httpResponse: response.httpResponse, data: data, json: json)
+        return Error.buildUnauthorized(
+            httpResponse: response.httpResponse,
+            data: data,
+            error: error,
+            description: description
+        )
+    } else if let response = response,
+        response.isMethodNotAllowed,
+        let json = client.responseParser.parse(data) as? [String : String],
+        let error = json["error"],
+        error == "MethodNotAllowed",
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.buildMethodNotAllowed(
+            httpResponse: response.httpResponse,
+            data: data,
+            debug: debug,
+            description: description
+        )
+    } else if let response = response,
+        response.isNotFound,
+        let json = client.responseParser.parse(data) as? [String : String],
+        json["error"] == "DataLinkEntityNotFound",
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.buildDataLinkEntityNotFound(
+            httpResponse: response.httpResponse,
+            data: data,
+            debug: debug,
+            description: description
+        )
     } else if let response = response,
         response.isForbidden,
         let json = client.responseParser.parse(data) as? [String : String],
@@ -112,7 +180,12 @@ func buildError(data: Data?, response: Response?, error: Swift.Error?, client: C
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.missingConfiguration(httpResponse: response.httpResponse, data: data, debug: debug, description: description)
+        return Error.missingConfiguration(
+            httpResponse: response.httpResponse,
+            data: data,
+            debug: debug,
+            description: description
+        )
     } else if let response = response,
         response.isNotFound,
         let json = client.responseParser.parse(data) as? [String : String],
@@ -120,8 +193,17 @@ func buildError(data: Data?, response: Response?, error: Swift.Error?, client: C
         let description = json["description"]
     {
         return Error.appNotFound(description: description)
-    } else if let response = response, let json = client.responseParser.parse(data) {
-        return Error.buildUnknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
+    } else if let response = response,
+        let json = client.responseParser.parse(data)
+    {
+        return Error.buildUnknownJsonError(
+            httpResponse: response.httpResponse,
+            data: data,
+            json: json
+        )
     }
-    return Error.invalidResponse(httpResponse: response?.httpResponse, data: data)
+    return Error.invalidResponse(
+        httpResponse: response?.httpResponse,
+        data: data
+    )
 }

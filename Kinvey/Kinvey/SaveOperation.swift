@@ -12,20 +12,45 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
     
     var persistable: T
     
-    init(persistable: inout T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    init(
+        persistable: inout T,
+        writePolicy: WritePolicy,
+        sync: AnySync? = nil,
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.persistable = persistable
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        super.init(
+            writePolicy: writePolicy,
+            sync: sync,
+            cache: cache,
+            options: options
+        )
     }
     
-    init(persistable: T, writePolicy: WritePolicy, sync: AnySync? = nil, cache: AnyCache<T>? = nil, client: Client) {
+    init(
+        persistable: T,
+        writePolicy: WritePolicy,
+        sync: AnySync? = nil,
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.persistable = persistable
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        super.init(
+            writePolicy: writePolicy,
+            sync: sync,
+            cache: cache,
+            options: options
+        )
     }
     
     func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
+            let request = self.client.networkRequestFactory.buildAppDataSave(
+                self.persistable,
+                options: options
+            )
             
             let persistable = self.fillObject(&self.persistable)
             if let cache = self.cache {
@@ -41,17 +66,27 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataSave(persistable)
+        let request = client.networkRequestFactory.buildAppDataSave(
+            persistable,
+            options: options
+        )
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
                 if let response = response, response.isOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
                         let persistable = T(JSON: json)
-                        if let objectId = self.persistable.entityId, let sync = self.sync {
-                            sync.removeAllPendingOperations(objectId, methods: ["POST", "PUT"])
+                        if let objectId = self.persistable.entityId,
+                            let sync = self.sync
+                        {
+                            sync.removeAllPendingOperations(
+                                objectId,
+                                methods: ["POST", "PUT"]
+                            )
                         }
-                        if let persistable = persistable, let cache = self.cache {
+                        if let persistable = persistable,
+                            let cache = self.cache
+                        {
                             cache.remove(entity: self.persistable)
                             cache.save(entity: persistable)
                         }

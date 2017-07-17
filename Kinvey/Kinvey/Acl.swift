@@ -144,6 +144,7 @@ extension Acl: Mappable {
 
 extension Acl {
     
+    /// Property names for Acl
     public struct Key {
         
         static let creator = "creator"

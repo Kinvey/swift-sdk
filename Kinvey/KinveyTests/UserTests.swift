@@ -183,7 +183,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, completionHandler: {
+            User.destroy(userId: user.userId, client: client) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -194,7 +194,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -219,7 +219,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, completionHandler: {
+            User.destroy(userId: user.userId, hard: true, client: client) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -230,7 +230,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -255,7 +255,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: false, completionHandler: {
+            User.destroy(userId: user.userId, hard: false, client: client) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -266,7 +266,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -291,7 +291,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, completionHandler: {
+            User.destroy(userId: user.userId, hard: true, client: client) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -302,7 +302,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -687,7 +687,11 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            dataStore.find() { (result: Result<[Person], Swift.Error>) in
+            dataStore.find(
+                options: Options(
+                    client: client
+                )
+            ) { (result: Result<[Person], Swift.Error>) in
                 switch result {
                 case .success:
                     break
@@ -1966,7 +1970,7 @@ class UserTests: KinveyTestCase {
                 
                 weak var expectationForgotUsername = expectation(description: "Forgot Username")
                 
-                User.forgotUsername(email: user.email!) {
+                User.forgotUsername(email: user.email!, client: client) {
                     XCTAssertTrue(Thread.isMainThread)
                     
                     switch $0 {
@@ -1991,7 +1995,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
-        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com") {
+        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com", client: client) {
             XCTAssertTrue(Thread.isMainThread)
             
             switch $0 {
@@ -2714,7 +2718,13 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234", clientId: nil) { result in
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            code: "1234",
+            options: Options(
+                clientId: nil
+            )
+        ) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -2768,7 +2778,13 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, code: "1234", clientId: nil) { result in
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            code: "1234",
+            options: Options(
+                clientId: nil
+            )
+        ) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -2796,7 +2812,14 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            username: UUID().uuidString,
+            password: UUID().uuidString,
+            options: Options(
+                clientId: nil
+            )
+        ) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -2866,7 +2889,14 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            username: UUID().uuidString,
+            password: UUID().uuidString,
+            options: Options(
+                clientId: nil
+            )
+        ) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -2919,7 +2949,14 @@ class UserTests: KinveyTestCase {
         
         weak var expectationLogin = expectation(description: "Login")
         
-        MIC.login(redirectURI: URL(string: "myCustomURIScheme://")!, username: UUID().uuidString, password: UUID().uuidString, clientId: nil) { result in
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            username: UUID().uuidString,
+            password: UUID().uuidString,
+            options: Options(
+                clientId: nil
+            )
+        ) { result in
             XCTAssertTrue(Thread.isMainThread)
             
             switch result {
@@ -3664,7 +3701,11 @@ extension UserTests {
             return true
         }
         
-        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?code=1234")!)
+        let result = User.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            micURL: URL(string: "myCustomURIScheme://?code=1234")!,
+            client: client
+        )
         XCTAssertTrue(result)
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
@@ -3672,7 +3713,11 @@ extension UserTests {
     }
     
     func testUserMICLoginWrongCode() {
-        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?no_code=1234")!)
+        let result = User.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            micURL: URL(string: "myCustomURIScheme://?no_code=1234")!,
+            client: client
+        )
         XCTAssertFalse(result)
     }
     
@@ -3728,7 +3773,11 @@ extension UserTests {
             return true
         }
         
-        let result = User.login(redirectURI: URL(string: "myCustomURIScheme://")!, micURL: URL(string: "myCustomURIScheme://?code=1234")!)
+        let result = User.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            micURL: URL(string: "myCustomURIScheme://?code=1234")!,
+            client: client
+        )
         XCTAssertTrue(result)
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
@@ -3753,7 +3802,11 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 3, forceUIWebView: true) { (user, error) -> Void in
+        User.presentMICViewController(
+            redirectURI: redirectURI,
+            timeout: 3,
+            forceUIWebView: true
+        ) { (user, error) -> Void in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(error)
             

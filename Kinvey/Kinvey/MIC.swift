@@ -17,11 +17,15 @@ class URLSessionDelegateAdapter : NSObject, URLSessionTaskDelegate {
     
 }
 
+/// Class that handles Mobile Identity Connect (MIC) calls
 open class MIC {
     
     private init() {
     }
     
+    /**
+     Validate if a URL matches for a redirect URI and also contains a code value
+     */
     open class func isValid(redirectURI: URL, url: URL) -> Bool {
         return parseCode(redirectURI: redirectURI, url: url) != nil
     }
@@ -44,15 +48,16 @@ open class MIC {
         return code
     }
     
+    /// Returns a URL that must be used for login with MIC
     open class func urlForLogin(
         redirectURI: URL,
         loginPage: Bool = true,
-        clientId: String? = nil,
-        client: Client = sharedClient
+        options: Options? = nil
     ) -> URL {
+        let client = options?.client ?? sharedClient
         return Endpoint.oauthAuth(
             client: client,
-            clientId: clientId,
+            clientId: options?.clientId,
             redirectURI: redirectURI,
             loginPage: loginPage
         ).url
@@ -62,16 +67,27 @@ open class MIC {
     class func login<U: User>(
         redirectURI: URL,
         code: String,
-        clientId: String?,
-        client: Client = sharedClient,
+        options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> Request {
+        let client = options?.client ?? sharedClient
         let requests = MultiRequest()
         Promise<U> { fulfill, reject in
-            let request = client.networkRequestFactory.buildOAuthToken(redirectURI: redirectURI, code: code, clientId: clientId)
+            let request = client.networkRequestFactory.buildOAuthToken(
+                redirectURI: redirectURI,
+                code: code,
+                options: options
+            )
             request.execute { (data, response, error) in
-                if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
-                    requests += User.login(authSource: .kinvey, authData, clientId: clientId, client: client) { (result: Result<U, Swift.Error>) in
+                if let response = response,
+                    response.isOK,
+                    let authData = client.responseParser.parse(data)
+                {
+                    requests += User.login(
+                        authSource: .kinvey,
+                        authData,
+                        options: options
+                    ) { (result: Result<U, Swift.Error>) in
                         switch result {
                         case .success(let user):
                             fulfill(user)
@@ -97,12 +113,15 @@ open class MIC {
         redirectURI: URL,
         username: String,
         password: String,
-        clientId: String?,
-        client: Client = sharedClient,
+        options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> Request {
+        let client = options?.client ?? sharedClient
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantAuth(redirectURI: redirectURI, clientId: clientId)
+        let request = client.networkRequestFactory.buildOAuthGrantAuth(
+            redirectURI: redirectURI,
+            options: options
+        )
         Promise<URL> { fulfill, reject in
             request.execute { (data, response, error) in
                 if let response = response,
@@ -119,8 +138,18 @@ open class MIC {
             requests += request
         }.then { tempLoginUrl in
             return Promise<U> { fulfill, reject in
-                let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(redirectURI: redirectURI, clientId: clientId, tempLoginUri: tempLoginUrl, username: username, password: password)
-                let urlSession = URLSession(configuration: client.urlSession.configuration, delegate: URLSessionDelegateAdapter(), delegateQueue: nil)
+                let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
+                    redirectURI: redirectURI,
+                    tempLoginUri: tempLoginUrl,
+                    username: username,
+                    password: password,
+                    options: options
+                )
+                let urlSession = URLSession(
+                    configuration: client.urlSession.configuration,
+                    delegate: URLSessionDelegateAdapter(),
+                    delegateQueue: nil
+                )
                 request.execute(urlSession: urlSession) { (data, response, error) in
                     if let response = response,
                         let httpResponse = response as? HttpResponse,
@@ -129,7 +158,11 @@ open class MIC {
                         let url = URL(string: location),
                         let code = parseCode(redirectURI: redirectURI, url: url)
                     {
-                        requests += login(redirectURI: redirectURI, code: code, clientId: clientId, client: client) { result in
+                        requests += login(
+                            redirectURI: redirectURI,
+                            code: code,
+                            options: options
+                        ) { result in
                             switch result {
                             case .success(let user):
                                 fulfill(user as! U)
@@ -160,7 +193,12 @@ open class MIC {
         completionHandler: User.UserHandler<U>? = nil
     ) -> Request {
         let requests = MultiRequest()
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(refreshToken: refreshToken, clientId: clientId)
+        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
+            refreshToken: refreshToken,
+            options: Options(
+                clientId: clientId
+            )
+        )
         request.execute { (data, response, error) in
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
                 requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
@@ -214,10 +252,8 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     var activityIndicatorView: UIActivityIndicatorView!
     
     let redirectURI: URL
-    let timeout: TimeInterval?
     let forceUIWebView: Bool
-    let clientId: String?
-    let client: Client
+    let options: Options?
     let completionHandler: UserHandler<User>
     
     var webView: UIView!
@@ -229,12 +265,16 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
-    init<UserType: User>(redirectURI: URL, userType: UserType.Type, timeout: TimeInterval? = nil, forceUIWebView: Bool = false, clientId: String?, client: Client = sharedClient, completionHandler: @escaping UserHandler<UserType>) {
+    init<UserType: User>(
+        redirectURI: URL,
+        userType: UserType.Type,
+        forceUIWebView: Bool = false,
+        options: Options?,
+        completionHandler: @escaping UserHandler<UserType>
+    ) {
         self.redirectURI = redirectURI
-        self.timeout = timeout
         self.forceUIWebView = forceUIWebView
-        self.clientId = clientId
-        self.client = client
+        self.options = options
         self.completionHandler = {
             switch $0 {
             case .success(let user):
@@ -349,14 +389,14 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let url = MIC.urlForLogin(redirectURI: redirectURI, clientId: clientId, client: client)
+        let url = MIC.urlForLogin(redirectURI: redirectURI, options: options)
         let request = URLRequest(url: url)
         webView(
             wkWebView: { $0.load(request) },
             uiWebView: { $0.loadRequest(request) }
         )
         
-        if let timeout = timeout, timeout > 0 {
+        if let timeout = options?.timeout, timeout > 0 {
             timer = Timer.scheduledTimer(
                 timeInterval: timeout,
                 target: self,
@@ -400,7 +440,11 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     func success(code: String) {
         activityIndicatorView.startAnimating()
         
-        MIC.login(redirectURI: redirectURI, code: code, clientId: clientId, client: client) { result in
+        MIC.login(
+            redirectURI: redirectURI,
+            code: code,
+            options: options
+        ) { result in
             self.activityIndicatorView.stopAnimating()
             
             self.closeViewControllerUserInteraction(result)

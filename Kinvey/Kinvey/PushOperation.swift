@@ -63,11 +63,19 @@ fileprivate class PushRequest: NSObject, Request {
 
 internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]> where T: NSObject {
     
-    internal override init(sync: AnySync?, cache: AnyCache<T>?, client: Client) {
-        super.init(sync: sync, cache: cache, client: client)
+    internal override init(
+        sync: AnySync?,
+        cache: AnyCache<T>?,
+        options: Options?
+    ) {
+        super.init(
+            sync: sync,
+            cache: cache,
+            options: options
+        )
     }
     
-    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
+    func execute(completionHandler: CompletionHandler?) -> Request {
         var count = UInt(0)
         var errors: [Swift.Error] = []
         
@@ -84,7 +92,10 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         
         if let sync = sync {
             for pendingOperation in sync.pendingOperations() {
-                let request = HttpRequest(request: pendingOperation.buildRequest(), timeout: timeout, client: client)
+                let request = HttpRequest(
+                    request: pendingOperation.buildRequest(),
+                    options: options
+                )
                 let objectId = pendingOperation.objectId
                 let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
                     request.execute() { data, response, error in
@@ -114,9 +125,16 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             }
                         } else if let response = response, response.isUnauthorized,
                             let data = data,
-                            let json = self.client.responseParser.parse(data) as? [String : String]
+                            let json = self.client.responseParser.parse(data) as? [String : String],
+                            let error = json["error"],
+                            let description = json["description"]
                         {
-                            let error = Error.buildUnauthorized(httpResponse: response.httpResponse, data: data, json: json)
+                            let error = Error.buildUnauthorized(
+                                httpResponse: response.httpResponse,
+                                data: data,
+                                error: error,
+                                description: description
+                            )
                             switch error {
                             case .unauthorized(_, _, let error, _):
                                 if error == Error.InsufficientCredentials {

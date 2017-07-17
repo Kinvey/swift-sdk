@@ -113,11 +113,16 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     typealias UIntArrayCompletionHandler = (UInt?, [T]?, Swift.Error?) -> Void
     
     let cache: AnyCache<T>?
+    let options: Options?
     let client: Client
     
-    init(cache: AnyCache<T>? = nil, client: Client) {
+    init(
+        cache: AnyCache<T>? = nil,
+        options: Options?
+    ) {
         self.cache = cache
-        self.client = client
+        self.options = options
+        self.client = options?.client ?? sharedClient
     }
     
     func reduceToIdsLmts(_ jsonArray: [JsonDictionary]) -> [String : String] {

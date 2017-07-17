@@ -150,7 +150,11 @@ class ViewController: NSViewController {
         
         print("Requesting Login")
         
-        User.login(username: username!, password: password!) { (result: Result<User, Swift.Error>) in
+        User.login(
+            username: username!,
+            password: password!,
+            client: sharedClient
+        ) { (result: Result<User, Swift.Error>) in
             switch result {
             case .success(let user):
                 print("Login Succeed")

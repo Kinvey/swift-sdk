@@ -12,27 +12,50 @@ import ObjectMapper
 import CoreLocation
 import MapKit
 
+/// Class that represents a 2D geolocation with latitude and longitude
 public final class GeoPoint: Object {
     
+    /// Specifies the north–south position of a point
     open dynamic var latitude: CLLocationDegrees = 0.0
+    
+    /// Specifies the east-west position of a point
     open dynamic var longitude: CLLocationDegrees = 0.0
     
-    public convenience init(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+    /**
+     Constructor that takes `CLLocationDegrees` (`Double`) values for latitude
+     and longitude
+     */
+    public convenience init(
+        latitude: CLLocationDegrees,
+        longitude: CLLocationDegrees
+    ) {
         self.init()
         self.latitude = latitude
         self.longitude = longitude
     }
     
+    /// Constructor that takes a `CLLocationCoordinate2D`
     public convenience init(coordinate: CLLocationCoordinate2D) {
-        self.init(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        self.init(
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude
+        )
     }
     
+    /**
+     Constructor that takes an array of `CLLocationDegrees` (`Double`) values
+     for longitude and latitude (in this order)
+     */
     convenience init(_ array: [CLLocationDegrees]) {
         self.init(latitude: array[1], longitude: array[0])
     }
     
 }
 
+/**
+ Make the GeoPoint implement Mappable, so we can serialize and deserialize
+ GeoPoint
+ */
 extension GeoPoint: Mappable {
     
     public convenience init?(map: Map) {
@@ -94,6 +117,10 @@ func ==(lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
 
 extension CLLocation {
     
+    /**
+     Constructor that takes a `GeoPoint` to make it easy to convert to a
+     `CLLocation` instance
+     */
     public convenience init(geoPoint: GeoPoint) {
         self.init(latitude: geoPoint.latitude, longitude: geoPoint.longitude)
     }
@@ -102,6 +129,10 @@ extension CLLocation {
 
 extension CLLocationCoordinate2D {
     
+    /**
+     Constructor that takes a `GeoPoint` to make it easy to convert to a
+     `CLLocationCoordinate2D` instance
+     */
     public init(geoPoint: GeoPoint) {
         self.init(latitude: geoPoint.latitude, longitude: geoPoint.longitude)
     }

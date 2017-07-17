@@ -9,12 +9,13 @@
 import Foundation
 import ObjectMapper
 
-
+/// Default TransformType for `Date` types
 open class KinveyDateTransform : TransformType {
     
     public typealias Object = Date
     public typealias JSON = String
     
+    /// Default Constructor
     public init() {}
     
     //read formatter that accounts for the timezone
@@ -42,6 +43,7 @@ open class KinveyDateTransform : TransformType {
         return wFormatter
     }()
     
+    /// Converts any value to `Date`, if possible
     open func transformFromJSON(_ value: Any?) -> Date? {
         if let dateString = value as? String {
             
@@ -62,6 +64,7 @@ open class KinveyDateTransform : TransformType {
         return nil
     }
     
+    /// Converts any `Date` to `String`, if possible
     open func transformToJSON(_ value: Date?) -> String? {
         if let date = value {
             return dateWriteFormatter.string(from: date)

@@ -32,6 +32,7 @@ fileprivate let dateFormatters = DateFormatters()
 
 extension String {
     
+    /// Converts a `String` to `Date`, if possible
     public func toDate() -> Date? {
         switch self.characters.count {
             case 20:
