@@ -222,8 +222,9 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
                 
                 override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?)
                 {
-                    if let task = task {
-                        print("File \(fileName) status: \(task.countOfBytesSent)/\(task.countOfBytesExpectedToSend)")
+                    if let task = task, task.countOfBytesExpectedToSend > 0 {
+                        let percent = Float(task.countOfBytesSent) / Float(task.countOfBytesExpectedToSend) * 100
+                        print(String(format: "File \(fileName) status: \(task.countOfBytesSent)/\(task.countOfBytesExpectedToSend) %.1f%%\r", percent))
                     }
                 }
             }
@@ -250,6 +251,7 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             weakTask = task
             observer.task = task
             print("Uploading \(fileName)")
+            print("POST \(url)")
             task.addObserver(observer, forKeyPath: "countOfBytesSent", options: .new, context: nil)
             task.addObserver(observer, forKeyPath: "countOfBytesExpectedToSend", options: .new, context: nil)
             task.resume()
@@ -259,13 +261,14 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
         uploadFile(draft, file: carthageZipURL, name: "Carthage.framework.zip") {
             uploadGroup.leave()
         }
+        uploadGroup.wait()
         
         uploadGroup.enter()
         uploadFile(draft, file: zipURL) {
             uploadGroup.leave()
         }
-        
         uploadGroup.wait()
+        
         completionHandler()
     }
 }
