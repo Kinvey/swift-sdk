@@ -85,7 +85,7 @@ deploy-github:
 deploy-git:
 	@if [ "$(CURRENT_BRANCH)" = "develop" ]; then \
 		git-flow release start "$(VERSION)"; \
-		git-flow release finish -n -m "Merge branch 'release/$(VERSION)'" "$(VERSION)"; \
+		GIT_MERGE_AUTOEDIT=no git-flow release finish -n "$(VERSION)"; \
 		git push; \
 	else \
 		echo "Change to 'develop' branch and run again"; \
