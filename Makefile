@@ -5,6 +5,8 @@ CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] =
 
 all: build archive pack docs
 
+deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs
+
 clean:
 	rm -Rf docs
 	rm -Rf build
@@ -80,14 +82,18 @@ deploy-aws-s3:
 deploy-github:
 	swift scripts/github-release/main.swift release .
 
-deploy:
+deploy-git:
 	@if [ "$(CURRENT_BRANCH)" = "develop" ]; then \
 		git-flow release start $(VERSION); \
-		git flow release finish $(VERSION); \
+		git-flow release finish -m "$(VERSION)" $(VERSION); \
 		git push; \
 	else \
 		echo "Change to 'develop' branch and run again"; \
+		exit 1; \
 	fi
+
+deploy-docs:
+	
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
