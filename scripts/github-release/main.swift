@@ -323,10 +323,14 @@ case "release":
         uploadFiles(draft) {
             print("Upload succeed!")
             
-//            publish() {
-//                print("Release Published!")
+            guard let url = draft["url"] as? String else {
+                fatalError("Draft 'url' not found")
+            }
+            
+            publish(url: url) {
+                print("Release Published!")
                 exit(EXIT_SUCCESS)
-//            }
+            }
         }
     }
 default:
