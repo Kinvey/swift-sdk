@@ -1,8 +1,11 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
 IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.3.1)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
+CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] == "*") print array[2]}')
 
 all: build archive pack docs
+
+deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs
 
 clean:
 	rm -Rf docs
@@ -51,8 +54,8 @@ test-macos:
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
-	cd Carthage/Build/iOS; \
-	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ObjectMapper.framework XCGLogger.framework ../../../build/Kinvey-$(VERSION)
+	cd Carthage/Build; \
+	find . -name "*.framework" ! -name "KIF.framework" ! -name "Nimble.framework" | awk '{split($$0, array, "/"); system("mkdir -p ../../build/Kinvey-$(VERSION)/" array[2] " && cp -R " array[2] "/" array[3] " ../../build/Kinvey-$(VERSION)/" array[2])}'
 	cd build; \
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
@@ -72,6 +75,25 @@ deploy-cocoapods:
 
 test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
+
+deploy-aws-s3:
+	aws s3 cp build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
+
+deploy-github:
+	swift scripts/github-release/main.swift release .
+
+deploy-git:
+	@if [ "$(CURRENT_BRANCH)" = "develop" ]; then \
+		git-flow release start "$(VERSION)"; \
+		GIT_MERGE_AUTOEDIT=no git-flow release finish -n "$(VERSION)"; \
+		git push; \
+	else \
+		echo "Change to 'develop' branch and run again"; \
+		exit 1; \
+	fi
+
+deploy-docs:
+	
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '

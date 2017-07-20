@@ -393,7 +393,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
+    @available(*, deprecated: 3.6.0, message: "Please use count(_:options:completionHandler:)")
     @discardableResult
     open func count(
         _ query: Query? = nil,
@@ -424,7 +424,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      response returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
+    @available(*, deprecated: 3.6.0, message: "Please use count(_:options:completionHandler:)")
     @discardableResult
     open func count(
         _ query: Query? = nil,
