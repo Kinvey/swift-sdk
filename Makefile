@@ -2,10 +2,15 @@ CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
 IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone SE (10.3.1)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] == "*") print array[2]}')
+DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
+DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
+DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
 
 all: build archive pack docs
 
 deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs
+
+release: all deploy
 
 clean:
 	rm -Rf docs
@@ -93,7 +98,35 @@ deploy-git:
 	fi
 
 deploy-docs:
-	
+	rm -Rf build/devcenter
+	cd build; \
+	git clone $(DEVCENTER_GIT)
+	cd build/devcenter; \
+	git remote add v3yk1n-devcenter $(DEVCENTER_GIT_TEST); \
+	git remote add kinvey-devcenter-prod $(DEVCENTER_GIT_PROD)
+	rm -Rf build/devcenter/content/reference/ios-v3.0/*
+	cp -R docs/** build/devcenter/content/reference/ios-v3.0
+	cd build/devcenter; \
+	git add content/reference/ios-v3.0; \
+	git commit -m "Swift SDK Release $(VERSION) - Reference Docs"; \
+	git push origin master; \
+	git push v3yk1n-devcenter master; \
+	git push kinvey-devcenter-prod master
+
+deploy-devcenter:
+	rm -Rf build/devcenter
+	cd build; \
+	git clone $(DEVCENTER_GIT)
+	cd build/devcenter; \
+	git remote add v3yk1n-devcenter $(DEVCENTER_GIT_TEST); \
+	git remote add kinvey-devcenter-prod $(DEVCENTER_GIT_PROD)
+	swift scripts/devcenter-release/main.swift $(VERSION) build/devcenter
+	cd build/devcenter; \
+	git add content; \
+	git commit -m "Swift SDK Release $(VERSION) - Release Notes"; \
+	git push origin master; \
+	git push v3yk1n-devcenter master; \
+	git push kinvey-devcenter-prod master
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
