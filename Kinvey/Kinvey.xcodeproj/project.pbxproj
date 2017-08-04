@@ -80,6 +80,8 @@
 		5765B8641C97751000080FFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
+		57711A921F27BD730044C533 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		57711A931F27BF650044C533 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
 		577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8351C92365700080FFA /* FindOperationTest.swift */; };
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
@@ -2760,6 +2762,8 @@
 			files = (
 				57E448071DF62E35003D1AFA /* Person.swift in Sources */,
 				57E448061DF62E05003D1AFA /* NoCacheTestCase.swift in Sources */,
+				57711A931F27BF650044C533 /* MockKinveyBackend.swift in Sources */,
+				57711A921F27BD730044C533 /* KinveyTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3995,6 +3999,7 @@
 				578E79681EEB0B10002BBF9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5793B8961D2306A60088B5F9 /* Build configuration list for PBXNativeTarget "KinveyTests Encrypted" */ = {
 			isa = XCConfigurationList;
