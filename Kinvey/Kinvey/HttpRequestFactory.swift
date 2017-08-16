@@ -31,8 +31,6 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         var bodyObject = JsonDictionary()
         if let username = username {
             bodyObject["username"] = username
@@ -43,7 +41,7 @@ class HttpRequestFactory: RequestFactory {
         if let user = user {
             bodyObject += user.toJSON()
         }
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -120,13 +118,12 @@ class HttpRequestFactory: RequestFactory {
             endpoint: Endpoint.userLogin(client: client),
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = [
             "username" : username,
             "password" : password
         ]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -141,10 +138,8 @@ class HttpRequestFactory: RequestFactory {
         )
         request.request.httpMethod = "POST"
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = ["username" : username]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -183,15 +178,13 @@ class HttpRequestFactory: RequestFactory {
             credential: client.activeUser,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         var bodyObject = user.toJSON()
         
         if let newPassword = newPassword {
             bodyObject["password"] = newPassword
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -206,11 +199,8 @@ class HttpRequestFactory: RequestFactory {
             credential: client.activeUser,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = userQuery.toJSON()
-        
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -237,10 +227,8 @@ class HttpRequestFactory: RequestFactory {
             credential: client,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = ["email" : email]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -344,13 +332,11 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         if (isNewObj) {
             bodyObject[Entity.Key.entityId] = nil
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -399,8 +385,7 @@ class HttpRequestFactory: RequestFactory {
             "platform" : "ios",
             "deviceId" : deviceToken.hexString()
         ]
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -440,9 +425,8 @@ class HttpRequestFactory: RequestFactory {
         )
         
         let bodyObject = file.toJSON()
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
