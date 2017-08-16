@@ -285,10 +285,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
     var request: URLRequest
     var credential: Credential? {
         didSet {
-            if let credential = credential {
-                let header = HttpHeader.authorization(credential: credential)
-                request.setValue(header.value, forHTTPHeaderField: header.name)
-            }
+            setAuthorization()
         }
     }
     let options: Options?
@@ -350,14 +347,18 @@ internal class HttpRequest: TaskProgressRequest, Request {
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
     }
     
-    func prepareRequest() {
-        for header in defaultHeaders {
-            request.setValue(header.value, forHTTPHeaderField: header.name)
-        }
+    private func setAuthorization() {
         if let credential = credential {
             let header = HttpHeader.authorization(credential: credential)
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
+    }
+    
+    func prepareRequest() {
+        for header in defaultHeaders {
+            request.setValue(header.value, forHTTPHeaderField: header.name)
+        }
+        setAuthorization()
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
