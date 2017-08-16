@@ -617,21 +617,35 @@ class HttpRequestFactory: RequestFactory {
     
     // MARK: Realtime
     
-    func buildUserRegisterRealtime(
-        user: User,
+    private func build(
         deviceId: String,
+        endpoint: Endpoint,
+        credential: Credential?,
         options: Options?
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.userRegisterRealtime(client: client, user: user),
-            credential: client.activeUser,
+            endpoint: endpoint,
+            credential: credential,
             options: options
         )
         request.setBody(json: [
             "deviceId" : deviceId
         ])
         return request
+    }
+    
+    func buildUserRegisterRealtime(
+        user: User,
+        deviceId: String,
+        options: Options?
+    ) -> HttpRequest {
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.userRegisterRealtime(client: client, user: user),
+            credential: client.activeUser,
+            options: options
+        )
     }
     
     func buildUserUnregisterRealtime(
@@ -639,16 +653,12 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
+        return build(
+            deviceId: deviceId,
             endpoint: Endpoint.userUnregisterRealtime(client: client, user: user),
             credential: client.activeUser,
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildAppDataSubscribe(
@@ -656,16 +666,12 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
+        return build(
+            deviceId: deviceId,
             endpoint: Endpoint.appDataSubscribe(client: client, collectionName: collectionName),
             credential: client.activeUser,
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildAppDataUnSubscribe(
@@ -673,16 +679,12 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
+        return build(
+            deviceId: deviceId,
             endpoint: Endpoint.appDataUnSubscribe(client: client, collectionName: collectionName),
             credential: client.activeUser,
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildLiveStreamGrantAccess(
@@ -715,24 +717,6 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    private func buildLiveStream(
-        deviceId: String,
-        endpoint: Endpoint,
-        options: Options?,
-        client: Client
-    ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: endpoint,
-            credential: client.activeUser,
-            options: options
-        )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
-    }
-    
     func buildLiveStreamSubscribe(
         streamName: String,
         userId: String,
@@ -740,11 +724,11 @@ class HttpRequestFactory: RequestFactory {
         options: Options?
     ) -> HttpRequest {
         let client = options?.client ?? self.client
-        return buildLiveStream(
+        return build(
             deviceId: deviceId,
             endpoint: Endpoint.liveStreamSubscribe(client: client, streamName: streamName, userId: userId),
-            options: options,
-            client: client
+            credential: client.activeUser,
+            options: options
         )
     }
     
@@ -755,11 +739,11 @@ class HttpRequestFactory: RequestFactory {
         options: Options?
     ) -> HttpRequest {
         let client = options?.client ?? self.client
-        return buildLiveStream(
+        return build(
             deviceId: deviceId,
             endpoint: Endpoint.liveStreamUnsubscribe(client: client, streamName: streamName, userId: userId),
-            options: options,
-            client: client
+            credential: client.activeUser,
+            options: options
         )
     }
 
