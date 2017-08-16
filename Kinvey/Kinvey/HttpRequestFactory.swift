@@ -617,16 +617,19 @@ class HttpRequestFactory: RequestFactory {
     
     // MARK: Realtime
     
+    private func client(options: Options?) -> Client {
+        return options?.client ?? self.client
+    }
+    
     private func build(
         deviceId: String,
         endpoint: Endpoint,
-        credential: Credential?,
         options: Options?
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: endpoint,
-            credential: credential,
+            credential: client(options: options).activeUser,
             options: options
         )
         request.setBody(json: [
@@ -642,8 +645,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.userRegisterRealtime(client: client, user: user),
-            credential: client.activeUser,
+            endpoint: Endpoint.userRegisterRealtime(client: client(options: options), user: user),
             options: options
         )
     }
@@ -655,8 +657,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.userUnregisterRealtime(client: client, user: user),
-            credential: client.activeUser,
+            endpoint: Endpoint.userUnregisterRealtime(client: client(options: options), user: user),
             options: options
         )
     }
@@ -668,8 +669,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.appDataSubscribe(client: client, collectionName: collectionName),
-            credential: client.activeUser,
+            endpoint: Endpoint.appDataSubscribe(client: client(options: options), collectionName: collectionName),
             options: options
         )
     }
@@ -681,8 +681,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.appDataUnSubscribe(client: client, collectionName: collectionName),
-            credential: client.activeUser,
+            endpoint: Endpoint.appDataUnSubscribe(client: client(options: options), collectionName: collectionName),
             options: options
         )
     }
@@ -695,7 +694,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .put,
-            endpoint: Endpoint.liveStreamByUser(client: client, streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamByUser(client: client(options: options), streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -710,7 +709,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.liveStreamPublish(client: client, streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamPublish(client: client(options: options), streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -723,11 +722,9 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let client = options?.client ?? self.client
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.liveStreamSubscribe(client: client, streamName: streamName, userId: userId),
-            credential: client.activeUser,
+            endpoint: Endpoint.liveStreamSubscribe(client: client(options: options), streamName: streamName, userId: userId),
             options: options
         )
     }
@@ -738,11 +735,9 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let client = options?.client ?? self.client
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.liveStreamUnsubscribe(client: client, streamName: streamName, userId: userId),
-            credential: client.activeUser,
+            endpoint: Endpoint.liveStreamUnsubscribe(client: client(options: options), streamName: streamName, userId: userId),
             options: options
         )
     }
