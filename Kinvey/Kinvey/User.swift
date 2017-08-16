@@ -95,6 +95,31 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
+    private class func login<U: User>(
+        request: HttpRequest,
+        client: Client,
+        userType: U.Type,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)?
+    ) {
+        Promise<U> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response,
+                    response.isOK,
+                    let user = client.responseParser.parseUser(data) as? U
+                {
+                    client.activeUser = user
+                    fulfill(user)
+                } else {
+                    reject(buildError(data, response, error, client))
+                }
+            }
+        }.then { user in
+            completionHandler?(.success(user))
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+    }
+    
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
     open class func signup<U: User>(
@@ -118,23 +143,12 @@ open class User: NSObject, Credential, Mappable {
             user: user,
             options: options
         )
-        Promise<U> { fulfill, reject in
-            request.execute() { (data, response, error) in
-                if let response = response,
-                    response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
-                {
-                    client.activeUser = user
-                    fulfill(user)
-                } else {
-                    reject(buildError(data, response, error, client))
-                }
-            }
-        }.then { user in
-            completionHandler?(.success(user))
-        }.catch { error in
-            completionHandler?(.failure(error))
-        }
+        login(
+            request: request,
+            client: client,
+            userType: U.self,
+            completionHandler: completionHandler
+        )
         return request
     }
     
@@ -400,23 +414,12 @@ open class User: NSObject, Credential, Mappable {
             password: password,
             options: options
         )
-        Promise<U> { fulfill, reject in
-            request.execute() { (data, response, error) in
-                if let response = response,
-                    response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
-                {
-                    client.activeUser = user
-                    fulfill(user)
-                } else {
-                    reject(buildError(data, response, error, client))
-                }
-            }
-        }.then { user in
-            completionHandler?(.success(user))
-        }.catch { error in
-            completionHandler?(.failure(error))
-        }
+        login(
+            request: request,
+            client: client,
+            userType: U.self,
+            completionHandler: completionHandler
+        )
         return request
     }
     
