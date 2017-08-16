@@ -208,6 +208,35 @@ class FileTestCase: StoreTestCase {
         }
     }
     
+    func testDownload404Error() {
+        signUp()
+        
+        var file = File() {
+            $0.fileId = UUID().uuidString
+        }
+        
+        mockResponse(statusCode: 404, data: [])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationDownload = expectation(description: "Download")
+        
+        fileStore.download(file) { (file, data: Data?, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            
+            XCTAssertNil(file)
+            XCTAssertNil(data)
+            XCTAssertNotNil(error)
+            
+            expectationDownload?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationDownload = nil
+        }
+    }
+    
     func testDownloadDataTimeoutError() {
         signUp()
         
@@ -411,6 +440,66 @@ class FileTestCase: StoreTestCase {
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
+            
+            expectationUpload?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationUpload = nil
+        }
+    }
+    
+    func testUploadData404Error() {
+        signUp()
+        
+        var file = File() {
+            $0.publicAccessible = true
+        }
+        self.file = file
+        let path = caminandes3TrailerURL.path
+        
+        var count = 0
+        mockResponse { request in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(statusCode: 201, json: [
+                    "_public": true,
+                    "_id": "2a37d253-752f-42cd-987e-db319a626077",
+                    "_filename": "a2f88ffc-e7fe-4d17-aa69-063088cb24fa",
+                    "_acl": [
+                        "creator": "584287c3b1c6f88d1990e1e8"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-03T08:52:19.204Z",
+                        "ect": "2016-12-03T08:52:19.204Z"
+                    ],
+                    "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
+                    "_expiresAt": "2016-12-10T08:52:19.488Z",
+                    "_requiredHeaders": [
+                    ]
+                    ])
+            case 1:
+                return HttpResponse(statusCode: 404, data: nil)
+            default:
+                Swift.fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+        
+        weak var expectationUpload = expectation(description: "Upload")
+        
+        fileStore.upload(file, data: data) { (file, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            
+            XCTAssertNil(file)
+            XCTAssertNotNil(error)
             
             expectationUpload?.fulfill()
         }
