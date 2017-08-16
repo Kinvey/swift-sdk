@@ -382,10 +382,15 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+    private func buildPushDevice(
+        _ deviceToken: Data,
+        options: Options?,
+        client: Client,
+        endpoint: Endpoint
+    ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.pushRegisterDevice(client: client),
+            endpoint: endpoint,
             credential: client.activeUser,
             options: options
         )
@@ -399,21 +404,24 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.pushUnRegisterDevice(client: client),
-            credential: client.activeUser,
-            options: options
+    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+        let client = options?.client ?? self.client
+        return buildPushDevice(
+            deviceToken,
+            options: options,
+            client: client,
+            endpoint: Endpoint.pushRegisterDevice(client: client)
         )
-        
-        let bodyObject = [
-            "platform" : "ios",
-            "deviceId" : deviceToken.hexString()
-        ]
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
-        return request
+    }
+    
+    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+        let client = options?.client ?? self.client
+        return buildPushDevice(
+            deviceToken,
+            options: options,
+            client: client,
+            endpoint: Endpoint.pushUnRegisterDevice(client: client)
+        )
     }
     
     func buildBlobUploadFile(
