@@ -447,6 +447,26 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
+    private class func execute(
+        request: HttpRequest,
+        client: Client,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)?
+    ) {
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response, response.isOK {
+                    fulfill()
+                } else {
+                    reject(buildError(data, response, error, client))
+                }
+            }
+        }.then {
+            completionHandler?(.success())
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+    }
+    
     /**
      Sends a request to confirm email address to the specified user.
      
@@ -467,19 +487,11 @@ open class User: NSObject, Credential, Mappable {
             forUsername: username,
             options: options
         )
-        Promise<Void> { fulfill, reject in
-            request.execute() { (data, response, error) in
-                if let response = response, response.isOK {
-                    fulfill()
-                } else {
-                    reject(buildError(data, response, error, client))
-                }
-            }
-        }.then {
-            completionHandler?(.success())
-        }.catch { error in
-            completionHandler?(.failure(error))
-        }
+        execute(
+            request: request,
+            client: client,
+            completionHandler: completionHandler
+        )
         return request
     }
     
@@ -558,19 +570,11 @@ open class User: NSObject, Credential, Mappable {
             usernameOrEmail: usernameOrEmail,
             options: options
         )
-        Promise<Void> { fulfill, reject in
-            request.execute() { (data, response, error) in
-                if let response = response, response.isOK {
-                    fulfill()
-                } else {
-                    reject(buildError(data, response, error, client))
-                }
-            }
-        }.then {
-            completionHandler?(.success())
-        }.catch { error in
-            completionHandler?(.failure(error))
-        }
+        execute(
+            request: request,
+            client: client,
+            completionHandler: completionHandler
+        )
         return request
     }
     
@@ -729,19 +733,11 @@ open class User: NSObject, Credential, Mappable {
             email: email,
             options: options
         )
-        Promise<Void> { fulfill, reject in
-            request.execute() { (data, response, error) in
-                if let response = response, response.isOK {
-                    fulfill()
-                } else {
-                    reject(buildError(data, response, error, client))
-                }
-            }
-        }.then {
-            completionHandler?(.success())
-        }.catch { error in
-            completionHandler?(.failure(error))
-        }
+        execute(
+            request: request,
+            client: client,
+            completionHandler: completionHandler
+        )
         return request
     }
     
