@@ -1255,21 +1255,24 @@ open class User: NSObject, Credential, Mappable {
     static let MICSafariViewControllerSuccessNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Success")
     static let MICSafariViewControllerFailureNotificationName = NSNotification.Name("Kinvey.User.MICSafariViewController.Failure")
     
+    private static func removeObservers() {
+        if let token = MICSafariViewControllerSuccessNotificationObserver {
+            NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerSuccessNotificationName, object: nil)
+        }
+        if let token = MICSafariViewControllerFailureNotificationObserver {
+            NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerFailureNotificationName, object: nil)
+        }
+    }
+    
     private static var MICSafariViewControllerSuccessNotificationObserver: Any? = nil {
         willSet {
-            if let token = MICSafariViewControllerSuccessNotificationObserver {
-                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerSuccessNotificationName, object: nil)
-                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerFailureNotificationName, object: nil)
-            }
+            removeObservers()
         }
     }
     
     private static var MICSafariViewControllerFailureNotificationObserver: Any? = nil {
         willSet {
-            if let token = MICSafariViewControllerFailureNotificationObserver {
-                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerSuccessNotificationName, object: nil)
-                NotificationCenter.default.removeObserver(token, name: MICSafariViewControllerFailureNotificationName, object: nil)
-            }
+            removeObservers()
         }
     }
     
