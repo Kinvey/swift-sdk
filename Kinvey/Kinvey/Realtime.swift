@@ -124,6 +124,29 @@ public class LiveStream<Type: BaseMappable> {
         return request
     }
     
+    private func execute(
+        request: HttpRequest,
+        userId: String,
+        realtimeRouter: RealtimeRouter,
+        fulfill: @escaping ((RealtimeRouter, String)) -> Void,
+        reject: @escaping (Swift.Error) -> Void
+    ) {
+        request.execute() { (data, response, error) in
+            if let response = response,
+                response.isOK,
+                let data = data,
+                let jsonObject = try? JSONSerialization.jsonObject(with: data),
+                let jsonDict = jsonObject as? [String : String],
+                let substreamChannelName = jsonDict["substreamChannelName"]
+            {
+                self.substreamChannelNameMap[userId] = substreamChannelName
+                fulfill(realtimeRouter, substreamChannelName)
+            } else {
+                reject(buildError(data, response, error, self.client))
+            }
+        }
+    }
+    
     /// Sends a message to an specific user
     public func send(
         userId: String,
@@ -142,20 +165,13 @@ public class LiveStream<Type: BaseMappable> {
                         userId: userId,
                         options: options
                     )
-                    request.execute() { (data, response, error) in
-                        if let response = response,
-                            response.isOK,
-                            let data = data,
-                            let jsonObject = try? JSONSerialization.jsonObject(with: data),
-                            let jsonDict = jsonObject as? [String : String],
-                            let substreamChannelName = jsonDict["substreamChannelName"]
-                        {
-                            self.substreamChannelNameMap[userId] = substreamChannelName
-                            fulfill(realtimeRouter, substreamChannelName)
-                        } else {
-                            reject(buildError(data, response, error, self.client))
-                        }
-                    }
+                    self.execute(
+                        request: request,
+                        userId: userId,
+                        realtimeRouter: realtimeRouter,
+                        fulfill: fulfill,
+                        reject: reject
+                    )
                 }
             }
         }.then { realtimeRouter, channelName in
@@ -269,20 +285,13 @@ public class LiveStream<Type: BaseMappable> {
                         deviceId: deviceId,
                         options: options
                     )
-                    request.execute() { (data, response, error) in
-                        if let response = response,
-                            response.isOK,
-                            let data = data,
-                            let jsonObject = try? JSONSerialization.jsonObject(with: data),
-                            let jsonDict = jsonObject as? [String : String],
-                            let substreamChannelName = jsonDict["substreamChannelName"]
-                        {
-                            self.substreamChannelNameMap[userId] = substreamChannelName
-                            fulfill(realtimeRouter, substreamChannelName)
-                        } else {
-                            reject(buildError(data, response, error, self.client))
-                        }
-                    }
+                    self.execute(
+                        request: request,
+                        userId: userId,
+                        realtimeRouter: realtimeRouter,
+                        fulfill: fulfill,
+                        reject: reject
+                    )
                 }
             }
         }.then { (realtimeRouter, channelName) -> Void in
