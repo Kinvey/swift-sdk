@@ -43,6 +43,9 @@
                   Identifier = "PerformanceProductTestCase">
                </Test>
                <Test
+                  Identifier = "PerformanceTest">
+               </Test>
+               <Test
                   Identifier = "PerformanceTestCase">
                </Test>
             </SkippedTests>

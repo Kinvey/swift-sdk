@@ -83,6 +83,10 @@ public final class Query: NSObject, BuilderType, Mappable {
     }
     
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        defer {
+            log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+        }
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
                 leftExpression: translate(expression: predicate.leftExpression, otherSideExpression: predicate.rightExpression),
