@@ -361,7 +361,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter completionHandler: Completion handler to be called once the respose returns
      - returns: A `Request` instance which will allow cancel the request later
      */
-    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handler")
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of Array<T> (or [T]) for completion handlers")
     @discardableResult
     open func find(
         _ query: Query = Query(),
@@ -1729,7 +1729,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
-    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handlers")
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of Array<T> (or [T]) for completion handlers")
     @discardableResult
     open func pull(
         _ query: Query = Query(),
@@ -1848,7 +1848,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
-    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of [T] instead for completion handler")
+    @available(*, deprecated: 3.6.2, message: "Please use AnyRandomAccessCollection<T> instead of Array<T> (or [T]) for completion handlers")
     @discardableResult
     open func sync(
         _ query: Query = Query(),
