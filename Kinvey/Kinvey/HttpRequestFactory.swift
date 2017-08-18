@@ -617,10 +617,6 @@ class HttpRequestFactory: RequestFactory {
     
     // MARK: Realtime
     
-    private func client(options: Options?) -> Client {
-        return options?.client ?? self.client
-    }
-    
     private func build(
         deviceId: String,
         endpoint: Endpoint,
@@ -629,7 +625,7 @@ class HttpRequestFactory: RequestFactory {
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: endpoint,
-            credential: client(options: options).activeUser,
+            credential: (options?.client ?? self.client).activeUser,
             options: options
         )
         request.setBody(json: [
@@ -645,7 +641,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.userRegisterRealtime(client: client(options: options), user: user),
+            endpoint: Endpoint.userRegisterRealtime(client: options?.client ?? self.client, user: user),
             options: options
         )
     }
@@ -657,7 +653,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.userUnregisterRealtime(client: client(options: options), user: user),
+            endpoint: Endpoint.userUnregisterRealtime(client: options?.client ?? self.client, user: user),
             options: options
         )
     }
@@ -669,7 +665,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.appDataSubscribe(client: client(options: options), collectionName: collectionName),
+            endpoint: Endpoint.appDataSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
             options: options
         )
     }
@@ -681,7 +677,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.appDataUnSubscribe(client: client(options: options), collectionName: collectionName),
+            endpoint: Endpoint.appDataUnSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
             options: options
         )
     }
@@ -694,7 +690,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .put,
-            endpoint: Endpoint.liveStreamByUser(client: client(options: options), streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -709,7 +705,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.liveStreamPublish(client: client(options: options), streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamPublish(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -724,7 +720,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.liveStreamSubscribe(client: client(options: options), streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamSubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             options: options
         )
     }
@@ -737,7 +733,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         return build(
             deviceId: deviceId,
-            endpoint: Endpoint.liveStreamUnsubscribe(client: client(options: options), streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamUnsubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             options: options
         )
     }
