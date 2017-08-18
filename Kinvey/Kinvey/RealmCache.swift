@@ -11,27 +11,55 @@ import Realm
 import RealmSwift
 import MapKit
 
-let typesNeedsPredicateTranslation = [
-    StringValue.self.className(),
-    IntValue.self.className(),
-    FloatValue.self.className(),
-    DoubleValue.self.className(),
-    BoolValue.self.className()
+fileprivate let typeStringValue = StringValue.self.className()
+fileprivate let typeIntValue = IntValue.self.className()
+fileprivate let typeFloatValue = FloatValue.self.className()
+fileprivate let typeDoubleValue = DoubleValue.self.className()
+fileprivate let typeBoolValue = BoolValue.self.className()
+fileprivate let typesNeedsTranslation = [
+    typeStringValue,
+    typeIntValue,
+    typeFloatValue,
+    typeDoubleValue,
+    typeBoolValue
 ]
+
+#if !os(watchOS)
+    fileprivate func tupleMKShape(predicate: NSPredicate) -> (NSComparisonPredicate, (keyPathExpression: NSExpression, constantValueExpression: NSExpression), Any)? {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            return (predicate, keyPathConstantTuple, constantValue)
+        }
+        return nil
+    }
+#endif
 
 internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
     typealias `Type` = T
     
+    let configuration: Realm.Configuration
     let realm: Realm
     let objectSchema: ObjectSchema
+    let properties: [String : Property]
     let propertyNames: [String]
     let propertyTypes: [PropertyType]
     let propertyObjectClassNames: [String?]
-    let needsPredicateTranslation: Bool
+    let needsTranslation: Bool
     let executor: Executor
     
     lazy var entityType = T.self as! Entity.Type
+    
+    var dynamic: DynamicCacheType? {
+        return self
+    }
+    
+    var newRealm: Realm {
+        return try! Realm(configuration: configuration)
+    }
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
@@ -50,24 +78,28 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             configuration.deleteRealmIfMigrationNeeded = true
             realm = try! Realm(configuration: configuration)
         }
+        self.configuration = configuration
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
         objectSchema = realm.schema[className]!
         
+        var properties = [String : Property]()
         var propertyNames = [String]()
         var propertyTypes = [PropertyType]()
         var propertyObjectClassNames = [String?]()
         for property in objectSchema.properties {
+            properties[property.name] = property
             propertyNames.append(property.name)
             propertyTypes.append(property.type)
             propertyObjectClassNames.append(property.objectClassName)
         }
+        self.properties = properties
         self.propertyNames = propertyNames
         self.propertyTypes = propertyTypes
         self.propertyObjectClassNames = propertyObjectClassNames
-        needsPredicateTranslation = !propertyObjectClassNames.filter {
+        needsTranslation = !propertyObjectClassNames.filter {
             if let className = $0 {
-                return typesNeedsPredicateTranslation.contains(className)
+                return typesNeedsTranslation.contains(className)
             }
             return false
         }.isEmpty
@@ -79,10 +111,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     func translate(predicate: NSPredicate) -> NSPredicate {
         #if !os(watchOS)
-            if let predicate = predicate as? NSComparisonPredicate,
-                let keyPathConstantTuple = predicate.keyPathConstantTuple,
-                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-                constantValue is MKCircle || constantValue is MKPolygon
+            if let _ = tupleMKShape(predicate: predicate)
             {
                 return NSPredicate(value: true)
             }
@@ -117,7 +146,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             } else {
                 if let idx = propertyNames.index(of: keyPath),
                     let className = propertyObjectClassNames[idx],
-                    typesNeedsPredicateTranslation.contains(className)
+                    typesNeedsTranslation.contains(className)
                 {
                     return true
                 }
@@ -187,7 +216,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             } else {
                 if let idx = propertyNames.index(of: keyPath),
                     let className = propertyObjectClassNames[idx],
-                    typesNeedsPredicateTranslation.contains(className)
+                    typesNeedsTranslation.contains(className)
                 {
                     keyPath += ".value"
                 }
@@ -239,6 +268,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     fileprivate func results(_ query: Query) -> AnyRandomAccessCollection<Entity> {
         log.verbose("Fetching by query: \(query)")
+        
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
             if let exception = tryBlock({
@@ -293,33 +323,32 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
 
     }
     
-    func detach(entities: [T], query: Query?) -> [T] {
+    func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
         log.verbose("Detaching \(entities.count) object(s)")
-        var detachedResults = [T]()
         let skip = query?.skip ?? 0
-        let limit = query?.limit ?? entities.count
-        var arrayEnumerate: [T]
-        if skip != 0 || limit != entities.count {
-            let begin = max(min(skip, entities.count), 0)
-            let end = max(min(skip + limit, entities.count), 0)
-            arrayEnumerate = Array<T>(entities[begin ..< end])
+        let limit = query?.limit ?? Int(entities.count)
+        var arrayEnumerate: AnyRandomAccessCollection<T>
+        if skip != 0 || limit != Int(entities.count) {
+            let begin = max(min(skip, Int(entities.count)), 0)
+            let end = max(min(skip + limit, Int(entities.count)), 0)
+            arrayEnumerate = AnyRandomAccessCollection(Array(entities)[begin ..< end])
         } else {
-            arrayEnumerate = entities
+            arrayEnumerate = AnyRandomAccessCollection(entities)
         }
-        for entity in arrayEnumerate {
-            if let entity = entity as? Object {
-                detachedResults.append(detach(entity, props: self.propertyNames) as! T)
-            }
+        let detachedResults = arrayEnumerate.lazy.map {
+            self.detach($0 as! Object, props: self.propertyNames) as! T
         }
-        return detachedResults
+        return AnyRandomAccessCollection(detachedResults)
     }
     
-    func detach(_ results: AnyRandomAccessCollection<Entity>, query: Query?) -> [T] {
-        var results: [T] = results.map { $0 as! T }
+    func detach(_ results: AnyRandomAccessCollection<Entity>, query: Query?) -> AnyRandomAccessCollection<T> {
+        var results = AnyRandomAccessCollection(results.lazy.map {
+            $0 as! T
+        })
         if let predicate = query?.predicate {
             results = results.filter(predicate: predicate)
         }
-        return detach(entities: results, query: query)
+        return detach(entities: AnyRandomAccessCollection(results), query: query)
     }
     
     func save(entity: T) {
@@ -331,15 +360,19 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func save(entities: [T]) {
+    func save(entities: AnyRandomAccessCollection<Type>) {
+        let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
-            try! self.realm.write {
+            let realm = self.realm
+            let entityType = self.entityType
+            try! realm.write {
                 for entity in entities {
-                    self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
+                    realm.create(entityType, value: entity, update: true)
                 }
             }
         }
+        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func find(byId objectId: String) -> T? {
@@ -356,11 +389,12 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return result
     }
     
-    func find(byQuery query: Query) -> [T] {
+    func find(byQuery query: Query) -> AnyRandomAccessCollection<T> {
         log.verbose("Finding objects by query: \(query)")
-        var results = [T]()
+        var results = AnyRandomAccessCollection<T>([])
         executor.executeAndWait {
-            results = self.detach(self.results(query), query: query)
+            let _results = self.results(query)
+            results = self.detach(_results, query: query)
         }
         return results
     }
@@ -409,7 +443,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return result
     }
     
-    func remove(entities: [T]) -> Bool {
+    func remove(entities: AnyRandomAccessCollection<Type>) -> Bool {
         log.verbose("Removing objects: \(entities)")
         var result = false
         executor.executeAndWait {
@@ -464,6 +498,46 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
 }
 
+extension RealmCache: DynamicCacheType {
+    
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>) {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        log.verbose("Saving \(entities.count) object(s)")
+        let realm = self.newRealm
+        let entityType = self.entityType.className()
+        let propertyMapping = T.propertyMapping()
+        try! realm.write {
+            for entity in entities {
+                var translatedEntity = JsonDictionary()
+                for (translatedKey, (key, transform)) in propertyMapping {
+                    if let transform = transform,
+                        let value = transform.transformFromJSON(entity[key]) as? NSObject,
+                        let property = properties[translatedKey],
+                        let objectClassName = property.objectClassName,
+                        let schema = realm.schema[objectClassName]
+                    {
+                        translatedEntity[translatedKey] = value.dictionaryWithValues(forKeys: schema.properties.map { $0.name })
+                    } else if needsTranslation,
+                        let array = entity[key] as? [Any],
+                        let property = properties[translatedKey],
+                        let objectClassName = property.objectClassName,
+                        typesNeedsTranslation.contains(objectClassName)
+                    {
+                        translatedEntity[translatedKey] = array.map {
+                            return ["value" : $0]
+                        }
+                    } else {
+                        translatedEntity[translatedKey] = entity[key]
+                    }
+                }
+                realm.dynamicCreate(entityType, value: translatedEntity, update: true)
+            }
+        }
+        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+    }
+    
+}
+
 extension NSComparisonPredicate {
     
     var keyPathConstantTuple: (keyPathExpression: NSExpression, constantValueExpression: NSExpression)? {
@@ -489,23 +563,20 @@ extension NSComparisonPredicate {
     
 }
 
-extension Array where Element: NSObject, Element: Persistable {
+extension AnyRandomAccessCollection where Element: NSObject, Element: Persistable {
     
-    fileprivate func filter(predicate: NSPredicate) -> [Array.Element] {
+    fileprivate func filter(predicate: NSPredicate) -> AnyRandomAccessCollection<Iterator.Element> {
         #if !os(watchOS)
-            if let predicate = predicate as? NSComparisonPredicate,
-                let keyPathConstantTuple = predicate.keyPathConstantTuple,
-                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-                constantValue is MKCircle || constantValue is MKPolygon
+            if let (_, keyPathConstantTuple, constantValue) = tupleMKShape(predicate: predicate)
             {
                 if let circle = constantValue as? MKCircle {
                     let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
-                    return filter({ (item) -> Bool in
+                    return AnyRandomAccessCollection(filter({ (item) -> Bool in
                         if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
                             return CLLocation(geoPoint: geoPoint).distance(from: center) <= circle.radius
                         }
                         return false
-                    })
+                    }))
                 } else if let polygon = constantValue as? MKPolygon {
                     let pointCount = polygon.pointCount
                     var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
@@ -532,12 +603,12 @@ extension Array where Element: NSObject, Element: Persistable {
                         }
                     }
                     path.close()
-                    return filter({ (item) -> Bool in
+                    return AnyRandomAccessCollection(filter({ (item) -> Bool in
                         if let geoPoint = item[keyPathConstantTuple.keyPathExpression.keyPath] as? GeoPoint {
                             return path.contains(CGPoint(x: geoPoint.latitude, y: geoPoint.longitude))
                         }
                         return false
-                    })
+                    }))
                 }
             }
         #endif

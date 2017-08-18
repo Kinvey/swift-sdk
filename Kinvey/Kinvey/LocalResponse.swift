@@ -18,5 +18,6 @@ class LocalResponse: Response {
     var isMethodNotAllowed = false
     
     var etag: String? = nil
+    var contentTypeIsJson: Bool = false
 
 }

@@ -13,7 +13,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
     override init(
         query: Query,
         deltaSet: Bool,
-        deltaSetCompletionHandler: (([T]) -> Void)?,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?,
         readPolicy: ReadPolicy,
         cache: AnyCache<T>?,
         options: Options?,

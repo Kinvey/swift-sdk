@@ -93,22 +93,25 @@ class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: inout GeoPoint, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
-    left <- (map, GeoPointTransform())
+    let transform = GeoPointTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: inout GeoPoint?, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
-    left <- (map, GeoPointTransform())
+    let transform = GeoPointTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: inout GeoPoint!, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
-    left <- (map, GeoPointTransform())
+    let transform = GeoPointTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
 }
 
 func ==(lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {

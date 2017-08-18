@@ -54,20 +54,22 @@ internal enum Endpoint {
     case liveStreamSubscribe(client: Client, streamName: String, userId: String)
     case liveStreamUnsubscribe(client: Client, streamName: String, userId: String)
     
+    private func translate(url: URL, query: Query?) -> URL {
+        if let query = query,
+            let urlQueryItems = query.urlQueryItems,
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        {
+            urlComponents.queryItems = urlQueryItems
+            return urlComponents.url!
+        }
+        return url
+    }
+    
     var url: URL {
         switch self {
         case .user(let client, let query):
             let url = client.apiHostName.appendingPathComponent("/user/\(client.appKey!)")
-            
-            if let query = query,
-                let urlQueryItems = query.urlQueryItems,
-                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            {
-                urlComponents.queryItems = urlQueryItems
-                return urlComponents.url!
-            }
-            
-            return url
+            return translate(url: url, query: query)
         case .userById(let client, let userId):
             return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/\(userId)")
         case .userDelete(let client, let userId, let hard):
@@ -101,32 +103,11 @@ internal enum Endpoint {
         case .appDataById(let client, let collectionName, let id):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
         case .appDataByQuery(let client, let collectionName, let query):
-            let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
-            guard let query = query else {
-                return URL(string: url)!
-            }
-            
-            if let urlQueryItems = query.urlQueryItems,
-                let url = URL(string: url),
-                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            {
-                urlComponents.queryItems = urlQueryItems
-                return urlComponents.url!
-            }
-            
-            return URL(string: url)!
+            let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/")
+            return translate(url: url, query: query)
         case .appDataCount(let client, let collectionName, let query):
-            let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count").absoluteString
-            if let query = query {
-                if let urlQueryItems = query.urlQueryItems,
-                    let url = URL(string: url),
-                    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                {
-                    urlComponents.queryItems = urlQueryItems
-                    return urlComponents.url!
-                }
-            }
-            return URL(string: url)!
+            let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count")
+            return translate(url: url, query: query)
         case .appDataGroup(let client, let collectionName):
             return client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_group")
         case .appDataSubscribe(let client, let collectionName):

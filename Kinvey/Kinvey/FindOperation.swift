@@ -11,11 +11,11 @@ import PromiseKit
 
 private let MaxIdsPerQuery = 200
 
-internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>, ReadOperationType where T: NSObject {
+internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCollection<T>, Swift.Error>, ReadOperationType where T: NSObject {
     
     let query: Query
     let deltaSet: Bool
-    let deltaSetCompletionHandler: (([T]) -> Void)?
+    let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?
     
     lazy var isEmptyQuery: Bool = {
         return (self.query.predicate == nil || self.query.predicate == NSPredicate()) && self.query.skip == nil && self.query.limit == nil
@@ -31,7 +31,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
     init(
         query: Query,
         deltaSet: Bool,
-        deltaSetCompletionHandler: (([T]) -> Void)? = nil,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
         readPolicy: ReadPolicy,
         cache: AnyCache<T>?,
         options: Options?,
@@ -56,7 +56,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                 let json = cache.find(byQuery: self.query)
                 completionHandler?(.success(json))
             } else {
-                completionHandler?(.success([]))
+                completionHandler?(.success(AnyRandomAccessCollection<T>([])))
             }
         }
         return request
@@ -87,12 +87,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                     allIds.formUnion(deltaSet.deleted)
                     if allIds.count > MaxIdsPerQuery {
                         let allIds = Array<String>(allIds)
-                        var promises = [Promise<[T]>]()
+                        var promises = [Promise<AnyRandomAccessCollection<T>>]()
                         var newRefObjs = [String : String]()
                         for offset in stride(from: 0, to: allIds.count, by: MaxIdsPerQuery) {
                             let limit = min(offset + MaxIdsPerQuery, allIds.count - 1)
                             let allIds = Set<String>(allIds[offset...limit])
-                            let promise = Promise<[T]> { fulfill, reject in
+                            let promise = Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
                                 let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
                                 let operation = FindOperation<T>(
                                     query: query,
@@ -125,7 +125,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                                 )
                             }
                             if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
-                                deltaSetCompletionHandler(results.flatMap { $0 })
+                                deltaSetCompletionHandler(AnyRandomAccessCollection(results.flatMap { $0 }))
                             }
                             self.executeLocal(completionHandler)
                         }.catch { error in
@@ -164,7 +164,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                         self.executeLocal(completionHandler)
                     }
                 } else {
-                    let entities = [T](JSONArray: jsonArray)
+                    func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
+                        let startTime = CFAbsoluteTimeGetCurrent()
+                        let entities = AnyRandomAccessCollection(jsonArray.lazy.map {
+                            T(JSON: $0)!
+                        })
+                        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+                        return entities
+                    }
+                    let entities = convert(jsonArray)
                     if let cache = self.cache {
                         if self.mustRemoveCachedRecords {
                             let refObjs = self.reduceToIdsLmts(jsonArray)
@@ -178,7 +186,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, [T], Swift.Error>
                                 deleted: deltaSet.deleted
                             )
                         }
-                        cache.save(entities: entities)
+                        if let cache = cache.dynamic {
+                            cache.save(entities: AnyRandomAccessCollection(jsonArray))
+                        } else {
+                            cache.save(entities: entities)
+                        }
                     }
                     completionHandler?(.success(entities))
                 }

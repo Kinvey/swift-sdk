@@ -466,6 +466,9 @@ extension Persistable {
         let currentThread = Thread.current
         let className = StringFromClass(cls: self as! AnyClass)
         currentThread.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
+        defer {
+            currentThread.threadDictionary.removeObject(forKey: KinveyMappingTypeKey)
+        }
         let obj = self.init()
         let _ = obj.toJSON()
         if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
@@ -540,6 +543,18 @@ extension Persistable where Self: NSObject {
                 self[kmdKey] = newValue
             }
         }
+    }
+    
+}
+
+extension AnyRandomAccessCollection where Element: Persistable {
+    
+    public subscript(idx: Int) -> Element {
+        return self[IntMax(idx)]
+    }
+    
+    public subscript(idx: IntMax) -> Element {
+        return self[index(startIndex, offsetBy: idx)]
     }
     
 }
