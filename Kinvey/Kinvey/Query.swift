@@ -8,6 +8,9 @@
 
 import Foundation
 import ObjectMapper
+#if !os(watchOS)
+    import MapKit
+#endif
 
 extension NSPredicate: StaticMappable {
     
@@ -47,6 +50,10 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Impose a limit of records in the results of the query.
     open var limit: Int?
     
+    public override var description: String {
+        return "Fields: \(String(describing: fields))\nPredicate: \(String(describing: predicate))\nSort Descriptors: \(String(describing: sortDescriptors))\nSkip: \(String(describing: skip))\nLimit: \(String(describing: limit))"
+    }
+    
     internal func translate(expression: NSExpression, otherSideExpression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
@@ -70,12 +77,23 @@ public final class Query: NSObject, BuilderType, Mappable {
             }
             return NSExpression(forKeyPath: keyPath)
         case .constantValue:
-            if otherSideExpression.expressionType == .keyPath,
-                let (_, optionalTransform) = persistableType?.propertyMapping(otherSideExpression.keyPath),
-                let transform = optionalTransform
-            {
-                return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
-            }
+            #if !os(watchOS)
+                if otherSideExpression.expressionType == .keyPath,
+                    let (_, optionalTransform) = persistableType?.propertyMapping(otherSideExpression.keyPath),
+                    let transform = optionalTransform,
+                    let constantValue = expression.constantValue,
+                    !(constantValue is MKShape)
+                {
+                    return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
+                }
+            #else
+                if otherSideExpression.expressionType == .keyPath,
+                    let (_, optionalTransform) = persistableType?.propertyMapping(otherSideExpression.keyPath),
+                    let transform = optionalTransform
+                {
+                    return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
+                }
+            #endif
             return expression
         default:
             return expression

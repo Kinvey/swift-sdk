@@ -18,5 +18,6 @@ internal protocol Response {
     var isMethodNotAllowed: Bool { get }
     
     var etag: String? { get }
+    var contentTypeIsJson: Bool { get }
 
 }

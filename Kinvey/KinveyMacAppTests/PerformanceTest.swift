@@ -8,48 +8,13 @@
 
 import XCTest
 import Kinvey
-
-class HierarchyCache: Entity {
-    
-    dynamic var salesOrganization: String?
-    dynamic var distributionChannel: String?
-    dynamic var sapCustomerNumber: String?
-    dynamic var materialNumber: String?
-    dynamic var conditionType: String?
-    dynamic var salesDivision: String?
-    dynamic var validityStartDate: String?
-    dynamic var validityEndDate: String?
-    dynamic var price: String?
-    dynamic var currency: String?
-    dynamic var deliveryUnit: String?
-    dynamic var unitQuantity: String?
-    dynamic var unitOfMeasure: String?
-    
-    override class func collectionName() -> String {
-        return "hierarchycache"
-    }
-    
-    override func propertyMapping(_ map: Map) {
-        super.propertyMapping(map)
-        
-        salesOrganization <- ("salesOrganization", map["SalesOrganization"])
-        distributionChannel <- ("distributionChannel", map["DistributionChannel"])
-        sapCustomerNumber <- ("sapCustomerNumber", map["SAPCustomerNumber"])
-        materialNumber <- ("materialNumber", map["MaterialNumber"])
-        conditionType <- ("conditionType", map["ConditionType"])
-        salesDivision <- ("salesDivision", map["SalesDivision"])
-        validityStartDate <- ("validityStartDate", map["ValidityStartDate"])
-        validityEndDate <- ("validityEndDate", map["ValidityEndDate"])
-        price <- ("price", map["Price"])
-        currency <- ("currency", map["Currency"])
-        deliveryUnit <- ("deliveryUnit", map["DeliveryUnit"])
-        unitQuantity <- ("unitQuantity", map["UnitQuantity"])
-        unitOfMeasure <- ("unitOfMeasure", map["UnitOfMeasure"])
-    }
-    
-}
+#if os(iOS)
+    import KinveyApp
+#endif
 
 class PerformanceTest: XCTestCase {
+    
+    let defaultTimeout: TimeInterval = 30
 
     func testPerformance() {
         do {
@@ -69,7 +34,7 @@ class PerformanceTest: XCTestCase {
                 expectationInit?.fulfill()
             }
             
-            waitForExpectations(timeout: KinveyTestCase.defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationInit = nil
             }
         }
@@ -92,7 +57,7 @@ class PerformanceTest: XCTestCase {
                 expectationLogin?.fulfill()
             }
             
-            waitForExpectations(timeout: KinveyTestCase.defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationLogin = nil
             }
         }
@@ -154,7 +119,7 @@ class PerformanceTest: XCTestCase {
                 }
             }
             
-            waitForExpectations(timeout: KinveyTestCase.defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFindLocal = nil
                 expectationFindNetwork = nil
             }
@@ -164,38 +129,43 @@ class PerformanceTest: XCTestCase {
         
         Kinvey.sharedClient.timeoutInterval = 600
         let limit = 10000
-        let startTime = CFAbsoluteTimeGetCurrent()
         
-        for (sapCustomerNumber, expectedCount) in sapCustomerNumbers {
-            for offset in stride(from: 0, to: expectedCount, by: limit) {
-                var expectationFindLocal: XCTestExpectation? = expectation(description: "Find Local \(sapCustomerNumber) \(offset)/\(expectedCount)")
-                let expectationFindNetwork = expectation(description: "Find Network \(sapCustomerNumber) \(offset)/\(expectedCount)")
-                
-                let query = Query(format: "sapCustomerNumber == %@", sapCustomerNumber)
-                query.limit = limit
-                query.skip = offset
-                
-                dataStore.find(query, options: nil) { (result: Result<[HierarchyCache], Swift.Error>) in
-                    if expectationFindLocal != nil {
-                        expectationFindLocal?.fulfill()
-                        expectationFindLocal = nil
-                    } else {
-                        switch result {
-                        case .success(_):
-                            break
-                        case .failure(let error):
-                            XCTFail(error.localizedDescription)
+        measure {
+            let startTime = CFAbsoluteTimeGetCurrent()
+            
+            dataStore.clearCache()
+            
+            for (sapCustomerNumber, expectedCount) in sapCustomerNumbers {
+                for offset in stride(from: 0, to: expectedCount, by: limit) {
+                    var expectationFindLocal: XCTestExpectation? = self.expectation(description: "Find Local \(sapCustomerNumber) \(offset)/\(expectedCount)")
+                    let expectationFindNetwork = self.expectation(description: "Find Network \(sapCustomerNumber) \(offset)/\(expectedCount)")
+                    
+                    let query = Query(format: "sapCustomerNumber == %@", sapCustomerNumber)
+                    query.limit = limit
+                    query.skip = offset
+                    
+                    dataStore.find(query, options: nil) { (result: Result<AnyRandomAccessCollection<HierarchyCache>, Swift.Error>) in
+                        if expectationFindLocal != nil {
+                            expectationFindLocal?.fulfill()
+                            expectationFindLocal = nil
+                        } else {
+                            switch result {
+                            case .success(_):
+                                break
+                            case .failure(let error):
+                                XCTFail(error.localizedDescription)
+                            }
+                            
+                            expectationFindNetwork.fulfill()
                         }
-                        
-                        expectationFindNetwork.fulfill()
                     }
                 }
             }
+            
+            self.waitForExpectations(timeout: TimeInterval(UInt16.max))
+            
+            print("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s.")
         }
-        
-        waitForExpectations(timeout: TimeInterval(UInt16.max))
-        
-        print("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s.")
     }
 
 }

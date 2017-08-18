@@ -14,13 +14,15 @@ internal protocol CacheType: class {
     
     associatedtype `Type`: Persistable
     
+    var dynamic: DynamicCacheType? { get }
+    
     func save(entity: Type)
     
-    func save(entities: [Type])
+    func save(entities: AnyRandomAccessCollection<Type>)
     
     func find(byId objectId: String) -> Type?
     
-    func find(byQuery query: Query) -> [Type]
+    func find(byQuery query: Query) -> AnyRandomAccessCollection<Type>
     
     func findIdsLmts(byQuery query: Query) -> [String : String]
     
@@ -30,14 +32,20 @@ internal protocol CacheType: class {
     func remove(entity: Type) -> Bool
     
     @discardableResult
-    func remove(entities: [Type]) -> Bool
+    func remove(entities: AnyRandomAccessCollection<Type>) -> Bool
     
     @discardableResult
     func remove(byQuery query: Query) -> Int
     
     func clear(query: Query?)
     
-    func detach(entities: [Type], query: Query?) -> [Type]
+    func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type>
+    
+}
+
+internal protocol DynamicCacheType: class {
+    
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>)
     
 }
 
@@ -76,23 +84,29 @@ class AnyCache<T: Persistable>: CacheType {
         }
     }
     
+    var dynamic: DynamicCacheType? {
+        return _getDynamic()
+    }
+    
+    private let _getDynamic: () -> DynamicCacheType?
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
-    private let _saveEntities: ([T]) -> Void
+    private let _saveEntities: (AnyRandomAccessCollection<Type>) -> Void
     private let _findById: (String) -> T?
-    private let _findByQuery: (Query) -> [T]
+    private let _findByQuery: (Query) -> AnyRandomAccessCollection<Type>
     private let _findIdsLmtsByQuery: (Query) -> [String : String]
     private let _count: (Query?) -> Int
     private let _removeEntity: (T) -> Bool
-    private let _removeEntities: ([T]) -> Bool
+    private let _removeEntities: (AnyRandomAccessCollection<Type>) -> Bool
     private let _removeByQuery: (Query) -> Int
     private let _clear: (Query?) -> Void
-    private let _detach: ([T], Query?) -> [T]
+    private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
     
     typealias `Type` = T
 
     init<Cache: CacheType>(_ cache: Cache) where Cache.`Type` == T {
+        _getDynamic = { return cache.dynamic }
         _getTTL = { return cache.ttl }
         _setTTL = { cache.ttl = $0 }
         _saveEntity = cache.save(entity:)
@@ -112,7 +126,7 @@ class AnyCache<T: Persistable>: CacheType {
         _saveEntity(entity)
     }
     
-    func save(entities: [T]) {
+    func save(entities: AnyRandomAccessCollection<Type>) {
         _saveEntities(entities)
     }
     
@@ -120,7 +134,7 @@ class AnyCache<T: Persistable>: CacheType {
         return _findById(objectId)
     }
     
-    func find(byQuery query: Query) -> [T] {
+    func find(byQuery query: Query) -> AnyRandomAccessCollection<Type> {
         return _findByQuery(query)
     }
     
@@ -138,7 +152,7 @@ class AnyCache<T: Persistable>: CacheType {
     }
     
     @discardableResult
-    func remove(entities: [T]) -> Bool {
+    func remove(entities: AnyRandomAccessCollection<Type>) -> Bool {
         return _removeEntities(entities)
     }
     
@@ -151,7 +165,7 @@ class AnyCache<T: Persistable>: CacheType {
         _clear(query)
     }
     
-    func detach(entities: [T], query: Query?) -> [T] {
+    func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type> {
         return _detach(entities, query)
     }
     

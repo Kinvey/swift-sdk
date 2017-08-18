@@ -38,17 +38,21 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             var count = 0
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
-                count = realmObjects.count
-                let detachedObjects = cache.detach(entities: realmObjects, query: self.query)
-                if cache.remove(entities: realmObjects) {
-                    let idKey = T.entityIdProperty()
-                    for object in detachedObjects {
-                        if let objectId = object[idKey] as? String, let sync = self.sync {
-                            if objectId.hasPrefix(ObjectIdTmpPrefix) {
-                                sync.removeAllPendingOperations(objectId)
-                            } else {
-                                sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
-                            }
+                count = Int(realmObjects.count)
+                let idKey = T.entityIdProperty()
+                let objectIds = cache.detach(entities: realmObjects, query: self.query).map {
+                    $0[idKey] as? String
+                }.filter {
+                    $0 != nil
+                }.map {
+                    $0!
+                }
+                if cache.remove(entities: realmObjects), let sync = self.sync {
+                    for objectId in objectIds {
+                        if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                            sync.removeAllPendingOperations(objectId)
+                        } else {
+                            sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
                         }
                     }
                 }

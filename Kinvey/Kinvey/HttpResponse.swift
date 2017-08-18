@@ -57,6 +57,13 @@ struct HttpResponse: Response {
     var etag: String? {
         return response.allHeaderFields["Etag"] as? String
     }
+    
+    var contentTypeIsJson: Bool {
+        if let contentType = response.allHeaderFields["Content-Type"] as? String {
+            return contentType.hasPrefix("application/json")
+        }
+        return false
+    }
 
 }
 
