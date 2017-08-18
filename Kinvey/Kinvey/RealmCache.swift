@@ -24,6 +24,19 @@ fileprivate let typesNeedsTranslation = [
     typeBoolValue
 ]
 
+#if !os(watchOS)
+    fileprivate func tupleMKShape(predicate: NSPredicate) -> (NSComparisonPredicate, (keyPathExpression: NSExpression, constantValueExpression: NSExpression), Any)? {
+        if let predicate = predicate as? NSComparisonPredicate,
+            let keyPathConstantTuple = predicate.keyPathConstantTuple,
+            let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
+            constantValue is MKCircle || constantValue is MKPolygon
+        {
+            return (predicate, keyPathConstantTuple, constantValue)
+        }
+        return nil
+    }
+#endif
+
 internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
     typealias `Type` = T
@@ -98,10 +111,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     func translate(predicate: NSPredicate) -> NSPredicate {
         #if !os(watchOS)
-            if let predicate = predicate as? NSComparisonPredicate,
-                let keyPathConstantTuple = predicate.keyPathConstantTuple,
-                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-                constantValue is MKCircle || constantValue is MKPolygon
+            if let _ = tupleMKShape(predicate: predicate)
             {
                 return NSPredicate(value: true)
             }
@@ -557,10 +567,7 @@ extension AnyRandomAccessCollection where Element: NSObject, Element: Persistabl
     
     fileprivate func filter(predicate: NSPredicate) -> AnyRandomAccessCollection<Iterator.Element> {
         #if !os(watchOS)
-            if let predicate = predicate as? NSComparisonPredicate,
-                let keyPathConstantTuple = predicate.keyPathConstantTuple,
-                let constantValue = keyPathConstantTuple.constantValueExpression.constantValue,
-                constantValue is MKCircle || constantValue is MKPolygon
+            if let (_, keyPathConstantTuple, constantValue) = tupleMKShape(predicate: predicate)
             {
                 if let circle = constantValue as? MKCircle {
                     let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)

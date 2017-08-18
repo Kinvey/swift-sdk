@@ -454,29 +454,13 @@ open class FileStore<FileType: File> {
         )
     }
     
-    /// Uploads a file using a `NSData`.
-    fileprivate func upload(
+    fileprivate func createBucket(
         _ file: FileType,
         fromSource source: InputSource,
         options: Options?,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> Request {
-        if file.size.value == nil {
-            switch source {
-            case let .data(data):
-                file.size.value = IntMax(data.count)
-            case let .url(url):
-                if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                    let fileSize = attrs[.size] as? IntMax
-                {
-                    file.size.value = fileSize
-                }
-            default:
-                break
-            }
-        }
-        let requests = MultiRequest()
-        Promise<(file: FileType, skip: Int?)> { fulfill, reject in //creating bucket
+        requests: MultiRequest
+    ) -> Promise<(file: FileType, skip: Int?)> {
+        return Promise<(file: FileType, skip: Int?)> { fulfill, reject in //creating bucket
             let createUpdateFileEntry = {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file, options: options)
                 requests += request
@@ -555,87 +539,131 @@ open class FileStore<FileType: File> {
             } else {
                 createUpdateFileEntry()
             }
-        }.then { file, skip in //uploading data
-            return Promise<FileType> { fulfill, reject in
-                var request = URLRequest(url: file.uploadURL!)
-                request.httpMethod = "PUT"
-                if let uploadHeaders = file.uploadHeaders {
-                    for (headerField, value) in uploadHeaders {
-                        request.setValue(value, forHTTPHeaderField: headerField)
-                    }
-                }
-                
-                let handler: (Data?, URLResponse?, Swift.Error?) -> Void = { data, response, error in
-                    if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
-                        do {
-                            log.debug("\(response.description(data))")
-                        }
-                    }
-                    
-                    if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
-                        switch source {
-                        case let .url(url):
-                            file.path = url.path
-                        default:
-                            break
-                        }
-                        
-                        fulfill(file)
-                    } else {
-                        reject(buildError(data, HttpResponse(response: response), error, self.client))
-                    }
-                }
-                
-                switch source {
-                case let .data(data):
-                    let uploadData: Data
-                    if let skip = skip {
-                        let startIndex = skip + 1
-                        uploadData = data.subdata(in: startIndex ..< data.count - startIndex)
-                        request.setValue("bytes \(startIndex)-\(data.count - 1)/\(data.count)", forHTTPHeaderField: "Content-Range")
-                    } else {
-                        uploadData = data
-                    }
-                    
-                    if self.client.logNetworkEnabled {
-                        do {
-                            log.debug("\(request.description)")
-                        }
-                    }
-                    
-                    let uploadTask = self.client.urlSession.uploadTask(with: request, from: uploadData) { (data, response, error) -> Void in
-                        handler(data, response, error)
-                    }
-                    requests += (URLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
-                    uploadTask.resume()
-                case let .url(url):
-                    if self.client.logNetworkEnabled {
-                        do {
-                            log.debug("\(request.description)")
-                        }
-                    }
-                    
-                    let uploadTask = self.client.urlSession.uploadTask(with: request, fromFile: url) { (data, response, error) -> Void in
-                        handler(data, response, error)
-                    }
-                    requests += (URLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
-                    uploadTask.resume()
-                case let .stream(stream):
-                    request.httpBodyStream = stream
-                    
-                    if self.client.logNetworkEnabled {
-                        do {
-                            log.debug("\(request.description)")
-                        }
-                    }
-                    
-                    let dataTask = self.client.urlSession.dataTask(with: request) { (data, response, error) -> Void in
-                        handler(data, response, error)
-                    }
-                    requests += (URLSessionTaskRequest(client: self.client, task: dataTask), addProgress: true)
-                    dataTask.resume()
+        }
+    }
+    
+    fileprivate func upload(
+        _ file: FileType,
+        fromSource source: InputSource,
+        skip: Int?,
+        requests: MultiRequest
+    ) -> Promise<FileType> {
+        return Promise<FileType> { fulfill, reject in
+            var request = URLRequest(url: file.uploadURL!)
+            request.httpMethod = "PUT"
+            if let uploadHeaders = file.uploadHeaders {
+                for (headerField, value) in uploadHeaders {
+                    request.setValue(value, forHTTPHeaderField: headerField)
                 }
             }
+            
+            let handler: (Data?, URLResponse?, Swift.Error?) -> Void = { data, response, error in
+                if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
+                    do {
+                        log.debug("\(response.description(data))")
+                    }
+                }
+                
+                if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
+                    switch source {
+                    case let .url(url):
+                        file.path = url.path
+                    default:
+                        break
+                    }
+                    
+                    fulfill(file)
+                } else {
+                    reject(buildError(data, HttpResponse(response: response), error, self.client))
+                }
+            }
+            
+            switch source {
+            case let .data(data):
+                let uploadData: Data
+                if let skip = skip {
+                    let startIndex = skip + 1
+                    uploadData = data.subdata(in: startIndex ..< data.count - startIndex)
+                    request.setValue("bytes \(startIndex)-\(data.count - 1)/\(data.count)", forHTTPHeaderField: "Content-Range")
+                } else {
+                    uploadData = data
+                }
+                
+                if self.client.logNetworkEnabled {
+                    do {
+                        log.debug("\(request.description)")
+                    }
+                }
+                
+                let uploadTask = self.client.urlSession.uploadTask(with: request, from: uploadData) { (data, response, error) -> Void in
+                    handler(data, response, error)
+                }
+                requests += (URLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
+                uploadTask.resume()
+            case let .url(url):
+                if self.client.logNetworkEnabled {
+                    do {
+                        log.debug("\(request.description)")
+                    }
+                }
+                
+                let uploadTask = self.client.urlSession.uploadTask(with: request, fromFile: url) { (data, response, error) -> Void in
+                    handler(data, response, error)
+                }
+                requests += (URLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
+                uploadTask.resume()
+            case let .stream(stream):
+                request.httpBodyStream = stream
+                
+                if self.client.logNetworkEnabled {
+                    do {
+                        log.debug("\(request.description)")
+                    }
+                }
+                
+                let dataTask = self.client.urlSession.dataTask(with: request) { (data, response, error) -> Void in
+                    handler(data, response, error)
+                }
+                requests += (URLSessionTaskRequest(client: self.client, task: dataTask), addProgress: true)
+                dataTask.resume()
+            }
+        }
+    }
+    
+    /// Uploads a file using a `NSData`.
+    fileprivate func upload(
+        _ file: FileType,
+        fromSource source: InputSource,
+        options: Options?,
+        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        if file.size.value == nil {
+            switch source {
+            case let .data(data):
+                file.size.value = IntMax(data.count)
+            case let .url(url):
+                if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                    let fileSize = attrs[.size] as? IntMax
+                {
+                    file.size.value = fileSize
+                }
+            default:
+                break
+            }
+        }
+        let requests = MultiRequest()
+        createBucket(
+            file,
+            fromSource: source,
+            options: options,
+            requests: requests
+        ).then { file, skip in //uploading data
+            return self.upload(
+                file,
+                fromSource: source,
+                skip: skip,
+                requests: requests
+            )
         }.then { file in //fetching download url
             let (request, promise) = self.getFileMetadata(
                 file,

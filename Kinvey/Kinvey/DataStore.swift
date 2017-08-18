@@ -2013,6 +2013,23 @@ open class DataStore<T: Persistable> where T: NSObject {
         return realtimeRouter
     }
     
+    func execute(request: HttpRequest) -> Promise<RealtimeRouter> {
+        return Promise<RealtimeRouter> { fulfill, reject in
+            do {
+                let realtimeRouter = try self.realtimeRouter()
+                request.execute() { (data, response, error) in
+                    if let response = response, response.isOK {
+                        fulfill(realtimeRouter)
+                    } else {
+                        reject(buildError(data, response, error, self.client))
+                    }
+                }
+            } catch {
+                reject(error)
+            }
+        }
+    }
+    
     /**
      Subscribe and start listening to changes in the collection
      */
@@ -2029,20 +2046,9 @@ open class DataStore<T: Persistable> where T: NSObject {
             deviceId: deviceId,
             options: options
         )
-        Promise<RealtimeRouter> { fulfill, reject in
-            do {
-                let realtimeRouter = try self.realtimeRouter()
-                request.execute() { (data, response, error) in
-                    if let response = response, response.isOK {
-                        fulfill(realtimeRouter)
-                    } else {
-                        reject(buildError(data, response, error, self.client))
-                    }
-                }
-            } catch {
-                reject(error)
-            }
-        }.then { realtimeRouter in
+        execute(
+            request: request
+        ).then { realtimeRouter in
             realtimeRouter.subscribe(
                 channel: self.channelName,
                 context: self,
@@ -2076,20 +2082,9 @@ open class DataStore<T: Persistable> where T: NSObject {
             deviceId: deviceId,
             options: options
         )
-        Promise<RealtimeRouter> { fulfill, reject in
-            do {
-                let realtimeRouter = try self.realtimeRouter()
-                request.execute() { (data, response, error) in
-                    if let response = response, response.isOK {
-                        fulfill(realtimeRouter)
-                    } else {
-                        reject(buildError(data, response, error, self.client))
-                    }
-                }
-            } catch {
-                reject(error)
-            }
-        }.then { realtimeRouter in
+        execute(
+            request: request
+        ).then { realtimeRouter in
             realtimeRouter.unsubscribe(channel: self.channelName, context: self)
         }.then {
             completionHandler(.success())

@@ -31,8 +31,6 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         var bodyObject = JsonDictionary()
         if let username = username {
             bodyObject["username"] = username
@@ -43,7 +41,7 @@ class HttpRequestFactory: RequestFactory {
         if let user = user {
             bodyObject += user.toJSON()
         }
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -120,13 +118,12 @@ class HttpRequestFactory: RequestFactory {
             endpoint: Endpoint.userLogin(client: client),
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = [
             "username" : username,
             "password" : password
         ]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -141,10 +138,8 @@ class HttpRequestFactory: RequestFactory {
         )
         request.request.httpMethod = "POST"
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = ["username" : username]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -183,15 +178,13 @@ class HttpRequestFactory: RequestFactory {
             credential: client.activeUser,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         var bodyObject = user.toJSON()
         
         if let newPassword = newPassword {
             bodyObject["password"] = newPassword
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -206,11 +199,8 @@ class HttpRequestFactory: RequestFactory {
             credential: client.activeUser,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = userQuery.toJSON()
-        
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -237,10 +227,8 @@ class HttpRequestFactory: RequestFactory {
             credential: client,
             options: options
         )
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let bodyObject = ["email" : email]
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -344,13 +332,11 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
         
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         if (isNewObj) {
             bodyObject[Entity.Key.entityId] = nil
         }
         
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -382,10 +368,15 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+    private func buildPushDevice(
+        _ deviceToken: Data,
+        options: Options?,
+        client: Client,
+        endpoint: Endpoint
+    ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.pushRegisterDevice(client: client),
+            endpoint: endpoint,
             credential: client.activeUser,
             options: options
         )
@@ -394,26 +385,28 @@ class HttpRequestFactory: RequestFactory {
             "platform" : "ios",
             "deviceId" : deviceToken.hexString()
         ]
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
-    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.pushUnRegisterDevice(client: client),
-            credential: client.activeUser,
-            options: options
+    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+        let client = options?.client ?? self.client
+        return buildPushDevice(
+            deviceToken,
+            options: options,
+            client: client,
+            endpoint: Endpoint.pushRegisterDevice(client: client)
         )
-        
-        let bodyObject = [
-            "platform" : "ios",
-            "deviceId" : deviceToken.hexString()
-        ]
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
-        return request
+    }
+    
+    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+        let client = options?.client ?? self.client
+        return buildPushDevice(
+            deviceToken,
+            options: options,
+            client: client,
+            endpoint: Endpoint.pushUnRegisterDevice(client: client)
+        )
     }
     
     func buildBlobUploadFile(
@@ -432,9 +425,8 @@ class HttpRequestFactory: RequestFactory {
         )
         
         let bodyObject = file.toJSON()
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
-        request.request.httpBody = try! JSONSerialization.data(withJSONObject: bodyObject)
+        request.setBody(json: bodyObject)
         return request
     }
     
@@ -625,21 +617,33 @@ class HttpRequestFactory: RequestFactory {
     
     // MARK: Realtime
     
-    func buildUserRegisterRealtime(
-        user: User,
+    private func build(
         deviceId: String,
+        endpoint: Endpoint,
         options: Options?
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.userRegisterRealtime(client: client, user: user),
-            credential: client.activeUser,
+            endpoint: endpoint,
+            credential: (options?.client ?? self.client).activeUser,
             options: options
         )
         request.setBody(json: [
             "deviceId" : deviceId
         ])
         return request
+    }
+    
+    func buildUserRegisterRealtime(
+        user: User,
+        deviceId: String,
+        options: Options?
+    ) -> HttpRequest {
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.userRegisterRealtime(client: options?.client ?? self.client, user: user),
+            options: options
+        )
     }
     
     func buildUserUnregisterRealtime(
@@ -647,16 +651,11 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.userUnregisterRealtime(client: client, user: user),
-            credential: client.activeUser,
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.userUnregisterRealtime(client: options?.client ?? self.client, user: user),
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildAppDataSubscribe(
@@ -664,16 +663,11 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.appDataSubscribe(client: client, collectionName: collectionName),
-            credential: client.activeUser,
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.appDataSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildAppDataUnSubscribe(
@@ -681,16 +675,11 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.appDataUnSubscribe(client: client, collectionName: collectionName),
-            credential: client.activeUser,
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.appDataUnSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildLiveStreamGrantAccess(
@@ -701,7 +690,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .put,
-            endpoint: Endpoint.liveStreamByUser(client: client, streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -716,7 +705,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .post,
-            endpoint: Endpoint.liveStreamPublish(client: client, streamName: streamName, userId: userId),
+            endpoint: Endpoint.liveStreamPublish(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -729,16 +718,11 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.liveStreamSubscribe(client: client, streamName: streamName, userId: userId),
-            credential: client.activeUser,
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.liveStreamSubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
     
     func buildLiveStreamUnsubscribe(
@@ -747,16 +731,11 @@ class HttpRequestFactory: RequestFactory {
         deviceId: String,
         options: Options?
     ) -> HttpRequest {
-        let request = HttpRequest(
-            httpMethod: .post,
-            endpoint: Endpoint.liveStreamUnsubscribe(client: client, streamName: streamName, userId: userId),
-            credential: client.activeUser,
+        return build(
+            deviceId: deviceId,
+            endpoint: Endpoint.liveStreamUnsubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             options: options
         )
-        request.setBody(json: [
-            "deviceId" : deviceId
-        ])
-        return request
     }
 
 }

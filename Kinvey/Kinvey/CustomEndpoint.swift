@@ -66,12 +66,11 @@ open class CustomEndpoint {
             options: options
         )
         if let params = params {
-            request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             switch params.value {
             case .json(let json):
-                request.request.httpBody = try! JSONSerialization.data(withJSONObject: json.toJson())
+                request.setBody(json: json.toJson())
             case .object(let object):
-                request.request.httpBody = try! JSONSerialization.data(withJSONObject: object.toJSON().toJson())
+                request.setBody(json: object.toJSON().toJson())
             }
         }
         request.request.setValue(nil, forHTTPHeaderField: KinveyHeaderField.requestId)
