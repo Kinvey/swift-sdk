@@ -28,7 +28,8 @@ internal class ObjCRuntime: NSObject {
         let property = class_getProperty(cls, propertyName)
         let attributeValueCString = property_copyAttributeValue(property, "T")
         defer { free(attributeValueCString) }
-        if let attributeValue = String(validatingUTF8: attributeValueCString!),
+        if let attributeValueCString = attributeValueCString,
+            let attributeValue = String(validatingUTF8: attributeValueCString),
             let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.characters.count)).first
         {
             let attributeValueNSString = attributeValue as NSString
