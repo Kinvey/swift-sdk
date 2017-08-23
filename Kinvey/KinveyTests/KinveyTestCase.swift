@@ -246,9 +246,9 @@ extension XCTestCase {
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func mockResponse(completionHandler: @escaping (URLRequest) -> HttpResponse) {
+    func mockResponse(client: Client = sharedClient, completionHandler: @escaping (URLRequest) -> HttpResponse) {
         MockURLProtocol.completionHandler = completionHandler
-        setURLProtocol(MockURLProtocol.self)
+        setURLProtocol(MockURLProtocol.self, client: client)
     }
     
 }

@@ -53,6 +53,48 @@ class QueryTest: XCTestCase {
     func testQueryEq() {
         XCTAssertEqual(encodeQuery(Query(format: "age == %@", 30)), "query=\(encodeURL(["age" : 30]))")
         XCTAssertEqual(encodeQuery(Query(format: "age = %@", 30)), "query=\(encodeURL(["age" : 30]))")
+        XCTAssertEqual(encodeQuery(Query(format: "obj._id == %@", 30)), "query=\(encodeURL(["obj._id" : 30]))")
+        
+        do {
+            let client = Client(
+                appKey: UUID().uuidString,
+                appSecret: UUID().uuidString
+            )
+            
+            var mockReached = false
+            mockResponse(client: client) { (request) -> HttpResponse in
+                let components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let query = components.queryItems!.filter { $0.name == "query" }.first!.value!
+                XCTAssertEqual(query, "{\"obj._id\":30}")
+                mockReached = true
+                return HttpResponse(json: [])
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let dataStore = DataStore<Person>.collection(.network, client: client)
+            let query = Query(format: "obj._id == %@", 30)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            dataStore.find(query, options: Options(client: client)) { (result: Result<[Person], Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: 30) { (error) in
+                expectationFind = nil
+            }
+            
+            XCTAssertTrue(mockReached)
+        }
     }
     
     func testQueryGt() {
