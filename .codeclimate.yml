@@ -1,0 +1,7 @@
+exclude_paths:
+- "Kinvey/KinveyTests/"
+- "Kinvey/KinveyApp/"
+- "Kinvey/RealtimeSender/"
+- "devtools/"
+- "Tools/"
+- "scripts/"
