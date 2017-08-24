@@ -5,3 +5,4 @@ exclude_paths:
 - "devtools/"
 - "Tools/"
 - "scripts/"
+- "DocTemplates/"
