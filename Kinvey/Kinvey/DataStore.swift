@@ -75,6 +75,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     fileprivate let uuid = UUID()
     
+    private let autoPagination: Bool
+    
     /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
     open var ttl: TTL? {
         didSet {
@@ -113,7 +115,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
-    open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, autoPagination: Bool = false, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
@@ -121,7 +123,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
             let fileURL = client.fileURL(tag)
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, autoPagination: autoPagination, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
@@ -139,15 +141,17 @@ open class DataStore<T: Persistable> where T: NSObject {
         return DataStore<NewType>(
             type: type,
             deltaSet: deltaSet,
+            autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
             encryptionKey: client.encryptionKey
         )
     }
     
-    fileprivate init(type: StoreType, deltaSet: Bool, client: Client, fileURL: URL?, encryptionKey: Data?) {
+    fileprivate init(type: StoreType, deltaSet: Bool, autoPagination: Bool, client: Client, fileURL: URL?, encryptionKey: Data?) {
         self.type = type
         self.deltaSet = deltaSet
+        self.autoPagination = autoPagination
         self.client = client
         self.fileURL = fileURL
         collectionName = T.collectionName()
@@ -397,14 +401,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         let operation = FindOperation<T>(
             query: Query(query: query, persistableType: T.self),
             deltaSet: deltaSet,
+            autoPagination: autoPagination,
             readPolicy: readPolicy,
             cache: cache,
             options: options
         )
         let request = operation.execute { result in
-            DispatchQueue.main.async {
-                completionHandler(result)
-            }
+            completionHandler(result)
         }
         return request
     }
@@ -1785,6 +1788,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                     query: Query(query: query, persistableType: T.self),
                     deltaSet: deltaSet,
                     deltaSetCompletionHandler: deltaSetCompletionHandler,
+                    autoPagination: autoPagination,
                     readPolicy: .forceNetwork,
                     cache: cache,
                     options: options

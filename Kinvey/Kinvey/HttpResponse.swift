@@ -38,6 +38,10 @@ struct HttpResponse: Response {
         return response.statusCode == 304
     }
     
+    var isBadRequest: Bool {
+        return response.statusCode == 400
+    }
+    
     var isUnauthorized: Bool {
         return response.statusCode == 401
     }

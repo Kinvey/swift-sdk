@@ -134,8 +134,12 @@ func buildError(
 ) -> Swift.Error {
     if let error = error {
         return error
-    } else if let response = response, response.isUnauthorized,
-        let json = client.responseParser.parse(data) as? [String : String],
+    }
+    
+    let json = client.responseParser.parse(data) as? [String : String]
+    if let response = response,
+        response.isUnauthorized,
+        let json = json,
         let error = json["error"],
         let debug = json["debug"],
         let description = json["description"]
@@ -149,7 +153,7 @@ func buildError(
         )
     } else if let response = response,
         response.isMethodNotAllowed,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         let error = json["error"],
         error == "MethodNotAllowed",
         let debug = json["debug"],
@@ -163,7 +167,7 @@ func buildError(
         )
     } else if let response = response,
         response.isNotFound,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         json["error"] == "DataLinkEntityNotFound",
         let debug = json["debug"],
         let description = json["description"]
@@ -176,7 +180,7 @@ func buildError(
         )
     } else if let response = response,
         response.isForbidden,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         let error = json["error"],
         error == "MissingConfiguration",
         let debug = json["debug"],
@@ -190,7 +194,7 @@ func buildError(
         )
     } else if let response = response,
         response.isNotFound,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         json["error"] == "AppNotFound",
         let description = json["description"]
     {
@@ -201,6 +205,14 @@ func buildError(
         json[Entity.Key.entityId] == nil
     {
         return Error.objectIdMissing
+    } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.ResultSetSizeExceeded,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.resultSetSizeExceeded(debug: debug, description: description)
     } else if let response = response,
         let json = client.responseParser.parse(data)
     {

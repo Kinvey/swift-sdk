@@ -17,6 +17,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Constant for 401 responses where the credentials are not valid to complete the request.
     public static let InvalidCredentials = "InvalidCredentials"
     
+    /// Constant for 400 response where the number of results exceeded the limit.
+    public static let ResultSetSizeExceeded = "ResultSetSizeExceeded"
+    
     /// Error where Object ID is required.
     case objectIdMissing
     
@@ -68,6 +71,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error forbidden
     case forbidden(description: String)
     
+    /// Error when the number of results exceeded the limit
+    case resultSetSizeExceeded(debug: String, description: String)
     
     /// Error localized description.
     public var description: String {
@@ -80,7 +85,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .invalidOperation(let description),
              .missingConfiguration(_, _, _, let description),
              .appNotFound(let description),
-             .forbidden(let description):
+             .forbidden(let description),
+             .resultSetSizeExceeded(_, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -116,7 +122,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         case .methodNotAllowed(_, _, let debug, _),
              .dataLinkEntityNotFound(_, _, let debug, _),
              .missingConfiguration(_, _, let debug, _),
-             .unauthorized(_, _, _, let debug, _):
+             .unauthorized(_, _, _, let debug, _),
+             .resultSetSizeExceeded(let debug, _):
             return debug
         default:
             return description
