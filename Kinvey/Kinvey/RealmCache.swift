@@ -513,6 +513,7 @@ extension RealmCache: DynamicCacheType {
                     if let transform = transform,
                         let value = transform.transformFromJSON(entity[key]) as? NSObject,
                         let property = properties[translatedKey],
+                        property.type != .array,
                         let objectClassName = property.objectClassName,
                         let schema = realm.schema[objectClassName]
                     {

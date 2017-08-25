@@ -199,6 +199,66 @@ class DataTypeTestCase: StoreTestCase {
         XCTAssertEqual(transform.transformToJSON(Date(timeIntervalSince1970: 1479114355.787)), "2016-11-14T09:05:55.787Z")
     }
     
+    func testPropertyMapping() {
+        let propertyMapping = Book.propertyMapping()
+        var entityId = false,
+        metadata = false,
+        acl = false,
+        title = false,
+        authorNames = false,
+        editions = false,
+        editionsYear = false,
+        editionsRetailPrice = false,
+        editionsRating = false,
+        editionsAvailable = false
+        for (left, (right, _)) in propertyMapping {
+            switch left {
+            case "entityId":
+                XCTAssertEqual(right, "_id")
+                entityId = true
+            case "metadata":
+                XCTAssertEqual(right, "_kmd")
+                metadata = true
+            case "acl":
+                XCTAssertEqual(right, "_acl")
+                acl = true
+            case "title":
+                XCTAssertEqual(right, "title")
+                title = true
+            case "authorNames":
+                XCTAssertEqual(right, "authorNames")
+                authorNames = true
+            case "editions":
+                XCTAssertEqual(right, "editions")
+                editions = true
+            case "editionsYear":
+                XCTAssertEqual(right, "editionsYear")
+                editionsYear = true
+            case "editionsRetailPrice":
+                XCTAssertEqual(right, "editionsRetailPrice")
+                editionsRetailPrice = true
+            case "editionsRating":
+                XCTAssertEqual(right, "editionsRating")
+                editionsRating = true
+            case "editionsAvailable":
+                XCTAssertEqual(right, "editionsAvailable")
+                editionsAvailable = true
+            default:
+                XCTFail()
+            }
+        }
+        XCTAssertTrue(entityId)
+        XCTAssertTrue(metadata)
+        XCTAssertTrue(acl)
+        XCTAssertTrue(title)
+        XCTAssertTrue(authorNames)
+        XCTAssertTrue(editions)
+        XCTAssertTrue(editionsYear)
+        XCTAssertTrue(editionsRetailPrice)
+        XCTAssertTrue(editionsRating)
+        XCTAssertTrue(editionsAvailable)
+    }
+    
 }
 
 class EntityWithDate : Entity {
