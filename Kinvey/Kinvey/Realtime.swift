@@ -360,6 +360,18 @@ public struct LiveStreamAcl: StaticMappable {
     /// Group Acl
     public var groups = LiveStreamAclGroups()
     
+    public init(subscribers: [String]? = nil, publishers: [String]? = nil, groups: LiveStreamAclGroups? = nil) {
+        if let subscribers = subscribers {
+            self.subscribers = subscribers
+        }
+        if let publishers = publishers {
+            self.publishers = publishers
+        }
+        if let groups = groups {
+            self.groups = groups
+        }
+    }
+    
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return LiveStreamAcl()
     }

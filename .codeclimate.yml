@@ -1,0 +1,17 @@
+---
+engines:
+  tailor:
+    enabled: true
+  fixme:
+    enabled: true
+ratings:
+  paths:
+  - "**.swift"
+exclude_paths:
+- "Kinvey/KinveyTests/"
+- "Kinvey/KinveyApp/"
+- "Kinvey/RealtimeSender/"
+- "devtools/"
+- "Tools/"
+- "scripts/"
+- "DocTemplates/"

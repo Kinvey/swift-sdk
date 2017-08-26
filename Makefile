@@ -8,7 +8,7 @@ DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
 
 all: build archive pack docs
 
-deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs
+deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs deploy-devcenter
 
 release: all deploy
 

@@ -191,14 +191,11 @@ class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictio
 
 /// Overload operator for `List` values
 public func <-<T: BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
-    let (_, map) = rhs
+    let (right, map) = rhs
     var list = lhs
-    switch map.mappingType {
-    case .fromJSON:
-        list <- (map, ListValueTransform<T>(list))
-    case .toJSON:
-        list <- (map, ListValueTransform<T>(list))
-    }
+    let transform = ListValueTransform<T>(list)
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    list <- (map, transform)
 }
 
 // MARK: String Value Transform
@@ -226,13 +223,14 @@ class StringValueTransform: TransformOf<List<StringValue>, [String]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<StringValue>, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    let transform = StringValueTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     var list = left
     switch map.mappingType {
     case .toJSON:
-        list <- (map, StringValueTransform())
+        list <- (map, transform)
     case .fromJSON:
-        list <- (map, StringValueTransform())
+        list <- (map, transform)
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -263,13 +261,14 @@ class IntValueTransform: TransformOf<List<IntValue>, [Int]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<IntValue>, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    let transform = IntValueTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     var list = left
     switch map.mappingType {
     case .toJSON:
-        list <- (map, IntValueTransform())
+        list <- (map, transform)
     case .fromJSON:
-        list <- (map, IntValueTransform())
+        list <- (map, transform)
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -306,13 +305,14 @@ class FloatValueTransform: TransformOf<List<FloatValue>, [Float]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<FloatValue>, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    let transform = FloatValueTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     var list = left
     switch map.mappingType {
     case .toJSON:
-        list <- (map, FloatValueTransform())
+        list <- (map, transform)
     case .fromJSON:
-        list <- (map, FloatValueTransform())
+        list <- (map, transform)
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -343,13 +343,14 @@ class DoubleValueTransform: TransformOf<List<DoubleValue>, [Double]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<DoubleValue>, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    let transform = DoubleValueTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     var list = left
     switch map.mappingType {
     case .toJSON:
-        list <- (map, DoubleValueTransform())
+        list <- (map, transform)
     case .fromJSON:
-        list <- (map, DoubleValueTransform())
+        list <- (map, transform)
         left.removeAll()
         left.append(objectsIn: list)
     }
@@ -380,13 +381,14 @@ class BoolValueTransform: TransformOf<List<BoolValue>, [Bool]> {
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: List<BoolValue>, right: (String, Map)) {
     let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
+    let transform = BoolValueTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     var list = left
     switch map.mappingType {
     case .toJSON:
-        list <- (map, BoolValueTransform())
+        list <- (map, transform)
     case .fromJSON:
-        list <- (map, BoolValueTransform())
+        list <- (map, transform)
         left.removeAll()
         left.append(objectsIn: list)
     }
