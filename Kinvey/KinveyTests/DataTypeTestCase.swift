@@ -247,6 +247,7 @@ class DataTypeTestCase: StoreTestCase {
                 XCTFail()
             }
         }
+        
         XCTAssertTrue(entityId)
         XCTAssertTrue(metadata)
         XCTAssertTrue(acl)
