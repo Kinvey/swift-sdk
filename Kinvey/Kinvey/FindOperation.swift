@@ -166,7 +166,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 } else {
                     func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
                         let startTime = CFAbsoluteTimeGetCurrent()
-                        let entities = AnyRandomAccessCollection(jsonArray.lazy.map {
+                        let entities = AnyRandomAccessCollection(jsonArray.lazy.filter {
+                            ($0[Entity.Key.entityId] as? String) != nil
+                        }.map {
                             T(JSON: $0)!
                         })
                         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")

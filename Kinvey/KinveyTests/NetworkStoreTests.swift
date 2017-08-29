@@ -2356,4 +2356,37 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMissingId() {
+        let personName = "Victor"
+        mockResponse(json: [
+            [
+                "_id" : UUID().uuidString,
+                "name" : personName
+            ],
+            [
+                "name" : "\(personName) Barros"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { persons, error in
+            XCTAssertNotNil(persons)
+            XCTAssertNil(error)
+            
+            if let persons = persons {
+                XCTAssertEqual(persons.count, 1)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
