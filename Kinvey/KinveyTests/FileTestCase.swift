@@ -16,22 +16,6 @@ import Nimble
     typealias Image = UIImage
 #endif
 
-class MyFile: File {
-    
-    dynamic var label: String?
-    
-    public convenience required init?(map: Map) {
-        self.init()
-    }
-    
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-        
-        label <- ("label", map["label"])
-    }
-    
-}
-
 class FileTestCase: StoreTestCase {
     
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
@@ -659,6 +643,8 @@ class FileTestCase: StoreTestCase {
                     }
                     switch count {
                     case 0:
+                        let requestBody = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
+                        XCTAssertEqual(requestBody["label"] as? String, "trailer")
                         return HttpResponse(statusCode: 201, json: [
                             "_public": true,
                             "_id": "2a37d253-752f-42cd-987e-db319a626077",

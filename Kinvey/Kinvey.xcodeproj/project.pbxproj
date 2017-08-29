@@ -30,6 +30,8 @@
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571BA2611F55D9E600DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
+		571BA2621F55DA1C00DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		5726321E1EE99C940082A1A8 /* SongRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5726321D1EE99C940082A1A8 /* SongRecommendation.swift */; };
@@ -718,6 +720,7 @@
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		571BA2601F55D9E600DE1886 /* MyFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyFile.swift; sourceTree = "<group>"; };
 		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		5726321D1EE99C940082A1A8 /* SongRecommendation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongRecommendation.swift; sourceTree = "<group>"; };
 		572709B01F50BD70002DE5A4 /* RealtimeAclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealtimeAclTestCase.swift; sourceTree = "<group>"; };
@@ -1446,6 +1449,7 @@
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
 				5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */,
+				571BA2601F55D9E600DE1886 /* MyFile.swift */,
 				5781D1351CE3D0BA00369F40 /* FileTestCase.swift */,
 				5771F9FE1D301F6300903777 /* Event.swift */,
 				57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */,
@@ -2564,6 +2568,7 @@
 				572709B21F50BD78002DE5A4 /* RealtimeAclTestCase.swift in Sources */,
 				578B806E1EE746CB004D92A6 /* PersistableTestCase.swift in Sources */,
 				578B80691EE746B2004D92A6 /* LogTestCase.swift in Sources */,
+				571BA2621F55DA1C00DE1886 /* MyFile.swift in Sources */,
 				578B80681EE74677004D92A6 /* RefProject.swift in Sources */,
 				578B805E1EE74328004D92A6 /* Event.swift in Sources */,
 				578B80761EE876C5004D92A6 /* UserTests.swift in Sources */,
@@ -2822,6 +2827,7 @@
 				572709B11F50BD70002DE5A4 /* RealtimeAclTestCase.swift in Sources */,
 				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
 				575465A41E66405D0063B4B6 /* PerformanceProductTestCase.swift in Sources */,
+				571BA2611F55D9E600DE1886 /* MyFile.swift in Sources */,
 				5796B3E71DEE8EC900209C9F /* CacheStoreTests.swift in Sources */,
 				5754DDBD1EAEBC4A00122A7A /* DateTestCase.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
