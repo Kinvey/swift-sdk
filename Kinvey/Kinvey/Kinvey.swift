@@ -194,6 +194,12 @@ func buildError(
     {
         return Error.appNotFound(description: description)
     } else if let response = response,
+        response.isOK,
+        let json = client.responseParser.parse(data),
+        json[Entity.Key.entityId] == nil
+    {
+        return Error.objectIdMissing
+    } else if let response = response,
         let json = client.responseParser.parse(data)
     {
         return Error.buildUnknownJsonError(
