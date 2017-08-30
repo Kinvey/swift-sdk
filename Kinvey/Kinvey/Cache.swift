@@ -104,8 +104,11 @@ class AnyCache<T: Persistable>: CacheType {
     private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
     
     typealias `Type` = T
+    
+    let cache: Any
 
     init<Cache: CacheType>(_ cache: Cache) where Cache.`Type` == T {
+        self.cache = cache
         _getDynamic = { return cache.dynamic }
         _getTTL = { return cache.ttl }
         _setTTL = { cache.ttl = $0 }

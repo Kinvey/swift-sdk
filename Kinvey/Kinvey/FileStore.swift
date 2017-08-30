@@ -759,9 +759,9 @@ open class FileStore<FileType: File> {
                             fulfill(pathURL)
                         } else {
                             let fileManager = FileManager()
-                            if let entityId = entityId,
-                                let baseFolder = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+                            if let entityId = entityId
                             {
+                                let baseFolder = cacheBasePath
                                 do {
                                     var baseFolderURL = URL(fileURLWithPath: baseFolder)
                                     baseFolderURL = baseFolderURL.appendingPathComponent(self.client.appKey!).appendingPathComponent("files")
