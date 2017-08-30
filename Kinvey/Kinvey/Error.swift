@@ -39,7 +39,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     case invalidResponse(httpResponse: HTTPURLResponse?, data: Data?)
     
     /// Error when a Unauthorized Response coming from the backend.
-    case unauthorized(httpResponse: HTTPURLResponse?, data: Data?, error: String, description: String)
+    case unauthorized(httpResponse: HTTPURLResponse?, data: Data?, error: String, debug: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case noActiveUser
@@ -76,7 +76,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         case .methodNotAllowed(_, _, _, let description),
              .dataLinkEntityNotFound(_, _, _, let description),
              .unknownError(_, _, let description),
-             .unauthorized(_, _, _, let description),
+             .unauthorized(_, _, _, _, let description),
              .invalidOperation(let description),
              .missingConfiguration(_, _, _, let description),
              .appNotFound(let description),
@@ -115,7 +115,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         switch self {
         case .methodNotAllowed(_, _, let debug, _),
              .dataLinkEntityNotFound(_, _, let debug, _),
-             .missingConfiguration(_, _, let debug, _):
+             .missingConfiguration(_, _, let debug, _),
+             .unauthorized(_, _, _, let debug, _):
             return debug
         default:
             return description
@@ -129,7 +130,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unknownJsonError(let httpResponse, _, _),
              .dataLinkEntityNotFound(let httpResponse, _, _, _),
              .methodNotAllowed(let httpResponse, _, _, _),
-             .unauthorized(let httpResponse, _, _, _),
+             .unauthorized(let httpResponse, _, _, _, _),
              .invalidResponse(let httpResponse, _):
             return httpResponse
         default:
@@ -149,7 +150,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unknownJsonError(_, let data, _),
              .dataLinkEntityNotFound(_, let data, _, _),
              .methodNotAllowed(_, let data, _, _),
-             .unauthorized(_, let data, _, _),
+             .unauthorized(_, let data, _, _, _),
              .invalidResponse(_, let data),
              .missingConfiguration(_, let data, _, _):
             return data
@@ -173,52 +174,6 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
             return jsonObject as? JsonDictionary
         }
         return nil
-    }
-    
-    static func buildUnknownJsonError(httpResponse: HTTPURLResponse?, data: Data?, json: [String : Any]) -> Error {
-        return unknownJsonError(httpResponse: httpResponse, data: data, json: json)
-    }
-    
-    static func buildDataLinkEntityNotFound(
-        httpResponse: HTTPURLResponse?,
-        data: Data?,
-        debug: String,
-        description: String
-    ) -> Error {
-        return dataLinkEntityNotFound(
-            httpResponse: httpResponse,
-            data: data,
-            debug: debug,
-            description: description
-        )
-    }
-    
-    static func buildMethodNotAllowed(
-        httpResponse: HTTPURLResponse?,
-        data: Data?,
-        debug: String,
-        description: String
-    ) -> Error {
-        return methodNotAllowed(
-            httpResponse: httpResponse,
-            data: data,
-            debug: debug,
-            description: description
-        )
-    }
-    
-    static func buildUnauthorized(
-        httpResponse: HTTPURLResponse?,
-        data: Data?,
-        error: String,
-        description: String
-    ) -> Error {
-        return unauthorized(
-            httpResponse: httpResponse,
-            data: data,
-            error: error,
-            description: description
-        )
     }
     
 }

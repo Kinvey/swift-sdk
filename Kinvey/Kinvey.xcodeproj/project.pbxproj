@@ -288,6 +288,13 @@
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
 		57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C2F1721D5E5A68005A214B /* BuilderType.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
+		57C731EE1F575D4B00B67C13 /* ObjectMapper.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731EF1F575D5A00B67C13 /* PubNub.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57E6BD001EC51F80000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731F01F575D6600B67C13 /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731F11F575D7300B67C13 /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1E51CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731F21F575DBB00B67C13 /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1E71CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731F31F575DC600B67C13 /* RealmSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57C731F41F575DD100B67C13 /* XCGLogger.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 577751391DF8B908006C98F1 /* XCGLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */; };
@@ -661,6 +668,22 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57C731ED1F575D3B00B67C13 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				57C731EE1F575D4B00B67C13 /* ObjectMapper.framework in CopyFiles */,
+				57C731EF1F575D5A00B67C13 /* PubNub.framework in CopyFiles */,
+				57C731F01F575D6600B67C13 /* KeychainAccess.framework in CopyFiles */,
+				57C731F11F575D7300B67C13 /* PromiseKit.framework in CopyFiles */,
+				57C731F21F575DBB00B67C13 /* Realm.framework in CopyFiles */,
+				57C731F31F575DC600B67C13 /* RealmSwift.framework in CopyFiles */,
+				57C731F41F575DD100B67C13 /* XCGLogger.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1837,6 +1860,7 @@
 				578E79571EEB0B0F002BBF9C /* Sources */,
 				578E79581EEB0B0F002BBF9C /* Frameworks */,
 				578E79591EEB0B0F002BBF9C /* Resources */,
+				57C731ED1F575D3B00B67C13 /* CopyFiles */,
 			);
 			buildRules = (
 			);
