@@ -118,7 +118,7 @@ open class File: Object, Mappable {
         block(self)
     }
     
-    public func mapping(map: Map) {
+    open func mapping(map: Map) {
         fileId <- map[Entity.Key.entityId]
         acl <- map[Entity.Key.acl]
         metadata <- map[Entity.Key.metadata]
