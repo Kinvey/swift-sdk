@@ -16,6 +16,7 @@ internal enum Endpoint {
     case userLookup(client: Client)
     case userExistsByUsername(client: Client)
     case userLogin(client: Client)
+    case userLogout(client: Client)
     case sendEmailConfirmation(client: Client, username: String)
     case userResetPassword(usernameOrEmail: String, client: Client)
     case userForgotUsername(client: Client)
@@ -84,6 +85,8 @@ internal enum Endpoint {
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
         case .userLogin(let client):
             return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/login")
+        case .userLogout(let client):
+            return client.apiHostName.appendingPathComponent("/user/\(client.appKey!)/_logout")
         case .sendEmailConfirmation(let client, let username):
             return client.apiHostName.appendingPathComponent("/rpc/\(client.appKey!)/\(username)/user-email-verification-initiate")
         case .userResetPassword(let usernameOrEmail, let client):

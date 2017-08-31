@@ -127,6 +127,19 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserLogout(
+        user: User,
+        options: Options?
+    ) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.userLogout(client: client),
+            credential: client.activeUser,
+            options: options
+        )
+        return request
+    }
+    
     func buildUserExists(
         username: String,
         options: Options?

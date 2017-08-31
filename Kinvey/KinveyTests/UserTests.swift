@@ -3865,6 +3865,40 @@ extension UserTests {
         }
     }
     
+    func testLogout() {
+        signUp()
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            Swift.fatalError()
+        }
+        
+        if useMockData {
+            mockResponse(statusCode: 204, data: Data())
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationLogout = expectation(description: "Logout")
+        
+        user.logout {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationLogout?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogout = nil
+        }
+    }
+    
 }
 
 #endif
