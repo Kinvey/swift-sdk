@@ -431,9 +431,16 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         if let entityId = entity.entityId {
             executor.executeAndWait {
                 var found = false
-                try! self.realm.write {
-                    if let entity = self.realm.object(ofType: (type(of: entity) as! Entity.Type), forPrimaryKey: entityId) {
-                        self.realm.delete(entity)
+                let realm = self.realm
+                try! realm.write {
+                    let entityType = type(of: entity) as! Entity.Type
+                    let entityTypeClassName = entityType.className()
+                    if let entity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
+                        self.cascadeDelete(
+                            realm: realm,
+                            entityType: entityTypeClassName,
+                            entity: entity
+                        )
                         found = true
                     }
                 }
@@ -447,11 +454,18 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         log.verbose("Removing objects: \(entities)")
         var result = false
         executor.executeAndWait {
-            try! self.realm.write {
+            let realm = self.realm
+            try! realm.write {
+                let entityType = self.entityType
+                let entityTypeClassName = entityType.className()
                 for entity in entities {
-                    let entity = self.realm.object(ofType: type(of: entity) as! Entity.Type, forPrimaryKey: entity.entityId!)
+                    let entity = realm.object(ofType: entityType, forPrimaryKey: entity.entityId!)
                     if let entity = entity {
-                        self.realm.delete(entity)
+                        self.cascadeDelete(
+                            realm: realm,
+                            entityType: entityTypeClassName,
+                            entity: entity
+                        )
                         result = true
                     }
                 }
@@ -500,6 +514,82 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
 
 extension RealmCache: DynamicCacheType {
     
+    internal func cascadeDelete(realm: Realm, entityType: String, entity: Object) {
+        if let schema = realm.schema[entityType] {
+            for property in schema.properties {
+                switch property.type {
+                case .array:
+                    if let primaryKeyProperty = schema.primaryKeyProperty,
+                        let entityId = entity[primaryKeyProperty.name],
+                        let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
+                        let objectClassName = property.objectClassName,
+                        let nestedArray = dynamicObject[property.name] as? List<DynamicObject>
+                    {
+                        cascadeDelete(
+                            realm: realm,
+                            entityType: objectClassName,
+                            entities: nestedArray
+                        )
+                    }
+                case .object:
+                    if let objectClassName = property.objectClassName,
+                        let nestedObject = entity[property.name] as? Object
+                    {
+                        cascadeDelete(
+                            realm: realm,
+                            entityType: objectClassName,
+                            entity: nestedObject
+                        )
+                    }
+                default:
+                    break
+                }
+            }
+        }
+        realm.delete(entity)
+    }
+    
+    private func cascadeDelete(realm: Realm, entityType: String, entities: List<DynamicObject>) {
+        for entity in entities {
+            cascadeDelete(
+                realm: realm,
+                entityType: entityType,
+                entity: entity
+            )
+        }
+    }
+    
+    private func cascadeDelete(realm: Realm, entityType: String, entity: JsonDictionary, propertyMapping: PropertyMap) {
+        for (translatedKey, _) in propertyMapping {
+            if let property = properties[translatedKey],
+                property.type == .object,
+                let objectClassName = property.objectClassName,
+                let entityId = entity[Entity.Key.entityId],
+                let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
+                let nestedObject = dynamicObject[translatedKey] as? Object,
+                !(nestedObject is Entity)
+            {
+                cascadeDelete(
+                    realm: realm,
+                    entityType: objectClassName,
+                    entity: nestedObject
+                )
+            } else if let property = properties[translatedKey],
+                property.type == .array,
+                let objectClassName = property.objectClassName,
+                let entityId = entity[Entity.Key.entityId],
+                let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
+                let nestedArray = dynamicObject[translatedKey] as? List<DynamicObject>
+            {
+                cascadeDelete(
+                    realm: realm,
+                    entityType: objectClassName,
+                    entities: nestedArray
+                )
+            }
+        }
+    }
+    
     func save(entities: AnyRandomAccessCollection<JsonDictionary>) {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
@@ -531,6 +621,12 @@ extension RealmCache: DynamicCacheType {
                         translatedEntity[translatedKey] = entity[key]
                     }
                 }
+                cascadeDelete(
+                    realm: realm,
+                    entityType: entityType,
+                    entity: entity,
+                    propertyMapping: propertyMapping
+                )
                 realm.dynamicCreate(entityType, value: translatedEntity, update: true)
             }
         }

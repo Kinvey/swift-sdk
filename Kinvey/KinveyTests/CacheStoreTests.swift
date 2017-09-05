@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import Kinvey
+import RealmSwift
 
 class CacheStoreTests: StoreTestCase {
     
@@ -272,6 +273,14 @@ class CacheStoreTests: StoreTestCase {
         book.title = "Swift for the win!"
         book.authorNames.append("Victor Barros")
         
+        let book1stEdition = BookEdition()
+        book1stEdition.year = 2017
+        book.editions.append(book1stEdition)
+        
+        let book2ndEdition = BookEdition()
+        book2ndEdition.year = 2016
+        book.editions.append(book2ndEdition)
+        
         if useMockData {
             var mockJson: JsonDictionary? = nil
             var count = 0
@@ -368,6 +377,17 @@ class CacheStoreTests: StoreTestCase {
                 expectationFindLocal = nil
                 expectationFindNetwork = nil
             }
+        }
+        
+        do {
+            let basePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+            var url = URL(fileURLWithPath: basePath)
+            url = url.appendingPathComponent(sharedClient.appKey!)
+            url = url.appendingPathComponent("kinvey.realm")
+            let realm = try! Realm(fileURL: url)
+            XCTAssertEqual(realm.objects(Acl.self).count, 1)
+            XCTAssertEqual(realm.objects(StringValue.self).count, 1)
+            XCTAssertEqual(realm.objects(BookEdition.self).count, 2)
         }
     }
     
