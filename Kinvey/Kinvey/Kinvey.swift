@@ -137,12 +137,14 @@ func buildError(
     } else if let response = response, response.isUnauthorized,
         let json = client.responseParser.parse(data) as? [String : String],
         let error = json["error"],
+        let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildUnauthorized(
+        return Error.unauthorized(
             httpResponse: response.httpResponse,
             data: data,
             error: error,
+            debug: debug,
             description: description
         )
     } else if let response = response,
@@ -153,7 +155,7 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildMethodNotAllowed(
+        return Error.methodNotAllowed(
             httpResponse: response.httpResponse,
             data: data,
             debug: debug,
@@ -166,7 +168,7 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildDataLinkEntityNotFound(
+        return Error.dataLinkEntityNotFound(
             httpResponse: response.httpResponse,
             data: data,
             debug: debug,
@@ -196,7 +198,7 @@ func buildError(
     } else if let response = response,
         let json = client.responseParser.parse(data)
     {
-        return Error.buildUnknownJsonError(
+        return Error.unknownJsonError(
             httpResponse: response.httpResponse,
             data: data,
             json: json

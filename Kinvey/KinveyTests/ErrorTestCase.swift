@@ -27,7 +27,7 @@ class ErrorTestCase: KinveyTestCase {
     }
     
     func testUnauthorized() {
-        XCTAssertEqual(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", description: "Description").description, "Description")
+        XCTAssertEqual(Kinvey.Error.unauthorized(httpResponse: nil, data: nil, error: "Error", debug: "Debug", description: "Description").description, "Description")
     }
     
     func testNoActiveUser() {

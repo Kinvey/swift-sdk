@@ -466,7 +466,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
             let object = try? JSONSerialization.jsonObject(with: data),
             let json = object as? JsonDictionary
         {
-            failure(error: Error.buildUnknownJsonError(httpResponse: nil, data: nil, json: json))
+            failure(error: Error.unknownJsonError(httpResponse: nil, data: nil, json: json))
         }
     }
     
