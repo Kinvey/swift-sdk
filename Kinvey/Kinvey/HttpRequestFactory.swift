@@ -519,7 +519,7 @@ class HttpRequestFactory: RequestFactory {
     func set(_ params: inout [String : String], clientId: String?) {
         if let appKey = client.appKey {
             if let clientId = clientId {
-                params["client_id"] = "\(appKey):\(clientId)"
+                params["client_id"] = "\(appKey).\(clientId)"
             } else {
                 params["client_id"] = appKey
             }
