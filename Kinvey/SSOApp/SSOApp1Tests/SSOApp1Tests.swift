@@ -142,6 +142,11 @@ class SSOApp1Tests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     
                     client?.urlProtocolDidFinishLoading(self)
+                case "/user/\(MockURLProtocol.appKey ?? "")/_logout":
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "1.1", headerFields: [:])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client?.urlProtocol(self, didLoad: Data())
+                    client?.urlProtocolDidFinishLoading(self)
                 default:
                     XCTFail("URL Path not handled: \(request.url!.path)")
                 }
