@@ -996,10 +996,34 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Sign out the current active user.
-    open func logout() {
-        if self == client.activeUser {
-            client.activeUser = nil
+    @discardableResult
+    open func logout(
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let request = client.networkRequestFactory.buildUserLogout(
+            user: self,
+            options: options
+        )
+        Promise<Void> { fulfill, reject in
+            request.execute { data, response, error in
+                if let response = response,
+                    response.isOK
+                {
+                    fulfill()
+                } else {
+                    reject(error ?? buildError(data, response, error, self.client))
+                }
+            }
+            if self == client.activeUser {
+                client.activeUser = nil
+            }
+        }.then {
+            completionHandler?(.success())
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
+        return request
     }
     
     /// Creates or updates a `User`.

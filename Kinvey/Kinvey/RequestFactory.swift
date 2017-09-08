@@ -17,6 +17,7 @@ protocol RequestFactory {
     func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest
     
     func buildUserLogin(username: String, password: String, options: Options?) -> HttpRequest
+    func buildUserLogout(user: User, options: Options?) -> HttpRequest
     func buildUserExists(username: String, options: Options?) -> HttpRequest
     func buildUserGet(userId: String, options: Options?) -> HttpRequest
     func buildUserFind(query: Query, options: Options?) -> HttpRequest
