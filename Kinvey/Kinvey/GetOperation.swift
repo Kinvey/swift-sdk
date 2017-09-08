@@ -48,6 +48,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
             if let response = response,
                 response.isOK,
                 let json = self.client.responseParser.parse(data),
+                json[Entity.Key.entityId] != nil,
                 let obj = T(JSON: json)
             {
                 self.cache?.save(entity: obj)

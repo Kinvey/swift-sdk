@@ -2289,4 +2289,104 @@ class NetworkStoreTests: StoreTestCase {
         }.to(throwAssertion())
     }
     
+    func testGetMissingKmdAndAcl() {
+        let personId = UUID().uuidString
+        let personName = "Victor"
+        mockResponse(json: [
+            "_id" : personId,
+            "name" : personName
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(personId, readPolicy: .forceNetwork) { person, error in
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            if let person = person {
+                XCTAssertNotNil(person.entityId)
+                XCTAssertEqual(person.personId, personId)
+                XCTAssertEqual(person.name, personName)
+                XCTAssertNil(person.metadata)
+                XCTAssertNil(person.acl)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testGetMissingId() {
+        let personId = UUID().uuidString
+        let personName = "Victor"
+        mockResponse(json: [
+            "name" : personName
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(personId, readPolicy: .forceNetwork) { person, error in
+            XCTAssertNil(person)
+            XCTAssertNotNil(error)
+            XCTAssertNotNil(error as? Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .objectIdMissing:
+                    break
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindMissingId() {
+        let personName = "Victor"
+        mockResponse(json: [
+            [
+                "_id" : UUID().uuidString,
+                "name" : personName
+            ],
+            [
+                "name" : "\(personName) Barros"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(readPolicy: .forceNetwork) { persons, error in
+            XCTAssertNotNil(persons)
+            XCTAssertNil(error)
+            
+            if let persons = persons {
+                XCTAssertEqual(persons.count, 1)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }

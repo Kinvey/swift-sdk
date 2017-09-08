@@ -66,6 +66,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+        let multiRequest = MultiRequest()
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(
@@ -80,6 +81,18 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 self.resultsHandler?(jsonArray)
                 if let cache = self.cache, deltaSet {
                     let refObjs = self.reduceToIdsLmts(jsonArray)
+                    guard jsonArray.count == refObjs.count else {
+                        let operation = FindOperation(
+                            query: self.query,
+                            deltaSet: false,
+                            readPolicy: self.readPolicy,
+                            cache: cache,
+                            options: self.options
+                        )
+                        let request = operation.executeNetwork(completionHandler)
+                        multiRequest += request
+                        return
+                    }
                     let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                     var allIds = Set<String>(minimumCapacity: deltaSet.created.count + deltaSet.updated.count + deltaSet.deleted.count)
                     allIds.formUnion(deltaSet.created)
@@ -166,7 +179,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 } else {
                     func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
                         let startTime = CFAbsoluteTimeGetCurrent()
-                        let entities = AnyRandomAccessCollection(jsonArray.lazy.map {
+                        let entities = AnyRandomAccessCollection(jsonArray.lazy.filter {
+                            ($0[Entity.Key.entityId] as? String) != nil
+                        }.map {
                             T(JSON: $0)!
                         })
                         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
@@ -198,7 +213,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        multiRequest += request
+        return multiRequest
     }
     
     fileprivate func removeCachedRecords<S : Sequence>(_ cache: AnyCache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {

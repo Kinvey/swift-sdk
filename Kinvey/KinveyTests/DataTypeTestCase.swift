@@ -52,7 +52,7 @@ class DataTypeTestCase: StoreTestCase {
         
         mockResponse(json: [
             [
-                "_id" : Foundation.UUID().uuidString,
+                "_id" : UUID().uuidString,
                 "fullName2" : [
                     "lastName" : "Barros",
                     "fontDescriptor" : [
@@ -63,6 +63,7 @@ class DataTypeTestCase: StoreTestCase {
                 ],
                 "boolValue" : true,
                 "fullName" : [
+                    "_id" : UUID().uuidString,
                     "lastName" : "Barros",
                     "firstName" : "Victor"
                 ],
