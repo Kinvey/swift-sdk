@@ -10,7 +10,7 @@ import UIKit
 import Kinvey
 
 let micRedirectURI = URL(string: "ssoApp2://")!
-let clientId = "sso_app1_client_id"
+let authServiceId = "sso_app1_client_id"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

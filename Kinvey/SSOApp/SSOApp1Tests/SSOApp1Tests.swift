@@ -70,8 +70,8 @@ class SSOApp1Tests: KinveyTestCase {
                         let clientId = queryItems.filter { $0.name == "client_id" }.first?.value
                         XCTAssertNotNil(clientId)
                         if let clientId = clientId {
-                            XCTAssertTrue(clientId.contains(":"))
-                            let regex = try? NSRegularExpression(pattern: "([^:]+):([^:]+)")
+                            XCTAssertTrue(clientId.contains("."))
+                            let regex = try? NSRegularExpression(pattern: "([^:]+).([^:]+)")
                             XCTAssertNotNil(regex)
                             if let regex = regex {
                                 let match = regex.firstMatch(in: clientId, range: NSMakeRange(0, clientId.characters.count))

@@ -168,7 +168,7 @@ internal enum Endpoint {
                 var queryItems = [URLQueryItem]()
                 if let appKey = client.appKey {
                     if let clientId = clientId {
-                        queryItems.append(URLQueryItem(name: "client_id", value: "\(appKey):\(clientId)"))
+                        queryItems.append(URLQueryItem(name: "client_id", value: "\(appKey).\(clientId)"))
                     } else {
                         queryItems.append(URLQueryItem(name: "client_id", value: appKey))
                     }

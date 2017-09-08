@@ -10,7 +10,7 @@ import UIKit
 import Kinvey
 
 let micRedirectURI = URL(string: "ssoApp1://")!
-let clientId = "sso_app1_client_id"
+let authServiceId = "sso_app1_client_id"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        if User.login(redirectURI: micRedirectURI, micURL: url, clientId: clientId) {
+        if User.login(redirectURI: micRedirectURI, micURL: url, authServiceId: authServiceId) {
             return true
         }
         

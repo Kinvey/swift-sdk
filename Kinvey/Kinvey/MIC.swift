@@ -57,7 +57,7 @@ open class MIC {
         let client = options?.client ?? sharedClient
         return Endpoint.oauthAuth(
             client: client,
-            clientId: options?.clientId,
+            clientId: options?.authServiceId,
             redirectURI: redirectURI,
             loginPage: loginPage
         ).url
@@ -188,7 +188,7 @@ open class MIC {
     @discardableResult
     class func login<U: User>(
         refreshToken: String,
-        clientId: String?,
+        authServiceId: String?,
         client: Client = sharedClient,
         completionHandler: User.UserHandler<U>? = nil
     ) -> Request {
@@ -196,7 +196,7 @@ open class MIC {
         let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: Options(
-                clientId: clientId
+                authServiceId: authServiceId
             )
         )
         request.execute { (data, response, error) in

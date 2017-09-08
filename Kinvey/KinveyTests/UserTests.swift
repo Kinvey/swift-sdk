@@ -2722,7 +2722,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2782,7 +2782,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2817,7 +2817,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2894,7 +2894,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2954,7 +2954,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
