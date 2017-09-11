@@ -1580,6 +1580,10 @@ class FileTestCase: StoreTestCase {
         }
         self.file = file
         let path = caminandes3TrailerURL.path
+        let attributes = try! FileManager.default.attributesOfItem(atPath: path)
+        guard let fileSize = attributes[.size] as? Int else {
+            Swift.fatalError()
+        }
         
         do {
             weak var expectationUpload = expectation(description: "Upload")
@@ -1638,7 +1642,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNil(error)
                 
                 if let data = data {
-                    XCTAssertEqual(data.count, 10899706)
+                    XCTAssertEqual(data.count, fileSize)
                 }
                 
                 expectationDownload?.fulfill()
