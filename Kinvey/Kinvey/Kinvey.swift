@@ -117,10 +117,7 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 let defaultTag = "kinvey"
 
 #if os(macOS)
-    fileprivate var applicationSupportDirectoryURL: URL = {
-        return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!)
-    }()
-    let cacheBasePath = applicationSupportDirectoryURL.appendingPathComponent(Bundle.main.bundleIdentifier!).path
+    let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
 #else
     let cacheBasePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 #endif

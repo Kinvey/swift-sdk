@@ -380,7 +380,7 @@ class CacheStoreTests: StoreTestCase {
         }
         
         do {
-            let basePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+            let basePath = Kinvey.cacheBasePath
             var url = URL(fileURLWithPath: basePath)
             url = url.appendingPathComponent(sharedClient.appKey!)
             url = url.appendingPathComponent("kinvey.realm")
