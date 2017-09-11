@@ -44,8 +44,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         self.deltaSet = deltaSet
         self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.autoPagination = autoPagination
-        if autoPagination {
-            query.limit = min(query.limit ?? Int.max, MaxSizePerResultSet)
+        if autoPagination, query.limit == nil {
+            query.limit = MaxSizePerResultSet
         }
         self.resultsHandler = resultsHandler
         super.init(
@@ -104,7 +104,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         query: query,
                         deltaSet: self.deltaSet,
                         autoPagination: false,
-                        readPolicy: self.readPolicy,
+                        readPolicy: .forceNetwork,
                         cache: self.cache,
                         options: self.options
                     )
@@ -120,7 +120,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
                 promises.append(promise)
             }
-            when(fulfilled: promises).then { (results) -> Void in
+            when(fulfilled: promises).then { results -> Void in
                 let results = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
                 fulfill(results)
             }.catch { error in
@@ -275,10 +275,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     } else {
                         func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
                             let startTime = CFAbsoluteTimeGetCurrent()
-                            let entities = AnyRandomAccessCollection(jsonArray.lazy.filter {
-                                ($0[Entity.Key.entityId] as? String) != nil
-                            }.map {
-                                T(JSON: $0)!
+                            let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
+                                guard let entity = T(JSON: json) else {
+                                    fatalError("_id is required")
+                                }
+                                return entity
                             })
                             log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
                             return entities

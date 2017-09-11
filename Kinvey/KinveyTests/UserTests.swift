@@ -391,7 +391,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -455,7 +458,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -494,7 +500,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -553,7 +562,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -2437,7 +2449,7 @@ class UserTests: KinveyTestCase {
                 case 8:
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    let json = [[:]]
+                    let json = [[String : Any]]()
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)

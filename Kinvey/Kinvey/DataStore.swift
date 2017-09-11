@@ -606,8 +606,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationCustomResult<T>(value: T(JSON: $0)!, custom: $0)
+                let array = results.map { (json) -> AggregationCustomResult<T> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationCustomResult<T>(
+                        value: T(JSON: json)!,
+                        custom: json
+                    )
                 }
                 DispatchQueue.main.async {
                     completionHandler(.success(array))
@@ -715,10 +720,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationCountResult<T, Count>(
-                        value: T(JSON: $0)!,
-                        count: $0[aggregation.resultKey] as! Count
+                let array = results.map { (json) -> AggregationCountResult<T, Count> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationCountResult<T, Count>(
+                        value: T(JSON: json)!,
+                        count: json[aggregation.resultKey] as! Count
                     )
                 }
                 DispatchQueue.main.async {
@@ -834,10 +841,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationSumResult<T, Sum>(
-                        value: T(JSON: $0)!,
-                        sum: $0[aggregation.resultKey] as! Sum
+                let array = results.map { (json) -> AggregationSumResult<T, Sum> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationSumResult<T, Sum>(
+                        value: T(JSON: json)!,
+                        sum: json[aggregation.resultKey] as! Sum
                     )
                 }
                 DispatchQueue.main.async {
@@ -953,10 +962,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationAvgResult<T, Avg>(
-                        value: T(JSON: $0)!,
-                        avg: $0[aggregation.resultKey] as! Avg
+                let array = results.map { (json) -> AggregationAvgResult<T, Avg> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationAvgResult<T, Avg>(
+                        value: T(JSON: json)!,
+                        avg: json[aggregation.resultKey] as! Avg
                     )
                 }
                 DispatchQueue.main.async {
@@ -1072,10 +1083,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationMinResult<T, Min>(
-                        value: T(JSON: $0)!,
-                        min: $0[aggregation.resultKey] as! Min
+                let array = results.map { (json) -> AggregationMinResult<T, Min> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationMinResult<T, Min>(
+                        value: T(JSON: json)!,
+                        min: json[aggregation.resultKey] as! Min
                     )
                 }
                 DispatchQueue.main.async {
@@ -1191,10 +1204,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = operation.execute { result in
             switch result {
             case .success(let results):
-                let array = results.map {
-                    AggregationMaxResult<T, Max>(
-                        value: T(JSON: $0)!,
-                        max: $0[aggregation.resultKey] as! Max
+                let array = results.map { (json) -> AggregationMaxResult<T, Max> in
+                    var json = json
+                    json[Entity.Key.entityId] = groupId
+                    return AggregationMaxResult<T, Max>(
+                        value: T(JSON: json)!,
+                        max: json[aggregation.resultKey] as! Max
                     )
                 }
                 DispatchQueue.main.async {

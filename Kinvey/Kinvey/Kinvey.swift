@@ -115,6 +115,7 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 }
 
 let defaultTag = "kinvey"
+let groupId = "_group_"
 
 let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 
