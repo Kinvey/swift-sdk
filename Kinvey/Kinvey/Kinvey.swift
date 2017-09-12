@@ -116,7 +116,11 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 
 let defaultTag = "kinvey"
 
-let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+#if os(macOS)
+    let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+#else
+    let cacheBasePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+#endif
 
 func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
     return buildError(data: data, response: response, error: error, client: client)

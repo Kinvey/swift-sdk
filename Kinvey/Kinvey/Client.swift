@@ -315,8 +315,7 @@ open class Client: Credential {
     }
     
     internal class func fileURL(appKey: String, tag: String = defaultTag) -> URL {
-        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-        let path = paths.first! as NSString
+        let path = cacheBasePath as NSString
         var filePath = URL(fileURLWithPath: path.appendingPathComponent(appKey))
         filePath.appendPathComponent("\(tag).realm")
         return filePath
