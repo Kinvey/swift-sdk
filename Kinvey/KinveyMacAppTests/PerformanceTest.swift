@@ -43,8 +43,8 @@ class PerformanceTest: XCTestCase {
             weak var expectationLogin = expectation(description: "Login")
             
             User.login(
-                username: "ccalato",
-                password: "ccalato",
+                username: "",
+                password: "",
                 options: nil
             ) { (result: Result<User, Swift.Error>) in
                 switch result {
@@ -196,8 +196,8 @@ class PerformanceTest: XCTestCase {
             weak var expectationLogin = expectation(description: "Login")
             
             User.login(
-                username: "ccalato",
-                password: "ccalato",
+                username: "",
+                password: "",
                 options: nil
             ) { (result: Result<User, Swift.Error>) in
                 switch result {
