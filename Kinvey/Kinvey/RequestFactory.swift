@@ -17,6 +17,7 @@ protocol RequestFactory {
     func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest
     
     func buildUserLogin(username: String, password: String, options: Options?) -> HttpRequest
+    func buildUserLogout(user: User, options: Options?) -> HttpRequest
     func buildUserExists(username: String, options: Options?) -> HttpRequest
     func buildUserGet(userId: String, options: Options?) -> HttpRequest
     func buildUserFind(query: Query, options: Options?) -> HttpRequest
@@ -70,8 +71,8 @@ public struct Options {
     /// Custom `Client` instance
     public var client: Client?
     
-    /// Custom `clientId` value used for MIC
-    public var clientId: String?
+    /// Custom `authServiceId` value used for MIC
+    public var authServiceId: String?
     
     /// Custom `TTL` value used for cases where time-to-live value is present
     public var ttl: TTL?
@@ -100,7 +101,7 @@ public struct Options {
      */
     public init(
         client: Client? = nil,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         ttl: TTL? = nil,
         deltaSet: Bool? = nil,
         readPolicy: ReadPolicy? = nil,
@@ -110,7 +111,7 @@ public struct Options {
         customRequestProperties: [String : Any]? = nil
     ) {
         self.client = client
-        self.clientId = clientId
+        self.authServiceId = authServiceId
         self.ttl = ttl
         self.deltaSet = deltaSet
         self.readPolicy = readPolicy

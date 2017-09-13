@@ -1335,7 +1335,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
-    func testFindOneRecordDeltaSet() {
+    func testFindOneRecordDeltaSetNoChange() {
         signUp()
         
         let store = DataStore<Person>.collection(.sync, deltaSet: true)
@@ -1399,10 +1399,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        var urlProtocolCalled = false
+        var mockCount = 0
         if useMockData {
             mockResponse { request in
-                urlProtocolCalled = true
+                mockCount += 1
                 return HttpResponse(json: [
                     [
                         "_id" : mockObjectId!,
@@ -1422,7 +1422,250 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         defer {
             if useMockData {
                 setURLProtocol(nil)
-                XCTAssertTrue(urlProtocolCalled)
+                XCTAssertEqual(mockCount, 1)
+            }
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(query, readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 1)
+                
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindOneRecordDeltaSetChanged() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) { (person, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationSave = nil
+        }
+        
+        var mockObjectId: String? = nil
+        var mockDate: Date? = nil
+        do {
+            if useMockData {
+                mockObjectId = UUID().uuidString
+                mockDate = Date()
+                mockResponse(statusCode: 201, json: [
+                    "_id" : mockObjectId!,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser?.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : mockDate?.toString(),
+                        "ect" : mockDate?.toString()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
+        }
+        
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        var mockCount = 0
+        if useMockData {
+            mockResponse { request in
+                mockCount += 1
+                return HttpResponse(json: [
+                    [
+                        "_id" : mockObjectId!,
+                        "name" : "Victor",
+                        "age" : 0,
+                        "_acl" : [
+                            "creator" : self.client.activeUser?.userId
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
+                            "ect" : mockDate?.toString()
+                        ]
+                    ]
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+                XCTAssertEqual(mockCount, 2)
+            }
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(query, readPolicy: .forceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 1)
+                
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindOneRecordDeltaSetNoKmd() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) { (person, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationSave = nil
+        }
+        
+        var mockObjectId: String? = nil
+        var mockDate: Date? = nil
+        do {
+            if useMockData {
+                mockObjectId = UUID().uuidString
+                mockDate = Date()
+                mockResponse(statusCode: 201, json: [
+                    "_id" : mockObjectId!,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : client.activeUser?.userId
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { (count, error) in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
+        }
+        
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        var mockCount = 0
+        if useMockData {
+            mockResponse { request in
+                defer {
+                    mockCount += 1
+                }
+                switch mockCount {
+                case 0:
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                    let fields = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first
+                    XCTAssertNotNil(fields)
+                    if let fields = fields {
+                        XCTAssertNotNil(fields.value)
+                        if let fieldsValue = fields.value {
+                            let fields = fieldsValue.components(separatedBy: ",")
+                            XCTAssertEqual(fields.count, 2)
+                            XCTAssertTrue(fields.contains("_id"))
+                            XCTAssertTrue(fields.contains("_kmd.lmt"))
+                        }
+                    }
+                    return HttpResponse(json: [
+                        [
+                            "_id" : mockObjectId!
+                        ]
+                    ])
+                case 1:
+                    return HttpResponse(json: [
+                        [
+                            "_id" : mockObjectId!,
+                            "name" : "Victor",
+                            "age" : 0,
+                            "_acl" : [
+                                "creator" : self.client.activeUser?.userId
+                            ]
+                        ]
+                    ])
+                default:
+                    Swift.fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+                XCTAssertEqual(mockCount, 2)
             }
         }
         

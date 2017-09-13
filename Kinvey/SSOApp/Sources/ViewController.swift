@@ -42,7 +42,7 @@ class ViewController: UIViewController {
             User.presentMICViewController(
                 redirectURI: micRedirectURI,
                 micUserInterface: micUserInterface,
-                clientId: clientId
+                authServiceId: authServiceId
             ) { user, error in
                 self.completionHandler?(user, error)
                 if let user = user {

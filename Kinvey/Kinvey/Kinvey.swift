@@ -115,8 +115,13 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 }
 
 let defaultTag = "kinvey"
+let groupId = "_group_"
 
-let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+#if os(macOS)
+    let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+#else
+    let cacheBasePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+#endif
 
 func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
     return buildError(data: data, response: response, error: error, client: client)
@@ -134,26 +139,32 @@ func buildError(
 ) -> Swift.Error {
     if let error = error {
         return error
-    } else if let response = response, response.isUnauthorized,
-        let json = client.responseParser.parse(data) as? [String : String],
+    }
+    
+    let json = client.responseParser.parse(data) as? [String : String]
+    if let response = response,
+        response.isUnauthorized,
+        let json = json,
         let error = json["error"],
+        let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildUnauthorized(
+        return Error.unauthorized(
             httpResponse: response.httpResponse,
             data: data,
             error: error,
+            debug: debug,
             description: description
         )
     } else if let response = response,
         response.isMethodNotAllowed,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         let error = json["error"],
         error == "MethodNotAllowed",
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildMethodNotAllowed(
+        return Error.methodNotAllowed(
             httpResponse: response.httpResponse,
             data: data,
             debug: debug,
@@ -161,12 +172,12 @@ func buildError(
         )
     } else if let response = response,
         response.isNotFound,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         json["error"] == "DataLinkEntityNotFound",
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.buildDataLinkEntityNotFound(
+        return Error.dataLinkEntityNotFound(
             httpResponse: response.httpResponse,
             data: data,
             debug: debug,
@@ -174,7 +185,7 @@ func buildError(
         )
     } else if let response = response,
         response.isForbidden,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         let error = json["error"],
         error == "MissingConfiguration",
         let debug = json["debug"],
@@ -188,15 +199,29 @@ func buildError(
         )
     } else if let response = response,
         response.isNotFound,
-        let json = client.responseParser.parse(data) as? [String : String],
+        let json = json,
         json["error"] == "AppNotFound",
         let description = json["description"]
     {
         return Error.appNotFound(description: description)
     } else if let response = response,
+        response.isOK,
+        let json = client.responseParser.parse(data),
+        json[Entity.Key.entityId] == nil
+    {
+        return Error.objectIdMissing
+    } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.ResultSetSizeExceeded,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.resultSetSizeExceeded(debug: debug, description: description)
+    } else if let response = response,
         let json = client.responseParser.parse(data)
     {
-        return Error.buildUnknownJsonError(
+        return Error.unknownJsonError(
             httpResponse: response.httpResponse,
             data: data,
             json: json

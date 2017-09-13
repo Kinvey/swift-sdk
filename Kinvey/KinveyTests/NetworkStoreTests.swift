@@ -2289,4 +2289,172 @@ class NetworkStoreTests: StoreTestCase {
         }.to(throwAssertion())
     }
     
+    func testAutoPaginationDisabled() {
+        let store = DataStore<Products>.collection(.network)
+        
+        mockResponse(
+            statusCode: 400,
+            json: [
+                "error" : "ResultSetSizeExceeded",
+                "description" : "Your query produced more than 10,000 results. Please rewrite your query to be more selective.",
+                "debug" : "Your query returned 320193 results"
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .resultSetSizeExceeded(let debug, let description):
+                        XCTAssertEqual(description, "Your query produced more than 10,000 results. Please rewrite your query to be more selective.")
+                        XCTAssertTrue(debug.hasPrefix("Your query returned "))
+                        XCTAssertTrue(debug.hasSuffix(" results"))
+                    default:
+                        XCTFail(error.debugDescription)
+                    }
+                } else {
+                    XCTFail(error.localizedDescription)
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testAutoPaginationEnabledNetworkOnly() {
+        var count = 0
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(json: ["count" : 21000])
+            case 1...3:
+                var json = [[String : Any]]()
+                let limit = count == 3 ? 1000 : 10000
+                for i in 0 ..< limit {
+                    json.append([
+                        "_id" : UUID().uuidString,
+                        "Description" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ])
+                }
+                return HttpResponse(json: json)
+            default:
+                Swift.fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = DataStore<Products>.collection(.network, autoPagination: true)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
+            switch result {
+            case .success(let products):
+                XCTAssertEqual(products.count, 21000)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout * 5) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testAutoPaginationEnabled() {
+        var count = 0
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(json: ["count" : 21000])
+            case 1...3:
+                var json = [[String : Any]]()
+                let limit = count == 3 ? 1000 : 10000
+                for i in 0 ..< limit {
+                    json.append([
+                        "_id" : UUID().uuidString,
+                        "Description" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ]
+                    ])
+                }
+                return HttpResponse(json: json)
+            default:
+                Swift.fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = DataStore<Products>.collection(.sync, autoPagination: true)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
+            switch result {
+            case .success(let products):
+                XCTAssertEqual(products.count, 21000)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout * 5) { error in
+            expectationFind = nil
+        }
+    }
+    
+}
+
+class Products: Entity {
+    
+    dynamic var desc: String?
+    
+    override static func collectionName() -> String {
+        return "products"
+    }
+    
+    override func propertyMapping(_ map: Map) {
+        super.propertyMapping(map)
+        
+        desc <- ("desc", map["Description"])
+    }
+    
 }

@@ -70,8 +70,8 @@ class SSOApp1Tests: KinveyTestCase {
                         let clientId = queryItems.filter { $0.name == "client_id" }.first?.value
                         XCTAssertNotNil(clientId)
                         if let clientId = clientId {
-                            XCTAssertTrue(clientId.contains(":"))
-                            let regex = try? NSRegularExpression(pattern: "([^:]+):([^:]+)")
+                            XCTAssertTrue(clientId.contains("."))
+                            let regex = try? NSRegularExpression(pattern: "([^:]+).([^:]+)")
                             XCTAssertNotNil(regex)
                             if let regex = regex {
                                 let match = regex.firstMatch(in: clientId, range: NSMakeRange(0, clientId.characters.count))
@@ -141,6 +141,11 @@ class SSOApp1Tests: KinveyTestCase {
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     
+                    client?.urlProtocolDidFinishLoading(self)
+                case "/user/\(MockURLProtocol.appKey ?? "")/_logout":
+                    let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "1.1", headerFields: [:])!
+                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                    client?.urlProtocol(self, didLoad: Data())
                     client?.urlProtocolDidFinishLoading(self)
                 default:
                     XCTFail("URL Path not handled: \(request.url!.path)")

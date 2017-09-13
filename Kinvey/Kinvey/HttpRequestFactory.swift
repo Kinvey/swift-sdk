@@ -127,6 +127,19 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserLogout(
+        user: User,
+        options: Options?
+    ) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .post,
+            endpoint: Endpoint.userLogout(client: client),
+            credential: client.activeUser,
+            options: options
+        )
+        return request
+    }
+    
     func buildUserExists(
         username: String,
         options: Options?
@@ -519,7 +532,7 @@ class HttpRequestFactory: RequestFactory {
     func set(_ params: inout [String : String], clientId: String?) {
         if let appKey = client.appKey {
             if let clientId = clientId {
-                params["client_id"] = "\(appKey):\(clientId)"
+                params["client_id"] = "\(appKey).\(clientId)"
             } else {
                 params["client_id"] = appKey
             }
@@ -536,7 +549,7 @@ class HttpRequestFactory: RequestFactory {
             "redirect_uri" : redirectURI.absoluteString,
             "code" : code
         ]
-        set(&params, clientId: options?.clientId)
+        set(&params, clientId: options?.authServiceId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
@@ -555,7 +568,7 @@ class HttpRequestFactory: RequestFactory {
             "redirect_uri" : redirectURI.absoluteString,
             "response_type" : "code"
         ]
-        let clientId = options?.clientId
+        let clientId = options?.authServiceId
         set(&json, clientId: clientId)
         let request = HttpRequest(
             httpMethod: .post,
@@ -585,7 +598,7 @@ class HttpRequestFactory: RequestFactory {
             "username" : username,
             "password" : password
         ]
-        set(&params, clientId: options?.clientId)
+        set(&params, clientId: options?.authServiceId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.url(url: tempLoginUri),
@@ -604,7 +617,7 @@ class HttpRequestFactory: RequestFactory {
             "grant_type" : "refresh_token",
             "refresh_token" : refreshToken
         ]
-        set(&params, clientId: options?.clientId)
+        set(&params, clientId: options?.authServiceId)
         let request = HttpRequest(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),

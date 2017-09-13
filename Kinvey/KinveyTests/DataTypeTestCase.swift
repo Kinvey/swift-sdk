@@ -41,7 +41,13 @@ class DataTypeTestCase: StoreTestCase {
         fullName2.fontDescriptor = FontDescriptor(name: "Arial", size: 12)
         dataType.fullName2 = fullName2
         
-        let tuple = save(dataType, store: store)
+        let tuple = save(dataType, store: store) {
+            var json = $0
+            var fullName = json["fullName"] as! JsonDictionary
+            fullName["_id"] = UUID().uuidString
+            json["fullName"] = fullName
+            return json
+        }
         
         XCTAssertNotNil(tuple.savedPersistable)
         if let savedPersistable = tuple.savedPersistable {
@@ -52,7 +58,7 @@ class DataTypeTestCase: StoreTestCase {
         
         mockResponse(json: [
             [
-                "_id" : Foundation.UUID().uuidString,
+                "_id" : UUID().uuidString,
                 "fullName2" : [
                     "lastName" : "Barros",
                     "fontDescriptor" : [
@@ -63,6 +69,7 @@ class DataTypeTestCase: StoreTestCase {
                 ],
                 "boolValue" : true,
                 "fullName" : [
+                    "_id" : UUID().uuidString,
                     "lastName" : "Barros",
                     "firstName" : "Victor"
                 ],
@@ -247,6 +254,7 @@ class DataTypeTestCase: StoreTestCase {
                 XCTFail()
             }
         }
+        
         XCTAssertTrue(entityId)
         XCTAssertTrue(metadata)
         XCTAssertTrue(acl)

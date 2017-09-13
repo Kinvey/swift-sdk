@@ -233,7 +233,7 @@ open class User: NSObject, Credential, Mappable {
         authSource: AuthSource,
         _ authData: [String : Any],
         createIfNotExists: Bool = true,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
     ) -> Request {
@@ -241,7 +241,7 @@ open class User: NSObject, Credential, Mappable {
             authSource: authSource,
             authData,
             createIfNotExists: createIfNotExists,
-            clientId: clientId,
+            authServiceId: authServiceId,
             client: client
         ) { (result: Result<U, Swift.Error>) in
             switch result {
@@ -265,7 +265,7 @@ open class User: NSObject, Credential, Mappable {
         authSource: AuthSource,
         _ authData: [String : Any],
         createIfNotExists: Bool = true,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> Request {
@@ -275,7 +275,7 @@ open class User: NSObject, Credential, Mappable {
             createIfNotExists: createIfNotExists,
             options: Options(
                 client: client,
-                clientId: clientId
+                authServiceId: authServiceId
             ),
             completionHandler: completionHandler
         )
@@ -344,7 +344,7 @@ open class User: NSObject, Credential, Mappable {
             requests += request
         }.then { user -> Void in
             client.activeUser = user
-            client.clientId = options?.clientId
+            client.clientId = options?.authServiceId
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -996,10 +996,34 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Sign out the current active user.
-    open func logout() {
-        if self == client.activeUser {
-            client.activeUser = nil
+    @discardableResult
+    open func logout(
+        options: Options? = nil,
+        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let request = client.networkRequestFactory.buildUserLogout(
+            user: self,
+            options: options
+        )
+        Promise<Void> { fulfill, reject in
+            request.execute { data, response, error in
+                if let response = response,
+                    response.isOK
+                {
+                    fulfill()
+                } else {
+                    reject(error ?? buildError(data, response, error, self.client))
+                }
+            }
+            if self == client.activeUser {
+                client.activeUser = nil
+            }
+        }.then {
+            completionHandler?(.success())
+        }.catch { error in
+            completionHandler?(.failure(error))
         }
+        return request
     }
     
     /// Creates or updates a `User`.
@@ -1188,7 +1212,7 @@ open class User: NSObject, Credential, Mappable {
         redirectURI: URL,
         username: String,
         password: String,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
     ) {
@@ -1196,7 +1220,7 @@ open class User: NSObject, Credential, Mappable {
             redirectURI: redirectURI,
             username: username,
             password: password,
-            clientId: clientId,
+            authServiceId: authServiceId,
             client: client
         ) { (result: Result<U, Swift.Error>) in
             switch result {
@@ -1215,7 +1239,7 @@ open class User: NSObject, Credential, Mappable {
         redirectURI: URL,
         username: String,
         password: String,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) {
@@ -1225,7 +1249,7 @@ open class User: NSObject, Credential, Mappable {
             password: password,
             options: Options(
                 client: client,
-                clientId: clientId
+                authServiceId: authServiceId
             ),
             completionHandler: completionHandler
         )
@@ -1278,7 +1302,7 @@ open class User: NSObject, Credential, Mappable {
     open class func login(
         redirectURI: URL,
         micURL: URL,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient
     ) -> Bool {
         return login(
@@ -1286,7 +1310,7 @@ open class User: NSObject, Credential, Mappable {
             micURL: micURL,
             options: Options(
                 client: client,
-                clientId: clientId
+                authServiceId: authServiceId
             )
         )
     }
@@ -1327,7 +1351,7 @@ open class User: NSObject, Credential, Mappable {
         redirectURI: URL,
         timeout: TimeInterval = 0,
         forceUIWebView: Bool,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: UserHandler<User>? = nil
     ) {
@@ -1335,7 +1359,7 @@ open class User: NSObject, Credential, Mappable {
             redirectURI: redirectURI,
             timeout: timeout,
             micUserInterface: forceUIWebView ? .uiWebView : .wkWebView,
-            clientId: clientId,
+            authServiceId: authServiceId,
             client: client,
             completionHandler: completionHandler
         )
@@ -1347,7 +1371,7 @@ open class User: NSObject, Credential, Mappable {
         timeout: TimeInterval = 0,
         micUserInterface: MICUserInterface = .safari,
         currentViewController: UIViewController? = nil,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
     ) {
@@ -1356,7 +1380,7 @@ open class User: NSObject, Credential, Mappable {
             timeout: timeout,
             micUserInterface: micUserInterface,
             currentViewController: currentViewController,
-            clientId: clientId,
+            authServiceId: authServiceId,
             client: client
         ) { (result: Result<U, Swift.Error>) in
             switch result {
@@ -1374,7 +1398,7 @@ open class User: NSObject, Credential, Mappable {
         timeout: TimeInterval = 0,
         micUserInterface: MICUserInterface = .safari,
         currentViewController: UIViewController? = nil,
-        clientId: String? = nil,
+        authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) {
@@ -1384,7 +1408,7 @@ open class User: NSObject, Credential, Mappable {
             currentViewController: currentViewController,
             options: Options(
                 client: client,
-                clientId: clientId,
+                authServiceId: authServiceId,
                 timeout: timeout
             ),
             completionHandler: completionHandler

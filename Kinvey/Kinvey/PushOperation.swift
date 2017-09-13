@@ -127,16 +127,18 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             let data = data,
                             let json = self.client.responseParser.parse(data) as? [String : String],
                             let error = json["error"],
+                            let debug = json["debug"],
                             let description = json["description"]
                         {
-                            let error = Error.buildUnauthorized(
+                            let error = Error.unauthorized(
                                 httpResponse: response.httpResponse,
                                 data: data,
                                 error: error,
+                                debug: debug,
                                 description: description
                             )
                             switch error {
-                            case .unauthorized(_, _, let error, _):
+                            case .unauthorized(_, _, let error, _, _):
                                 if error == Error.InsufficientCredentials {
                                     self.sync?.removePendingOperation(pendingOperation)
                                 }

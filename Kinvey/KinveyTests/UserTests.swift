@@ -391,7 +391,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -455,7 +458,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -494,7 +500,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -553,7 +562,10 @@ class UserTests: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(json: [
-                    ["name" : "Test"]
+                    [
+                        "_id" : UUID().uuidString,
+                        "name" : "Test"
+                    ]
                 ])
             }
             defer {
@@ -2437,7 +2449,7 @@ class UserTests: KinveyTestCase {
                 case 8:
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    let json = [[:]]
+                    let json = [[String : Any]]()
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
@@ -2722,7 +2734,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2782,7 +2794,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2817,7 +2829,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2894,7 +2906,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -2954,7 +2966,7 @@ class UserTests: KinveyTestCase {
             username: UUID().uuidString,
             password: UUID().uuidString,
             options: Options(
-                clientId: nil
+                authServiceId: nil
             )
         ) { result in
             XCTAssertTrue(Thread.isMainThread)
@@ -3862,6 +3874,106 @@ extension UserTests {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationLogin = nil
+        }
+    }
+    
+    func testLogout() {
+        signUp()
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            Swift.fatalError()
+        }
+        
+        if useMockData {
+            mockResponse(statusCode: 204, data: Data())
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationLogout = expectation(description: "Logout")
+        
+        user.logout {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationLogout?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogout = nil
+        }
+    }
+    
+    func testLogoutTimeoutError() {
+        signUp()
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+            return
+        }
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogout = expectation(description: "Logout")
+        
+        user.logout {
+            XCTAssertNil(Kinvey.sharedClient.activeUser)
+            
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
+            
+            expectationLogout?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogout = nil
+        }
+    }
+    
+    func testLogoutServerError() {
+        signUp()
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+            return
+        }
+        
+        mockResponse(statusCode: 500, data: "Server Error".data(using: .utf8))
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogout = expectation(description: "Logout")
+        
+        user.logout {
+            XCTAssertNil(Kinvey.sharedClient.activeUser)
+            
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+            }
+            
+            expectationLogout?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogout = nil
         }
     }
     
