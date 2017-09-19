@@ -284,7 +284,7 @@ open class FileStore<FileType: File> {
     ) -> Request {
         return upload(
             file,
-            fromSource: .url(URL(fileURLWithPath: path)),
+            fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
             options: options,
             completionHandler: completionHandler
         )
@@ -454,6 +454,69 @@ open class FileStore<FileType: File> {
         )
     }
     
+    @discardableResult
+    open func create(
+        _ file: FileType,
+        data: Data,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+    ) -> Request {
+        let requests = MultiRequest()
+        createBucket(
+            file,
+            fromSource: .data(data),
+            options: options,
+            requests: requests
+        ).then { file, skip in
+            completionHandler(.success(file))
+        }.catch {
+            completionHandler(.failure($0))
+        }
+        return requests
+    }
+    
+    @discardableResult
+    open func create(
+        _ file: FileType,
+        path: String,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+    ) -> Request {
+        let requests = MultiRequest()
+        createBucket(
+            file,
+            fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
+            options: options,
+            requests: requests
+        ).then { file, skip in
+            completionHandler(.success(file))
+        }.catch {
+            completionHandler(.failure($0))
+        }
+        return requests
+    }
+    
+    @discardableResult
+    open func create(
+        _ file: FileType,
+        stream: InputStream,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+    ) -> Request {
+        let requests = MultiRequest()
+        createBucket(
+            file,
+            fromSource: .stream(stream),
+            options: options,
+            requests: requests
+        ).then { file, skip in
+            completionHandler(.success(file))
+        }.catch {
+            completionHandler(.failure($0))
+        }
+        return requests
+    }
+    
     fileprivate func createBucket(
         _ file: FileType,
         fromSource source: InputSource,
@@ -461,6 +524,21 @@ open class FileStore<FileType: File> {
         requests: MultiRequest
     ) -> Promise<(file: FileType, skip: Int?)> {
         return Promise<(file: FileType, skip: Int?)> { fulfill, reject in //creating bucket
+            if file.size.value == nil {
+                switch source {
+                case let .data(data):
+                    file.size.value = IntMax(data.count)
+                case let .url(url):
+                    if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                        let fileSize = attrs[.size] as? IntMax
+                    {
+                        file.size.value = fileSize
+                    }
+                default:
+                    break
+                }
+            }
+            
             let createUpdateFileEntry = {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file, options: options)
                 requests += request
@@ -503,7 +581,7 @@ open class FileStore<FileType: File> {
                 
                 if self.client.logNetworkEnabled {
                     do {
-                        log.debug("\(request)")
+                        log.debug("\(request.description)")
                     }
                 }
                 
@@ -518,17 +596,21 @@ open class FileStore<FileType: File> {
                     if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
                         createUpdateFileEntry()
                     } else if let response = response as? HTTPURLResponse,
-                        response.statusCode == 308,
-                        let rangeString = response.allHeaderFields["Range"] as? String,
-                        let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.characters.count)).first,
-                        textCheckingResult.numberOfRanges == 3
+                        response.statusCode == 308
                     {
-                        let rangeNSString = rangeString as NSString
-                        let endRangeString = rangeNSString.substring(with: textCheckingResult.rangeAt(2))
-                        if let endRange = Int(endRangeString) {
-                            fulfill((file: file, skip: endRange))
+                        if let rangeString = response.allHeaderFields["Range"] as? String,
+                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.characters.count)).first,
+                            textCheckingResult.numberOfRanges == 3
+                        {
+                            let rangeNSString = rangeString as NSString
+                            let endRangeString = rangeNSString.substring(with: textCheckingResult.rangeAt(2))
+                            if let endRange = Int(endRangeString) {
+                                fulfill((file: file, skip: endRange))
+                            } else {
+                                reject(Error.invalidResponse(httpResponse: response, data: data))
+                            }
                         } else {
-                            reject(Error.invalidResponse(httpResponse: response, data: data))
+                            fulfill((file: file, skip: nil))
                         }
                     } else {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
@@ -637,20 +719,6 @@ open class FileStore<FileType: File> {
         options: Options?,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
     ) -> Request {
-        if file.size.value == nil {
-            switch source {
-            case let .data(data):
-                file.size.value = IntMax(data.count)
-            case let .url(url):
-                if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                    let fileSize = attrs[.size] as? IntMax
-                {
-                    file.size.value = fileSize
-                }
-            default:
-                break
-            }
-        }
         let requests = MultiRequest()
         createBucket(
             file,
