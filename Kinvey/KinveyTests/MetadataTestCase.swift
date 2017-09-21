@@ -27,9 +27,9 @@ class MetadataTestCase: XCTestCase {
         let metadata = Metadata(JSON: json)
         XCTAssertNotNil(metadata)
         if let metadata = metadata {
-            XCTAssertEqualWithAccuracy(metadata.lastModifiedTime!.timeIntervalSinceReferenceDate, lmt.timeIntervalSinceReferenceDate, accuracy: 0.0009)
-            XCTAssertEqualWithAccuracy(metadata.entityCreationTime!.timeIntervalSinceReferenceDate, ect.timeIntervalSinceReferenceDate, accuracy: 0.0009)
-            XCTAssertEqualWithAccuracy(metadata.lastReadTime.timeIntervalSinceReferenceDate, lrt.timeIntervalSinceReferenceDate, accuracy: 0.9999)
+            XCTAssertEqual(metadata.lastModifiedTime!.timeIntervalSinceReferenceDate, lmt.timeIntervalSinceReferenceDate, accuracy: 0.0009)
+            XCTAssertEqual(metadata.entityCreationTime!.timeIntervalSinceReferenceDate, ect.timeIntervalSinceReferenceDate, accuracy: 0.0009)
+            XCTAssertEqual(metadata.lastReadTime.timeIntervalSinceReferenceDate, lrt.timeIntervalSinceReferenceDate, accuracy: 0.9999)
             XCTAssertEqual(metadata.authtoken, authToken)
         }
     }

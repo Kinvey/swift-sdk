@@ -171,7 +171,8 @@ class PerformanceProductTestCase: KinveyTestCase {
             
             let checkpoint = Date()
             let object = try! JSONSerialization.jsonObject(with: inputStream)
-            productsJsonArray = object as! [JsonDictionary]
+            productsJsonArray = object as? [JsonDictionary]
+            XCTAssertNotNil(productsJsonArray)
             print(String(format: "JSON Parse: %3.3f second(s)", -checkpoint.timeIntervalSinceNow))
         }
         
