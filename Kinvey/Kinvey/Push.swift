@@ -253,7 +253,9 @@ open class Push {
                     options: options,
                     completionHandler: completionHandler
                 )
-                UIApplication.shared.registerForRemoteNotifications()
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
             } else {
                 if let error = error {
                     completionHandler?(.failure(error))
