@@ -25,7 +25,7 @@ class StoreTestCase: KinveyTestCase {
     }
     
     @discardableResult
-    func save<T: Persistable>(_ persistable: T, store: DataStore<T>, mockResponseHandler: ((JsonDictionary) -> JsonDictionary)? = nil) -> (originalPersistable: T, savedPersistable: T?) where T: NSObject {
+    func save<T>(_ persistable: T, store: DataStore<T>, mockResponseHandler: ((JsonDictionary) -> JsonDictionary)? = nil) -> (originalPersistable: T, savedPersistable: T?) {
         if useMockData {
             mockResponse {
                 var json = try! JSONSerialization.jsonObject(with: $0) as! JsonDictionary

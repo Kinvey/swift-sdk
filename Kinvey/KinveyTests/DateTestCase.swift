@@ -54,7 +54,7 @@ class DateTestCase: KinveyTestCase {
         let date = Date()
         let dateString = date.toString()
         
-        XCTAssertEqualWithAccuracy(date.timeIntervalSinceReferenceDate, (transform.transformFromJSON(dateString) as! Date).timeIntervalSinceReferenceDate, accuracy: 0.0009)
+        XCTAssertEqual(date.timeIntervalSinceReferenceDate, (transform.transformFromJSON(dateString) as! Date).timeIntervalSinceReferenceDate, accuracy: 0.0009)
         XCTAssertEqual(dateString, transform.transformToJSON(date) as? String)
     }
     
@@ -130,7 +130,7 @@ class DateTestCase: KinveyTestCase {
                     for event in events {
                         XCTAssertNotNil(event.publishDate)
                         if let date = event.publishDate {
-                            XCTAssertEqualWithAccuracy(date.timeIntervalSinceReferenceDate, publishDate.timeIntervalSinceReferenceDate, accuracy: 0.0009)
+                            XCTAssertEqual(date.timeIntervalSinceReferenceDate, publishDate.timeIntervalSinceReferenceDate, accuracy: 0.0009)
                         }
                     }
                 }
