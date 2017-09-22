@@ -275,7 +275,7 @@ public func <- (left: List<IntValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T : RealmOptionalType>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
+public func <- <T>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
     kinveyMappingType(left: right.query, right: right.map.currentKey!)
     left.value <- right.map
 }
