@@ -33,21 +33,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        Kinvey.sharedClient.initialize(
-            appKey: "kid_WyWKm0pPM-",
-            appSecret: "1f94baeb156b4acf9674f979df680ca2"
-        ) { (result: Kinvey.Result<User?, Swift.Error>) in
-            switch result {
-            case .success(let user):
-                if let user = user {
-                    print(user)
-                } else {
-                    self.signup()
-                }
-            case .failure(let error):
-                print(error)
-            }
-        }
+//        Kinvey.sharedClient.initialize(
+//            appKey: "",
+//            appSecret: ""
+//        ) { (result: Kinvey.Result<User?, Swift.Error>) in
+//            switch result {
+//            case .success(let user):
+//                if let user = user {
+//                    print(user)
+//                } else {
+//                    self.signup()
+//                }
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
         
         UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         
