@@ -59,6 +59,7 @@ protocol RequestFactory {
     func buildOAuthGrantRefreshToken(refreshToken: String, options: Options?) -> HttpRequest
     
     func buildLiveStreamGrantAccess(streamName: String, userId: String, acl: LiveStreamAcl, options: Options?) -> HttpRequest
+    func buildLiveStreamAccess(streamName: String, userId: String, options: Options?) -> HttpRequest
     func buildLiveStreamPublish(streamName: String, userId: String, options: Options?) -> HttpRequest
     func buildLiveStreamSubscribe(streamName: String, userId: String, deviceId: String, options: Options?) -> HttpRequest
     func buildLiveStreamUnsubscribe(streamName: String, userId: String, deviceId: String, options: Options?) -> HttpRequest

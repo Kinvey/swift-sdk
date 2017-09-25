@@ -711,6 +711,20 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildLiveStreamAccess(
+        streamName: String,
+        userId: String,
+        options: Options?
+    ) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .get,
+            endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
+            credential: client.activeUser,
+            options: options
+        )
+        return request
+    }
+    
     func buildLiveStreamPublish(
         streamName: String,
         userId: String,
