@@ -400,7 +400,7 @@ internal class HttpRequest: TaskProgressRequest, Request {
             }
         }
         
-        let urlSession = urlSession ?? client.urlSession
+        let urlSession = urlSession ?? options?.urlSession ?? client.urlSession
         task = urlSession.dataTask(with: request) { (data, response, error) -> Void in
             if let response = response as? HTTPURLResponse {
                 if self.client.logNetworkEnabled {
