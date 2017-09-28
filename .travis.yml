@@ -50,6 +50,7 @@ before_script:
 - if [ ! -d "Carthage/Build/$PLATFORM/Nimble.framework" ]; then
     carthage build --platform $PLATFORM Nimble;
   fi
+- store build cache
 - brew install tree
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - date
