@@ -635,31 +635,6 @@ extension RealmCache: DynamicCacheType {
     
 }
 
-extension NSComparisonPredicate {
-    
-    var keyPathConstantTuple: (keyPathExpression: NSExpression, constantValueExpression: NSExpression)? {
-        switch leftExpression.expressionType {
-        case .keyPath:
-            switch rightExpression.expressionType {
-            case .constantValue:
-                return (keyPathExpression: leftExpression, constantValueExpression: rightExpression)
-            default:
-                return nil
-            }
-        case .constantValue:
-            switch rightExpression.expressionType {
-            case .keyPath:
-                return (keyPathExpression: rightExpression, constantValueExpression: leftExpression)
-            default:
-                return nil
-            }
-        default:
-            return nil
-        }
-    }
-    
-}
-
 extension AnyRandomAccessCollection where Element: NSObject, Element: Persistable {
     
     fileprivate func filter(predicate: NSPredicate) -> AnyRandomAccessCollection<Iterator.Element> {
