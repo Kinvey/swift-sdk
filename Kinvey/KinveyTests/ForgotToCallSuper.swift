@@ -12,6 +12,7 @@ import Nimble
 
 class ForgotToCallSuperEntity: Entity {
     
+    @objc
     dynamic var myProperty: String?
     
     override class func collectionName() -> String {
@@ -26,7 +27,10 @@ class ForgotToCallSuperEntity: Entity {
 
 class ForgotToCallSuperEntity2: Entity {
     
+    @objc
     dynamic var myId: String?
+    
+    @objc
     dynamic var myProperty: String?
     
     override class func collectionName() -> String {
@@ -42,6 +46,7 @@ class ForgotToCallSuperEntity2: Entity {
 
 class ForgotToCallSuperPersistable: Persistable {
     
+    @objc
     dynamic var myProperty: String?
     
     class func collectionName() -> String {

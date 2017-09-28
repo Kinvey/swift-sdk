@@ -83,8 +83,8 @@ open class KinveyDateTransform : TransformType {
             return results.map {
                 TextCheckingResultTuple(
                     match: nsString.substring(with: $0.range),
-                    milliseconds: $0.rangeAt(1).location != NSNotFound ? nsString.substring(with: $0.rangeAt(1)) : nil,
-                    timezone: nsString.substring(with: $0.rangeAt(2))
+                    milliseconds: $0.range(at: 1).location != NSNotFound ? nsString.substring(with: $0.range(at: 1)) : nil,
+                    timezone: nsString.substring(with: $0.range(at: 2))
                 )
             }
         } catch let error {

@@ -15,7 +15,10 @@ import ObjectMapper
 
 class Person: Entity {
     
+    @objc
     dynamic var firstName: String?
+    
+    @objc
     dynamic var lastName: String?
     
     override class func collectionName() -> String {

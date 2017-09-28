@@ -34,15 +34,15 @@ public enum ImageRepresentation {
         }
         let newRep = NSBitmapImageRep(cgImage: cgImage)
         newRep.size = image.size
-        var fileType: NSBitmapImageFileType!
-        var properties: [String : Any]!
+        var fileType: NSBitmapImageRep.FileType!
+        var properties: [NSBitmapImageRep.PropertyKey : Any]!
         switch self {
         case .png:
-            fileType = NSPNGFileType
+            fileType = .png
             properties = [:]
         case .jpeg(let compressionQuality):
-            fileType = NSJPEGFileType
-            properties = [NSImageCompressionFactor : compressionQuality]
+            fileType = .jpeg
+            properties = [.compressionFactor : compressionQuality]
         }
         return newRep.representation(using: fileType, properties: properties)
     }
@@ -527,10 +527,10 @@ open class FileStore<FileType: File> {
             if file.size.value == nil {
                 switch source {
                 case let .data(data):
-                    file.size.value = IntMax(data.count)
+                    file.size.value = Int64(data.count)
                 case let .url(url):
                     if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                        let fileSize = attrs[.size] as? IntMax
+                        let fileSize = attrs[.size] as? Int64
                     {
                         file.size.value = fileSize
                     }
@@ -570,7 +570,7 @@ open class FileStore<FileType: File> {
                     request.setValue("bytes */\(data.count)", forHTTPHeaderField: "Content-Range")
                 case let .url(url):
                     if let attrs = try? FileManager.default.attributesOfItem(atPath: (url.path as NSString).expandingTildeInPath),
-                        let fileSize = attrs[FileAttributeKey.size] as? UIntMax
+                        let fileSize = attrs[FileAttributeKey.size] as? UInt64
                     {
                         request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
                     }
@@ -602,8 +602,7 @@ open class FileStore<FileType: File> {
                             let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.characters.count)).first,
                             textCheckingResult.numberOfRanges == 3
                         {
-                            let rangeNSString = rangeString as NSString
-                            let endRangeString = rangeNSString.substring(with: textCheckingResult.rangeAt(2))
+                            let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
                             if let endRange = Int(endRangeString) {
                                 fulfill((file: file, skip: endRange))
                             } else {
@@ -956,7 +955,7 @@ open class FileStore<FileType: File> {
             let pathURL = file.pathURL
         {
             DispatchQueue.main.async {
-                completionHandler?(.success(cachedFile, pathURL))
+                completionHandler?(.success((cachedFile, pathURL)))
             }
         }
         
@@ -999,8 +998,8 @@ open class FileStore<FileType: File> {
                         fulfill((file, localUrl))
                     }
                 }
-            }.then { file, localUrl -> Void in
-                completionHandler?(.success(file, localUrl))
+            }.then {
+                completionHandler?(.success($0))
             }.catch { error in
                 completionHandler?(.failure(error))
             }
@@ -1118,7 +1117,7 @@ open class FileStore<FileType: File> {
                 }
             }
         }.then { data in
-            completionHandler?(.success(file, data))
+            completionHandler?(.success((file, data)))
         }.catch { error in
             completionHandler?(.failure(error))
         }

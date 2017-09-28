@@ -10,6 +10,7 @@ import Kinvey
 
 class MyFile: File {
     
+    @objc
     dynamic var label: String?
     
     public convenience required init?(map: Map) {

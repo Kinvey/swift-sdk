@@ -48,7 +48,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                                         cache.save(entity: persistable)
                                     }
                                     self.sync?.removePendingOperation(pendingOperation)
-                                    fulfill()
+                                    fulfill(())
                                 } else {
                                     reject(buildError(data, response, error, self.client))
                                 }
@@ -60,7 +60,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                 case .delete:
                     promises.append(Promise<Void> { fulfill, reject in
                         sync.removePendingOperation(pendingOperation)
-                        fulfill()
+                        fulfill(())
                     })
                 case .create:
                     promises.append(Promise<Void> { fulfill, reject in
@@ -69,7 +69,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                             cache?.remove(byQuery: query)
                         }
                         sync.removePendingOperation(pendingOperation)
-                        fulfill()
+                        fulfill(())
                     })
                 default:
                     break

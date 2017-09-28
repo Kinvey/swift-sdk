@@ -12,11 +12,19 @@ import ObjectMapper
 
 class DirectoryEntry: Entity {
     
+    @objc
     dynamic var uniqueId: String?
+    
+    @objc
     dynamic var nameFirst: String?
+    
+    @objc
     dynamic var nameLast: String?
+    
+    @objc
     dynamic var email: String?
     
+    @objc
     dynamic var refProject: RefProject?
     
     override class func collectionName() -> String {

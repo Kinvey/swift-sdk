@@ -30,6 +30,7 @@ open class User: NSObject, Credential, Mappable {
         return _userId!
     }
     
+    @objc
     private dynamic var _userId: String?
     
     /// `_acl` property of the user.
@@ -193,13 +194,13 @@ open class User: NSObject, Credential, Mappable {
                     {
                         client.activeUser = nil
                     }
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, client))
                 }
             }
-        }.then { _ in
-            completionHandler?(.success())
+        }.then {
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -455,13 +456,13 @@ open class User: NSObject, Credential, Mappable {
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK {
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, client))
                 }
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -943,13 +944,13 @@ open class User: NSObject, Credential, Mappable {
                     if self == self.client.activeUser {
                         self.client.activeUser = self
                     }
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { user in
-            completionHandler?(.success())
+        }.then {
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -1010,7 +1011,7 @@ open class User: NSObject, Credential, Mappable {
                 if let response = response,
                     response.isOK
                 {
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(error ?? buildError(data, response, error, self.client))
                 }
@@ -1019,7 +1020,7 @@ open class User: NSObject, Credential, Mappable {
                 client.activeUser = nil
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -1153,13 +1154,13 @@ open class User: NSObject, Credential, Mappable {
                     let userChannelGroup = json["userChannelGroup"] as? String
                 {
                     self.realtimeRouter = PubNubRealtimeRouter(user: self, subscribeKey: subscribeKey, publishKey: publishKey, userChannelGroup: userChannelGroup)
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { users in
-            completionHandler?(.success())
+        }.then {
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -1181,13 +1182,13 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK {
                     self.realtimeRouter = nil
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { users in
-            completionHandler?(.success())
+        }.then {
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }

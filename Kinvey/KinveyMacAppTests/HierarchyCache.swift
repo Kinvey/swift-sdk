@@ -10,18 +10,43 @@ import Kinvey
 
 public class HierarchyCache: Entity {
     
+    @objc
     dynamic var salesOrganization: String?
+    
+    @objc
     dynamic var distributionChannel: String?
+    
+    @objc
     dynamic var sapCustomerNumber: String?
+    
+    @objc
     dynamic var materialNumber: String?
+    
+    @objc
     dynamic var conditionType: String?
+    
+    @objc
     dynamic var salesDivision: String?
+    
+    @objc
     dynamic var validityStartDate: String?
+    
+    @objc
     dynamic var validityEndDate: String?
+    
+    @objc
     dynamic var price: String?
+    
+    @objc
     dynamic var currency: String?
+    
+    @objc
     dynamic var deliveryUnit: String?
+    
+    @objc
     dynamic var unitQuantity: String?
+    
+    @objc
     dynamic var unitOfMeasure: String?
     
     public override class func collectionName() -> String {

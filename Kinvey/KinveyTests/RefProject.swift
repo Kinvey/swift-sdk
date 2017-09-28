@@ -12,7 +12,10 @@ import ObjectMapper
 
 class RefProject: Entity {
     
+    @objc
     dynamic var uniqueId: String?
+    
+    @objc
     dynamic var name: String?
     
     override class func collectionName() -> String {

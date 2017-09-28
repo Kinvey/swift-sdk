@@ -11,9 +11,14 @@ import Kinvey
 /// Event.swift - an entity in the 'Events' collection
 class Event : Entity {
 
-    var name: String?
-    var publishDate: Date?
-    var location: String?
+    @objc
+    dynamic var name: String?
+    
+    @objc
+    dynamic var publishDate: Date?
+    
+    @objc
+    dynamic var location: String?
     
     override class func collectionName() -> String {
         return "Event"

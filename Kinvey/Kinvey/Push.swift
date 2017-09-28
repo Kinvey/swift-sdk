@@ -109,18 +109,34 @@ open class Push {
             let applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = imp_implementationWithBlock(unsafeBitCast(applicationDidRegisterForRemoteNotificationsWithDeviceTokenBlock, to: AnyObject.self))
             let applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = imp_implementationWithBlock(unsafeBitCast(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorBlock, to: AnyObject.self))
             
-            if originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod == nil {
-                let result = class_addMethod(appDelegateType, applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector, applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation, method_getTypeEncoding(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod))
-                assert(result)
+            if let originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod = originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod {
+                self.originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = method_setImplementation(
+                    originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod,
+                    applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation
+                )
             } else {
-                self.originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = method_setImplementation(originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenMethod, applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation)
+                let result = class_addMethod(
+                    appDelegateType,
+                    applicationDidRegisterForRemoteNotificationsWithDeviceTokenSelector,
+                    applicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation,
+                    nil
+                )
+                assert(result)
             }
             
-            if originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod == nil {
-                let result = class_addMethod(appDelegateType, applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector, applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation, method_getTypeEncoding(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod))
-                assert(result)
+            if let originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod = originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod {
+                self.originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = method_setImplementation(
+                    originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod,
+                    applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation
+                )
             } else {
-                self.originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = method_setImplementation(originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorMethod, applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation)
+                let result = class_addMethod(
+                    appDelegateType,
+                    applicationDidFailToRegisterForRemoteNotificationsWithErrorSelector,
+                    applicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation,
+                    nil
+                )
+                assert(result)
             }
         }
         
@@ -317,13 +333,13 @@ open class Push {
                     response.isOK
                 {
                     self.deviceToken = nil
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
         }.then { success in
-            completionHandler?(.success())
+            completionHandler?(.success(success))
         }.catch { error in
             completionHandler?(.failure(error))
         }
