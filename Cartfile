@@ -1,4 +1,4 @@
-github "KinveyApps/NSPredicate-MongoDB-Adaptor" "master"
+github "tjboneman/NSPredicate-MongoDB-Adaptor" "master"
 github "mxcl/PromiseKit" ~> 4.0
 github "kishikawakatsumi/KeychainAccess" ~> 3.0
 github "realm/realm-cocoa" ~> 2.0
