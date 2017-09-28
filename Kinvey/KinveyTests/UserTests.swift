@@ -3704,7 +3704,7 @@ extension UserTests {
     func testUserMICLoginTimeoutError() {
         mockResponse(error: timeoutError)
         
-        expectation(forNotification: User.MICSafariViewControllerFailureNotificationName.rawValue, object: nil) { (notification) -> Bool in
+        expectation(forNotification: User.MICSafariViewControllerFailureNotificationName, object: nil) { (notification) -> Bool in
             XCTAssertNotNil(notification.object)
             XCTAssertTrue(notification.object is Swift.Error)
             if let error = notification.object as? Swift.Error {
@@ -3775,7 +3775,7 @@ extension UserTests {
             setURLProtocol(nil)
         }
         
-        expectation(forNotification: User.MICSafariViewControllerSuccessNotificationName.rawValue, object: nil) { (notification) -> Bool in
+        expectation(forNotification: User.MICSafariViewControllerSuccessNotificationName, object: nil) { (notification) -> Bool in
             XCTAssertNotNil(notification.object)
             XCTAssertTrue(notification.object is User)
             if let user = notification.object as? User {

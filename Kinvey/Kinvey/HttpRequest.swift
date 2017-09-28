@@ -260,8 +260,8 @@ enum Body {
         let nsbody = body as NSString
         for match in regex.matches(in: body, range: NSMakeRange(0, body.characters.count)) {
             if match.numberOfRanges == 3 {
-                let key = nsbody.substring(with: match.rangeAt(1))
-                let value = nsbody.substring(with: match.rangeAt(2))
+                let key = nsbody.substring(with: match.range(at: 1))
+                let value = nsbody.substring(with: match.range(at: 2))
                 params[key] = value
             }
         }

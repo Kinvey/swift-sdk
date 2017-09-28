@@ -83,7 +83,7 @@ public class LiveStream<Type: BaseMappable> {
         return userPromise.then { activeUser in
             return Promise<(User, RealtimeRouter)> { fulfill, reject in
                 if let realtimeRouter = activeUser.realtimeRouter {
-                    fulfill(activeUser, realtimeRouter)
+                    fulfill((activeUser, realtimeRouter))
                 } else {
                     reject(Error.invalidOperation(description: "Active User not register for realtime"))
                 }
@@ -111,13 +111,13 @@ public class LiveStream<Type: BaseMappable> {
                     response.isOK,
                     let _ = data
                 {
-                    fulfill()
+                    fulfill(())
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -140,7 +140,7 @@ public class LiveStream<Type: BaseMappable> {
                 let substreamChannelName = jsonDict["substreamChannelName"]
             {
                 self.substreamChannelNameMap[userId] = substreamChannelName
-                fulfill(realtimeRouter, substreamChannelName)
+                fulfill((realtimeRouter, substreamChannelName))
             } else {
                 reject(buildError(data, response, error, self.client))
             }
@@ -158,7 +158,7 @@ public class LiveStream<Type: BaseMappable> {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
                 if let channelName = self.substreamChannelNameMap[userId] {
-                    fulfill(realtimeRouter, channelName)
+                    fulfill((realtimeRouter, channelName))
                 } else {
                     let request = self.client.networkRequestFactory.buildLiveStreamPublish(
                         streamName: self.name,
@@ -179,7 +179,7 @@ public class LiveStream<Type: BaseMappable> {
                 realtimeRouter.publish(channel: channelName, message: message.toJSON()) {
                     switch $0 {
                     case .success:
-                        fulfill()
+                        fulfill(())
                     case .failure(let error):
                         if retry, let error = error as? Kinvey.Error {
                             switch error {
@@ -188,7 +188,7 @@ public class LiveStream<Type: BaseMappable> {
                                 self.send(userId: userId, message: message, retry: false) {
                                     switch $0 {
                                     case .success:
-                                        fulfill()
+                                        fulfill(())
                                     case .failure(let error):
                                         reject(error)
                                     }
@@ -203,7 +203,7 @@ public class LiveStream<Type: BaseMappable> {
                 }
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
@@ -277,7 +277,7 @@ public class LiveStream<Type: BaseMappable> {
         realtimeRouterPromise.then { activeUser, realtimeRouter in
             return Promise<(RealtimeRouter, String)> { fulfill, reject in
                 if let channelName = self.substreamChannelNameMap[userId] {
-                    fulfill(realtimeRouter, channelName)
+                    fulfill((realtimeRouter, channelName))
                 } else {
                     let request = self.client.networkRequestFactory.buildLiveStreamSubscribe(
                         streamName: self.name,
@@ -340,7 +340,7 @@ public class LiveStream<Type: BaseMappable> {
                 realtimeRouter.unsubscribe(channel: channel, context: self)
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }

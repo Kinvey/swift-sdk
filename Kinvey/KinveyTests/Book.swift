@@ -10,7 +10,9 @@ import Kinvey
 
 class Book: Entity {
     
+    @objc
     dynamic var title: String?
+    
     let authorNames = List<StringValue>()
     
     let editions = List<BookEdition>()
@@ -46,9 +48,16 @@ class BookEdition: Object, Mappable {
         self.init()
     }
     
+    @objc
     dynamic var year: Int = 0
+    
+    @objc
     dynamic var retailPrice: Float = 0.0
+    
+    @objc
     dynamic var rating: Float = 0.0
+    
+    @objc
     dynamic var available: Bool = false
     
     func mapping(map: Map) {

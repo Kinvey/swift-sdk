@@ -116,11 +116,11 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
                         reject(Error.unknownError(httpResponse: nil, data: nil, error: publishStatus.errorData.information))
                     }
                 } else {
-                    fulfill()
+                    fulfill(())
                 }
             }
         }.then {
-            completionHandler?(.success())
+            completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }

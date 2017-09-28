@@ -114,7 +114,7 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
     }
 }
 
-let defaultTag = "kinvey"
+public let defaultTag = "kinvey"
 let groupId = "_group_"
 
 #if os(macOS)

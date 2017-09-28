@@ -552,10 +552,10 @@ extension Persistable where Self: NSObject {
 extension AnyRandomAccessCollection where Element: Persistable {
     
     public subscript(idx: Int) -> Element {
-        return self[IntMax(idx)]
+        return self[Int64(idx)]
     }
     
-    public subscript(idx: IntMax) -> Element {
+    public subscript(idx: Int64) -> Element {
         return self[index(startIndex, offsetBy: idx)]
     }
     

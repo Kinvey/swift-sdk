@@ -23,17 +23,18 @@ internal class ObjCRuntime: NSObject {
     }
     
     internal class func typeForPropertyName(_ cls: AnyClass, propertyName: String) -> AnyClass? {
-        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"")
-        
-        let property = class_getProperty(cls, propertyName)
+        guard let property = class_getProperty(cls, propertyName) else {
+            return nil
+        }
         let attributeValueCString = property_copyAttributeValue(property, "T")
         defer { free(attributeValueCString) }
         if let attributeValueCString = attributeValueCString,
             let attributeValue = String(validatingUTF8: attributeValueCString),
+            let regexClassName = try? NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\""),
             let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.characters.count)).first
         {
             let attributeValueNSString = attributeValue as NSString
-            let propertyTypeName = attributeValueNSString.substring(with: textCheckingResult.rangeAt(1))
+            let propertyTypeName = attributeValueNSString.substring(with: textCheckingResult.range(at: 1))
             return NSClassFromString(propertyTypeName)
         }
         return nil
@@ -49,30 +50,28 @@ internal class ObjCRuntime: NSObject {
             if let properties = class_copyPropertyList(cls, &propertyCount) {
                 defer { free(properties) }
                 for i in UInt32(0) ..< propertyCount {
-                    if let property = properties[Int(i)] {
-                        if let propertyName = String(validatingUTF8: property_getName(property))
-                        {
-                            var attributeCount = UInt32(0)
-                            if let attributes = property_copyAttributeList(property, &attributeCount) {
-                                defer { free(attributes) }
-                                for x in UInt32(0) ..< attributeCount {
-                                    let attribute = attributes[Int(x)]
-                                    if let attributeName = String(validatingUTF8: attribute.name),
-                                        attributeName == "T",
-                                        let attributeValue = String(validatingUTF8: attribute.value),
-                                        let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.characters.count)).first
-                                    {
-                                        var tuple: (type: String?, subType: String?) = (nil, nil)
-                                        if let range = textCheckingResult.rangeAt(1).toRange() {
-                                            tuple.type = attributeValue.substring(with: range)
-                                        }
-                                        
-                                        if textCheckingResult.numberOfRanges > 1,
-                                            let range = textCheckingResult.rangeAt(2).toRange() {
-                                            tuple.subType = attributeValue.substring(with: range)
-                                        }
-                                        results[propertyName] = tuple
+                    let property = properties[Int(i)]
+                    if let propertyName = String(validatingUTF8: property_getName(property)) {
+                        var attributeCount = UInt32(0)
+                        if let attributes = property_copyAttributeList(property, &attributeCount) {
+                            defer { free(attributes) }
+                            for x in UInt32(0) ..< attributeCount {
+                                let attribute = attributes[Int(x)]
+                                if let attributeName = String(validatingUTF8: attribute.name),
+                                    attributeName == "T",
+                                    let attributeValue = String(validatingUTF8: attribute.value),
+                                    let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.characters.count)).first
+                                {
+                                    var tuple: (type: String?, subType: String?) = (nil, nil)
+                                    if let range = Range(textCheckingResult.range(at: 1)) {
+                                        tuple.type = attributeValue.substring(with: range)
                                     }
+                                    
+                                    if textCheckingResult.numberOfRanges > 1,
+                                        let range = Range(textCheckingResult.range(at: 2)) {
+                                        tuple.subType = attributeValue.substring(with: range)
+                                    }
+                                    results[propertyName] = tuple
                                 }
                             }
                         }
@@ -83,6 +82,8 @@ internal class ObjCRuntime: NSObject {
                 } else {
                     cls = class_getSuperclass(cls)
                 }
+            } else {
+                cls = class_getSuperclass(cls)
             }
         }
         return results

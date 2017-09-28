@@ -515,8 +515,8 @@ class NetworkStoreTests: StoreTestCase {
                 var skip: Int?
                 var limit: Int?
                 for match in matches {
-                    let key = query[query.index(query.startIndex, offsetBy: match.rangeAt(1).location) ..< query.index(query.startIndex, offsetBy: match.rangeAt(1).location + match.rangeAt(1).length)]
-                    let value = query[query.index(query.startIndex, offsetBy: match.rangeAt(2).location) ..< query.index(query.startIndex, offsetBy: match.rangeAt(2).location + match.rangeAt(2).length)]
+                    let key = query[query.index(query.startIndex, offsetBy: match.range(at: 1).location) ..< query.index(query.startIndex, offsetBy: match.range(at: 1).location + match.range(at: 1).length)]
+                    let value = query[query.index(query.startIndex, offsetBy: match.range(at: 2).location) ..< query.index(query.startIndex, offsetBy: match.range(at: 2).location + match.range(at: 2).length)]
                     switch key {
                     case "skip":
                         skip = Int(value)
@@ -2445,6 +2445,7 @@ class NetworkStoreTests: StoreTestCase {
 
 class Products: Entity {
     
+    @objc
     dynamic var desc: String?
     
     override static func collectionName() -> String {

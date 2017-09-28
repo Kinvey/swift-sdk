@@ -256,6 +256,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     let options: Options?
     let completionHandler: UserHandler<User>
     
+    @objc
     var webView: UIView!
     var timer: Timer? {
         willSet {
@@ -415,10 +416,12 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
+    @objc
     func closeViewControllerUserInteractionCancel(_ sender: Any) {
         closeViewControllerUserInteraction(.failure(Error.requestCancelled))
     }
     
+    @objc
     func closeViewControllerUserInteractionTimeout(_ sender: Any) {
         closeViewControllerUserInteraction(.failure(Error.requestTimeout))
     }
@@ -430,6 +433,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
+    @objc
     func refreshPage(_ sender: Any) {
         webView(
             wkWebView: { $0.reload() },
