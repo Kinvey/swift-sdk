@@ -23,8 +23,8 @@ before_script:
 - if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
     carthage checkout realm-cocoa;
   fi
-- travis_wait 30 if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
-    carthage build --platform $PLATFORM realm-cocoa;
+- if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
+    travis_wait 30 carthage build --platform $PLATFORM realm-cocoa;
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/KeychainAccess.framework" ]; then
     carthage checkout KeychainAccess;
