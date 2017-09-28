@@ -217,12 +217,18 @@ public enum MICUserInterface {
     
     /// Uses SFSafariViewController
     case safari
+
+    /// Uses SFAuthenticationSession
+    case safariAuthenticationSession
     
     /// Uses WKWebView
     case wkWebView
     
     /// Uses UIWebView
     case uiWebView
+    
+    /// Default Value: .safari
+    public static let `default`: MICUserInterface = .safari
     
 }
 

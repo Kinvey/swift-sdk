@@ -13,8 +13,7 @@ import WebKit
 open class MICLoginViewController: UIViewController {
 
     @IBOutlet weak var userIdLabel: UILabel!
-    @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
-    @IBOutlet weak var useSafariViewControllerSwitch: UISwitch!
+    @IBOutlet weak var micUserInterfaceSegmentedControl: UISegmentedControl!
     
     open var completionHandler: User.UserHandler<User>?
     
@@ -46,24 +45,26 @@ open class MICLoginViewController: UIViewController {
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
         
-        if useSafariViewControllerSwitch.isOn {
-            User.presentMICViewController(redirectURI: redirectURI) { user, error in
-                if let user = user {
-                    self.userIdLabel.text = user.userId
-                } else if let error = error {
-                    print("\(error)")
-                }
-                self.completionHandler?(user, error)
+        var micUserInterface: MICUserInterface!
+        switch micUserInterfaceSegmentedControl.selectedSegmentIndex {
+        case 0:
+            micUserInterface = .safari
+        case 1:
+            micUserInterface = .safariAuthenticationSession
+        case 2:
+            micUserInterface = .wkWebView
+        case 3:
+            micUserInterface = .uiWebView
+        default:
+            micUserInterface = MICUserInterface.default
+        }
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) { (user, error) -> Void in
+            if let user = user {
+                self.userIdLabel.text = user.userId
+            } else if let error = error{
+                print("\(error)")
             }
-        } else {
-            User.presentMICViewController(redirectURI: redirectURI, timeout: 60 * 5, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) { (user, error) -> Void in
-                if let user = user {
-                    self.userIdLabel.text = user.userId
-                } else if let error = error{
-                    print("\(error)")
-                }
-                self.completionHandler?(user, error)
-            }
+            self.completionHandler?(user, error)
         }
     }
 

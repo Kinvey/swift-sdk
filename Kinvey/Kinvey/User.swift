@@ -1370,7 +1370,7 @@ open class User: NSObject, Credential, Mappable {
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
-        micUserInterface: MICUserInterface = .safari,
+        micUserInterface: MICUserInterface = MICUserInterface.default,
         currentViewController: UIViewController? = nil,
         authServiceId: String? = nil,
         client: Client = sharedClient,
@@ -1397,7 +1397,7 @@ open class User: NSObject, Credential, Mappable {
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
-        micUserInterface: MICUserInterface = .safari,
+        micUserInterface: MICUserInterface = MICUserInterface.default,
         currentViewController: UIViewController? = nil,
         authServiceId: String? = nil,
         client: Client = sharedClient,
@@ -1419,7 +1419,7 @@ open class User: NSObject, Credential, Mappable {
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
-        micUserInterface: MICUserInterface = .safari,
+        micUserInterface: MICUserInterface = MICUserInterface.default,
         currentViewController: UIViewController? = nil,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
@@ -1435,12 +1435,7 @@ open class User: NSObject, Credential, Mappable {
         Promise<U> { fulfill, reject in
             var micVC: UIViewController!
             
-            switch micUserInterface {
-            case .safari:
-                let url = MIC.urlForLogin(
-                    redirectURI: redirectURI,
-                    options: options
-                )
+            let loginWithSafariViewController: (URL) -> Void = { url in
                 micVC = SFSafariViewController(url: url)
                 micVC.modalPresentationStyle = .overCurrentContext
                 MICSafariViewControllerSuccessNotificationObserver = NotificationCenter.default.addObserver(
@@ -1472,6 +1467,62 @@ open class User: NSObject, Credential, Mappable {
                             reject(Error.invalidResponse(httpResponse: nil, data: nil))
                         }
                     }
+                }
+            }
+            
+            switch micUserInterface {
+            case .safari:
+                let url = MIC.urlForLogin(
+                    redirectURI: redirectURI,
+                    options: options
+                )
+                loginWithSafariViewController(url)
+            case .safariAuthenticationSession:
+                let url = MIC.urlForLogin(
+                    redirectURI: redirectURI,
+                    options: options
+                )
+                if #available(iOS 11.0, *) {
+                    var timer: Timer? = nil
+                    let authSession = SFAuthenticationSession(
+                        url: url,
+                        callbackURLScheme: redirectURI.scheme
+                    ) { (url, error) in
+                        timer?.invalidate()
+                        timer = nil
+                        if let url = url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
+                            MIC.login(
+                                redirectURI: redirectURI,
+                                code: code,
+                                options: options
+                            ) { (result: Result<U, Swift.Error>) in
+                                switch result {
+                                case .success(let user):
+                                    fulfill(user)
+                                case .failure(let error):
+                                    reject(error)
+                                }
+                            }
+                        } else {
+                            reject(buildError(nil, nil, error, client))
+                        }
+                    }
+                    if authSession.start() {
+                        if let timeout = options?.timeout {
+                            timer = Timer.scheduledTimer(
+                                withTimeInterval: timeout,
+                                repeats: false
+                            ) { (timer) in
+                                authSession.cancel()
+                                timer.invalidate()
+                            }
+                        }
+                    } else {
+                        reject(buildError(nil, nil, nil, client))
+                    }
+                } else {
+                    log.warning("SFAuthenticationSession only available for iOS 11 and above. Using SFSafariViewController instead.")
+                    loginWithSafariViewController(url)
                 }
             default:
                 let forceUIWebView = micUserInterface == .uiWebView
