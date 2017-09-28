@@ -29,6 +29,9 @@ before_script:
 - if [ ! -d "Carthage/Build/$PLATFORM/KeychainAccess.framework" ]; then
     carthage checkout KeychainAccess;
   fi
+- if [ ! -d "Carthage/Build/$PLATFORM/KeychainAccess.framework" ]; then
+    carthage build --platform $PLATFORM KeychainAccess;
+  fi
 - if [ ! -d "Carthage/Build/$PLATFORM/PromiseKit.framework" ]; then
     carthage build --platform $PLATFORM PromiseKit;
   fi
