@@ -236,22 +236,105 @@
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="gpC-EE-q83">
                                 <rect key="frame" x="16" y="100" width="343" height="29"/>
                                 <segments>
-                                    <segment title="Safari View Controller"/>
-                                    <segment title="Safari Authentication Session"/>
+                                    <segment title="SafariViewController"/>
+                                    <segment title="SFAuthenticationSession"/>
                                     <segment title="WKWebView"/>
                                     <segment title="UIWebView"/>
                                 </segments>
+                                <connections>
+                                    <action selector="micUserInterfaceChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="Jb5-rJ-EIn"/>
+                                </connections>
                             </segmentedControl>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="6YE-RM-fYr">
+                                <rect key="frame" x="16" y="136" width="343" height="148"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fS0-M3-8vl">
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SafariViewController" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fcX-ch-gCh">
+                                                <rect key="frame" x="0.0" y="0.0" width="294" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pyM-wF-K98">
+                                                <rect key="frame" x="294" y="0.0" width="51" height="31"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="SafariViewController" label="SafariViewController"/>
+                                                <connections>
+                                                    <action selector="safariViewControllerSwitchValueChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="lAM-z7-POW"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IFL-1o-MOS">
+                                        <rect key="frame" x="0.0" y="39" width="343" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SFAuthenticationSession" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Af-om-Ayd">
+                                                <rect key="frame" x="0.0" y="0.0" width="294" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YL3-lo-fc9">
+                                                <rect key="frame" x="294" y="0.0" width="51" height="31"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="SFAuthenticationSession" label="SFAuthenticationSession"/>
+                                                <connections>
+                                                    <action selector="sfAuthenticationSessionSwitchValueChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="Qfg-jN-3yE"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cAC-Wi-kos">
+                                        <rect key="frame" x="0.0" y="78" width="343" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WKWebView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L3W-NN-kYZ">
+                                                <rect key="frame" x="0.0" y="0.0" width="294" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="EGu-w8-jwa">
+                                                <rect key="frame" x="294" y="0.0" width="51" height="31"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="WKWebView" label="WKWebView"/>
+                                                <connections>
+                                                    <action selector="wkWebViewSwitchValueChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="LSe-5g-Qdh"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rkD-WB-1xA">
+                                        <rect key="frame" x="0.0" y="117" width="343" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UIWebView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mz0-df-8lO">
+                                                <rect key="frame" x="0.0" y="0.0" width="294" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YJe-92-xea">
+                                                <rect key="frame" x="294" y="0.0" width="51" height="31"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="UIWebView" label="UIWebView"/>
+                                                <connections>
+                                                    <action selector="uiWebViewSwitchValueChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="5X3-Rd-KkR"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="OIX-P9-NM5" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="379-0f-Qg8"/>
+                            <constraint firstItem="6YE-RM-fYr" firstAttribute="leading" secondItem="iYE-ue-OHW" secondAttribute="leadingMargin" id="6L2-S2-X4z"/>
                             <constraint firstItem="3Py-hQ-JY0" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="DIC-DD-CGy"/>
                             <constraint firstItem="gpC-EE-q83" firstAttribute="top" secondItem="pim-MP-Veo" secondAttribute="bottom" constant="7.5" id="VVL-sx-jys"/>
                             <constraint firstItem="pim-MP-Veo" firstAttribute="trailing" secondItem="iYE-ue-OHW" secondAttribute="trailingMargin" priority="250" id="Wvf-7W-7rl"/>
+                            <constraint firstItem="6YE-RM-fYr" firstAttribute="top" secondItem="gpC-EE-q83" secondAttribute="bottom" constant="8" id="XMP-XT-wGC"/>
                             <constraint firstItem="gpC-EE-q83" firstAttribute="leading" secondItem="iYE-ue-OHW" secondAttribute="leadingMargin" id="Xap-UP-HVO"/>
                             <constraint firstItem="lLB-OQ-MDw" firstAttribute="top" secondItem="sdG-G0-QTA" secondAttribute="bottom" constant="8" id="bx5-wA-xC1"/>
                             <constraint firstItem="pim-MP-Veo" firstAttribute="top" secondItem="sdG-G0-QTA" secondAttribute="bottom" constant="8" id="dPd-FD-rxL"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="6YE-RM-fYr" secondAttribute="trailing" id="dda-Se-6Bk"/>
                             <constraint firstItem="lLB-OQ-MDw" firstAttribute="leading" secondItem="iYE-ue-OHW" secondAttribute="leadingMargin" id="hJL-Jh-bdJ"/>
                             <constraint firstItem="pim-MP-Veo" firstAttribute="leading" secondItem="lLB-OQ-MDw" secondAttribute="trailing" constant="8" id="lw7-zp-jdT"/>
                             <constraint firstItem="gpC-EE-q83" firstAttribute="trailing" secondItem="iYE-ue-OHW" secondAttribute="trailingMargin" id="oYU-UI-Hai"/>
@@ -261,7 +344,11 @@
                     </view>
                     <connections>
                         <outlet property="micUserInterfaceSegmentedControl" destination="gpC-EE-q83" id="M7X-1F-lMv"/>
+                        <outlet property="safariViewControllerSwitch" destination="pyM-wF-K98" id="9Q9-tn-Yoy"/>
+                        <outlet property="sfAuthenticationSessionSwitch" destination="YL3-lo-fc9" id="jfe-kc-IVx"/>
+                        <outlet property="uiWebViewSwitch" destination="YJe-92-xea" id="S89-3l-Vii"/>
                         <outlet property="userIdLabel" destination="pim-MP-Veo" id="bpP-VT-fd1"/>
+                        <outlet property="wkWebViewSwitch" destination="EGu-w8-jwa" id="Xdp-j0-omL"/>
                         <segue destination="mhd-J6-YwC" kind="unwind" identifier="back" unwindAction="unwindToMainViewController:" id="4dw-7y-G9i"/>
                     </connections>
                 </viewController>
@@ -617,13 +704,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delta Set:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oFJ-Ww-aUF">
-                                <rect key="frame" x="16" y="97" width="75" height="20.5"/>
+                                <rect key="frame" x="16" y="77" width="75" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8nk-DY-zE7">
-                                <rect key="frame" x="99" y="92" width="51" height="31"/>
+                                <rect key="frame" x="99" y="72" width="51" height="31"/>
                             </switch>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

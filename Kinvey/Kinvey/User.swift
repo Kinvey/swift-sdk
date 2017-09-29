@@ -1508,7 +1508,7 @@ open class User: NSObject, Credential, Mappable {
                         }
                     }
                     if authSession.start() {
-                        if let timeout = options?.timeout {
+                        if let timeout = options?.timeout, timeout > 0 {
                             timer = Timer.scheduledTimer(
                                 withTimeInterval: timeout,
                                 repeats: false
@@ -1520,6 +1520,7 @@ open class User: NSObject, Credential, Mappable {
                     } else {
                         reject(buildError(nil, nil, nil, client))
                     }
+                    return
                 } else {
                     log.warning("SFAuthenticationSession only available for iOS 11 and above. Using SFSafariViewController instead.")
                     loginWithSafariViewController(url)

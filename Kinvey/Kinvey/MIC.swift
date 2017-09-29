@@ -35,8 +35,7 @@ open class MIC {
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             var queryItems = urlComponents.queryItems
-            else
-        {
+        else {
             return nil
         }
         

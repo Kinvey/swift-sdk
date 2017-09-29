@@ -3026,7 +3026,7 @@ extension UserTests {
             }
         }
         
-        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "SafariViewController")
         
         tester().waitForAnimationsToFinish()
         
@@ -3092,7 +3092,7 @@ extension UserTests {
             }
         }
         
-        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "SafariViewController")
         
         tester().waitForAnimationsToFinish()
         
@@ -3143,7 +3143,7 @@ extension UserTests {
             }
         }
         
-        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "SafariViewController")
         
         tester().waitForAnimationsToFinish()
         
@@ -3194,7 +3194,7 @@ extension UserTests {
             }
         }
         
-        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "SafariViewController")
         
         tester().waitForAnimationsToFinish()
         
@@ -3245,7 +3245,7 @@ extension UserTests {
             }
         }
         
-        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "Use SafariViewController Value")
+        tester().setOn(true, forSwitchWithAccessibilityIdentifier: "SafariViewController")
         
         tester().waitForAnimationsToFinish()
         
