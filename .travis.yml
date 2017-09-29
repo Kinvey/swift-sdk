@@ -24,6 +24,12 @@ before_script:
     carthage checkout realm-cocoa;
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
+    cat Cartfile.resolved | grep "realm/realm-cocoa" | awk '{ versionV=$3; gsub("\"", "", versionV); version=versionV; gsub("v", "", version); system("wget https://github.com/realm/realm-cocoa/releases/download/" versionV "/realm-swift-" version ".zip") }';
+    cat Cartfile.resolved | grep "realm/realm-cocoa" | awk '{ gsub("\"", "", $3); gsub("v", "", $3); system("unzip realm-swift-" $3 ".zip") }';
+    rm -Rf Carthage/Build/$PLATFORM/Realm*;
+    cat Cartfile.resolved | grep "realm/realm-cocoa" | awk '{ gsub("\"", "", $3); gsub("v", "", $3); system("cp -R realm-swift-" $3 "/$PLATFORM_ALIAS/swift-4.0/*.framework Carthage/Build/$PLATFORM") }';
+  fi
+- if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
     travis_wait 30 carthage build --platform $PLATFORM realm-cocoa;
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/KeychainAccess.framework" ]; then
@@ -50,7 +56,6 @@ before_script:
 - if [ ! -d "Carthage/Build/$PLATFORM/Nimble.framework" ]; then
     carthage build --platform $PLATFORM Nimble;
   fi
-- store build cache
 - brew install tree
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - date
@@ -73,5 +78,5 @@ env:
     - secure: IW9jgSdH76Rgp4Hf45+7saqTYslau7K/KgnRtizVZnQwI31b/dMrimMuQj3m6R80ymetz1ZhLk5dX83g+Y5A4XAJjspk2vaAE3ZIZUo6mqdtkRxzxkomN5HZEzEAj8SdjQ4GZxLHX2skATP78SWKJrr7vBbfigPm/Pp8gt4AfKzmfVnBGiN8niU6q/qSUNq67j+F0J/bB2hhOQjIO4mbHRAPW+AygGV9/o+25k+fL4yXWpsDoKzMFTsWHp9H9NkevGFXwK7crGX/Bgo8QESOvVZT4JEnHapEKnT8tAkT3wUCNKiPp60lAo9r/eggASU2a8Oq03wSZMv1F88ORzBVKQfSlNHcV0XOylYL2JZqtzznPmTRx2biHncB8xSg/DBh4MtUKuuProsq+/KIy067pITYCudEqjqL7YjaLlDEUl+YiahOY4DJ391GaCkCklUbHv1TW3vdDpBSvjtC4Ny7anNqK5Mo/cwscPGBTgkQkFyzRf48WLf79wH1sonIVQXv5wKxJAAn08K48dUfhK7yuePjHKmXsKpSjJJbPPlcAEvOknGQnG9OQ6MWb2A/Wk01ki29CENRFbVZCWG2CcM8bPTLGxz07Dp6VH3nxQoQHgsH/J4j1hWfnL1DGacFrDzC/SFhB78v65FxheV5ZOEx+Es/eSRiPEdX8gdjZnqOb3Y=
     - secure: nawAGSUbPzyAH/SllDj9q6IOLGaF91DQsudQYx4AJs+swwFhAvAe3hM6vWdGVuDLxqVHQ4+4AAQFecXq/mDi5WtRISPbGHWVtOx7Q6szL8Y54uZKVmKV06wnAo4nrwu8pp1+TbRLYwG+/oJIfabW2yuMgNn7nWFm5SdE0GuduVI7Ho9p0/SeaE7DCtaNKgyCLfspAA8svCYMK0N9NzBVhkTPzWRiIF174k5VE28lZox/fjN5x4j1aaMBUhElkJELjcWKdTX11MnCyybWjJZ1YTMK/A4vBtZCFmHIFuhtQiqWCQIWxeo8axRDBZEMzZ5U+9zSfaz0w0wovWI/cvtRFS0j/7UQ4o6alO7EOMdhH5rRl8atOxSS+Rl81Oz1kZiLhjJa/feAN5QGQ423L4CyfDeEBV6t1D8Cmb1jlficswFeX2rQw82qFnI2ua9p8HrpUJydDsGR6AoOI+KUamwi53OC+hsG/M1sA4MOAPEJoMGT6dyER5UVE63JB45All9TDJWV2EZz+11FQIp6P/62/QXJBQhqxu+W0u/3q7KqoSgmxFx/QSbv8hpK9aJWDQNf5cv02bT+vJnMv4Lrf+XcSVOWH0TwpL5nVcRJXyq2A6FCGdE2S0Xa0+KkgZdF7p3qk4jN32CryHImRp8T3qbkA6Q9nNdxATt7P9OjYl/XqDA=
   matrix:
-    - PLATFORM=Mac
-    - PLATFORM=iOS
+    - PLATFORM=Mac PLATFORM_ALIAS=osx
+    - PLATFORM=iOS PLATFORM_ALIAS=ios
