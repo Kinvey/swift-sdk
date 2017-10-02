@@ -13,14 +13,16 @@ import WebKit
 open class MICLoginViewController: UIViewController {
 
     @IBOutlet weak var userIdLabel: UILabel!
-    @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
-    @IBOutlet weak var useSafariViewControllerSwitch: UISwitch!
+    @IBOutlet weak var micUserInterfaceSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var safariViewControllerSwitch: UISwitch!
+    @IBOutlet weak var sfAuthenticationSessionSwitch: UISwitch!
+    @IBOutlet weak var wkWebViewSwitch: UISwitch!
+    @IBOutlet weak var uiWebViewSwitch: UISwitch!
     
     open var completionHandler: User.UserHandler<User>?
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         if let appKey = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_KEY"],
             let appSecret = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_SECRET"]
@@ -46,25 +48,54 @@ open class MICLoginViewController: UIViewController {
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
         
-        if useSafariViewControllerSwitch.isOn {
-            User.presentMICViewController(redirectURI: redirectURI) { user, error in
-                if let user = user {
-                    self.userIdLabel.text = user.userId
-                } else if let error = error {
-                    print("\(error)")
-                }
-                self.completionHandler?(user, error)
-            }
-        } else {
-            User.presentMICViewController(redirectURI: redirectURI, timeout: 60 * 5, micUserInterface: forceUIWebViewSwitch.isOn ? .uiWebView : .wkWebView) { (user, error) -> Void in
-                if let user = user {
-                    self.userIdLabel.text = user.userId
-                } else if let error = error{
-                    print("\(error)")
-                }
-                self.completionHandler?(user, error)
-            }
+        var micUserInterface: MICUserInterface!
+        switch micUserInterfaceSegmentedControl.selectedSegmentIndex {
+        case 0:
+            micUserInterface = .safari
+        case 1:
+            micUserInterface = .safariAuthenticationSession
+        case 2:
+            micUserInterface = .wkWebView
+        case 3:
+            micUserInterface = .uiWebView
+        default:
+            micUserInterface = MICUserInterface.default
         }
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) { (user, error) -> Void in
+            if let user = user {
+                self.userIdLabel.text = user.userId
+            } else if let error = error{
+                print("\(error)")
+            }
+            self.completionHandler?(user, error)
+        }
+    }
+    
+    @IBAction func micUserInterfaceChanged(_ sender: UISegmentedControl) {
+        safariViewControllerSwitch.setOn(sender.selectedSegmentIndex == 0, animated: true)
+        sfAuthenticationSessionSwitch.setOn(sender.selectedSegmentIndex == 1, animated: true)
+        wkWebViewSwitch.setOn(sender.selectedSegmentIndex == 2, animated: true)
+        uiWebViewSwitch.setOn(sender.selectedSegmentIndex == 3, animated: true)
+    }
+    
+    @IBAction func safariViewControllerSwitchValueChanged(_ sender: UISwitch) {
+        micUserInterfaceSegmentedControl.selectedSegmentIndex = 0
+        micUserInterfaceChanged(micUserInterfaceSegmentedControl)
+    }
+    
+    @IBAction func sfAuthenticationSessionSwitchValueChanged(_ sender: UISwitch) {
+        micUserInterfaceSegmentedControl.selectedSegmentIndex = 1
+        micUserInterfaceChanged(micUserInterfaceSegmentedControl)
+    }
+    
+    @IBAction func wkWebViewSwitchValueChanged(_ sender: UISwitch) {
+        micUserInterfaceSegmentedControl.selectedSegmentIndex = 2
+        micUserInterfaceChanged(micUserInterfaceSegmentedControl)
+    }
+    
+    @IBAction func uiWebViewSwitchValueChanged(_ sender: UISwitch) {
+        micUserInterfaceSegmentedControl.selectedSegmentIndex = 3
+        micUserInterfaceChanged(micUserInterfaceSegmentedControl)
     }
 
 }

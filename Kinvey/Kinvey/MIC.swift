@@ -35,8 +35,7 @@ open class MIC {
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             var queryItems = urlComponents.queryItems
-            else
-        {
+        else {
             return nil
         }
         
@@ -217,12 +216,18 @@ public enum MICUserInterface {
     
     /// Uses SFSafariViewController
     case safari
+
+    /// Uses SFAuthenticationSession if running on iOS 11 and above, otherwise uses SFSafariViewController instead
+    case safariAuthenticationSession
     
     /// Uses WKWebView
     case wkWebView
     
     /// Uses UIWebView
     case uiWebView
+    
+    /// Default Value: .safari
+    public static let `default`: MICUserInterface = .safariAuthenticationSession
     
 }
 
