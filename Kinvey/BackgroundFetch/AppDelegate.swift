@@ -12,7 +12,7 @@ import PromiseKit
 
 class Book: Entity {
     
-    var name: String?
+    dynamic var name: String?
     
     override class func collectionName() -> String {
         return "Book"
@@ -96,27 +96,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         var promises = [AnyPromise]()
         
-//        let promiseDataStore = Promise<AnyRandomAccessCollection<Book>> { fulfill, reject in
-//            print("DataStore find")
-//            self.dataStore.find { (result: Kinvey.Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
-//                switch result {
-//                case .success(let books):
-//                    print("\(books.count) Book(s)")
-//                    fulfill(books)
-//                case .failure(let error):
-//                    print(error)
-//                    reject(error)
-//                }
-//            }
-//        }
-//        promises.append(AnyPromise(promiseDataStore))
+        let promiseDataStore = Promise<AnyRandomAccessCollection<Book>> { fulfill, reject in
+            print("DataStore find")
+            self.dataStore.find { (result: Kinvey.Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
+                switch result {
+                case .success(let books):
+                    print("\(books.count) Book(s)")
+                    fulfill(books)
+                case .failure(let error):
+                    print(error)
+                    reject(error)
+                }
+            }
+        }
+        promises.append(AnyPromise(promiseDataStore))
         
         let promiseFileStore = Promise<[File]> { fulfill, reject in
             print("Files find")
             self.fileStore.find(options: nil) { (result: Kinvey.Result<[File], Swift.Error>) in
                 switch result {
                 case .success(let files):
-                    print(files)
+                    print("\(files.count) File(s)")
                     fulfill(files)
                 case .failure(let error):
                     print(error)
@@ -126,9 +126,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         promises.append(AnyPromise(promiseFileStore))
         
-        when(fulfilled: promises.map { $0.asPromise() }).then { _ in
+        when(fulfilled: promises.map { $0.asPromise() }).then { (result) -> Void in
+            print("completionHandler new data")
             completionHandler(.newData)
-        }.catch { _ in
+        }.catch { (error) -> Void in
+            print("completionHandler failed")
             completionHandler(.failed)
         }
     }
