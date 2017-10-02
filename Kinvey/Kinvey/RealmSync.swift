@@ -41,7 +41,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType {
-        return RealmPendingOperation(request: request, collectionName: T.collectionName(), objectId: objectId)
+        return RealmPendingOperation(request: request, collectionName: collectionName, objectId: objectId)
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationType) {
@@ -63,7 +63,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         log.verbose("Fetching pending operations")
         var results: [PendingOperationType]?
         executor.executeAndWait {
-            results = self.realm.objects(RealmPendingOperation.self).map {
+            results = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName).map {
                 return RealmPendingOperationThreadSafeReference($0)
             }
         }
@@ -84,7 +84,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         log.verbose("Removing pending operations by object id: \(String(describing: objectId))")
         executor.executeAndWait {
             try! self.realm.write {
-                var realmResults = self.realm.objects(RealmPendingOperation.self)
+                var realmResults = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName)
                 if let objectId = objectId {
                     realmResults = realmResults.filter("objectId == %@", objectId)
                 }
