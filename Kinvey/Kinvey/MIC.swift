@@ -217,7 +217,7 @@ public enum MICUserInterface {
     /// Uses SFSafariViewController
     case safari
 
-    /// Uses SFAuthenticationSession
+    /// Uses SFAuthenticationSession if running on iOS 11 and above, otherwise uses SFSafariViewController instead
     case safariAuthenticationSession
     
     /// Uses WKWebView
@@ -227,7 +227,7 @@ public enum MICUserInterface {
     case uiWebView
     
     /// Default Value: .safari
-    public static let `default`: MICUserInterface = .safari
+    public static let `default`: MICUserInterface = .safariAuthenticationSession
     
 }
 
