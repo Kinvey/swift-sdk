@@ -71,6 +71,9 @@ public struct Options {
     /// Custom `Client` instance
     public var client: Client?
     
+    /// Custom `URLSession` instance
+    public var urlSession: URLSession?
+    
     /// Custom `authServiceId` value used for MIC
     public var authServiceId: String?
     
@@ -101,6 +104,7 @@ public struct Options {
      */
     public init(
         client: Client? = nil,
+        urlSession: URLSession? = nil,
         authServiceId: String? = nil,
         ttl: TTL? = nil,
         deltaSet: Bool? = nil,
@@ -111,6 +115,7 @@ public struct Options {
         customRequestProperties: [String : Any]? = nil
     ) {
         self.client = client
+        self.urlSession = urlSession
         self.authServiceId = authServiceId
         self.ttl = ttl
         self.deltaSet = deltaSet

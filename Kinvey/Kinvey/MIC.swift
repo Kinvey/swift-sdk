@@ -145,7 +145,7 @@ open class MIC {
                     password: password,
                     options: options
                 )
-                let urlSession = URLSession(
+                let urlSession = options?.urlSession ?? URLSession(
                     configuration: client.urlSession.configuration,
                     delegate: URLSessionDelegateAdapter(),
                     delegateQueue: nil
