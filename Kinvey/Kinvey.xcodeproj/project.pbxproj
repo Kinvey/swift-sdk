@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		570423F91F82EC3E00EE5CBD /* KinveyAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570423F81F82EC3E00EE5CBD /* KinveyAppUITests.swift */; };
+		570424041F832C3600EE5CBD /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570424021F832BF000EE5CBD /* Swifter.framework */; };
+		570424061F832C4100EE5CBD /* Swifter.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 570424021F832BF000EE5CBD /* Swifter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5705B1BB1EDF823F0006980A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BA1EDF823F0006980A /* AppDelegate.swift */; };
 		5705B1BD1EDF823F0006980A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BC1EDF823F0006980A /* ViewController.swift */; };
 		5705B1BF1EDF823F0006980A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1BE1EDF823F0006980A /* Assets.xcassets */; };
@@ -373,6 +376,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		570423FB1F82EC3E00EE5CBD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
+			remoteInfo = KinveyApp;
+		};
 		5705B1C91EDF823F0006980A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
@@ -579,6 +589,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		570424051F832C3B00EE5CBD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				570424061F832C4100EE5CBD /* Swifter.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5747103B1C7BA2B80096B15F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -772,6 +792,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		570423F61F82EC3E00EE5CBD /* KinveyAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		570423F81F82EC3E00EE5CBD /* KinveyAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyAppUITests.swift; sourceTree = "<group>"; };
+		570423FA1F82EC3E00EE5CBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		570424021F832BF000EE5CBD /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Swifter.framework; sourceTree = "<group>"; };
 		5705B1B81EDF823F0006980A /* KinveyMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5705B1BA1EDF823F0006980A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5705B1BC1EDF823F0006980A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -1027,6 +1051,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		570423F31F82EC3E00EE5CBD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570424041F832C3600EE5CBD /* Swifter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5705B1B51EDF823F0006980A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1260,6 +1292,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		570423F71F82EC3E00EE5CBD /* KinveyAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				570423F81F82EC3E00EE5CBD /* KinveyAppUITests.swift */,
+				570423FA1F82EC3E00EE5CBD /* Info.plist */,
+			);
+			path = KinveyAppUITests;
+			sourceTree = "<group>";
+		};
 		5705B1B91EDF823F0006980A /* KinveyMacApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -1447,6 +1488,7 @@
 				57A27C8F1C178F18000DF951 /* KinveyTests */,
 				5765B8451C9771BC00080FFA /* KinveyApp */,
 				57A465831CC02A59009E7384 /* KinveyAppTests */,
+				570423F71F82EC3E00EE5CBD /* KinveyAppUITests */,
 				578870911DD52EC80087FE78 /* SSOApp1 */,
 				578870A61DD52EC80087FE78 /* SSOApp1Tests */,
 				578870B51DD52ECF0087FE78 /* SSOApp2 */,
@@ -1489,6 +1531,7 @@
 				57182C4D1F75AF460013A6BD /* BackgroundFetch.app */,
 				57182C601F75AF470013A6BD /* BackgroundFetchTests.xctest */,
 				57182C6B1F75AF470013A6BD /* BackgroundFetchUITests.xctest */,
+				570423F61F82EC3E00EE5CBD /* KinveyAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1649,6 +1692,7 @@
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
 				57373AB31ECCE670002842CE /* Nimble.framework */,
+				570424021F832BF000EE5CBD /* Swifter.framework */,
 			);
 			name = iOS;
 			path = ../Carthage/Build/iOS;
@@ -1749,6 +1793,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		570423F51F82EC3E00EE5CBD /* KinveyAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 570423FD1F82EC3E00EE5CBD /* Build configuration list for PBXNativeTarget "KinveyAppUITests" */;
+			buildPhases = (
+				570423F21F82EC3E00EE5CBD /* Sources */,
+				570423F31F82EC3E00EE5CBD /* Frameworks */,
+				570423F41F82EC3E00EE5CBD /* Resources */,
+				570424051F832C3B00EE5CBD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				570423FC1F82EC3E00EE5CBD /* PBXTargetDependency */,
+			);
+			name = KinveyAppUITests;
+			productName = KinveyAppUITests;
+			productReference = 570423F61F82EC3E00EE5CBD /* KinveyAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		5705B1B71EDF823F0006980A /* KinveyMacApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5705B1DA1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacApp" */;
@@ -2208,6 +2271,12 @@
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
+					570423F51F82EC3E00EE5CBD = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = 5W7CYNR7UE;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5765B8431C9771BC00080FFA;
+					};
 					5705B1B71EDF823F0006980A = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 5W7CYNR7UE;
@@ -2371,6 +2440,7 @@
 				578D9FC11E8DE53900C2B280 /* PushMissingConfiguration */,
 				5765B8431C9771BC00080FFA /* KinveyApp */,
 				57A465811CC02A59009E7384 /* KinveyAppTests */,
+				570423F51F82EC3E00EE5CBD /* KinveyAppUITests */,
 				5788708F1DD52EC70087FE78 /* SSOApp1 */,
 				578870A21DD52EC80087FE78 /* SSOApp1Tests */,
 				578870B31DD52ECF0087FE78 /* SSOApp2 */,
@@ -2389,6 +2459,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		570423F41F82EC3E00EE5CBD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5705B1B61EDF823F0006980A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2779,6 +2856,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		570423F21F82EC3E00EE5CBD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570423F91F82EC3E00EE5CBD /* KinveyAppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5705B1B41EDF823F0006980A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3166,6 +3251,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		570423FC1F82EC3E00EE5CBD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
+			targetProxy = 570423FB1F82EC3E00EE5CBD /* PBXContainerItemProxy */;
+		};
 		5705B1CA1EDF823F0006980A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5705B1B71EDF823F0006980A /* KinveyMacApp */;
@@ -3401,6 +3491,61 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		570423FE1F82EC3E00EE5CBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = KinveyApp;
+			};
+			name = Debug;
+		};
+		570423FF1F82EC3E00EE5CBD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5W7CYNR7UE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = KinveyApp;
+			};
+			name = Release;
+		};
 		5705B1DB1EDF82400006980A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4491,6 +4636,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		570423FD1F82EC3E00EE5CBD /* Build configuration list for PBXNativeTarget "KinveyAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				570423FE1F82EC3E00EE5CBD /* Debug */,
+				570423FF1F82EC3E00EE5CBD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5705B1DA1EDF82400006980A /* Build configuration list for PBXNativeTarget "KinveyMacApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

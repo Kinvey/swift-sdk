@@ -217,14 +217,6 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Py-hQ-JY0">
-                                <rect key="frame" x="168.5" y="318.5" width="38" height="30"/>
-                                <accessibility key="accessibilityConfiguration" identifier="Login"/>
-                                <state key="normal" title="Login"/>
-                                <connections>
-                                    <action selector="login:" destination="AWA-yI-CjK" eventType="touchUpInside" id="na5-ob-14a"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OIX-P9-NM5">
                                 <rect key="frame" x="160" y="617" width="54" height="30"/>
                                 <accessibility key="accessibilityConfiguration" identifier="Dismiss"/>
@@ -246,7 +238,7 @@
                                 </connections>
                             </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="6YE-RM-fYr">
-                                <rect key="frame" x="16" y="136" width="343" height="148"/>
+                                <rect key="frame" x="16" y="136" width="343" height="223"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fS0-M3-8vl">
                                         <rect key="frame" x="0.0" y="0.0" width="343" height="31"/>
@@ -320,6 +312,44 @@
                                             </switch>
                                         </subviews>
                                     </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pSf-oM-iQo">
+                                        <rect key="frame" x="0.0" y="156" width="343" height="29"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delay in seconds" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k9S-LK-jvr">
+                                                <rect key="frame" x="0.0" y="0.0" width="199" height="29"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="0" borderStyle="roundedRect" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PV5-Cf-0Aq">
+                                                <rect key="frame" x="199" y="0.0" width="50" height="29"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Delay" label="Delay"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="50" id="lU4-nF-tnn"/>
+                                                </constraints>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="AWA-yI-CjK" id="2tm-kh-SN2"/>
+                                                </connections>
+                                            </textField>
+                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="600" translatesAutoresizingMaskIntoConstraints="NO" id="cff-2M-P54">
+                                                <rect key="frame" x="249" y="0.0" width="94" height="29"/>
+                                                <connections>
+                                                    <action selector="stepperValueChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="4wZ-c8-xzD"/>
+                                                </connections>
+                                            </stepper>
+                                        </subviews>
+                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Py-hQ-JY0">
+                                        <rect key="frame" x="0.0" y="193" width="343" height="30"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Login"/>
+                                        <state key="normal" title="Login"/>
+                                        <connections>
+                                            <action selector="login:" destination="AWA-yI-CjK" eventType="touchUpInside" id="na5-ob-14a"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -327,7 +357,6 @@
                         <constraints>
                             <constraint firstItem="OIX-P9-NM5" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="379-0f-Qg8"/>
                             <constraint firstItem="6YE-RM-fYr" firstAttribute="leading" secondItem="iYE-ue-OHW" secondAttribute="leadingMargin" id="6L2-S2-X4z"/>
-                            <constraint firstItem="3Py-hQ-JY0" firstAttribute="centerX" secondItem="iYE-ue-OHW" secondAttribute="centerX" id="DIC-DD-CGy"/>
                             <constraint firstItem="gpC-EE-q83" firstAttribute="top" secondItem="pim-MP-Veo" secondAttribute="bottom" constant="7.5" id="VVL-sx-jys"/>
                             <constraint firstItem="pim-MP-Veo" firstAttribute="trailing" secondItem="iYE-ue-OHW" secondAttribute="trailingMargin" priority="250" id="Wvf-7W-7rl"/>
                             <constraint firstItem="6YE-RM-fYr" firstAttribute="top" secondItem="gpC-EE-q83" secondAttribute="bottom" constant="8" id="XMP-XT-wGC"/>
@@ -338,7 +367,6 @@
                             <constraint firstItem="lLB-OQ-MDw" firstAttribute="leading" secondItem="iYE-ue-OHW" secondAttribute="leadingMargin" id="hJL-Jh-bdJ"/>
                             <constraint firstItem="pim-MP-Veo" firstAttribute="leading" secondItem="lLB-OQ-MDw" secondAttribute="trailing" constant="8" id="lw7-zp-jdT"/>
                             <constraint firstItem="gpC-EE-q83" firstAttribute="trailing" secondItem="iYE-ue-OHW" secondAttribute="trailingMargin" id="oYU-UI-Hai"/>
-                            <constraint firstItem="3Py-hQ-JY0" firstAttribute="centerY" secondItem="iYE-ue-OHW" secondAttribute="centerY" id="yLs-bj-pUA"/>
                             <constraint firstItem="KzI-ss-dHc" firstAttribute="top" secondItem="OIX-P9-NM5" secondAttribute="bottom" constant="20" id="zgD-Vl-xSP"/>
                         </constraints>
                     </view>
@@ -346,6 +374,7 @@
                         <outlet property="micUserInterfaceSegmentedControl" destination="gpC-EE-q83" id="M7X-1F-lMv"/>
                         <outlet property="safariViewControllerSwitch" destination="pyM-wF-K98" id="9Q9-tn-Yoy"/>
                         <outlet property="sfAuthenticationSessionSwitch" destination="YL3-lo-fc9" id="jfe-kc-IVx"/>
+                        <outlet property="textFieldDelay" destination="PV5-Cf-0Aq" id="LIK-Pn-mp8"/>
                         <outlet property="uiWebViewSwitch" destination="YJe-92-xea" id="S89-3l-Vii"/>
                         <outlet property="userIdLabel" destination="pim-MP-Veo" id="bpP-VT-fd1"/>
                         <outlet property="wkWebViewSwitch" destination="EGu-w8-jwa" id="Xdp-j0-omL"/>

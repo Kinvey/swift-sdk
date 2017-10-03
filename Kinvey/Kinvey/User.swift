@@ -1484,10 +1484,12 @@ open class User: NSObject, Credential, Mappable {
                 )
                 if #available(iOS 11.0, *) {
                     var timer: Timer? = nil
-                    let authSession = SFAuthenticationSession(
+                    var authSession: SFAuthenticationSession?
+                    authSession = SFAuthenticationSession(
                         url: url,
                         callbackURLScheme: redirectURI.scheme
                     ) { (url, error) in
+                        authSession = nil
                         timer?.invalidate()
                         timer = nil
                         if let url = url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
@@ -1507,7 +1509,7 @@ open class User: NSObject, Credential, Mappable {
                             reject(buildError(nil, nil, error, client))
                         }
                     }
-                    if authSession.start() {
+                    if let authSession = authSession, authSession.start() {
                         if let timeout = options?.timeout, timeout > 0 {
                             timer = Timer.scheduledTimer(
                                 withTimeInterval: timeout,

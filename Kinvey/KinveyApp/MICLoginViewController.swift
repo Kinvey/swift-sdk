@@ -18,22 +18,61 @@ open class MICLoginViewController: UIViewController {
     @IBOutlet weak var sfAuthenticationSessionSwitch: UISwitch!
     @IBOutlet weak var wkWebViewSwitch: UISwitch!
     @IBOutlet weak var uiWebViewSwitch: UISwitch!
+    @IBOutlet weak var textFieldDelay: UITextField!
     
     open var completionHandler: User.UserHandler<User>?
+    
+    var delay: Int = 0 {
+        didSet {
+            textFieldDelay.text = String(delay)
+        }
+    }
     
     open override func viewDidLoad() {
         super.viewDidLoad()
         
+        let toolbar = UIToolbar()
+        toolbar.items = [
+            UIBarButtonItem(
+                barButtonSystemItem: .flexibleSpace,
+                target: nil,
+                action: nil
+            ),
+            UIBarButtonItem(
+                barButtonSystemItem: .done,
+                target: self,
+                action: #selector(doneEditing)
+            )
+        ]
+        toolbar.sizeToFit()
+        textFieldDelay.inputView = toolbar
+        
         if let appKey = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_KEY"],
             let appSecret = ProcessInfo.processInfo.environment["KINVEY_MIC_APP_SECRET"]
         {
+            var apiUrl: URL? = nil
+            if let apiUrlString = ProcessInfo.processInfo.environment["KINVEY_MIC_API_URL"] {
+                apiUrl = URL(string: apiUrlString)
+            }
+            
+            var authUrl: URL? = nil
+            if let authUrlString = ProcessInfo.processInfo.environment["KINVEY_MIC_AUTH_URL"] {
+                authUrl = URL(string: authUrlString)
+            }
+            
             Kinvey.sharedClient.initialize(
                 appKey: appKey,
-                appSecret: appSecret
+                appSecret: appSecret,
+                apiHostName: apiUrl ?? Client.defaultApiHostName,
+                authHostName: authUrl ?? Client.defaultAuthHostName
             )
         }
     }
 
+    @IBAction func doneEditing() {
+        textFieldDelay.resignFirstResponder()
+    }
+    
     open override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -61,13 +100,15 @@ open class MICLoginViewController: UIViewController {
         default:
             micUserInterface = MICUserInterface.default
         }
-        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) { (user, error) -> Void in
-            if let user = user {
-                self.userIdLabel.text = user.userId
-            } else if let error = error{
-                print("\(error)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay)) {
+            User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) { (user, error) -> Void in
+                if let user = user {
+                    self.userIdLabel.text = user.userId
+                } else if let error = error{
+                    print("\(error)")
+                }
+                self.completionHandler?(user, error)
             }
-            self.completionHandler?(user, error)
         }
     }
     
@@ -97,6 +138,27 @@ open class MICLoginViewController: UIViewController {
         micUserInterfaceSegmentedControl.selectedSegmentIndex = 3
         micUserInterfaceChanged(micUserInterfaceSegmentedControl)
     }
+    
+    @IBAction func stepperValueChanged(_ sender: UIStepper) {
+        delay = Int(sender.value)
+    }
 
+}
+
+extension MICLoginViewController : UITextFieldDelegate {
+    
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return textField.resignFirstResponder()
+    }
+    
+    public func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == textFieldDelay,
+            let delayString = textField.text,
+            let delay = Int(delayString)
+        {
+            self.delay = delay
+        }
+    }
+    
 }
 
