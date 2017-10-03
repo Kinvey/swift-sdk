@@ -71,12 +71,15 @@ open class Entity: Object, Persistable {
     }
     
     /// The `_id` property mapped in the Kinvey backend.
+    @objc
     public dynamic var entityId: String?
     
     /// The `_kmd` property mapped in the Kinvey backend.
+    @objc
     public dynamic var metadata: Metadata?
     
     /// The `_acl` property mapped in the Kinvey backend.
+    @objc
     public dynamic var acl: Acl?
     
     /// Default Constructor.
@@ -168,6 +171,7 @@ open class Entity: Object, Persistable {
 open class StringValue: Object, ExpressibleByStringLiteral {
     
     /// String value for the wrapper
+    @objc
     public dynamic var value = ""
     
     /// Constructor for the `ExpressibleByUnicodeScalarLiteral` protocol
@@ -202,6 +206,7 @@ open class StringValue: Object, ExpressibleByStringLiteral {
 open class IntValue: Object, ExpressibleByIntegerLiteral {
     
     /// Integer value for the wrapper
+    @objc
     public dynamic var value = 0
     
     /// Constructor for the `ExpressibleByIntegerLiteral` protocol
@@ -224,6 +229,7 @@ open class IntValue: Object, ExpressibleByIntegerLiteral {
 open class FloatValue: Object, ExpressibleByFloatLiteral {
     
     /// Float value for the wrapper
+    @objc
     public dynamic var value = Float(0)
     
     /// Constructor for the `ExpressibleByFloatLiteral` protocol
@@ -246,6 +252,7 @@ open class FloatValue: Object, ExpressibleByFloatLiteral {
 open class DoubleValue: Object, ExpressibleByFloatLiteral {
     
     /// Double value for the wrapper
+    @objc
     public dynamic var value = 0.0
     
     /// Constructor for the `ExpressibleByFloatLiteral` protocol
@@ -268,6 +275,7 @@ open class DoubleValue: Object, ExpressibleByFloatLiteral {
 open class BoolValue: Object, ExpressibleByBooleanLiteral {
     
     /// Boolean value for the wrapper
+    @objc
     public dynamic var value = false
     
     /// Constructor for the `ExpressibleByBooleanLiteral` protocol

@@ -24,16 +24,22 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
     }
     
     let client: Client
+    let options: Options?
     var url: URL
     var file: File?
     
-    init(client: Client, url: URL) {
+    var urlSession: URLSession {
+        return options?.urlSession ?? client.urlSession
+    }
+    
+    init(client: Client, options: Options?, url: URL) {
         self.client = client
+        self.options = options
         self.url = url
     }
     
-    convenience init(client: Client, task: URLSessionTask) {
-        self.init(client: client, url: task.originalRequest!.url!)
+    convenience init(client: Client, options: Options?, task: URLSessionTask) {
+        self.init(client: client, options: options, url: task.originalRequest!.url!)
         self.task = task
         addObservers(task)
     }
@@ -89,11 +95,11 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
             }
             
             if let resumeData = file.resumeDownloadData {
-                task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
+                task = urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
                     handler(url, response, error)
                 }
             } else {
-                task = self.client.urlSession.downloadTask(with: url) { (url, response, error) -> Void in
+                task = urlSession.downloadTask(with: url) { (url, response, error) -> Void in
                     handler(url, response, error)
                 }
             }
@@ -105,7 +111,7 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
         self.file = file
         
         if let resumeData = file.resumeDownloadData {
-            task = self.client.urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
+            task = urlSession.downloadTask(withResumeData: resumeData) { (url, response, error) -> Void in
                 self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
             }
         } else {
@@ -113,7 +119,7 @@ class URLSessionTaskRequest: TaskProgressRequest, Request {
             if let etag = file.etag {
                 request.setValue(etag, forHTTPHeaderField: "If-None-Match")
             }
-            task = self.client.urlSession.downloadTask(with: request) { (url, response, error) -> Void in
+            task = urlSession.downloadTask(with: request) { (url, response, error) -> Void in
                 self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
             }
         }

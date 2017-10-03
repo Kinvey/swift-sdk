@@ -42,7 +42,7 @@ class SSOApp1Tests: KinveyTestCase {
                 case "/v3/oauth/login":
                     let requestBody = String(data: request.httpBody!, encoding: .utf8)!
                     let textCheckingResult = regexRedirectUri.matches(in: requestBody, range: NSMakeRange(0, requestBody.characters.count)).first!
-                    let range = textCheckingResult.rangeAt(1)
+                    let range = textCheckingResult.range(at: 1)
                     let redirectUri = requestBody[requestBody.index(requestBody.startIndex, offsetBy: range.location)...requestBody.index(requestBody.startIndex, offsetBy: range.location + range.length - 1)].removingPercentEncoding!
                     let url = URL(string: "\(redirectUri)?code=\(UUID().uuidString)")!
                     return URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.reloadIgnoringLocalCacheData, timeoutInterval: 30)
@@ -78,11 +78,11 @@ class SSOApp1Tests: KinveyTestCase {
                                 XCTAssertNotNil(match)
                                 if let match = match {
                                     XCTAssertEqual(match.numberOfRanges, 3)
-                                    let appKey = clientId.substring(with: match.rangeAt(1))
+                                    let appKey = clientId.substring(with: match.range(at: 1))
                                     XCTAssertNotNil(appKey)
                                     XCTAssertFalse(appKey.isEmpty)
                                     
-                                    let clientIdValue = clientId.substring(with: match.rangeAt(1))
+                                    let clientIdValue = clientId.substring(with: match.range(at: 1))
                                     XCTAssertNotNil(clientIdValue)
                                     XCTAssertFalse(clientIdValue.isEmpty)
                                 }
@@ -95,7 +95,7 @@ class SSOApp1Tests: KinveyTestCase {
                     var html = String(data: data, encoding: .utf8)!
                     let requestUrlQuery = request.url!.query!
                     let textCheckingResult = regexRedirectUri.matches(in: requestUrlQuery, range: NSMakeRange(0, requestUrlQuery.characters.count)).first!
-                    let range = textCheckingResult.rangeAt(1)
+                    let range = textCheckingResult.range(at: 1)
                     let redirectUri = requestUrlQuery[requestUrlQuery.index(requestUrlQuery.startIndex, offsetBy: range.location)...requestUrlQuery.index(requestUrlQuery.startIndex, offsetBy: range.location + range.length - 1)].removingPercentEncoding!
                     html = html.replacingOccurrences(of: "@redirect_uri@", with: redirectUri)
                     client?.urlProtocol(self, didLoad: html.data(using: .utf8)!)

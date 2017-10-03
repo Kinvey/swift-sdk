@@ -35,8 +35,7 @@ open class MIC {
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             var queryItems = urlComponents.queryItems
-            else
-        {
+        else {
             return nil
         }
         
@@ -145,7 +144,7 @@ open class MIC {
                     password: password,
                     options: options
                 )
-                let urlSession = URLSession(
+                let urlSession = options?.urlSession ?? URLSession(
                     configuration: client.urlSession.configuration,
                     delegate: URLSessionDelegateAdapter(),
                     delegateQueue: nil
@@ -217,12 +216,18 @@ public enum MICUserInterface {
     
     /// Uses SFSafariViewController
     case safari
+
+    /// Uses SFAuthenticationSession if running on iOS 11 and above, otherwise uses SFSafariViewController instead
+    case safariAuthenticationSession
     
     /// Uses WKWebView
     case wkWebView
     
     /// Uses UIWebView
     case uiWebView
+    
+    /// Default Value: .safari
+    public static let `default`: MICUserInterface = .safariAuthenticationSession
     
 }
 
@@ -256,6 +261,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     let options: Options?
     let completionHandler: UserHandler<User>
     
+    @objc
     var webView: UIView!
     var timer: Timer? {
         willSet {
@@ -415,10 +421,12 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
+    @objc
     func closeViewControllerUserInteractionCancel(_ sender: Any) {
         closeViewControllerUserInteraction(.failure(Error.requestCancelled))
     }
     
+    @objc
     func closeViewControllerUserInteractionTimeout(_ sender: Any) {
         closeViewControllerUserInteraction(.failure(Error.requestTimeout))
     }
@@ -430,6 +438,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
+    @objc
     func refreshPage(_ sender: Any) {
         webView(
             wkWebView: { $0.reload() },

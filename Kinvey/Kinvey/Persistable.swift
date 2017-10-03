@@ -275,7 +275,7 @@ public func <- (left: List<IntValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T : RealmOptionalType>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
+public func <- <T>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
     kinveyMappingType(left: right.query, right: right.map.currentKey!)
     left.value <- right.map
 }
@@ -552,10 +552,10 @@ extension Persistable where Self: NSObject {
 extension AnyRandomAccessCollection where Element: Persistable {
     
     public subscript(idx: Int) -> Element {
-        return self[IntMax(idx)]
+        return self[Int64(idx)]
     }
     
-    public subscript(idx: IntMax) -> Element {
+    public subscript(idx: Int64) -> Element {
         return self[index(startIndex, offsetBy: idx)]
     }
     

@@ -250,11 +250,11 @@ open class Client: Credential {
         
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String?, apiHostNameString.characters.last == "/" {
-            apiHostName = URL(string: apiHostNameString.substring(to: apiHostNameString.characters.index(before: apiHostNameString.characters.endIndex)))!
+            apiHostName = URL(string: String(apiHostNameString.dropLast()))!
         }
         var authHostName = authHostName
         if let authHostNameString = authHostName.absoluteString as String?, authHostNameString.characters.last == "/" {
-            authHostName = URL(string: authHostNameString.substring(to: authHostNameString.characters.index(before: authHostNameString.characters.endIndex)))!
+            authHostName = URL(string: String(authHostNameString.dropLast()))!
         }
         self.apiHostName = apiHostName
         self.authHostName = authHostName

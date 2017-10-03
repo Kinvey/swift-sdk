@@ -14,6 +14,7 @@ import ObjectMapper
 
 class Person: Entity {
     
+    @objc
     dynamic var fullName: String?
     
     override class func collectionName() -> String {

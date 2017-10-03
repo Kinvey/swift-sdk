@@ -14,22 +14,50 @@ import PromiseKit
 class Product: Entity {
     
     let materialNumber = RealmOptional<Int>()
+    
+    @objc
     dynamic var productDescription: String?
+    
+    @objc
     dynamic var vertical: String?
+    
+    @objc
     dynamic var subVertical: String?
+    
+    @objc
     dynamic var classification: String?
+    
+    @objc
     dynamic var materialGroup: String?
+    
     let materialFreightGroup = RealmOptional<Int>()
+    
+    @objc
     dynamic var materialType: String?
+    
+    @objc
     dynamic var baseUOM: String?
     let packageQuantity = RealmOptional<Int>()
+    
+    @objc
     dynamic var gsaFlag: String?
+    
+    @objc
     dynamic var discontinuedIndicator: String?
+    
+    @objc
     dynamic var deactivateDate: String?
+    
+    @objc
     dynamic var taaFlag: String?
+    
     let minOrderQuantity = RealmOptional<Int>()
     let active = RealmOptional<Bool>()
+    
+    @objc
     dynamic var created: String?
+    
+    @objc
     dynamic var modified: String?
     
     override static func collectionName() -> String {
@@ -171,7 +199,8 @@ class PerformanceProductTestCase: KinveyTestCase {
             
             let checkpoint = Date()
             let object = try! JSONSerialization.jsonObject(with: inputStream)
-            productsJsonArray = object as! [JsonDictionary]
+            productsJsonArray = object as? [JsonDictionary]
+            XCTAssertNotNil(productsJsonArray)
             print(String(format: "JSON Parse: %3.3f second(s)", -checkpoint.timeIntervalSinceNow))
         }
         
@@ -269,7 +298,7 @@ class PerformanceProductTestCase: KinveyTestCase {
                         XCTAssertNotNil(product)
                         XCTAssertNil(error)
                         
-                        fulfill()
+                        fulfill(())
                     }
                 }
                 promises.append(promise)

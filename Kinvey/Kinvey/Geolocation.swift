@@ -16,9 +16,11 @@ import MapKit
 public final class GeoPoint: Object {
     
     /// Specifies the north–south position of a point
+    @objc
     open dynamic var latitude: CLLocationDegrees = 0.0
     
     /// Specifies the east-west position of a point
+    @objc
     open dynamic var longitude: CLLocationDegrees = 0.0
     
     /**

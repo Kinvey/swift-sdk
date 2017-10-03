@@ -105,7 +105,7 @@ class ViewController: NSViewController {
         }
         
         func exit() {
-            NSApplication.shared().terminate(self)
+            NSApplication.shared.terminate(self)
         }
         
         func send() {

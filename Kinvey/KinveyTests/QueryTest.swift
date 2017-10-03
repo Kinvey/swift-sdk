@@ -178,7 +178,7 @@ class QueryTest: XCTestCase {
                 
                 XCTAssertEqual(coordinatesResult, coordinatesExpect)
                 
-                XCTAssertEqualWithAccuracy(centerSphereResult[1] as! Double, centerSphereExpect[1] as! Double, accuracy: 0.00001)
+                XCTAssertEqual(centerSphereResult[1] as! Double, centerSphereExpect[1] as! Double, accuracy: 0.00001)
             }
         }
     }

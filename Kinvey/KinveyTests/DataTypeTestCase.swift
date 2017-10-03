@@ -270,6 +270,8 @@ class DataTypeTestCase: StoreTestCase {
 }
 
 class EntityWithDate : Entity {
+    
+    @objc
     dynamic var date:Date?
     
     override class func collectionName() -> String {
@@ -296,7 +298,11 @@ class ColorTransformType : TransformType {
             let alpha = value["alpha"] as? CGFloat
         {
             #if os(macOS)
-                return Color(calibratedRed: red, green: green, blue: blue, alpha: alpha).usingColorSpaceName(NSCalibratedRGBColorSpace)
+                if #available(OSX 10.13, *) {
+                    return Color(srgbRed: red, green: green, blue: blue, alpha: alpha)
+                } else {
+                    return Color(calibratedRed: red, green: green, blue: blue, alpha: alpha).usingColorSpaceName(NSColorSpaceName.calibratedRGB)
+                }
             #else
                 return Color(red: red, green: green, blue: blue, alpha: alpha)
             #endif
@@ -325,20 +331,40 @@ class ColorTransformType : TransformType {
 
 class DataType: Entity {
     
+    @objc
     dynamic var boolValue: Bool = false
+    
+    @objc
     dynamic var fullName: FullName?
     
+    @objc
     fileprivate dynamic var fullName2Value: String?
+    
+    @objc
     dynamic var fullName2: FullName2?
     
+    @objc
     dynamic var objectValue: NSObject?
+    
+    @objc
     dynamic var stringValueNotOptional: String! = ""
+    
+    @objc
     dynamic var fullName2DefaultValue = FullName2()
+    
+    @objc
     dynamic var fullName2DefaultValueNotOptional: FullName2! = FullName2()
+    
+    @objc
     dynamic var fullName2DefaultValueTransformed = FullName2()
+    
+    @objc
     dynamic var fullName2DefaultValueNotOptionalTransformed: FullName2! = FullName2()
     
+    @objc
     fileprivate dynamic var colorValueString: String?
+    
+    @objc
     dynamic var colorValue: Color? {
         get {
             if let colorValueString = colorValueString,
@@ -396,7 +422,10 @@ class DataType: Entity {
 
 class FullName: Entity {
     
+    @objc
     dynamic var firstName: String?
+    
+    @objc
     dynamic var lastName: String?
     
     override class func collectionName() -> String {
@@ -435,8 +464,13 @@ class FullName2TransformType: TransformType {
 
 class FullName2: NSObject, Mappable {
     
+    @objc
     dynamic var firstName: String?
+    
+    @objc
     dynamic var lastName: String?
+    
+    @objc
     dynamic var fontDescriptor: FontDescriptor?
     
     override init() {
@@ -456,24 +490,12 @@ class FullName2: NSObject, Mappable {
 class FontDescriptorTransformType: TransformType {
     
     typealias Object = FontDescriptor
-    typealias JSON = JsonDictionary
-    
-    struct Attribute {
-        
-        #if !os(macOS)
-            static let name = UIFontDescriptorNameAttribute
-            static let size = UIFontDescriptorSizeAttribute
-        #else
-            static let name = NSFontNameAttribute
-            static let size = NSFontSizeAttribute
-        #endif
-        
-    }
+    typealias JSON = [FontDescriptor.AttributeName : Any]
     
     func transformFromJSON(_ value: Any?) -> Object? {
-        if let value = value as? JsonDictionary,
-            let fontName = value[Attribute.name] as? String,
-            let fontSize = value[Attribute.size] as? CGFloat
+        if let value = value as? JSON,
+            let fontName = value[.name] as? String,
+            let fontSize = value[.size] as? CGFloat
         {
             return FontDescriptor(name: fontName, size: fontSize)
         }
@@ -483,8 +505,8 @@ class FontDescriptorTransformType: TransformType {
     func transformToJSON(_ value: Object?) -> JSON? {
         if let value = value {
             return [
-                Attribute.name : value.fontAttributes[Attribute.name]!,
-                Attribute.size : value.fontAttributes[Attribute.size]!
+                .name : value.fontAttributes[.name]!,
+                .size : value.fontAttributes[.size]!
             ]
         }
         return nil

@@ -15,7 +15,7 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     lazy var filePath: NSString = {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         var filePath = paths.first! as NSString
-        filePath = filePath.appendingPathComponent("com.kinvey.\(appInitialize.appKey)_cache.realm") as NSString
+        filePath = filePath.appendingPathComponent("com.kinvey.\(KinveyTestCase.appInitialize.appKey)_cache.realm") as NSString
         return filePath
     }()
     

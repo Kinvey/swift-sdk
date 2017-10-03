@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.8.0"
+  s.version      = "3.9.0"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -138,7 +138,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  # s.xcconfig = {}
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 	
   s.dependency "PromiseKit", "~> 4.0"
   s.dependency "KeychainAccess", "~> 3.0"

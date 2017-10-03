@@ -47,7 +47,7 @@ extension String {
     func substring(with rangeInt: Range<Int>) -> String {
         let startIndex = index(self.startIndex, offsetBy: rangeInt.lowerBound)
         let endIndex = index(self.startIndex, offsetBy: rangeInt.upperBound)
-        return self[startIndex..<endIndex]
+        return String(self[startIndex..<endIndex])
     }
     
     func substring(with range: NSRange) -> String {

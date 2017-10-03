@@ -15,24 +15,30 @@ import ObjectMapper
 open class File: Object, Mappable {
     
     /// `_id` property of the file.
+    @objc
     open dynamic var fileId: String?
     
     /// `_filename` property of the file.
+    @objc
     open dynamic var fileName: String?
     
     /// `size` property of the file.
     open let size = RealmOptional<Int64>()
     
     /// `mimeType` property of the file.
+    @objc
     open dynamic var mimeType: String?
     
     /// `_public` property of the file, which represents if the file is accessible without need of credentials.
+    @objc
     open dynamic var publicAccessible = false
     
     /// Temporary download URL String of the file.
+    @objc
     open dynamic var download: String?
     
     /// Temporary download URL of the file.
+    @objc
     open dynamic var downloadURL: URL? {
         get {
             if let download = download {
@@ -46,9 +52,11 @@ open class File: Object, Mappable {
     }
     
     /// Temporary upload URL String of the file.
+    @objc
     open dynamic var upload: String?
     
     /// Temporary upload URL of the file.
+    @objc
     open dynamic var uploadURL: URL? {
         get {
             if let upload = upload {
@@ -64,12 +72,15 @@ open class File: Object, Mappable {
 
     
     /// Expiration data of the `downloadURL`.
+    @objc
     open dynamic var expiresAt: Date?
     
     /// ETag header used for validate the local cache
+    @objc
     open internal(set) dynamic var etag: String?
     
     /// Local path URL String for the cached file
+    @objc
     open internal(set) dynamic var path: String? {
         didSet {
             if let path = path,
@@ -85,6 +96,7 @@ open class File: Object, Mappable {
     }
     
     /// Local path URL for the cached file
+    @objc
     open internal(set) dynamic var pathURL: URL? {
         get {
             if let path = path {
@@ -98,9 +110,11 @@ open class File: Object, Mappable {
     }
     
     /// The `_kmd` property mapped in the Kinvey backend.
+    @objc
     public dynamic var metadata: Metadata?
     
     /// The `_acl` property mapped in the Kinvey backend.
+    @objc
     public dynamic var acl: Acl?
     
     /// Headers needed to submit the request to the `uploadURL`.
