@@ -667,6 +667,30 @@ class SyncStoreTests: StoreTestCase {
     func testPush() {
         save()
         
+        let bookDataStore = DataStore<Book>.collection(.sync)
+        
+        do {
+            let book = Book()
+            book.title = "Les Miserables"
+            
+            weak var expectationSave = expectation(description: "Save Book")
+            
+            bookDataStore.save(book, options: nil) { (result: Result<Book, Swift.Error>) in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
         XCTAssertEqual(store.syncCount(), 1)
         
         if useMockData {
