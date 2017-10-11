@@ -60,7 +60,7 @@ test-macos:
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
 	cd Carthage/Build; \
-	find . -name "*.framework" ! -name "KIF.framework" ! -name "Nimble.framework" | awk '{split($$0, array, "/"); system("mkdir -p ../../build/Kinvey-$(VERSION)/" array[2] " && cp -R " array[2] "/" array[3] " ../../build/Kinvey-$(VERSION)/" array[2])}'
+	find . -name "*.framework" ! -name "KIF.framework" ! -name "Nimble.framework" ! -name "Swifter.framework" | awk '{split($$0, array, "/"); system("mkdir -p ../../build/Kinvey-$(VERSION)/" array[2] " && cp -R " array[2] "/" array[3] " ../../build/Kinvey-$(VERSION)/" array[2])}'
 	cd build; \
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
