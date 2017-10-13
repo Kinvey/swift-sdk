@@ -66,6 +66,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// DataStoreType defines how the DataStore will behave.
     open let type: StoreType
     
+    open let validationStrategy: ValidationStrategy?
+    
     fileprivate let fileURL: URL?
     
     internal let cache: AnyCache<T>?
@@ -103,7 +105,13 @@ open class DataStore<T: Persistable> where T: NSObject {
      - Returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
-    open class func getInstance(_ type: StoreType = .cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    open class func getInstance(
+        _ type: StoreType = .cache,
+        deltaSet: Bool? = nil,
+        client: Client = sharedClient,
+        tag: String = defaultTag,
+        validationStrategy: ValidationStrategy? = nil
+    ) -> DataStore {
         return collection(type, deltaSet: deltaSet, client: client, tag: tag)
     }
 
@@ -115,7 +123,14 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
-    open class func collection(_ type: StoreType = .cache, deltaSet: Bool? = nil, autoPagination: Bool = false, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    open class func collection(
+        _ type: StoreType = .cache,
+        deltaSet: Bool? = nil,
+        autoPagination: Bool = false,
+        client: Client = sharedClient,
+        tag: String = defaultTag,
+        validationStrategy: ValidationStrategy? = nil
+    ) -> DataStore {
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
@@ -123,7 +138,15 @@ open class DataStore<T: Persistable> where T: NSObject {
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
             let fileURL = client.fileURL(tag)
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, autoPagination: autoPagination, client: client, fileURL: fileURL, encryptionKey: client.encryptionKey)
+            dataStore = DataStore<T>(
+                type: type,
+                deltaSet: deltaSet ?? false,
+                autoPagination: autoPagination,
+                client: client,
+                fileURL: fileURL,
+                encryptionKey: client.encryptionKey,
+                validationStrategy: validationStrategy
+            )
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
@@ -144,11 +167,20 @@ open class DataStore<T: Persistable> where T: NSObject {
             autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
-            encryptionKey: client.encryptionKey
+            encryptionKey: client.encryptionKey,
+            validationStrategy: validationStrategy
         )
     }
     
-    fileprivate init(type: StoreType, deltaSet: Bool, autoPagination: Bool, client: Client, fileURL: URL?, encryptionKey: Data?) {
+    fileprivate init(
+        type: StoreType,
+        deltaSet: Bool,
+        autoPagination: Bool,
+        client: Client,
+        fileURL: URL?,
+        encryptionKey: Data?,
+        validationStrategy: ValidationStrategy?
+    ) {
         self.type = type
         self.deltaSet = deltaSet
         self.autoPagination = autoPagination
@@ -164,6 +196,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         }
         readPolicy = type.readPolicy
         writePolicy = type.writePolicy
+        self.validationStrategy = validationStrategy
     }
     
     /**
@@ -288,6 +321,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let operation = GetOperation<T>(
             id: id,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -403,6 +437,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             deltaSet: deltaSet,
             autoPagination: autoPagination,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -485,6 +520,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let operation = CountOperation<T>(
             query: Query(query: query ?? Query(), persistableType: T.self),
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -600,6 +636,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -714,6 +751,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -835,6 +873,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -956,6 +995,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -1077,6 +1117,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -1198,6 +1239,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             aggregation: aggregation,
             condition: condition,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -1805,6 +1847,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                     deltaSetCompletionHandler: deltaSetCompletionHandler,
                     autoPagination: autoPagination,
                     readPolicy: .forceNetwork,
+                    validationStrategy: validationStrategy,
                     cache: cache,
                     options: options
                 )

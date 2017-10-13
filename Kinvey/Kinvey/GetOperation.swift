@@ -15,12 +15,14 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     init(
         id: String,
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?
     ) {
         self.id = id
         super.init(
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
