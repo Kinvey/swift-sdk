@@ -10,13 +10,15 @@ import Foundation
 
 public enum ValidationStrategy {
     
-    case randomNumberOfItems(numberOfItems: UInt32)
+    /// Percentagem between 0.0 and 1.0
+    case randomItems(percentage: Double)
     case custom(validationBlock: (Array<Dictionary<String, Any>>) -> Swift.Error?)
     
     func validate(jsonArray: Array<Dictionary<String, Any>>) -> Swift.Error? {
         switch self {
-        case .randomNumberOfItems(let numberOfItems):
+        case .randomItems(let percentage):
             let max = UInt32(jsonArray.count)
+            let numberOfItems = min(Int(ceil(Double(jsonArray.count) * percentage)), jsonArray.count)
             for _ in 0 ..< numberOfItems {
                 let item = jsonArray[Int(arc4random_uniform(max))]
                 guard
