@@ -123,9 +123,8 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  s.frameworks = "Accounts", "CoreGraphics", "CoreLocation", "Security", "Social", "SystemConfiguration"
-  s.ios.frameworks = "MobileCoreServices"
-  s.weak_framework = "WebKit"
+  s.frameworks = "CoreGraphics", "CoreLocation", "Security"
+  s.ios.frameworks = "MobileCoreServices", "WebKit"
 
   # s.libraries = 
 
