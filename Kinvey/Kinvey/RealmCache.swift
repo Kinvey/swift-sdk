@@ -617,6 +617,8 @@ extension RealmCache: DynamicCacheType {
                         translatedEntity[translatedKey] = array.map {
                             return ["value" : $0]
                         }
+                    } else if let transform = transform {
+                        translatedEntity[translatedKey] = transform.transformFromJSON(entity[key])
                     } else {
                         translatedEntity[translatedKey] = entity[key]
                     }

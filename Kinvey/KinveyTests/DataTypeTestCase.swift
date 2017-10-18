@@ -186,6 +186,60 @@ class DataTypeTestCase: StoreTestCase {
 
     }
     
+    func testDatePull() {
+        signUp()
+        
+        let store = DataStore<EntityWithDate>.collection(.sync)
+        
+        if useMockData {
+            mockResponse(json: [
+                [
+                    "_id" : UUID().uuidString,
+                    "date" : Date().toString(),
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ]
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationPull = expectation(description: "Pull")
+        
+        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        
+        store.pull(query) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertGreaterThan(results.count, 0)
+                
+                if let dataType = results.first {
+                    XCTAssertNotNil(dataType.date)
+                }
+            }
+            
+            expectationPull?.fulfill()
+        }
+        
+        defer {
+            store.clearCache()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationPull = nil
+        }
+    }
+    
     func testDateReadFormats() {
         let transform = KinveyDateTransform()
         XCTAssertEqual(transform.transformFromJSON("ISODate(\"2016-11-14T10:05:55.787Z\")"), Date(timeIntervalSince1970: 1479117955.787))
