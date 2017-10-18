@@ -32,9 +32,9 @@ class PullDataStoreViewController: UIViewController {
         super.viewDidLoad()
         
         Kinvey.sharedClient.initialize(
-            appKey: "kid_B15Lb5Pl-",
-            appSecret: "be64651eceb54bb58e47425db0b3918b",
-            apiHostName: URL(string: "https://stg-us1-baas.kinvey.com")!
+            appKey: "",
+            appSecret: "",
+            apiHostName: URL(string: "")!
         ) {
             switch $0 {
             case .success(let user):
