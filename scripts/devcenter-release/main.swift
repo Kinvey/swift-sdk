@@ -49,9 +49,9 @@ let downloadURLString = "http://download.kinvey.com/iOS/Kinvey-\(version).zip"
 let versionTuple: (major: Int, minor: Int, patch: Int) = {
     let regex = try! NSRegularExpression(pattern: "(\\d)\\.(\\d)\\.(\\d)")
     let match = regex.firstMatch(in: version, range: NSRange(location: 0, length: version.characters.count))!
-    let major = Int(version[match.rangeAt(1)])!
-    let minor = Int(version[match.rangeAt(2)])!
-    let patch = Int(version[match.rangeAt(3)])!
+    let major = Int(version[match.range(at: 1)])!
+    let minor = Int(version[match.range(at: 2)])!
+    let patch = Int(version[match.range(at: 3)])!
     return (major: major, minor: minor, patch: patch)
 }()
 let session = URLSession.shared
@@ -95,7 +95,7 @@ func convertBody(body: String) -> String {
         if let match = regexHeader.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)),
             match.numberOfRanges > 1
         {
-            currentHeader = line[match.rangeAt(1)]
+            currentHeader = line[match.range(at: 1)]
             switch currentHeader {
             case "Improvements"?:
                 currentHeader = "Improvement"
@@ -109,7 +109,7 @@ func convertBody(body: String) -> String {
         } else if let currentHeader = currentHeader,
             let match = regexTopic.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)),
             match.numberOfRanges > 1,
-            let line = Optional(line[match.rangeAt(1)]),
+            let line = Optional(line[match.range(at: 1)]),
             line != "None"
         {
             result += "* \(currentHeader): \(line)\n"
@@ -128,8 +128,8 @@ func changeDownloadsJson(pathURL: URL) {
     let regexKeyValue = try! NSRegularExpression(pattern: "\"([^\"]*)\"\\s*:\\s*\"([^\"]*)\"")
     for match in regexKeyValue.matches(in: ios, range: NSRange(location: 0, length: ios.characters.count)) {
         if match.numberOfRanges == 3 {
-            let rangeKey = match.rangeAt(1)
-            let rangeValue = match.rangeAt(2)
+            let rangeKey = match.range(at: 1)
+            let rangeValue = match.range(at: 2)
             let key = ios[rangeKey]
             switch key {
             case "version":
@@ -174,9 +174,9 @@ func changeLanguageSupport(pathURL: URL) {
     
     let regex = try! NSRegularExpression(pattern: "\\| Swift 3\\.1 and above \\| (\\d\\.\\d) \\| \\[Download Version (\\d\\.\\d\\.\\d)\\]\\(([^\\)]*)\\) \\|")
     let match = regex.firstMatch(in: content, range: NSRange(location: 0, length: content.characters.count))!
-    let versionWithoutPatchRange = match.rangeAt(1)
-    let versionRange = match.rangeAt(2)
-    let downloadURLRange = match.rangeAt(3)
+    let versionWithoutPatchRange = match.range(at: 1)
+    let versionRange = match.range(at: 2)
+    let downloadURLRange = match.range(at: 3)
     
     content.replaceSubrange(versionWithoutPatchRange.rangeStringIndex(for: content), with: "\(versionTuple.major).\(versionTuple.minor)")
     content.replaceSubrange(versionRange.rangeStringIndex(for: content), with: version)
