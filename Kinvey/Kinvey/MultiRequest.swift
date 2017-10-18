@@ -13,22 +13,22 @@ internal class MultiRequest: NSObject, Request {
     fileprivate var addProgresses = [Bool]()
     fileprivate var requests = [Request]()
     
-    var progress: ((ProgressStatus) -> Void)? {
-        didSet {
-            for (index, request) in requests.enumerated() {
-                if addProgresses[index] {
-                    request.progress = progress
-                }
-            }
-        }
-    }
+//    var progress: ((ProgressStatus) -> Void)? {
+//        didSet {
+//            for (index, request) in requests.enumerated() {
+//                if addProgresses[index] {
+//                    request.progress = progress
+//                }
+//            }
+//        }
+//    }
     
     internal func addRequest(_ request: Request, addProgress: Bool = false) {
         if _cancelled {
             request.cancel()
         }
         if addProgress {
-            request.progress = progress
+//            request.progress = progress
         }
         addProgresses.append(addProgress)
         requests.append(request)

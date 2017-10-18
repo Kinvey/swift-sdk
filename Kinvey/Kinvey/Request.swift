@@ -20,7 +20,4 @@ public protocol Request : NSObjectProtocol {
     /// Cancels a request in progress.
     func cancel()
     
-    /// Report upload progress of the request
-    var progress: ((ProgressStatus) -> Void)? { get set }
-    
 }

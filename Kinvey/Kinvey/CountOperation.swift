@@ -28,20 +28,18 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
-        request.execute { () -> Void in
-            if let cache = self.cache {
-                let count = cache.count(query: self.query)
-                completionHandler?(.success(count))
-            } else {
-                completionHandler?(.success(0))
-            }
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Progress {
+        let progress = Progress(totalUnitCount: 0)
+        if let cache = self.cache {
+            let count = cache.count(query: self.query)
+            completionHandler?(.success(count))
+        } else {
+            completionHandler?(.success(0))
         }
-        return request
+        return progress
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Progress {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(
             collectionName: T.collectionName(),
             query: query,
@@ -59,7 +57,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return request.progress!
     }
     
 }

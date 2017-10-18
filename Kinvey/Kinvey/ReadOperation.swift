@@ -40,29 +40,32 @@ protocol ReadOperationType {
     var readPolicy: ReadPolicy { get }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Progress
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Progress
     
 }
 
 extension ReadOperationType {
     
     @discardableResult
-    func execute(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func execute(_ completionHandler: CompletionHandler? = nil) -> Progress {
         switch readPolicy {
         case .forceLocal:
             return executeLocal(completionHandler)
         case .forceNetwork:
             return executeNetwork(completionHandler)
         case .both:
-            let request = MultiRequest()
+            let progress = Progress(totalUnitCount: 100)
             executeLocal() { result in
                 completionHandler?(result)
-                request.addRequest(self.executeNetwork(completionHandler))
+                progress.addChild(
+                    self.executeNetwork(completionHandler),
+                    withPendingUnitCount: 100
+                )
             }
-            return request
+            return progress
         }
     }
     

@@ -52,16 +52,25 @@ class TaskProgressRequest: NSObject {
     
     var task: URLSessionTask? {
         didSet {
-            if let task = task {
-                addObservers(task)
-            } else {
-                removeObservers(oldValue)
+            guard #available(iOS 11.0, *) else {
+                if let task = task {
+                    addObservers(task)
+                } else {
+                    removeObservers(oldValue)
+                }
+                return
             }
         }
     }
     
-    var progress: ((ProgressStatus) -> Void)? {
-        didSet { addObservers(task) }
+    private lazy var _progress = Progress(totalUnitCount: 100)
+    
+    var progress: Progress? {
+        if #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) {
+            return task?.progress
+        } else {
+            return _progress
+        }
     }
     
     var progressObserving = false
@@ -130,7 +139,8 @@ class TaskProgressRequest: NSObject {
                 DispatchQueue.main.async {
                     if self.lastProgressStatus == nil || (self.lastProgressStatus!) != progressStatus {
                         self.lastProgressStatus = progressStatus
-                        self.progress?(progressStatus)
+                        //FIXME
+//                        self.progress?(progressStatus)
                     }
                 }
             }

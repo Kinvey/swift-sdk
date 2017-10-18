@@ -58,22 +58,20 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
-        request.execute { () -> Void in
-            if let cache = self.cache {
-                let json = cache.find(byQuery: self.query)
-                completionHandler?(.success(json))
-            } else {
-                completionHandler?(.success(AnyRandomAccessCollection<T>([])))
-            }
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Progress {
+        let progress = Progress(totalUnitCount: 0)
+        if let cache = self.cache {
+            let json = cache.find(byQuery: self.query)
+            completionHandler?(.success(json))
+        } else {
+            completionHandler?(.success(AnyRandomAccessCollection<T>([])))
         }
-        return request
+        return progress
     }
     
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
-    private func count(multiRequest: MultiRequest) -> Promise<Int?> {
+    private func count(progress: Progress) -> Promise<Int?> {
         return Promise<Int?> { fulfill, reject in
             if autoPagination {
                 let query = Query(self.query)
@@ -94,20 +92,24 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         reject(error)
                     }
                 }
-                multiRequest += request
             } else {
                 fulfill(nil)
             }
         }
     }
     
-    private func fetchAutoPagination(multiRequest: MultiRequest, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetchAutoPagination(progress parentProgress: Progress, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            var promises = [Promise<AnyRandomAccessCollection<T>>]()
-            for offset in stride(from: 0, to: count, by: MaxSizePerResultSet) {
-                let promise = Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+            let progress = Progress(totalUnitCount: Int64(count), parent: parentProgress, pendingUnitCount: 1)
+            var offsetIterator = stride(from: 0, to: count, by: MaxSizePerResultSet).makeIterator()
+            let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
+                guard let offset = offsetIterator.next() else {
+                    return nil
+                }
+                return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
                     let query = Query(self.query)
                     query.skip = offset
+                    query.limit = min(MaxSizePerResultSet, count - offset)
                     let operation = FindOperation(
                         query: query,
                         deltaSet: self.deltaSet,
@@ -117,19 +119,19 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         cache: self.cache,
                         options: self.options
                     )
-                    let request = operation.execute { result in
+                    operation.execute { result in
                         switch result {
                         case .success(let results):
+                            progress.completedUnitCount += results.count
                             fulfill(results)
                         case .failure(let error):
                             reject(error)
                         }
                     }
-                    multiRequest += request
                 }
-                promises.append(promise)
             }
-            when(fulfilled: promises).then { results -> Void in
+            let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
+            when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).then { results -> Void in
                 let results = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
                 fulfill(results)
             }.catch { error in
@@ -138,7 +140,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetch(multiRequest: MultiRequest) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetch(progress: Progress) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
             let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
@@ -147,7 +149,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 query: fields != nil ? Query(query) { $0.fields = fields } : query,
                 options: options
             )
-            multiRequest += request
             request.execute() { data, response, error in
                 if let response = response, response.isOK,
                     let jsonArray = self.client.responseParser.parseArray(data)
@@ -179,7 +180,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                     reject(error)
                                 }
                             }
-                            multiRequest += request
                             return
                         }
                         let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
@@ -332,20 +332,20 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = MultiRequest()
-        count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Progress {
+        let progress = Progress(totalUnitCount: 1)
+        count(progress: progress).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
             if let count = count {
-                return self.fetchAutoPagination(multiRequest: request, count: count)
+                return self.fetchAutoPagination(progress: progress, count: count)
             } else {
-                return self.fetch(multiRequest: request)
+                return self.fetch(progress: progress)
             }
         }.then {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return progress
     }
     
     fileprivate func removeCachedRecords<S : Sequence>(_ cache: AnyCache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {

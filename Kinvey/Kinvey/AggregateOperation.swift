@@ -31,19 +31,17 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
-        request.execute { () -> Void in
-            if let _ = self.cache {
-                completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
-            } else {
-                completionHandler?(.success([]))
-            }
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Progress {
+        let progress = Progress(totalUnitCount: 100)
+        if let _ = self.cache {
+            completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
+        } else {
+            completionHandler?(.success([]))
         }
-        return request
+        return progress
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Progress {
         let request = client.networkRequestFactory.buildAppDataGroup(
             collectionName: T.collectionName(),
             keys: aggregation.keys,
@@ -63,7 +61,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return request.progress!
     }
     
 }

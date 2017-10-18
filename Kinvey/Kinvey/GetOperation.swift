@@ -28,19 +28,17 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let request = LocalRequest()
-        request.execute { () -> Void in
-            if let persistable = self.cache?.find(byId: self.id) {
-                completionHandler?(.success(persistable))
-            } else {
-                completionHandler?(.failure(buildError(client: self.client)))
-            }
+    func executeLocal(_ completionHandler: CompletionHandler?) -> Progress {
+        let progress = Progress(totalUnitCount: 0)
+        if let persistable = self.cache?.find(byId: self.id) {
+            completionHandler?(.success(persistable))
+        } else {
+            completionHandler?(.failure(buildError(client: self.client)))
         }
-        return request
+        return progress
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> Progress {
         let request = client.networkRequestFactory.buildAppDataGetById(
             collectionName: T.collectionName(),
             id: id,
@@ -59,7 +57,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return request.progress!
     }
     
 }
