@@ -13,6 +13,9 @@ internal class MultiRequest: NSObject, Request {
     fileprivate var addProgresses = [Bool]()
     fileprivate var requests = [Request]()
     
+    var progress = Progress()
+    
+    //FIXME
 //    var progress: ((ProgressStatus) -> Void)? {
 //        didSet {
 //            for (index, request) in requests.enumerated() {
@@ -28,6 +31,7 @@ internal class MultiRequest: NSObject, Request {
             request.cancel()
         }
         if addProgress {
+            //FIXME
 //            request.progress = progress
         }
         addProgresses.append(addProgress)

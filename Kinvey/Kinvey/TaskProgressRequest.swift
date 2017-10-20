@@ -63,13 +63,13 @@ class TaskProgressRequest: NSObject {
         }
     }
     
-    private lazy var _progress = Progress(totalUnitCount: 100)
+    private lazy var __progress = Progress()
     
-    var progress: Progress? {
+    var _progress: Progress {
         if #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) {
-            return task?.progress
+            return task?.progress ?? Progress()
         } else {
-            return _progress
+            return __progress
         }
     }
     
