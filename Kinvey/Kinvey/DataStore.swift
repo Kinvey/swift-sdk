@@ -102,6 +102,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      Default value: `sharedClient`
        - tag: (Optional) Tag the store and separate stores in different tags.
      Default value: `defaultTag`
+       - validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
      - Returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
@@ -121,6 +122,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
      - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
+     - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     open class func collection(

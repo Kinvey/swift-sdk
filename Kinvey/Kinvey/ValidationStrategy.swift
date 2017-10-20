@@ -8,15 +8,18 @@
 
 import Foundation
 
+/// Defines a strategy to validate results upfront
 public enum ValidationStrategy {
     
-    /// Percentagem between 0.0 and 1.0
-    case randomItems(percentage: Double)
+    /// Percentage between 0.0 and 1.0. This number specifies the fraction of entities in a backend response that are validated. Validating a higher percentage of entities upfront results in a performance penalty.
+    case randomSample(percentage: Double)
+    
+    /// Allow a custom validation strategy. It must return a `Swift.Error` if the validation fails or `nil` if the validation succeed.
     case custom(validationBlock: (Array<Dictionary<String, Any>>) -> Swift.Error?)
     
     func validate(jsonArray: Array<Dictionary<String, Any>>) -> Swift.Error? {
         switch self {
-        case .randomItems(let percentage):
+        case .randomSample(let percentage):
             let max = UInt32(jsonArray.count)
             let numberOfItems = min(Int(ceil(Double(jsonArray.count) * percentage)), jsonArray.count)
             for _ in 0 ..< numberOfItems {

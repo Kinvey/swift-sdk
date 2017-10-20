@@ -744,7 +744,7 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
-    func testFindMethodObjectIdMissingAndRandomItemsValidationStrategy() {
+    func testFindMethodObjectIdMissingAndRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
                 "name" : "Victor"
@@ -756,7 +756,7 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        let store = DataStore<Person>.collection(.network, validationStrategy: .randomItems(percentage: 0.1))
+        let store = DataStore<Person>.collection(.network, validationStrategy: .randomSample(percentage: 0.1))
         
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
