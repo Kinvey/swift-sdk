@@ -45,9 +45,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         self.deltaSet = deltaSet
         self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.autoPagination = autoPagination
-        if autoPagination, query.limit == nil {
-            query.limit = MaxSizePerResultSet
-        }
         self.resultsHandler = resultsHandler
         super.init(
             readPolicy: readPolicy,
@@ -76,25 +73,21 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     private func count(multiRequest: MultiRequest) -> Promise<Int?> {
         return Promise<Int?> { fulfill, reject in
             if autoPagination {
-                let query = Query(self.query)
-                query.skip = nil
-                query.limit = nil
-                let countOperation = CountOperation<T>(
-                    query: query,
-                    readPolicy: .forceNetwork,
-                    validationStrategy: validationStrategy,
-                    cache: nil,
-                    options: nil
-                )
-                let request = countOperation.execute { result in
-                    switch result {
-                    case .success(let count):
-                        fulfill(count)
-                    case .failure(let error):
-                        reject(error)
+                if let limit = query.limit {
+                    fulfill(limit)
+                } else {
+                    let countOperation = CountOperation<T>(query: query, readPolicy: .forceNetwork, cache: nil, options: nil)
+                    let request = countOperation.execute { result in
+                        switch result {
+                        case .success(let count):
+                            fulfill(count)
+                        case .failure(let error):
+                            reject(error)
+                        }
                     }
+                    multiRequest.progress.addChild(request.progress, withPendingUnitCount: 1)
+                    multiRequest += request
                 }
-                multiRequest += request
             } else {
                 fulfill(nil)
             }
@@ -103,7 +96,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func fetchAutoPagination(multiRequest: MultiRequest, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            let progress = Progress(totalUnitCount: Int64(count), parent: parentProgress, pendingUnitCount: 1)
+            let nPages = Int64(ceil(Double(count) / Double(MaxSizePerResultSet)))
+            let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
             var offsetIterator = stride(from: 0, to: count, by: MaxSizePerResultSet).makeIterator()
             let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
                 guard let offset = offsetIterator.next() else {
@@ -122,20 +116,22 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         cache: self.cache,
                         options: self.options
                     )
-                    operation.execute { result in
+                    let request = operation.execute { result in
                         switch result {
                         case .success(let results):
-                            progress.completedUnitCount += results.count
                             fulfill(results)
                         case .failure(let error):
                             reject(error)
                         }
                     }
+                    progress.addChild(request.progress, withPendingUnitCount: 1)
+                    multiRequest += request
                 }
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
-            when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).then { results -> Void in
+            when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).then(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let results = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
+                progress.completedUnitCount += 1
                 fulfill(results)
             }.catch { error in
                 reject(error)
@@ -143,7 +139,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetch(progress: Progress) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetch(multiRequest: MultiRequest) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
             let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
@@ -331,13 +327,16 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     reject(buildError(data, response, error, self.client))
                 }
             }
+            multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
         }
     }
     
     @discardableResult
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
         let request = MultiRequest()
+        request.progress = Progress(totalUnitCount: 100)
         count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
+            request.progress.completedUnitCount = 1
             if let count = count {
                 return self.fetchAutoPagination(multiRequest: request, count: count)
             } else {

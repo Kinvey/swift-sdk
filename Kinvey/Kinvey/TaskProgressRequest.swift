@@ -8,51 +8,11 @@
 
 import Foundation
 
-/// It holds the progress status of a request.
-open class ProgressStatus: NSObject {
-    
-    ///The number of bytes that the request has sent to the server in the request body. (read-only)
-    open let countOfBytesSent: Int64
-    
-    ///The number of bytes that the request expects to send in the request body. (read-only)
-    open let countOfBytesExpectedToSend: Int64
-    
-    ///The number of bytes that the request has received from the server in the response body. (read-only)
-    open let countOfBytesReceived: Int64
-    
-    ///The number of bytes that the request expects to receive in the response body. (read-only)
-    open let countOfBytesExpectedToReceive: Int64
-    
-    init(_ task: URLSessionTask) {
-        countOfBytesSent = task.countOfBytesSent
-        countOfBytesExpectedToSend = task.countOfBytesExpectedToSend
-        countOfBytesReceived = task.countOfBytesReceived
-        countOfBytesExpectedToReceive = task.countOfBytesExpectedToReceive
-    }
-    
-}
-
-/// Compare 2 ProgressStatus instances and returns `true` if they are equal
-public func ==(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
-    return lhs.countOfBytesSent == rhs.countOfBytesSent &&
-        lhs.countOfBytesExpectedToSend == rhs.countOfBytesExpectedToSend &&
-        lhs.countOfBytesReceived == rhs.countOfBytesReceived &&
-        lhs.countOfBytesExpectedToReceive == rhs.countOfBytesExpectedToReceive
-}
-
-/// Compare 2 ProgressStatus instances and returns `true` if they are not equal
-public func !=(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
-    return lhs.countOfBytesSent != rhs.countOfBytesSent ||
-        lhs.countOfBytesExpectedToSend != rhs.countOfBytesExpectedToSend ||
-        lhs.countOfBytesReceived != rhs.countOfBytesReceived ||
-        lhs.countOfBytesExpectedToReceive != rhs.countOfBytesExpectedToReceive
-}
-
 class TaskProgressRequest: NSObject {
     
     var task: URLSessionTask? {
         didSet {
-            guard #available(iOS 11.0, *) else {
+            guard #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) else {
                 if let task = task {
                     addObservers(task)
                 } else {
@@ -63,13 +23,15 @@ class TaskProgressRequest: NSObject {
         }
     }
     
-    private lazy var __progress = Progress()
+    private lazy var _progress = Progress(totalUnitCount: 1)
+    private var _progressDownload: Progress?
+    private var _progressUpload: Progress?
     
-    var _progress: Progress {
+    @objc var progress: Progress {
         if #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) {
-            return task?.progress ?? Progress()
+            return task!.progress
         } else {
-            return __progress
+            return _progress
         }
     }
     
@@ -80,7 +42,7 @@ class TaskProgressRequest: NSObject {
     func addObservers(_ task: URLSessionTask?) {
         lock.lock()
         if let task = task {
-            if !progressObserving && progress != nil {
+            if !progressObserving {
                 progressObserving = true
                 task.addObserver(self, forKeyPath: "countOfBytesSent", options: [.new], context: nil)
                 task.addObserver(self, forKeyPath: "countOfBytesExpectedToSend", options: [.new], context: nil)
@@ -94,7 +56,7 @@ class TaskProgressRequest: NSObject {
     func removeObservers(_ task: URLSessionTask?) {
         lock.lock()
         if let task = task {
-            if progressObserving && progress != nil {
+            if progressObserving {
                 progressObserving = false
                 task.removeObserver(self, forKeyPath: "countOfBytesSent")
                 task.removeObserver(self, forKeyPath: "countOfBytesExpectedToSend")
@@ -126,23 +88,35 @@ class TaskProgressRequest: NSObject {
         }
     }
     
-    fileprivate var lastProgressStatus: ProgressStatus?
-    
     fileprivate func reportProgress() {
-        if let _ = progress,
-            let task = task
+        if let task = task
         {
-            let progressStatus = ProgressStatus(task)
-            if (progressStatus.countOfBytesSent == progressStatus.countOfBytesExpectedToSend && progressStatus.countOfBytesReceived >= 0 && progressStatus.countOfBytesExpectedToReceive != 0) ||
-                (progressStatus.countOfBytesSent >= 0 && (progressStatus.countOfBytesExpectedToSend > 0 || progressStatus.countOfBytesExpectedToSend == -1))
-            {
-                DispatchQueue.main.async {
-                    if self.lastProgressStatus == nil || (self.lastProgressStatus!) != progressStatus {
-                        self.lastProgressStatus = progressStatus
-                        //FIXME
-//                        self.progress?(progressStatus)
-                    }
+            let httpMethod = task.originalRequest?.httpMethod ?? "GET"
+            switch httpMethod {
+            case "GET":
+                if _progressDownload == nil,
+                    task.countOfBytesExpectedToReceive != NSURLSessionTransferSizeUnknown
+                {
+                    _progressDownload = Progress(totalUnitCount: task.countOfBytesExpectedToReceive, parent: _progress, pendingUnitCount: 1)
                 }
+                if let progress = _progressDownload,
+                    task.countOfBytesReceived > 0
+                {
+                    progress.completedUnitCount = task.countOfBytesReceived
+                }
+            case "POST", "PUT", "PATCH":
+                if _progressUpload == nil,
+                    task.countOfBytesExpectedToSend != NSURLSessionTransferSizeUnknown
+                {
+                    _progressUpload = Progress(totalUnitCount: task.countOfBytesExpectedToSend, parent: _progress, pendingUnitCount: 1)
+                }
+                if let progress = _progressUpload,
+                    task.countOfBytesSent > 0
+                {
+                    progress.completedUnitCount = task.countOfBytesSent
+                }
+            default:
+                break
             }
         }
     }

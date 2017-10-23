@@ -59,7 +59,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request.progress!
+        return request
     }
     
 }

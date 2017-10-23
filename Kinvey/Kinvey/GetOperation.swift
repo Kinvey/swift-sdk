@@ -59,7 +59,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request.progress!
+        return request
     }
     
 }
