@@ -10,31 +10,14 @@ import Foundation
 
 internal class MultiRequest: NSObject, Request {
     
-    fileprivate var addProgresses = [Bool]()
     fileprivate var requests = [Request]()
     
     var progress = Progress()
     
-    //FIXME
-//    var progress: ((ProgressStatus) -> Void)? {
-//        didSet {
-//            for (index, request) in requests.enumerated() {
-//                if addProgresses[index] {
-//                    request.progress = progress
-//                }
-//            }
-//        }
-//    }
-    
-    internal func addRequest(_ request: Request, addProgress: Bool = false) {
+    internal func addRequest(_ request: Request) {
         if _cancelled {
             request.cancel()
         }
-        if addProgress {
-            //FIXME
-//            request.progress = progress
-        }
-        addProgresses.append(addProgress)
         requests.append(request)
     }
     
@@ -72,8 +55,4 @@ internal class MultiRequest: NSObject, Request {
 
 func +=(lhs: MultiRequest, rhs: Request) {
     lhs.addRequest(rhs)
-}
-
-func +=(lhs: MultiRequest, rhs: (Request, addProgress: Bool)) {
-    lhs.addRequest(rhs.0, addProgress: rhs.addProgress)
 }

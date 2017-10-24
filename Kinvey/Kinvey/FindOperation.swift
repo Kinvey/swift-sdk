@@ -76,7 +76,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 if let limit = query.limit {
                     fulfill(limit)
                 } else {
-                    let countOperation = CountOperation<T>(query: query, readPolicy: .forceNetwork, cache: nil, options: nil)
+                    let countOperation = CountOperation<T>(
+                        query: query,
+                        readPolicy: .forceNetwork,
+                        validationStrategy: validationStrategy,
+                        cache: nil,
+                        options: nil
+                    )
                     let request = countOperation.execute { result in
                         switch result {
                         case .success(let count):
@@ -112,7 +118,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         deltaSet: self.deltaSet,
                         autoPagination: false,
                         readPolicy: .forceNetwork,
-                        validationStrategy: validationStrategy,
+                        validationStrategy: self.validationStrategy,
                         cache: self.cache,
                         options: self.options
                     )

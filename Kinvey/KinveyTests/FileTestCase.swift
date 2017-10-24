@@ -779,24 +779,11 @@ class FileTestCase: StoreTestCase {
                 expectationUpload?.fulfill()
             }
             
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
-                    //upload finished
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
+                uploadProgressCount += 1
+                let percentage = request.progress.fractionCompleted * 100.0
+                print("Upload: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format:"%3.2f", percentage))%)")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             let memoryNow = reportMemory()
@@ -836,28 +823,20 @@ class FileTestCase: StoreTestCase {
                 expectationDownload?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            var reportProgress = 0
+            
+            keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
+                reportProgress += 1
+                let percentage = request.progress.fractionCompleted * 100.0
+                print("\(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format:"%3.2f", percentage))%")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(reportProgress, 0)
         }
     }
     
@@ -1015,24 +994,10 @@ class FileTestCase: StoreTestCase {
                 expectationUpload?.fulfill()
             }
             
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
-                    //upload finished
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThanOrEqual($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                uploadProgressCount += 1
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             let memoryNow = reportMemory()
@@ -1068,28 +1033,19 @@ class FileTestCase: StoreTestCase {
                 expectationDownload?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            var reportProgressCount = 0
+            
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                reportProgressCount += 1
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
     
@@ -1252,24 +1208,10 @@ class FileTestCase: StoreTestCase {
                 expectationUpload?.fulfill()
             }
             
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
-                    //upload finished
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                uploadProgressCount += 1
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             let memoryNow = reportMemory()
@@ -1306,28 +1248,17 @@ class FileTestCase: StoreTestCase {
                 expectationDownload?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                uploadProgressCount += 1
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(uploadProgressCount, 0)
         }
     }
     
@@ -1489,24 +1420,10 @@ class FileTestCase: StoreTestCase {
                 expectationUpload?.fulfill()
             }
             
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
-                    //upload finished
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                uploadProgressCount += 1
+                print("Upload: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             let memoryNow = reportMemory()
@@ -1543,28 +1460,19 @@ class FileTestCase: StoreTestCase {
                 expectationDownload?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            var reportProgressCount = 0
+            
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                reportProgressCount += 1
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
     
