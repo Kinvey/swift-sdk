@@ -13,13 +13,16 @@ internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
     typealias CompletionHandler = (Result<R, E>) -> Void
     
     let readPolicy: ReadPolicy
+    let validationStrategy: ValidationStrategy?
     
     init(
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?
     ) {
         self.readPolicy = readPolicy
+        self.validationStrategy = validationStrategy
         super.init(
             cache: cache,
             options: options

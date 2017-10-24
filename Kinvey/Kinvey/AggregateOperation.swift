@@ -17,6 +17,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         aggregation: Aggregation,
         condition predicate: NSPredicate? = nil,
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?
     ) {
@@ -24,6 +25,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         self.predicate = predicate
         super.init(
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
