@@ -783,6 +783,45 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodObjectIdMissingAndAllValidationStrategy() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .all)
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                switch error {
+                case let error as Kinvey.Error:
+                    switch error {
+                    case .objectIdMissing:
+                        break
+                    default:
+                        XCTFail()
+                    }
+                default:
+                    XCTFail()
+                }
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testGetMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
