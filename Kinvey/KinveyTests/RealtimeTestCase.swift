@@ -964,6 +964,46 @@ class RealtimeTestCase: KinveyTestCase {
                     expectationGrantAccess = nil
                 }
             }
+            
+            do {
+                if useMockData {
+                    mockResponse(json: [
+                        "_id" : UUID().uuidString,
+                        "publish" : [
+                            UUID().uuidString
+                        ],
+                        "subscribe" : [
+                            user.userId
+                        ],
+                        "groups" : [
+                            "publish" : [],
+                            "subscribe" : []
+                        ]
+                    ])
+                }
+                defer {
+                    if useMockData {
+                        setURLProtocol(nil)
+                    }
+                }
+                
+                weak var expectationGetAccess = self.expectation(description: "Get Access")
+                
+                stream.streamAccess(userId: user.userId) {
+                    switch $0 {
+                    case .success(let acl):
+                        XCTAssertEqual(acl.subscribers.first, user.userId)
+                    case .failure(let error):
+                        XCTFail()
+                    }
+                    
+                    expectationGetAccess?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+                    expectationGetAccess = nil
+                }
+            }
         }
         
         XCTAssertTrue(granted)

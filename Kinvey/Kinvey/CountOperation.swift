@@ -15,12 +15,14 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     init(
         query: Query? = nil,
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?
     ) {
         self.query = query
         super.init(
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )

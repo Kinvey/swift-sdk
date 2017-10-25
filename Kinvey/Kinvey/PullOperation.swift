@@ -16,6 +16,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?,
         autoPagination: Bool,
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?,
         resultsHandler: ResultsHandler? = nil
@@ -26,6 +27,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
             deltaSetCompletionHandler: deltaSetCompletionHandler,
             autoPagination: autoPagination,
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options,
             resultsHandler: resultsHandler

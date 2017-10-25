@@ -124,6 +124,38 @@ public class LiveStream<Type: BaseMappable> {
         return request
     }
     
+    /// Grant access to a user for the `LiveStream`
+    @discardableResult
+    public func streamAccess(
+        userId: String,
+        options: Options? = nil,
+        completionHandler: ((Result<LiveStreamAcl, Swift.Error>) -> Void)? = nil
+    ) -> Request {
+        let client = options?.client ?? self.client
+        let request = client.networkRequestFactory.buildLiveStreamAccess(
+            streamName: name,
+            userId: userId,
+            options: options
+        )
+        Promise<LiveStreamAcl> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response,
+                    response.isOK,
+                    let liveStreamAcl: LiveStreamAcl = client.responseParser.parse(data)
+                {
+                    fulfill(liveStreamAcl)
+                } else {
+                    reject(buildError(data, response, error, client))
+                }
+            }
+        }.then {
+            completionHandler?(.success($0))
+        }.catch {
+            completionHandler?(.failure($0))
+        }
+        return request
+    }
+    
     private func execute(
         request: HttpRequest,
         userId: String,

@@ -36,6 +36,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
         autoPagination: Bool,
         readPolicy: ReadPolicy,
+        validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?,
         resultsHandler: ResultsHandler? = nil
@@ -50,6 +51,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         self.resultsHandler = resultsHandler
         super.init(
             readPolicy: readPolicy,
+            validationStrategy: validationStrategy,
             cache: cache,
             options: options
         )
@@ -77,7 +79,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 let query = Query(self.query)
                 query.skip = nil
                 query.limit = nil
-                let countOperation = CountOperation<T>(query: query, readPolicy: .forceNetwork, cache: nil, options: nil)
+                let countOperation = CountOperation<T>(
+                    query: query,
+                    readPolicy: .forceNetwork,
+                    validationStrategy: validationStrategy,
+                    cache: nil,
+                    options: nil
+                )
                 let request = countOperation.execute { result in
                     switch result {
                     case .success(let count):
@@ -105,6 +113,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         deltaSet: self.deltaSet,
                         autoPagination: false,
                         readPolicy: .forceNetwork,
+                        validationStrategy: validationStrategy,
                         cache: self.cache,
                         options: self.options
                     )
@@ -143,6 +152,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 if let response = response, response.isOK,
                     let jsonArray = self.client.responseParser.parseArray(data)
                 {
+                    if let validationStrategy = self.validationStrategy,
+                        let error = validationStrategy.validate(jsonArray: jsonArray)
+                    {
+                        reject(error)
+                        return
+                    }
                     self.resultsHandler?(jsonArray)
                     if let cache = self.cache, deltaSet {
                         let refObjs = self.reduceToIdsLmts(jsonArray)
@@ -152,6 +167,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                 deltaSet: false,
                                 autoPagination: self.autoPagination,
                                 readPolicy: self.readPolicy,
+                                validationStrategy: self.validationStrategy,
                                 cache: cache,
                                 options: self.options
                             )
@@ -185,6 +201,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                         deltaSet: false,
                                         autoPagination: self.autoPagination,
                                         readPolicy: .forceNetwork,
+                                        validationStrategy: self.validationStrategy,
                                         cache: cache,
                                         options: self.options
                                     ) { jsonArray in
@@ -233,6 +250,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                 deltaSet: false,
                                 autoPagination : self.autoPagination,
                                 readPolicy: .forceNetwork,
+                                validationStrategy: self.validationStrategy,
                                 cache: cache,
                                 options: self.options
                             ) { jsonArray in
