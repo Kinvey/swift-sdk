@@ -146,6 +146,9 @@ class PerformanceProductTestCase: KinveyTestCase {
         }
         
         keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
+            XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+            XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+            XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
             let percentage = request.progress.fractionCompleted * 100.0
             print("\(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format:"%3.2f", percentage))%")
             return request.progress.fractionCompleted >= 1.0

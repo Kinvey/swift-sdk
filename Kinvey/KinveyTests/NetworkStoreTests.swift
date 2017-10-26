@@ -68,6 +68,7 @@ class NetworkStoreTests: StoreTestCase {
             
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 progressReportCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
                 return request.progress.fractionCompleted >= 1.0
@@ -169,6 +170,9 @@ class NetworkStoreTests: StoreTestCase {
             
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 reportProgressCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+                XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+                XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }

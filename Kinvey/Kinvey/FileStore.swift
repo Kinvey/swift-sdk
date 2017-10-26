@@ -1127,6 +1127,7 @@ open class FileStore<FileType: File> {
             }
         }.then { (file, downloadStage) in
             return Promise<(FileType, DownloadStage)> { fulfill, reject in
+                multiRequest.progress.completedUnitCount = 1
                 fulfill((file, downloadStage))
             }
         }.then { (file, downloadStage) -> Promise<Data> in

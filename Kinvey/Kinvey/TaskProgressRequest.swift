@@ -11,16 +11,26 @@ import Foundation
 class TaskProgressRequest: NSObject {
     
     var task: URLSessionTask? {
-        didSet {
+        willSet {
             guard #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) else {
                 if let task = task {
-                    addObservers(task)
-                } else {
-                    removeObservers(oldValue)
+                    removeObservers(task)
                 }
                 return
             }
         }
+        didSet {
+            guard #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) else {
+                if let task = task {
+                    addObservers(task)
+                }
+                return
+            }
+        }
+    }
+    
+    deinit {
+        removeObservers(task)
     }
     
     private lazy var _progress = Progress(totalUnitCount: 1)
@@ -44,6 +54,7 @@ class TaskProgressRequest: NSObject {
         if let task = task {
             if !progressObserving {
                 progressObserving = true
+                task.addObserver(self, forKeyPath: "state", options: [.new], context: nil)
                 task.addObserver(self, forKeyPath: "countOfBytesSent", options: [.new], context: nil)
                 task.addObserver(self, forKeyPath: "countOfBytesExpectedToSend", options: [.new], context: nil)
                 task.addObserver(self, forKeyPath: "countOfBytesReceived", options: [.new], context: nil)
@@ -58,6 +69,7 @@ class TaskProgressRequest: NSObject {
         if let task = task {
             if progressObserving {
                 progressObserving = false
+                task.removeObserver(self, forKeyPath: "state")
                 task.removeObserver(self, forKeyPath: "countOfBytesSent")
                 task.removeObserver(self, forKeyPath: "countOfBytesExpectedToSend")
                 task.removeObserver(self, forKeyPath: "countOfBytesReceived")
@@ -67,13 +79,11 @@ class TaskProgressRequest: NSObject {
         lock.unlock()
     }
     
-    deinit {
-        removeObservers(task)
-    }
-    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let _ = object as? URLSessionTask, let keyPath = keyPath {
             switch keyPath {
+            case "state":
+                reportProgress()
             case "countOfBytesReceived":
                 reportProgress()
             case "countOfBytesExpectedToReceive":
@@ -91,32 +101,41 @@ class TaskProgressRequest: NSObject {
     fileprivate func reportProgress() {
         if let task = task
         {
-            let httpMethod = task.originalRequest?.httpMethod ?? "GET"
-            switch httpMethod {
-            case "GET":
-                if _progressDownload == nil,
-                    task.countOfBytesExpectedToReceive != NSURLSessionTransferSizeUnknown
-                {
-                    _progressDownload = Progress(totalUnitCount: task.countOfBytesExpectedToReceive, parent: _progress, pendingUnitCount: 1)
-                }
-                if let progress = _progressDownload,
-                    task.countOfBytesReceived > 0
-                {
-                    progress.completedUnitCount = task.countOfBytesReceived
-                }
-            case "POST", "PUT", "PATCH":
-                if _progressUpload == nil,
-                    task.countOfBytesExpectedToSend != NSURLSessionTransferSizeUnknown
-                {
-                    _progressUpload = Progress(totalUnitCount: task.countOfBytesExpectedToSend, parent: _progress, pendingUnitCount: 1)
-                }
-                if let progress = _progressUpload,
-                    task.countOfBytesSent > 0
-                {
-                    progress.completedUnitCount = task.countOfBytesSent
-                }
+            switch task.state {
+            case .completed:
+                _progress.completedUnitCount = _progress.totalUnitCount
             default:
-                break
+                let httpMethod = task.originalRequest?.httpMethod ?? "GET"
+                switch httpMethod {
+                case "GET":
+                    if _progressDownload == nil,
+                        task.countOfBytesExpectedToReceive != NSURLSessionTransferSizeUnknown,
+                        task.countOfBytesExpectedToReceive > 0
+                    {
+                        _progressDownload = Progress(totalUnitCount: task.countOfBytesExpectedToReceive, parent: _progress, pendingUnitCount: 1)
+                    }
+                    if let progress = _progressDownload,
+                        task.countOfBytesReceived > 0,
+                        task.countOfBytesReceived <= task.countOfBytesExpectedToReceive
+                    {
+                        progress.completedUnitCount = task.countOfBytesReceived
+                    }
+                case "POST", "PUT", "PATCH":
+                    if _progressUpload == nil,
+                        task.countOfBytesExpectedToSend != NSURLSessionTransferSizeUnknown,
+                        task.countOfBytesExpectedToSend > 0
+                    {
+                        _progressUpload = Progress(totalUnitCount: task.countOfBytesExpectedToSend, parent: _progress, pendingUnitCount: 1)
+                    }
+                    if let progress = _progressUpload,
+                        task.countOfBytesSent > 0,
+                        task.countOfBytesSent <= task.countOfBytesExpectedToSend
+                    {
+                        progress.completedUnitCount = task.countOfBytesSent
+                    }
+                default:
+                    break
+                }
             }
         }
     }
