@@ -169,8 +169,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             let changed = results["changed"] as? [JsonDictionary]
                         {
                             cache.lastPull = date.addingTimeInterval(-5)
-                            cache.save(entities: AnyRandomAccessCollection(Array<T>(JSONArray: changed)))
                             cache.remove(entities: AnyRandomAccessCollection(Array<T>(JSONArray: deleted)))
+                            cache.save(entities: AnyRandomAccessCollection(Array<T>(JSONArray: changed)))
                             self.executeLocal {
                                 switch $0 {
                                 case .success(let results):
