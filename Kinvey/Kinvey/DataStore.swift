@@ -108,7 +108,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
     open class func getInstance(
         _ type: StoreType = .cache,
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         client: Client = sharedClient,
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil
@@ -127,7 +127,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     open class func collection(
         _ type: StoreType = .cache,
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         autoPagination: Bool = false,
         client: Client = sharedClient,
         tag: String = defaultTag,
@@ -136,22 +136,22 @@ open class DataStore<T: Persistable> where T: NSObject {
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
-        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
-        var dataStore = client.dataStoreInstances[key] as? DataStore
-        if dataStore == nil {
+//        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
+//        var dataStore = client.dataStoreInstances[key] as? DataStore
+//        if dataStore == nil {
             let fileURL = client.fileURL(tag)
-            dataStore = DataStore<T>(
+            return DataStore<T>(
                 type: type,
-                deltaSet: deltaSet ?? false,
+                deltaSet: deltaSet,
                 autoPagination: autoPagination,
                 client: client,
                 fileURL: fileURL,
                 encryptionKey: client.encryptionKey,
                 validationStrategy: validationStrategy
             )
-            client.dataStoreInstances[key] = dataStore
-        }
-        return dataStore!
+//            client.dataStoreInstances[key] = dataStore
+//        }
+//        return dataStore!
     }
     
     /**
@@ -349,7 +349,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func find(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ArrayCompletionHandler
     ) -> Request {
@@ -379,7 +379,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func find(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
     ) -> Request {
@@ -1774,7 +1774,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         completionHandler: DataStore<T>.ArrayCompletionHandler? = nil
     ) -> Request {
         return pull(
@@ -1795,7 +1795,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         deltaSetCompletionHandler: (([T]) -> Void)? = nil,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
     ) -> Request {
@@ -1882,7 +1882,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         completionHandler: UIntArrayCompletionHandler? = nil
     ) -> Request {
         return sync(query, deltaSet: deltaSet) { (result: Result<(UInt, [T]), [Swift.Error]>) in
@@ -1899,7 +1899,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> Request {
         return sync(

@@ -15,6 +15,8 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
     var memory = [String : T]()
     
+    var lastPull: Date?
+    
     var dynamic: DynamicCacheType? {
         return nil
     }

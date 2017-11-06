@@ -61,6 +61,25 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return try! Realm(configuration: configuration)
     }
     
+    var lastPull: Date? {
+        get {
+            return newRealm.object(ofType: RealmLastPull.self, forPrimaryKey: T.collectionName())?.lastPull
+        }
+        set {
+            let realm = newRealm
+            try! realm.write {
+                if let newValue = newValue {
+                    let lastPull = RealmLastPull()
+                    lastPull.collection = T.collectionName()
+                    lastPull.lastPull = newValue
+                    realm.add(lastPull, update: true)
+                } else if let lastPull = realm.object(ofType: RealmLastPull.self, forPrimaryKey: T.collectionName()) {
+                    realm.delete(lastPull)
+                }
+            }
+        }
+    }
+    
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
             fatalError("\(T.self) needs to be a Entity")
@@ -769,6 +788,17 @@ class RealmPendingOperationThreadSafeReference: PendingOperationType {
     
     func buildRequest() -> URLRequest {
         return realmPendingOperation.buildRequest()
+    }
+    
+}
+
+internal class RealmLastPull: Object {
+    
+    @objc dynamic var collection: String!
+    @objc dynamic var lastPull: Date!
+    
+    override public class func primaryKey() -> String? {
+        return "collection"
     }
     
 }

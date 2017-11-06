@@ -11,6 +11,7 @@ import Foundation
 internal protocol CacheType: class {
     
     var ttl: TimeInterval? { get set }
+    var lastPull: Date? { get set }
     
     associatedtype `Type`: Persistable
     
@@ -84,6 +85,15 @@ class AnyCache<T: Persistable>: CacheType {
         }
     }
     
+    var lastPull: Date? {
+        get {
+            return _getLastPull()
+        }
+        set {
+            _setLastPull(newValue)
+        }
+    }
+    
     var dynamic: DynamicCacheType? {
         return _getDynamic()
     }
@@ -91,6 +101,8 @@ class AnyCache<T: Persistable>: CacheType {
     private let _getDynamic: () -> DynamicCacheType?
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
+    private let _getLastPull: () -> Date?
+    private let _setLastPull: (Date?) -> Void
     private let _saveEntity: (T) -> Void
     private let _saveEntities: (AnyRandomAccessCollection<Type>) -> Void
     private let _findById: (String) -> T?
@@ -112,6 +124,8 @@ class AnyCache<T: Persistable>: CacheType {
         _getDynamic = { return cache.dynamic }
         _getTTL = { return cache.ttl }
         _setTTL = { cache.ttl = $0 }
+        _getLastPull = { return cache.lastPull }
+        _setLastPull = { cache.lastPull = $0 }
         _saveEntity = cache.save(entity:)
         _saveEntities = cache.save(entities:)
         _findById = cache.find(byId:)
