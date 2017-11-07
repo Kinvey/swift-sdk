@@ -349,7 +349,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func find(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ArrayCompletionHandler
     ) -> Request {
@@ -379,7 +379,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func find(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
     ) -> Request {
@@ -1774,7 +1774,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         completionHandler: DataStore<T>.ArrayCompletionHandler? = nil
     ) -> Request {
         return pull(
@@ -1795,7 +1795,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         deltaSetCompletionHandler: (([T]) -> Void)? = nil,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
     ) -> Request {
@@ -1882,7 +1882,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         completionHandler: UIntArrayCompletionHandler? = nil
     ) -> Request {
         return sync(query, deltaSet: deltaSet) { (result: Result<(UInt, [T]), [Swift.Error]>) in
@@ -1899,7 +1899,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
-        deltaSet: Bool = true,
+        deltaSet: Bool? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> Request {
         return sync(

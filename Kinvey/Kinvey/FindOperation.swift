@@ -152,7 +152,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 let request = CustomEndpoint.execute(
                     "DeltaSet",
                     params: CustomEndpoint.Params([
-                        "collection" : "Book",
+                        "collection" : T.collectionName(),
                         "lmt" : lastPull.toString()
                     ]),
                     options: Options(
@@ -161,10 +161,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 ) { (result: Result<JsonDictionary, Swift.Error>) in
                     switch result {
                     case .success(let results):
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                        let dateTransform = KinveyDateTransform()
                         if let dateString = results["date"] as? String,
-                            let date = dateFormatter.date(from: dateString),
+                            let date = dateTransform.transformFromJSON(dateString),
                             let deleted = results["deleted"] as? [JsonDictionary],
                             let changed = results["changed"] as? [JsonDictionary]
                         {
