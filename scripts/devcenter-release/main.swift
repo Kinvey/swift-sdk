@@ -47,7 +47,7 @@ extension String {
 let version = arguments[1]
 let downloadURLString = "http://download.kinvey.com/iOS/Kinvey-\(version).zip"
 let versionTuple: (major: Int, minor: Int, patch: Int) = {
-    let regex = try! NSRegularExpression(pattern: "(\\d)\\.(\\d)\\.(\\d)")
+    let regex = try! NSRegularExpression(pattern: "(\\d+)\\.(\\d+)\\.(\\d+)")
     let match = regex.firstMatch(in: version, range: NSRange(location: 0, length: version.characters.count))!
     let major = Int(version[match.range(at: 1)])!
     let minor = Int(version[match.range(at: 2)])!
