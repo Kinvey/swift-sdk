@@ -147,8 +147,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func fetch(multiRequest: MultiRequest) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            if deltaSet, let cache = self.cache {
-                let lastPull = cache.lastPull ?? Date(timeIntervalSince1970: 0)
+            if deltaSet, let cache = self.cache, let lastPull = cache.lastPull {
                 let request = CustomEndpoint.execute(
                     "DeltaSet",
                     params: CustomEndpoint.Params([
