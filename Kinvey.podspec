@@ -141,10 +141,10 @@ Pod::Spec.new do |s|
 	
   s.dependency "PromiseKit", "~> 4.0"
   s.dependency "KeychainAccess", "~> 3.0"
-  s.dependency "Realm", "~> 2.0"
-  s.dependency "RealmSwift", "~> 2.0"
-  s.dependency "ObjectMapper", "~> 2.0"
-  s.dependency "XCGLogger", "~> 4.0.0"
+  s.dependency "Realm", "~> 3.0"
+  s.dependency "RealmSwift", "~> 3.0"
+  s.dependency "ObjectMapper", "~> 3.0"
+  s.dependency "XCGLogger", "~> 6.0"
   s.dependency "PubNub", "~> 4.0"
 
 end

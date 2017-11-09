@@ -190,7 +190,7 @@ class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictio
 }
 
 /// Overload operator for `List` values
-public func <-<T: BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
+public func <-<T: Object & BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
     let (right, map) = rhs
     var list = lhs
     let transform = ListValueTransform<T>(list)
