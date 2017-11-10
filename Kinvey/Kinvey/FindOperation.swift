@@ -152,7 +152,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     "DeltaSet",
                     params: CustomEndpoint.Params([
                         "collection" : T.collectionName(),
-                        "lmt" : lastPull.toString()
+                        "lmt" : lastPull.toString(),
+                        "query" : self.query.predicate!.toJSON()
                     ]),
                     options: Options(
                         client: client

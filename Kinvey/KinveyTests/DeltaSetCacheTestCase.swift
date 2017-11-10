@@ -2256,4 +2256,227 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testQuery() {
+        Kinvey.sharedClient.logNetworkEnabled = true
+        
+        do {
+            weak var expectationLogin = expectation(description: "Login")
+            
+            Kinvey.sharedClient.initialize(
+                appKey: "",
+                appSecret: ""
+            ) {
+                switch $0 {
+                case .success(let user):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationLogin?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationLogin = nil
+            }
+        }
+        
+        if Kinvey.sharedClient.activeUser == nil {
+            weak var expectationSignup = expectation(description: "Signup")
+            
+            User.signup(options: nil) { (result: Result<User, Swift.Error>) in
+                switch result {
+                case .success(_):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSignup?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationSignup = nil
+            }
+            
+            deleteUserDuringTearDown = false
+        }
+        
+        defer {
+            if let user = Kinvey.sharedClient.activeUser {
+                weak var expectationDelete = expectation(description: "Delete")
+                
+                user.destroy() {
+                    switch $0 {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationDelete?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { (error) in
+                    expectationDelete = nil
+                }
+            }
+        }
+        
+        var savedBook: Book? = nil
+        var count = Int64(0)
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            let store = DataStore<Book>.collection(.sync)
+            
+            store.count(options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let _count):
+                    count = Int64(_count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationCount = nil
+            }
+            
+            do {
+                weak var expectationSave = expectation(description: "Save")
+                
+                let book = Book()
+                book.title = "Test"
+                store.save(book, options: nil) {
+                    switch $0 {
+                    case .success(let book):
+                        XCTAssertNotNil(book.entityId)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { (error) in
+                    expectationSave = nil
+                }
+            }
+            
+            do {
+                weak var expectationSave = expectation(description: "Save")
+                
+                let book = Book()
+                book.title = "Test 2"
+                store.save(book, options: nil) {
+                    switch $0 {
+                    case .success(let book):
+                        XCTAssertNotNil(book.entityId)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { (error) in
+                    expectationSave = nil
+                }
+            }
+            
+            XCTAssertEqual(store.syncCount(), 2)
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync() { (result: Result<(UInt, AnyRandomAccessCollection<Book>), [Swift.Error]>) in
+                switch result {
+                case .success(let _count, let books):
+                    XCTAssertEqual(_count, 2)
+                    XCTAssertEqual(books.count, Int64(count + 2))
+                    savedBook = books.first
+                case .failure(_):
+                    XCTFail()
+                }
+                
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationSync = nil
+            }
+            
+            XCTAssertEqual(store.syncCount(), 0)
+        }
+        
+        XCTAssertNotNil(savedBook)
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            let store = DataStore<Book>.collection(.sync)
+            
+            store.count(options: nil) { (result: Result<Int, Swift.Error>) in
+                switch result {
+                case .success(let _count):
+                    XCTAssertEqual(Int64(_count), count + 2)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationCount = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            let store = DataStore<Book>.collection(.sync, deltaSet: true)
+            
+            store.sync(Query(format: "title == %@", "Test")) { (result: Result<(UInt, AnyRandomAccessCollection<Book>), [Swift.Error]>) in
+                switch result {
+                case .success(let _count, let books):
+                    XCTAssertEqual(_count, 0)
+                    XCTAssertEqual(books.count, Int64(count + 1))
+                case .failure(let error):
+                    XCTFail(error.map({ $0.localizedDescription }).joined(separator: "\n"))
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            let store = DataStore<Book>.collection(.sync)
+            
+            store.count(options: nil) { (result: Result<Int, Swift.Error>) in
+                switch result {
+                case .success(let _count):
+                    XCTAssertEqual(Int64(_count), count + 2)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationCount = nil
+            }
+        }
+    }
+    
 }
