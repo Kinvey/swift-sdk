@@ -217,6 +217,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         }
                         let entities = convert(jsonArray)
                         if let cache = self.cache {
+                            if let fetchDateString = response.httpResponse?.allHeaderFields["x-kinvey-fetch-date"] as? String,
+                                let dateTransform = Optional(KinveyDateTransform()),
+                                let fetchDate = dateTransform.transformFromJSON(fetchDateString)
+                            {
+                                cache.lastPull = fetchDate
+                            }
                             if let cache = cache.dynamic {
                                 cache.save(entities: AnyRandomAccessCollection(jsonArray))
                             } else {
