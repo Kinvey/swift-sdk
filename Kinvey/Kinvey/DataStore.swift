@@ -108,7 +108,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @available(*, deprecated: 3.0.22, message: "Please use `collection()` instead")
     open class func getInstance(
         _ type: StoreType = .cache,
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         client: Client = sharedClient,
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil
@@ -127,7 +127,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     open class func collection(
         _ type: StoreType = .cache,
-        deltaSet: Bool? = nil,
+        deltaSet: Bool = true,
         autoPagination: Bool = false,
         client: Client = sharedClient,
         tag: String = defaultTag,
@@ -136,22 +136,22 @@ open class DataStore<T: Persistable> where T: NSObject {
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
-        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
-        var dataStore = client.dataStoreInstances[key] as? DataStore
-        if dataStore == nil {
+//        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
+//        var dataStore = client.dataStoreInstances[key] as? DataStore
+//        if dataStore == nil {
             let fileURL = client.fileURL(tag)
-            dataStore = DataStore<T>(
+            return DataStore<T>(
                 type: type,
-                deltaSet: deltaSet ?? false,
+                deltaSet: deltaSet,
                 autoPagination: autoPagination,
                 client: client,
                 fileURL: fileURL,
                 encryptionKey: client.encryptionKey,
                 validationStrategy: validationStrategy
             )
-            client.dataStoreInstances[key] = dataStore
-        }
-        return dataStore!
+//            client.dataStoreInstances[key] = dataStore
+//        }
+//        return dataStore!
     }
     
     /**
@@ -1965,7 +1965,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                                 reject(error)
                             }
                         }
-//                        requests.addRequest(request)
+                        requests.addRequest(request)
                     case .failure(let errors):
                         reject(MultipleErrors(errors: errors))
                     }
