@@ -15,7 +15,7 @@ class PendingBlockOperation: CollectionBlockOperation {
 class PushBlockOperation: PendingBlockOperation {
 }
 
-fileprivate class PushRequest: NSObject, Request {
+fileprivate class PushRequest: NSObject, BasicRequest {
     
     let completionOperation: PushBlockOperation
     private let dispatchSerialQueue: DispatchQueue
@@ -75,7 +75,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         )
     }
     
-    func execute(completionHandler: CompletionHandler?) -> Request {
+    func execute(completionHandler: CompletionHandler?) -> BasicRequest {
         var count = UInt(0)
         var errors: [Swift.Error] = []
         

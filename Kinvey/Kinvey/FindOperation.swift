@@ -55,7 +55,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
@@ -70,7 +70,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
-    private func count(multiRequest: MultiRequest) -> Promise<Int?> {
+    private func count(multiRequest: MultiRequest<Any>) -> Promise<Int?> {
         return Promise<Int?> { fulfill, reject in
             if autoPagination {
                 if let limit = query.limit {
@@ -100,7 +100,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetchAutoPagination(multiRequest: MultiRequest, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetchAutoPagination(multiRequest: MultiRequest<Any>, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let nPages = Int64(ceil(Double(count) / Double(MaxSizePerResultSet)))
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
@@ -145,7 +145,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetch(multiRequest: MultiRequest) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetch(multiRequest: MultiRequest<Any>) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             if deltaSet, let cache = self.cache, let lastPull = cache.lastPull {
                 let request = CustomEndpoint.execute(
@@ -240,8 +240,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = MultiRequest()
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+        let request = MultiRequest<Any>()
         request.progress = Progress(totalUnitCount: 100)
         count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
             request.progress.completedUnitCount = 1

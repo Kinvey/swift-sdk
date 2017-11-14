@@ -68,9 +68,9 @@ open class MIC {
         code: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> BasicRequest {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest()
+        let requests = MultiRequest<Any>()
         Promise<U> { fulfill, reject in
             let request = client.networkRequestFactory.buildOAuthToken(
                 redirectURI: redirectURI,
@@ -114,9 +114,9 @@ open class MIC {
         password: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> BasicRequest {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest()
+        let requests = MultiRequest<Any>()
         let request = client.networkRequestFactory.buildOAuthGrantAuth(
             redirectURI: redirectURI,
             options: options
@@ -190,8 +190,8 @@ open class MIC {
         authServiceId: String?,
         client: Client = sharedClient,
         completionHandler: User.UserHandler<U>? = nil
-    ) -> Request {
-        let requests = MultiRequest()
+    ) -> BasicRequest {
+        let requests = MultiRequest<Any>()
         let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: Options(

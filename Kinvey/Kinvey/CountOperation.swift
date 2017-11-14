@@ -28,7 +28,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
@@ -41,7 +41,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(
             collectionName: T.collectionName(),
             query: query,

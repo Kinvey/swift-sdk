@@ -44,7 +44,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> BasicRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(
@@ -65,7 +65,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> BasicRequest {
         let request = client.networkRequestFactory.buildAppDataSave(
             persistable,
             options: options

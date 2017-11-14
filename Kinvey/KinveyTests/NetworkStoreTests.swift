@@ -357,6 +357,103 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testCountSync() {
+        let store = DataStore<Event>.collection(.network)
+        
+        var eventsCount: Int = -1
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 85])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request: AnyRequest<Result<Int, Swift.Error>> = store.count()
+            XCTAssertTrue(request.wait())
+            switch request.result! {
+            case .success(let count):
+                eventsCount = count
+                XCTAssertEqual(count, 85)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        do {
+            let request: AnyRequest<Result<Int, Swift.Error>> = store.count(options: Options(readPolicy: .forceLocal))
+            XCTAssertTrue(request.wait())
+            switch request.result! {
+            case .success(let count):
+                XCTAssertEqual(count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTAssertNotNil(eventsCount)
+        
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Friday Party!",
+                    "_acl": [
+                        "creator": "58450c8000a5907e7dfb37bf"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:43:12.395Z",
+                        "ect": "2016-12-05T06:43:12.395Z"
+                    ],
+                    "_id": "58450c80d5ee86507a8b4e7e"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let event = Event()
+            event.name = "Friday Party!"
+            
+            weak var expectationCreate = expectation(description: "Create")
+            
+            store.save(event) { event, error in
+                XCTAssertNotNil(event)
+                XCTAssertNil(error)
+                
+                expectationCreate?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCreate = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 86])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request: AnyRequest<Result<Int, Swift.Error>> = store.count()
+            XCTAssertTrue(request.wait())
+            switch request.result! {
+            case .success(let count):
+                XCTAssertEqual(eventsCount + 1, count)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
     func testCountTranslateQuery() {
         let store = DataStore<Event>.collection(.network)
         
@@ -542,6 +639,161 @@ class NetworkStoreTests: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
+            }
+        }
+    }
+    
+    func testSaveAndFindByIdSync() {
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        var i = 0
+        
+        var mockData = JsonDictionary()
+        var _person: Person?
+        do {
+            if useMockData {
+                mockResponse { request in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json["_acl"] = [
+                        "creator": self.client.activeUser?.userId
+                    ]
+                    json["_kmd"] = [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                    json["_id"] = UUID().uuidString
+                    mockData = json
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            measure {
+                let person = Person {
+                    $0.name = "Person \(i)"
+                }
+                
+                weak var expectationSave = self.expectation(description: "Save")
+                
+                self.store.save(person, writePolicy: .forceNetwork) { person, error in
+                    _person = person
+                    XCTAssertNotNil(person)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                self.waitForExpectations(timeout: self.defaultTimeout) { error in
+                    expectationSave = nil
+                }
+                
+                i += 1
+            }
+        }
+        
+        if useMockData {
+            mockResponse(json: mockData)
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let request: AnyRequest<Result<Person, Swift.Error>> = store.find(_person!.personId!, options: Options(readPolicy: .forceNetwork), completionHandler: nil)
+        XCTAssertTrue(request.wait())
+        XCTAssertNotNil(request.result)
+        if let result = request.result {
+            switch result {
+            case .success(let person):
+                XCTAssertNotNil(person.personId)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
+    func testSaveAndFindByQuerySync() {
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        var mockData = JsonDictionary()
+        var _person: Person?
+        do {
+            if useMockData {
+                mockResponse { request in
+                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    json["_acl"] = [
+                        "creator": self.client.activeUser?.userId
+                    ]
+                    json["_kmd"] = [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                    json["_id"] = UUID().uuidString
+                    mockData = json
+                    return HttpResponse(statusCode: 201, json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let person = Person {
+                $0.name = "Person \(1)"
+            }
+            
+            weak var expectationSave = self.expectation(description: "Save")
+            
+            self.store.save(person, writePolicy: .forceNetwork) { person, error in
+                _person = person
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationSave?.fulfill()
+            }
+            
+            self.waitForExpectations(timeout: self.defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        if useMockData {
+            mockResponse(json: [mockData])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let query = Query(format: "personId == %@", _person!.personId!)
+        let request: AnyRequest<Result<AnyRandomAccessCollection<Person>, Swift.Error>> = store.find(query, options: Options(readPolicy: .forceNetwork), completionHandler: nil)
+        XCTAssertTrue(request.wait())
+        XCTAssertNotNil(request.result)
+        if let result = request.result {
+            switch result {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 1)
+                XCTAssertNotNil(persons.first)
+                if let result = persons.first {
+                    XCTAssertNotNil(result.personId)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
         }
     }

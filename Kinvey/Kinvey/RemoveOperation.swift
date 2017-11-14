@@ -32,7 +32,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             var count = 0
@@ -62,7 +62,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let results = self.client.responseParser.parse(data),

@@ -1090,6 +1090,31 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testFindByIdSync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        guard let personId = person.personId else { return }
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request: AnyRequest<Result<Person, Swift.Error>> = store.find(personId, options: nil, completionHandler: nil)
+        XCTAssertNotNil(request.result)
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let person):
+            XCTAssertNotNil(person.personId)
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testFindByQuery() {
         let person = save()
         
@@ -1123,6 +1148,57 @@ class SyncStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
+        }
+    }
+    
+    func testFindByQuerySync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        guard let personId = person.personId else { return }
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let query = Query(format: "personId == %@", personId)
+        let request: AnyRequest<Result<AnyRandomAccessCollection<Person>, Swift.Error>> = store.find(query, options: nil, completionHandler: nil)
+        XCTAssertTrue(request.wait())
+        XCTAssertNotNil(request.result)
+        switch request.result! {
+        case .success(let persons):
+            XCTAssertEqual(persons.count, 1)
+            XCTAssertNotNil(persons.first)
+            if let result = persons.first {
+                XCTAssertEqual(result.personId, personId)
+            }
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testCountSync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        guard let personId = person.personId else { return }
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request: AnyRequest<Result<Int, Swift.Error>> = store.count()
+        XCTAssertTrue(request.wait())
+        XCTAssertNotNil(request.result)
+        switch request.result! {
+        case .success(let count):
+            XCTAssertEqual(count, 1)
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
         }
     }
     

@@ -330,7 +330,7 @@ open class Client: Credential {
      call to the server.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> BasicRequest {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
             switch result {
             case .success(let envInfo):
@@ -347,7 +347,7 @@ open class Client: Credential {
      the backend.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> BasicRequest {
         guard let _ = appKey, let _ = appSecret else {
             DispatchQueue.main.async {
                 completionHandler(.failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()")))

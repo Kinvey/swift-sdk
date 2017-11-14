@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class LocalRequest: NSObject, Request {
+internal class LocalRequest: NSObject, BasicRequest {
     
     let executing = false
     let cancelled = false
