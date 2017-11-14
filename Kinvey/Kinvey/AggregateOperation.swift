@@ -31,7 +31,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BaseRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let _ = self.cache {
@@ -43,7 +43,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BaseRequest {
         let request = client.networkRequestFactory.buildAppDataGroup(
             collectionName: T.collectionName(),
             keys: aggregation.keys,

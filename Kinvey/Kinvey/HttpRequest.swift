@@ -270,7 +270,7 @@ enum Body {
     
 }
 
-internal class HttpRequest: TaskProgressRequest, BasicRequest {
+internal class HttpRequest: TaskProgressRequest, BaseRequest {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint

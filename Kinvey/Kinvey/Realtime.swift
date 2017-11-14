@@ -98,7 +98,7 @@ public class LiveStream<Type: BaseMappable> {
         acl: LiveStreamAcl,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let request = client.networkRequestFactory.buildLiveStreamGrantAccess(
             streamName: name,
             userId: userId,
@@ -130,7 +130,7 @@ public class LiveStream<Type: BaseMappable> {
         userId: String,
         options: Options? = nil,
         completionHandler: ((Result<LiveStreamAcl, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let client = options?.client ?? self.client
         let request = client.networkRequestFactory.buildLiveStreamAccess(
             streamName: name,

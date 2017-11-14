@@ -55,7 +55,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> BaseRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let cache = self.cache {
@@ -240,7 +240,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> BaseRequest {
         let request = MultiRequest<Any>()
         request.progress = Progress(totalUnitCount: 100)
         count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in

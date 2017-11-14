@@ -212,7 +212,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
-    open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> BasicRequest {
+    open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping ObjectCompletionHandler) -> BaseRequest {
         return find(byId: id, readPolicy: readPolicy) { (result: Result<T, Swift.Error>) in
             switch result {
             case .success(let obj):
@@ -234,7 +234,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     @available(*, deprecated: 3.6.0, message: "Please use find(_:options:completionHandler:)")
     @discardableResult
-    open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<T, Swift.Error>) -> Void) -> BasicRequest {
+    open func find(byId id: String, readPolicy: ReadPolicy? = nil, completionHandler: @escaping (Result<T, Swift.Error>) -> Void) -> BaseRequest {
         return find(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
     
@@ -261,7 +261,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ id: String,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ObjectCompletionHandler
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return find(
             id,
             readPolicy: readPolicy
@@ -292,7 +292,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ id: String,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<T, Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return find(
             id,
             options: Options(
@@ -316,7 +316,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ id: String,
         options: Options? = nil,
         completionHandler: @escaping (Result<T, Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         validate(id: id)
         
         let readPolicy = options?.readPolicy ?? self.readPolicy
@@ -391,7 +391,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         deltaSet: Bool? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ArrayCompletionHandler
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return find(
             query,
             deltaSet: deltaSet,
@@ -421,7 +421,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         deltaSet: Bool? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return find(
             query,
             options: Options(
@@ -446,7 +446,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return find(query, options: options) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
             switch result {
             case .success(let results):
@@ -470,7 +470,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: @escaping (Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let deltaSet = options?.deltaSet ?? self.deltaSet
         let operation = FindOperation<T>(
@@ -537,7 +537,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return count(
             query,
             readPolicy: readPolicy
@@ -568,7 +568,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return count(
             query,
             options: Options(
@@ -590,7 +590,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<Int, Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let operation = CountOperation<T>(
             query: Query(query: query ?? Query(), persistableType: T.self),
@@ -669,7 +669,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationCustomResult<T>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             initialObject: initialObject,
@@ -713,7 +713,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationCustomResult<T>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             initialObject: initialObject,
@@ -734,7 +734,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationCustomResult<T>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let keys = keys ?? []
         let aggregation: Aggregation = .custom(
@@ -796,7 +796,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationCountResult<T, Count>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             count: keys,
             countType: countType,
@@ -835,7 +835,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationCountResult<T, Count>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             count: keys,
             countType: countType,
@@ -854,7 +854,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationCountResult<T, Count>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .count(keys: keys)
         let operation = AggregateOperation<T>(
@@ -913,7 +913,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationSumResult<T, Sum>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             sum: sum,
@@ -955,7 +955,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationSumResult<T, Sum>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             sum: sum,
@@ -976,7 +976,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationSumResult<T, Sum>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .sum(keys: keys, sum: sum)
         let operation = AggregateOperation<T>(
@@ -1035,7 +1035,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationAvgResult<T, Avg>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             avg: avg,
@@ -1077,7 +1077,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationAvgResult<T, Avg>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             avg: avg,
@@ -1098,7 +1098,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationAvgResult<T, Avg>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .avg(keys: keys, avg: avg)
         let operation = AggregateOperation<T>(
@@ -1157,7 +1157,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationMinResult<T, Min>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             min: min,
@@ -1199,7 +1199,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationMinResult<T, Min>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             min: min,
@@ -1220,7 +1220,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationMinResult<T, Min>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .min(keys: keys, min: min)
         let operation = AggregateOperation<T>(
@@ -1279,7 +1279,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping ([AggregationMaxResult<T, Max>]?, Swift.Error?) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             max: max,
@@ -1321,7 +1321,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         readPolicy: ReadPolicy? = nil,
         completionHandler: @escaping (Result<[AggregationMaxResult<T, Max>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return group(
             keys: keys,
             max: max,
@@ -1342,7 +1342,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         condition: NSPredicate? = nil,
         options: Options? = nil,
         completionHandler: @escaping (Result<[AggregationMaxResult<T, Max>], Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let aggregation: Aggregation = .max(keys: keys, max: max)
         let operation = AggregateOperation<T>(
@@ -1383,7 +1383,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         writePolicy: WritePolicy? = nil,
         completionHandler: ObjectCompletionHandler? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return save(
             persistable,
             writePolicy: writePolicy
@@ -1404,7 +1404,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return save(
             persistable,
             options: Options(
@@ -1420,7 +1420,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         options: Options? = nil,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let writePolicy = options?.writePolicy ?? self.writePolicy
         let operation = SaveOperation<T>(
             persistable: persistable,
@@ -1444,7 +1444,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) throws -> BasicRequest {
+    ) throws -> BaseRequest {
         return try remove(
             persistable,
             writePolicy: writePolicy
@@ -1465,7 +1465,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) throws -> BasicRequest {
+    ) throws -> BaseRequest {
         return try remove(
             persistable,
             options: Options(
@@ -1481,7 +1481,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ persistable: T,
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) throws -> BasicRequest {
+    ) throws -> BaseRequest {
         guard let id = persistable.entityId else {
             log.error("Object Id is missing")
             throw Error.objectIdMissing
@@ -1500,7 +1500,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ array: [T],
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             array,
             writePolicy: writePolicy
@@ -1521,7 +1521,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ array: [T],
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             array,
             options: Options(
@@ -1537,7 +1537,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ array: [T],
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.entityId {
@@ -1558,7 +1558,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ id: String,
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byId: id,
             writePolicy: writePolicy,
@@ -1573,7 +1573,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byId id: String,
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byId: id,
             writePolicy: writePolicy
@@ -1594,7 +1594,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byId id: String,
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byId: id,
             options: Options(
@@ -1610,7 +1610,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byId id: String,
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         validate(id: id)
 
         let writePolicy = options?.writePolicy ?? self.writePolicy
@@ -1636,7 +1636,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ ids: [String],
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byIds: ids,
             writePolicy: writePolicy,
@@ -1651,7 +1651,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byIds ids: [String],
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byIds: ids,
             writePolicy: writePolicy
@@ -1672,7 +1672,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byIds ids: [String],
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             byIds: ids,
             options: Options(
@@ -1688,7 +1688,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         byIds ids: [String],
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         guard !ids.isEmpty else {
             DispatchQueue.main.async {
                 completionHandler?(.failure(Error.invalidOperation(description: "ids cannot be an empty array")))
@@ -1711,7 +1711,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             query,
             writePolicy: writePolicy
@@ -1732,7 +1732,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             query,
             options: Options(
@@ -1748,7 +1748,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let writePolicy = options?.writePolicy ?? self.writePolicy
         let operation = RemoveByQueryOperation<T>(
             query: Query(query: query, persistableType: T.self),
@@ -1771,7 +1771,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func removeAll(
         _ writePolicy: WritePolicy? = nil,
         completionHandler: IntCompletionHandler?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return removeAll(
             writePolicy
         ) { (result: Result<Int, Swift.Error>) in
@@ -1790,7 +1790,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func removeAll(
         _ writePolicy: WritePolicy? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return removeAll(
             options: Options(
                 writePolicy: writePolicy
@@ -1804,7 +1804,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func removeAll(
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return remove(
             options: options,
             completionHandler: completionHandler
@@ -1816,7 +1816,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: UIntErrorTypeArrayCompletionHandler? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return push(
             timeout: timeout
         ) { (result: Result<UInt, [Swift.Error]>) in
@@ -1834,7 +1834,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return push(
             options: Options(
                 timeout: timeout
@@ -1848,8 +1848,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func push(
         options: Options? = nil,
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
-    ) -> BasicRequest {
-        var request: BasicRequest!
+    ) -> BaseRequest {
+        var request: BaseRequest!
         Promise<UInt> { fulfill, reject in
             if type == .network {
                 request = LocalRequest()
@@ -1884,7 +1884,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         deltaSet: Bool? = nil,
         completionHandler: DataStore<T>.ArrayCompletionHandler? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return pull(
             query,
             deltaSet: deltaSet
@@ -1906,7 +1906,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         deltaSet: Bool? = nil,
         deltaSetCompletionHandler: (([T]) -> Void)? = nil,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return pull(
             query,
         deltaSetCompletionHandler: {
@@ -1940,8 +1940,8 @@ open class DataStore<T: Persistable> where T: NSObject {
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
-        var request: BasicRequest!
+    ) -> BaseRequest {
+        var request: BaseRequest!
         Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             if type == .network {
                 request = LocalRequest()
@@ -1992,7 +1992,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         deltaSet: Bool? = nil,
         completionHandler: UIntArrayCompletionHandler? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return sync(query, deltaSet: deltaSet) { (result: Result<(UInt, [T]), [Swift.Error]>) in
             switch result {
             case .success(let count, let array):
@@ -2009,7 +2009,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         deltaSet: Bool? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return sync(
             query,
             options: Options(
@@ -2026,7 +2026,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return sync(
             query,
             options: options
@@ -2050,7 +2050,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) -> Void)? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let requests = MultiRequest<Any>()
         Promise<(UInt, AnyRandomAccessCollection<T>)> { fulfill, reject in
             if type == .network {
@@ -2097,7 +2097,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func purge(
         _ query: Query = Query(),
         completionHandler: DataStore<T>.IntCompletionHandler? = nil
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         return purge(
             query
         ) { (result: Result<Int, Swift.Error>) in
@@ -2116,8 +2116,8 @@ open class DataStore<T: Persistable> where T: NSObject {
         _ query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
-    ) -> BasicRequest {
-        var request: BasicRequest!
+    ) -> BaseRequest {
+        var request: BaseRequest!
         Promise<Int> { fulfill, reject in
             if type == .network {
                 request = LocalRequest()
@@ -2212,7 +2212,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         onNext: @escaping (T) -> Void,
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let request = client.networkRequestFactory.buildAppDataSubscribe(
             collectionName: collectionName,
             deviceId: deviceId,
@@ -2248,7 +2248,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func unsubscribe(
         options: Options? = nil,
         completionHandler: @escaping (Result<Void, Swift.Error>) -> Void
-    ) -> BasicRequest {
+    ) -> BaseRequest {
         let request = client.networkRequestFactory.buildAppDataUnSubscribe(
             collectionName: collectionName,
             deviceId: deviceId,

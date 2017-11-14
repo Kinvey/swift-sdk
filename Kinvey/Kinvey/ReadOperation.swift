@@ -40,17 +40,17 @@ protocol ReadOperationType {
     var readPolicy: ReadPolicy { get }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler?) -> BasicRequest
+    func executeLocal(_ completionHandler: CompletionHandler?) -> BaseRequest
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> BasicRequest
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> BaseRequest
     
 }
 
 extension ReadOperationType {
     
     @discardableResult
-    func execute(_ completionHandler: CompletionHandler? = nil) -> BasicRequest {
+    func execute(_ completionHandler: CompletionHandler? = nil) -> BaseRequest {
         switch readPolicy {
         case .forceLocal:
             return executeLocal(completionHandler)

@@ -9,7 +9,7 @@
 import Foundation
 
 /// Protocol that represents a request made to the backend.
-public protocol BasicRequest : ProgressReporting {
+public protocol BaseRequest : ProgressReporting {
     
     /// Indicates if a request still executing or not.
     var executing: Bool { get }
@@ -22,18 +22,9 @@ public protocol BasicRequest : ProgressReporting {
     
 }
 
-public protocol Request : BasicRequest {
+public protocol Request : BaseRequest {
     
     associatedtype ResultType
-    
-    /// Indicates if a request still executing or not.
-    var executing: Bool { get }
-    
-    /// Indicates if a request was cancelled or not.
-    var cancelled: Bool { get }
-    
-    /// Cancels a request in progress.
-    func cancel()
     
     var result: ResultType? { get }
     

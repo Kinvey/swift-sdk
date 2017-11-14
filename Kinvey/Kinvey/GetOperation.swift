@@ -28,7 +28,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> BasicRequest {
+    func executeLocal(_ completionHandler: CompletionHandler?) -> BaseRequest {
         let request = LocalRequest()
         request.execute { () -> Void in
             if let persistable = self.cache?.find(byId: self.id) {
@@ -40,7 +40,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> BasicRequest {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> BaseRequest {
         let request = client.networkRequestFactory.buildAppDataGetById(
             collectionName: T.collectionName(),
             id: id,

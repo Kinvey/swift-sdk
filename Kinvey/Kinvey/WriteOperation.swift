@@ -40,17 +40,17 @@ protocol WriteOperationType {
     var writePolicy: WritePolicy { get }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler?) -> BasicRequest
+    func executeLocal(_ completionHandler: CompletionHandler?) -> BaseRequest
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> BasicRequest
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> BaseRequest
     
 }
 
 extension WriteOperationType {
     
     @discardableResult
-    func execute(_ completionHandler: CompletionHandler?) -> BasicRequest {
+    func execute(_ completionHandler: CompletionHandler?) -> BaseRequest {
         switch writePolicy {
         case .forceLocal:
             return executeLocal(completionHandler)

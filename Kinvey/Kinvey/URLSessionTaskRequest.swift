@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-class URLSessionTaskRequest: TaskProgressRequest, BasicRequest {
+class URLSessionTaskRequest: TaskProgressRequest, BaseRequest {
     
     var executing: Bool {
         get {
