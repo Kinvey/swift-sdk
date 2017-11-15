@@ -153,7 +153,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     params: CustomEndpoint.Params([
                         "collection" : T.collectionName(),
                         "lmt" : lastPull.toString(),
-                        "query" : self.query.predicate!.toJSON()
+                        "query" : self.query.predicate?.toJSON() ?? [:]
                     ]),
                     options: Options(
                         client: client
