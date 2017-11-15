@@ -33,7 +33,7 @@ public protocol Request : BaseRequest {
 extension Request {
     
     @discardableResult
-    func wait(timeout: TimeInterval = TimeInterval.infinity) -> Bool {
+    public func wait(timeout: TimeInterval = TimeInterval.infinity) -> Bool {
         var result = false
         let observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { (observer, activity) in
             if let _ = self.result {

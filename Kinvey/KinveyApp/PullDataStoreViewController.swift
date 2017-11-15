@@ -57,7 +57,7 @@ class PullDataStoreViewController: UIViewController {
     }
     
     lazy var dataStore = DataStore<HierarchyCache>.collection(.sync, autoPagination: true)
-    var request: BasicRequest?
+    var request: BaseRequest?
     
     @objc func updateTimer() {
         let seconds = CFAbsoluteTimeGetCurrent() - startTime!

@@ -95,7 +95,7 @@ class PerformanceTest: XCTestCase {
             
             let startTime = CFAbsoluteTimeGetCurrent()
             
-            let request: BasicRequest = dataStore.count(query, options: nil) { (result: Result<Int, Swift.Error>) in
+            let request: BaseRequest = dataStore.count(query, options: nil) { (result: Result<Int, Swift.Error>) in
                 if expectationFindLocal != nil {
                     switch result {
                     case .success(let count):
@@ -248,7 +248,7 @@ class PerformanceTest: XCTestCase {
             
             let startTime = CFAbsoluteTimeGetCurrent()
             
-            let request: BasicRequest = dataStore.count(query, options: nil) { (result: Result<Int, Swift.Error>) in
+            let request: BaseRequest = dataStore.count(query, options: nil) { (result: Result<Int, Swift.Error>) in
                 if expectationFindLocal != nil {
                     switch result {
                     case .success(let count):
