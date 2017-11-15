@@ -152,7 +152,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     "DeltaSet",
                     params: CustomEndpoint.Params([
                         "collection" : T.collectionName(),
-                        "lmt" : lastPull.addingTimeInterval(-10).toString(),
+                        "lmt" : lastPull.toString(),
                         "query" : self.query.predicate?.toJSON() ?? [:]
                     ]),
                     options: Options(
@@ -167,7 +167,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             let deleted = results["deleted"] as? [JsonDictionary],
                             let changed = results["changed"] as? [JsonDictionary]
                         {
-                            cache.lastPull = date.addingTimeInterval(-10)
+                            cache.lastPull = date.addingTimeInterval(-5)
                             
                             let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted.map({ $0["originalId"] as! String }))
                             cache.remove(byQuery: query)
@@ -221,11 +221,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         }
                         let entities = convert(jsonArray)
                         if let cache = self.cache {
-                            if let fetchDateString = response.httpResponse?.allHeaderFields["x-kinvey-fetch-date"] as? String,
+                            if let fetchDateString = response.httpResponse?.allHeaderFields["x-kinvey-last-lmt"] as? String,
                                 let dateTransform = Optional(KinveyDateTransform()),
                                 let fetchDate = dateTransform.transformFromJSON(fetchDateString)
                             {
-                                cache.lastPull = fetchDate.addingTimeInterval(-10)
+                                cache.lastPull = fetchDate.addingTimeInterval(-5)
                             }
                             if let cache = cache.dynamic {
                                 cache.save(entities: AnyRandomAccessCollection(jsonArray))
