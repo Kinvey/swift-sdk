@@ -76,6 +76,19 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 if let limit = query.limit {
                     fulfill(limit)
                 } else {
+                    var query = self.query
+                    if deltaSet,
+                        let cache = cache,
+                        let lastPull = cache.lastPull,
+                        let metadataProperty = T.metadataProperty()
+                    {
+                        let lastPullPredicate = NSPredicate(format: "\(metadataProperty).lmt > %@", lastPull.toString())
+                        if let predicate = query.predicate {
+                            query = Query(predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, lastPullPredicate]))
+                        } else {
+                            query = Query(predicate: lastPullPredicate)
+                        }
+                    }
                     let countOperation = CountOperation<T>(
                         query: query,
                         readPolicy: .forceNetwork,
@@ -147,7 +160,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func fetch(multiRequest: MultiRequest<Any>) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            if deltaSet, let cache = self.cache, let lastPull = cache.lastPull {
+            if deltaSet,
+                let cache = self.cache,
+                let lastPull = cache.lastPull,
+                self.query.skip == nil,
+                self.query.limit == nil
+            {
                 let request = CustomEndpoint.execute(
                     "DeltaSet",
                     params: CustomEndpoint.Params([
@@ -221,7 +239,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         }
                         let entities = convert(jsonArray)
                         if let cache = self.cache {
-                            if let fetchDateString = response.httpResponse?.allHeaderFields["x-kinvey-last-lmt"] as? String,
+                            if let fetchDateString = response.httpResponse?.allHeaderFields["x-kinvey-fetch-date"] as? String,
                                 let dateTransform = Optional(KinveyDateTransform()),
                                 let fetchDate = dateTransform.transformFromJSON(fetchDateString)
                             {
@@ -249,7 +267,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         request.progress = Progress(totalUnitCount: 100)
         count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
             request.progress.completedUnitCount = 1
-            if let count = count {
+            if let count = count, count > MaxSizePerResultSet {
                 return self.fetchAutoPagination(multiRequest: request, count: count)
             } else {
                 return self.fetch(multiRequest: request)

@@ -69,10 +69,17 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             let realm = newRealm
             try! realm.write {
                 if let newValue = newValue {
-                    let lastPull = RealmLastPull()
-                    lastPull.collection = T.collectionName()
-                    lastPull.lastPull = newValue
-                    realm.add(lastPull, update: true)
+                    if let lastPull = realm.object(ofType: RealmLastPull.self, forPrimaryKey: T.collectionName()) {
+                        if newValue > lastPull.lastPull {
+                            lastPull.lastPull = newValue
+                            realm.add(lastPull, update: true)
+                        }
+                    } else {
+                        let lastPull = RealmLastPull()
+                        lastPull.collection = T.collectionName()
+                        lastPull.lastPull = newValue
+                        realm.add(lastPull)
+                    }
                 } else if let lastPull = realm.object(ofType: RealmLastPull.self, forPrimaryKey: T.collectionName()) {
                     realm.delete(lastPull)
                 }
