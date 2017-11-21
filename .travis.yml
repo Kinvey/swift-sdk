@@ -17,7 +17,9 @@ before_script:
 - "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
 - brew update
+- brew install tree
 - brew upgrade carthage
+- tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
 - if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
     carthage checkout --no-use-binaries;
@@ -61,7 +63,6 @@ before_script:
 - if [ ! -d "Carthage/Build/$PLATFORM/Swifter.framework" ]; then
     carthage build --platform $PLATFORM swifter;
   fi
-- brew install tree
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - date
 script:
