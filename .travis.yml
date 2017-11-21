@@ -16,6 +16,8 @@ before_script:
   -P $KEY_PASSWORD -T /usr/bin/codesign
 - "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
+- brew update
+- brew upgrade carthage
 - carthage version
 - if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
     carthage checkout --no-use-binaries;
