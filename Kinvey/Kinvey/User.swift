@@ -1567,31 +1567,30 @@ open class User: NSObject, Credential, Mappable {
 public struct UserSocialIdentity : StaticMappable {
     
     /// Facebook social identity
-    public let facebook: [String : Any]?
+    public var facebook: [String : Any]?
     
     /// Twitter social identity
-    public let twitter: [String : Any]?
+    public var twitter: [String : Any]?
     
     /// Google+ social identity
-    public let googlePlus: [String : Any]?
+    public var googlePlus: [String : Any]?
     
     /// LinkedIn social identity
-    public let linkedIn: [String : Any]?
+    public var linkedIn: [String : Any]?
     
     /// Kinvey MIC social identity
-    public let kinvey: [String : Any]?
+    public var kinvey: [String : Any]?
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
-        return UserSocialIdentity(
-            facebook: map[AuthSource.facebook.rawValue].value(),
-            twitter: map[AuthSource.twitter.rawValue].value(),
-            googlePlus: map[AuthSource.googlePlus.rawValue].value(),
-            linkedIn: map[AuthSource.linkedIn.rawValue].value(),
-            kinvey: map[AuthSource.kinvey.rawValue].value()
-        )
+        return UserSocialIdentity()
     }
     
     public mutating func mapping(map: Map) {
+        facebook <- map[AuthSource.facebook.rawValue]
+        twitter <- map[AuthSource.twitter.rawValue]
+        googlePlus <- map[AuthSource.googlePlus.rawValue]
+        linkedIn <- map[AuthSource.linkedIn.rawValue]
+        kinvey <- map[AuthSource.kinvey.rawValue]
     }
     
 }

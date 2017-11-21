@@ -2063,9 +2063,33 @@ class UserTests: KinveyTestCase {
             "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
             "expires": "5105388"
         ]
-        User.login(authSource: .facebook, fakeFacebookData) { user, error in
-            XCTAssertNotNil(user)
-            XCTAssertNil(error)
+        User.login(authSource: .facebook, fakeFacebookData) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertNotNil(user.socialIdentity)
+                XCTAssertNotNil(user.socialIdentity?.facebook)
+                XCTAssertEqual(user.socialIdentity?.facebook?["id"] as? String, "100004289534145")
+                XCTAssertEqual(user.socialIdentity?.facebook?["name"] as? String, "Kois Steel")
+                XCTAssertEqual(user.socialIdentity?.facebook?["gender"] as? String, "female")
+                XCTAssertEqual(user.socialIdentity?.facebook?["email"] as? String, "kois.steel@testFB.net")
+                XCTAssertEqual(user.socialIdentity?.facebook?["birthday"] as? String, "2012/08/20")
+                XCTAssertEqual(user.socialIdentity?.facebook?["location"] as? String, "Cambridge, USA")
+                
+                let user = Keychain(appKey: Kinvey.sharedClient.appKey!, client: Kinvey.sharedClient).user
+                XCTAssertNotNil(user)
+                if let user = user {
+                    XCTAssertNotNil(user.socialIdentity)
+                    XCTAssertNotNil(user.socialIdentity?.facebook)
+                    XCTAssertEqual(user.socialIdentity?.facebook?["id"] as? String, "100004289534145")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["name"] as? String, "Kois Steel")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["gender"] as? String, "female")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["email"] as? String, "kois.steel@testFB.net")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["birthday"] as? String, "2012/08/20")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["location"] as? String, "Cambridge, USA")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationFacebookLogin?.fulfill()
         }
