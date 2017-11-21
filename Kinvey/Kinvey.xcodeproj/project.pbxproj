@@ -42,6 +42,8 @@
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571B5BC31FC3B6E7007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571B5BC41FC3B6F1007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		571BA2611F55D9E600DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
 		571BA2621F55DA1C00DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
@@ -645,6 +647,7 @@
 				578870DE1DD530210087FE78 /* ObjectMapper.framework in Embed Frameworks */,
 				578870D51DD52FE00087FE78 /* Kinvey.framework in Embed Frameworks */,
 				5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571B5BC41FC3B6F1007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */,
 				571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -663,6 +666,7 @@
 				578870EC1DD530540087FE78 /* PromiseKit.framework in Embed Frameworks */,
 				578870EE1DD530540087FE78 /* Realm.framework in Embed Frameworks */,
 				5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571B5BC31FC3B6E7007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */,
 				571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -1691,9 +1695,9 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
-				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D81CDCE88900492D6C /* PromiseKit.framework */,
@@ -2673,7 +2677,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/ObjcExceptionBridging.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -2688,7 +2691,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/ObjcExceptionBridging.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
