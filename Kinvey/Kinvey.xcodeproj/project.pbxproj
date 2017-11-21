@@ -42,6 +42,8 @@
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BCFE1EC51F64000E5C52 /* PubNub.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571B5BC31FC3B6E7007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		571B5BC41FC3B6F1007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		571BA2611F55D9E600DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
 		571BA2621F55DA1C00DE1886 /* MyFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BA2601F55D9E600DE1886 /* MyFile.swift */; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
@@ -95,6 +97,8 @@
 		5765B84E1C9771BC00080FFA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5765B84D1C9771BC00080FFA /* Assets.xcassets */; };
 		5765B8511C9771BC00080FFA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */; };
 		5765B8641C97751000080FFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		5768BAA11FA070B10040AA0B /* ObjcExceptionBridging.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5768BAA01FA070A60040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5768BAA31FA071190040AA0B /* ObjcExceptionBridging.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
 		576F1E821F1958E600C854CE /* PerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706231F1F1825CA00B7FAE9 /* PerformanceTest.swift */; };
@@ -643,6 +647,7 @@
 				578870DE1DD530210087FE78 /* ObjectMapper.framework in Embed Frameworks */,
 				578870D51DD52FE00087FE78 /* Kinvey.framework in Embed Frameworks */,
 				5776EE9A1E2FFA38003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571B5BC41FC3B6F1007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */,
 				571ADCC31ED8EF6100D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -661,6 +666,7 @@
 				578870EC1DD530540087FE78 /* PromiseKit.framework in Embed Frameworks */,
 				578870EE1DD530540087FE78 /* Realm.framework in Embed Frameworks */,
 				5776EE9B1E2FFA7D003B9DF0 /* XCGLogger.framework in Embed Frameworks */,
+				571B5BC31FC3B6E7007AD4C8 /* ObjcExceptionBridging.framework in Embed Frameworks */,
 				571ADCC41ED8EF6A00D0A127 /* PubNub.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -736,6 +742,7 @@
 				57C2F6C71F75EED7001C0D9D /* Kinvey.framework in CopyFiles */,
 				57C2F6BE1F75DDB3001C0D9D /* PubNub.framework in CopyFiles */,
 				57C2F6BF1F75DDB3001C0D9D /* XCGLogger.framework in CopyFiles */,
+				5768BAA31FA071190040AA0B /* ObjcExceptionBridging.framework in CopyFiles */,
 				57C2F6C01F75DDB3001C0D9D /* ObjectMapper.framework in CopyFiles */,
 				57C2F6C11F75DDB3001C0D9D /* KeychainAccess.framework in CopyFiles */,
 				57C2F6C21F75DDB3001C0D9D /* PromiseKit.framework in CopyFiles */,
@@ -757,6 +764,7 @@
 				57C731F21F575DBB00B67C13 /* Realm.framework in CopyFiles */,
 				57C731F31F575DC600B67C13 /* RealmSwift.framework in CopyFiles */,
 				57C731F41F575DD100B67C13 /* XCGLogger.framework in CopyFiles */,
+				5768BAA11FA070B10040AA0B /* ObjcExceptionBridging.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -883,6 +891,8 @@
 		5765B84D1C9771BC00080FFA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5765B8501C9771BC00080FFA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5765B8521C9771BC00080FFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5768BAA01FA070A60040AA0B /* ObjcExceptionBridging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjcExceptionBridging.framework; sourceTree = "<group>"; };
+		5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjcExceptionBridging.framework; sourceTree = "<group>"; };
 		576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTypeTestCase.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkStoreTests.swift; sourceTree = "<group>"; };
@@ -946,7 +956,6 @@
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoCacheTestCase.swift; sourceTree = "<group>"; };
-		5795AB0F1DD3B894001FC808 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/SafariServices.framework; sourceTree = DEVELOPER_DIR; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1686,8 +1695,9 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
 				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
+				5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */,
+				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
 				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D81CDCE88900492D6C /* PromiseKit.framework */,
@@ -1704,6 +1714,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				5768BAA01FA070A60040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BD001EC51F80000E5C52 /* PubNub.framework */,
 				577751391DF8B908006C98F1 /* XCGLogger.framework */,
 				57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */,
@@ -1771,7 +1782,6 @@
 		DBD4AA6B25714F7AAA213880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5795AB0F1DD3B894001FC808 /* SafariServices.framework */,
 				57BEAE2E1C98805E00479206 /* QuartzCore.framework */,
 				57BEAE2C1C98805600479206 /* CoreGraphics.framework */,
 				57B0C1C11CDCE88900492D6C /* iOS */,
@@ -1993,6 +2003,7 @@
 				5788708D1DD52EC70087FE78 /* Frameworks */,
 				5788708E1DD52EC70087FE78 /* Resources */,
 				578870D81DD52FE00087FE78 /* Embed Frameworks */,
+				5768BA9E1FA06FDF0040AA0B /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2031,6 +2042,7 @@
 				578870B11DD52ECF0087FE78 /* Frameworks */,
 				578870B21DD52ECF0087FE78 /* Resources */,
 				578870F11DD530540087FE78 /* Embed Frameworks */,
+				5768BA9F1FA070390040AA0B /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2659,6 +2671,34 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		5768BA9E1FA06FDF0040AA0B /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
+		5768BA9F1FA070390040AA0B /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
 		5771CD691ECF6CDC0057E505 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2688,6 +2728,7 @@
 				"$(SRCROOT)/../Carthage/Build/iOS/RealmSwift.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/XCGLogger.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/ObjcExceptionBridging.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -2848,6 +2889,7 @@
 				"$(SRCROOT)/../Carthage/Build/Mac/PromiseKit.framework",
 				"$(SRCROOT)/../Carthage/Build/Mac/RealmSwift.framework",
 				"$(SRCROOT)/../Carthage/Build/Mac/XCGLogger.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/ObjcExceptionBridging.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (

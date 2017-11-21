@@ -12,7 +12,7 @@ import PromiseKit
 
 class Book: Entity {
     
-    dynamic var name: String?
+    @objc dynamic var name: String?
     
     override class func collectionName() -> String {
         return "Book"

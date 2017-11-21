@@ -518,8 +518,9 @@ extension RealmCache: DynamicCacheType {
         if let schema = realm.schema[entityType] {
             for property in schema.properties {
                 switch property.type {
-                case .array:
-                    if let primaryKeyProperty = schema.primaryKeyProperty,
+                case .object:
+                    if property.isArray,
+                        let primaryKeyProperty = schema.primaryKeyProperty,
                         let entityId = entity[primaryKeyProperty.name],
                         let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                         let objectClassName = property.objectClassName,
@@ -530,9 +531,7 @@ extension RealmCache: DynamicCacheType {
                             entityType: objectClassName,
                             entities: nestedArray
                         )
-                    }
-                case .object:
-                    if let objectClassName = property.objectClassName,
+                    } else if let objectClassName = property.objectClassName,
                         let nestedObject = entity[property.name] as? Object
                     {
                         cascadeDelete(
@@ -575,7 +574,7 @@ extension RealmCache: DynamicCacheType {
                     entity: nestedObject
                 )
             } else if let property = properties[translatedKey],
-                property.type == .array,
+                property.isArray,
                 let objectClassName = property.objectClassName,
                 let entityId = entity[Entity.Key.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
@@ -603,7 +602,7 @@ extension RealmCache: DynamicCacheType {
                     if let transform = transform,
                         let value = transform.transformFromJSON(entity[key]) as? NSObject,
                         let property = properties[translatedKey],
-                        property.type != .array,
+                        !property.isArray,
                         let objectClassName = property.objectClassName,
                         let schema = realm.schema[objectClassName]
                     {

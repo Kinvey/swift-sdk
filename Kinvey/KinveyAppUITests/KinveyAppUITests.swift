@@ -42,7 +42,14 @@ class KinveyAppUITests: XCTestCase {
         
         app.staticTexts["MIC Login"].tap()
         app.switches["SFAuthenticationSession"].tap()
+        
+        addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
+            alert.buttons["Continue"].tap()
+            return true
+        }
+        
         app.buttons["Login"].tap()
+        app.tap()
         
         let code = UUID().uuidString
         let userId = UUID().uuidString
@@ -86,8 +93,6 @@ class KinveyAppUITests: XCTestCase {
         defer {
             server.stop()
         }
-        
-        app.buttons["URL"].tap()
         
         let userIdValue = app.staticTexts["User ID Value"]
         XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
