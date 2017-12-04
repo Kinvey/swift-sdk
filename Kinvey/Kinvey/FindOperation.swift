@@ -171,7 +171,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     params: CustomEndpoint.Params([
                         "collection" : T.collectionName(),
                         "lmt" : lastPull.toString(),
-                        "query" : self.query.predicate?.toJSON() ?? [:]
+                        "query" : self.query.translate(predicate: self.query.predicate)?.mongoDBQuery ?? [:]
                     ]),
                     options: Options(
                         client: client

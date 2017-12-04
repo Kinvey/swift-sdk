@@ -2263,8 +2263,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             weak var expectationLogin = expectation(description: "Login")
             
             Kinvey.sharedClient.initialize(
-                appKey: "",
-                appSecret: ""
+                appKey: "kid_rk4vC_QkM",
+                appSecret: "28f90d2d846f4588ad459254257a2c44"
             ) {
                 switch $0 {
                 case .success(let user):
@@ -2331,6 +2331,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let store = DataStore<Book>.collection(.sync)
             
+            let author = Author()
+            author.name = "Victor Hugo"
+            
             store.count(options: Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let _count):
@@ -2372,6 +2375,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 let book = Book()
                 book.title = "Test 2"
+                book.author = author
                 store.save(book, options: nil) {
                     switch $0 {
                     case .success(let book):
@@ -2432,6 +2436,30 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationCount = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            let store = DataStore<Book>.collection(.sync, deltaSet: true)
+            
+            store.sync(Query(format: "author.name == %@", "Victor Hugo")) { (result: Result<(UInt, AnyRandomAccessCollection<Book>), [Swift.Error]>) in
+                switch result {
+                case .success(let _count, let books):
+                    XCTAssertEqual(_count, 0)
+                    for book in books {
+                        XCTAssertEqual(book.author?.name, "Victor Hugo")
+                    }
+                case .failure(let error):
+                    XCTFail(error.map({ $0.localizedDescription }).joined(separator: "\n"))
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
             }
         }
         

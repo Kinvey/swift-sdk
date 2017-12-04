@@ -13,6 +13,7 @@ class Book: Entity {
     @objc
     dynamic var title: String?
     
+    @objc dynamic var author: Author?
     let authorNames = List<StringValue>()
     
     let editions = List<BookEdition>()
@@ -30,6 +31,7 @@ class Book: Entity {
         super.propertyMapping(map)
         
         title <- ("title", map["title"])
+        author <- ("author", map["author"])
         authorNames <- ("authorNames", map["authorNames"])
         
         editions <- ("editions", map["editions"])
@@ -38,6 +40,20 @@ class Book: Entity {
         editionsRetailPrice <- ("editionsRetailPrice", map["editionsRetailPrice"])
         editionsRating <- ("editionsRating", map["editionsRating"])
         editionsAvailable <- ("editionsAvailable", map["editionsAvailable"])
+    }
+    
+}
+
+class Author: Object, Mappable {
+    
+    @objc dynamic var name: String?
+    
+    convenience required init?(map: Map) {
+        self.init()
+    }
+    
+    func mapping(map: Map) {
+        name <- ("name", map["name"])
     }
     
 }

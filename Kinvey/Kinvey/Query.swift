@@ -100,11 +100,16 @@ public final class Query: NSObject, BuilderType, Mappable {
         }
     }
     
-    fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
+    internal func translate(predicate: NSPredicate?) -> NSPredicate? {
         let startTime = CFAbsoluteTimeGetCurrent()
         defer {
             log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
         }
+        
+        guard let predicate = predicate else {
+            return nil
+        }
+        
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
                 leftExpression: translate(expression: predicate.leftExpression, otherSideExpression: predicate.rightExpression),
@@ -116,7 +121,7 @@ public final class Query: NSObject, BuilderType, Mappable {
         } else if let predicate = predicate as? NSCompoundPredicate {
             var subpredicates = [NSPredicate]()
             for predicate in predicate.subpredicates as! [NSPredicate] {
-                subpredicates.append(translate(predicate: predicate))
+                subpredicates.append(translate(predicate: predicate)!)
             }
             return NSCompoundPredicate(type: predicate.compoundPredicateType, subpredicates: subpredicates)
         }
@@ -131,12 +136,15 @@ public final class Query: NSObject, BuilderType, Mappable {
             (fields == nil || fields!.isEmpty)
     }
     
-    fileprivate var queryStringEncoded: String? {
+    internal var queryStringEncoded: String? {
         guard let predicate = predicate else {
             return nil
         }
         
-        let translatedPredicate = translate(predicate: predicate)
+        guard let translatedPredicate = translate(predicate: predicate) else {
+            return nil
+        }
+        
         let queryObj = translatedPredicate.mongoDBQuery!
         
         let data = try! JSONSerialization.data(withJSONObject: queryObj)
