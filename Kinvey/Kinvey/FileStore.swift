@@ -605,7 +605,7 @@ open class FileStore<FileType: File> {
                         response.statusCode == 308
                     {
                         if let rangeString = response.allHeaderFields["Range"] as? String,
-                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.characters.count)).first,
+                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.count)).first,
                             textCheckingResult.numberOfRanges == 3
                         {
                             let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))

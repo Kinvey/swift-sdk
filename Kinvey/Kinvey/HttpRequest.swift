@@ -258,7 +258,7 @@ enum Body {
         let regex = try! NSRegularExpression(pattern: "([^&=]+)=([^&]*)")
         var params = [String : String]()
         let nsbody = body as NSString
-        for match in regex.matches(in: body, range: NSMakeRange(0, body.characters.count)) {
+        for match in regex.matches(in: body, range: NSMakeRange(0, body.count)) {
             if match.numberOfRanges == 3 {
                 let key = nsbody.substring(with: match.range(at: 1))
                 let value = nsbody.substring(with: match.range(at: 2))

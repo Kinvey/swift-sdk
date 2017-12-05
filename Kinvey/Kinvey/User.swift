@@ -364,7 +364,9 @@ open class User: NSObject, Credential, Mappable {
         return login(
             username: username,
             password: password,
-            client: client
+            options: Options(
+                client: client
+            )
         ) { (result: Result<U, Swift.Error>) in
             switch result {
             case .success(let user):
