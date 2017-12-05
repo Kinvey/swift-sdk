@@ -20,7 +20,7 @@ fileprivate class PushRequest: NSObject, Request {
     let completionOperation: PushBlockOperation
     private let dispatchSerialQueue: DispatchQueue
     
-    var progress: ((ProgressStatus) -> Void)?
+    var progress = Progress()
     
     var executing: Bool {
         return !completionOperation.isFinished

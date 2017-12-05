@@ -9,7 +9,7 @@
 import Foundation
 
 /// Protocol that represents a request made to the backend.
-public protocol Request : NSObjectProtocol {
+public protocol Request : ProgressReporting {
     
     /// Indicates if a request still executing or not.
     var executing: Bool { get }
@@ -19,8 +19,5 @@ public protocol Request : NSObjectProtocol {
     
     /// Cancels a request in progress.
     func cancel()
-    
-    /// Report upload progress of the request
-    var progress: ((ProgressStatus) -> Void)? { get set }
     
 }

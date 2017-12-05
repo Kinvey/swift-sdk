@@ -348,7 +348,8 @@ open class FileStore<FileType: File> {
 
     fileprivate func getFileMetadata(
         _ file: FileType,
-        options: Options?
+        options: Options?,
+        requests: MultiRequest? = nil
     ) -> (request: Request, promise: Promise<FileType>) {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(
             file,
@@ -368,6 +369,10 @@ open class FileStore<FileType: File> {
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
+            }
+            if let requests = requests {
+                requests.progress.addChild(request.progress, withPendingUnitCount: 1)
+                requests += request
             }
         }
         return (request: request, promise: promise)
@@ -616,7 +621,9 @@ open class FileStore<FileType: File> {
                         reject(buildError(data, HttpResponse(response: response), error, self.client))
                     }
                 }
-                requests += URLSessionTaskRequest(client: client, options: options, task: dataTask)
+                let urlSessionTaskRequest = URLSessionTaskRequest(client: client, options: options, task: dataTask)
+                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 1)
+                requests += urlSessionTaskRequest
                 dataTask.resume()
             } else {
                 createUpdateFileEntry()
@@ -683,7 +690,9 @@ open class FileStore<FileType: File> {
                 let uploadTask = urlSession.uploadTask(with: request, from: uploadData) { (data, response, error) -> Void in
                     handler(data, response, error)
                 }
-                requests += (URLSessionTaskRequest(client: self.client, options: options, task: uploadTask), addProgress: true)
+                let urlSessionTaskRequest = URLSessionTaskRequest(client: self.client, options: options, task: uploadTask)
+                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 98)
+                requests += urlSessionTaskRequest
                 uploadTask.resume()
             case let .url(url):
                 if self.client.logNetworkEnabled {
@@ -695,7 +704,9 @@ open class FileStore<FileType: File> {
                 let uploadTask = urlSession.uploadTask(with: request, fromFile: url) { (data, response, error) -> Void in
                     handler(data, response, error)
                 }
-                requests += (URLSessionTaskRequest(client: self.client, options: options, task: uploadTask), addProgress: true)
+                let urlSessionTaskRequest = URLSessionTaskRequest(client: self.client, options: options, task: uploadTask)
+                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 98)
+                requests += urlSessionTaskRequest
                 uploadTask.resume()
             case let .stream(stream):
                 request.httpBodyStream = stream
@@ -709,7 +720,9 @@ open class FileStore<FileType: File> {
                 let dataTask = urlSession.dataTask(with: request) { (data, response, error) -> Void in
                     handler(data, response, error)
                 }
-                requests += (URLSessionTaskRequest(client: self.client, options: options, task: dataTask), addProgress: true)
+                let urlSessionTaskRequest = URLSessionTaskRequest(client: self.client, options: options, task: dataTask)
+                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 98)
+                requests += urlSessionTaskRequest
                 dataTask.resume()
             }
         }
@@ -723,6 +736,7 @@ open class FileStore<FileType: File> {
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
     ) -> Request {
         let requests = MultiRequest()
+        requests.progress = Progress(totalUnitCount: 100)
         createBucket(
             file,
             fromSource: source,
@@ -736,14 +750,15 @@ open class FileStore<FileType: File> {
                 options: options,
                 requests: requests
             )
-        }.then { file in //fetching download url
-            let (request, promise) = self.getFileMetadata(
+        }.then { file -> Promise<FileType> in //fetching download url
+            let (_, promise) = self.getFileMetadata(
                 file,
-                options: options
+                options: options,
+                requests: requests
             )
-            requests += request
             return promise
-        }.then { file in
+        }.then { file -> Void in
+            requests.progress.completedUnitCount = requests.progress.totalUnitCount
             completionHandler?(.success(file))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -999,7 +1014,7 @@ open class FileStore<FileType: File> {
                     downloadURL: downloadURL,
                     options: options
                 )
-                multiRequest += (request, true)
+                multiRequest += request
                 return promise.then { localUrl in
                     return Promise<(FileType, URL)> { fulfill, reject in
                         fulfill((file, localUrl))
@@ -1069,6 +1084,7 @@ open class FileStore<FileType: File> {
         crashIfInvalid(file: file)
         
         let multiRequest = MultiRequest()
+        multiRequest.progress = Progress(totalUnitCount: 100)
         Promise<(FileType, DownloadStage)> { fulfill, reject in
             if let entityId = file.fileId,
                 let cachedFile = cachedFile(entityId),
@@ -1109,6 +1125,11 @@ open class FileStore<FileType: File> {
                     reject(error)
                 }
             }
+        }.then { (file, downloadStage) in
+            return Promise<(FileType, DownloadStage)> { fulfill, reject in
+                multiRequest.progress.completedUnitCount = 1
+                fulfill((file, downloadStage))
+            }
         }.then { (file, downloadStage) -> Promise<Data> in
             switch downloadStage {
             case .downloadURL(let downloadURL):
@@ -1117,14 +1138,16 @@ open class FileStore<FileType: File> {
                     downloadURL: downloadURL,
                     options: options
                 )
-                multiRequest += (request, addProgress: true)
+                multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
+                multiRequest += request
                 return promise
             case .data(let data):
                 return Promise<Data> { fulfill, reject in
                     fulfill(data)
                 }
             }
-        }.then { data in
+        }.then { data -> Void in
+            multiRequest.progress.completedUnitCount = multiRequest.progress.totalUnitCount
             completionHandler?(.success((file, data)))
         }.catch { error in
             completionHandler?(.failure(error))

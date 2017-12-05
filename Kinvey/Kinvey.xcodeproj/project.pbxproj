@@ -68,6 +68,7 @@
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
 		5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57465B3B1F956E5E007F86C7 /* PullDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57465B3A1F956E5E007F86C7 /* PullDataStoreViewController.swift */; };
 		57470FA11C76834B0096B15F /* ReadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA01C76834B0096B15F /* ReadOperation.swift */; };
 		57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA21C76847F0096B15F /* WriteOperation.swift */; };
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
@@ -860,6 +861,7 @@
 		573DD9841D11CCD6006ECF1C /* RealmCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmCache.swift; sourceTree = "<group>"; };
 		573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpointTests.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		57465B3A1F956E5E007F86C7 /* PullDataStoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullDataStoreViewController.swift; sourceTree = "<group>"; };
 		57470FA01C76834B0096B15F /* ReadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadOperation.swift; sourceTree = "<group>"; };
 		57470FA21C76847F0096B15F /* WriteOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteOperation.swift; sourceTree = "<group>"; };
 		57470FA41C76926B0096B15F /* PushOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushOperation.swift; sourceTree = "<group>"; };
@@ -1425,6 +1427,7 @@
 				5759854F1CC834FE0054DF08 /* MedData.swift */,
 				57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */,
 				57ABEBE71F32819B00B47708 /* LargeDataScrollViewController.swift */,
+				57465B3A1F956E5E007F86C7 /* PullDataStoreViewController.swift */,
 			);
 			path = KinveyApp;
 			sourceTree = "<group>";
@@ -3003,6 +3006,7 @@
 			files = (
 				57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */,
 				575985501CC834FE0054DF08 /* MedData.swift in Sources */,
+				57465B3B1F956E5E007F86C7 /* PullDataStoreViewController.swift in Sources */,
 				57ABEBE91F3282AC00B47708 /* HierarchyCache.swift in Sources */,
 				57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */,
 				5759854E1CC833930054DF08 /* LongData.swift in Sources */,

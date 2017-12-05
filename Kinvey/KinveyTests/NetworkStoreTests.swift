@@ -64,47 +64,21 @@ class NetworkStoreTests: StoreTestCase {
                 expectationCreate?.fulfill()
             }
             
-            var uploadProgressCount = 0
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
+            var progressReportCount = 0
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend && $0.countOfBytesExpectedToReceive > 0 {
-                    if downloadProgressCount == 0 {
-                        downloadProgressSent = $0.countOfBytesReceived
-                        downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                    } else {
-                        XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                        XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                        downloadProgressSent = $0.countOfBytesReceived
-                    }
-                    downloadProgressCount += 1
-                    print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                progressReportCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+                XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+                XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
             
-            XCTAssertGreaterThan(uploadProgressCount, 0)
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(progressReportCount, 0)
         }
         
         XCTAssertNotNil(event.entityId)
@@ -192,28 +166,22 @@ class NetworkStoreTests: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            var reportProgressCount = 0
+            
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                reportProgressCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+                XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+                XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
     

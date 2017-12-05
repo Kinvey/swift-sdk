@@ -1965,7 +1965,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                                 reject(error)
                             }
                         }
-                        requests.addRequest(request)
+//                        requests.addRequest(request)
                     case .failure(let errors):
                         reject(MultipleErrors(errors: errors))
                     }
