@@ -249,11 +249,11 @@ open class Client: Credential {
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         
         var apiHostName = apiHostName
-        if let apiHostNameString = apiHostName.absoluteString as String?, apiHostNameString.characters.last == "/" {
+        if let apiHostNameString = apiHostName.absoluteString as String?, apiHostNameString.last == "/" {
             apiHostName = URL(string: String(apiHostNameString.dropLast()))!
         }
         var authHostName = authHostName
-        if let authHostNameString = authHostName.absoluteString as String?, authHostNameString.characters.last == "/" {
+        if let authHostNameString = authHostName.absoluteString as String?, authHostNameString.last == "/" {
             authHostName = URL(string: String(authHostNameString.dropLast()))!
         }
         self.apiHostName = apiHostName
