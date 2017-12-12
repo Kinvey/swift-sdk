@@ -213,11 +213,19 @@ func buildError(
     } else if let response = response,
         response.isBadRequest,
         let json = json,
-        json["error"] == Error.ResultSetSizeExceeded,
+        json["error"] == Error.Keys.resultSetSizeExceeded.rawValue,
         let debug = json["debug"],
         let description = json["description"]
     {
         return Error.resultSetSizeExceeded(debug: debug, description: description)
+    } else if let response = response,
+        response.isNotFound,
+        let json = json,
+        json["error"] == Error.Keys.entityNotFound.rawValue,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.entityNotFound(debug: debug, description: description)
     } else if let response = response,
         let json = client.responseParser.parse(data)
     {

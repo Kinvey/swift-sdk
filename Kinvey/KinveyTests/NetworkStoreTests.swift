@@ -712,6 +712,47 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindByIdEntityNotFoundError() {
+        mockResponse(
+            statusCode: 404,
+            json: [
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection",
+                "debug" : ""
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find("id-not-found", options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .entityNotFound(let debug, let description):
+                        XCTAssertEqual(debug, "")
+                        XCTAssertEqual(description, "This entity not found in the collection")
+                    default:
+                        XCTFail()
+                    }
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testFindMethodObjectIdMissingAndRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
