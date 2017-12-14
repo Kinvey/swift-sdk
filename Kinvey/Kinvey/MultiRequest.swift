@@ -8,17 +8,21 @@
 
 import Foundation
 
-internal class MultiRequest: NSObject, Request {
+internal class MultiRequest<Result>: NSObject, Request {
     
-    fileprivate var requests = [Request]()
+    typealias ResultType = Result
+    
+    var result: Result?
+    
+    fileprivate var requests = [AnyRequest<Any>]()
     
     var progress = Progress()
     
-    internal func addRequest(_ request: Request) {
+    internal func addRequest<RequestType: Request>(_ request: RequestType) {
         if _cancelled {
             request.cancel()
         }
-        requests.append(request)
+        requests.append(AnyRequest(request))
     }
     
     internal var executing: Bool {
@@ -53,6 +57,6 @@ internal class MultiRequest: NSObject, Request {
     
 }
 
-func +=(lhs: MultiRequest, rhs: Request) {
+func +=<MultiRequestResult, RequestType: Request>(lhs: MultiRequest<MultiRequestResult>, rhs: RequestType) {
     lhs.addRequest(rhs)
 }

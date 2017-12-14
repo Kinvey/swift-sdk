@@ -12,6 +12,8 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     let id: String
     
+    typealias ResultType = Result<T, Swift.Error>
+    
     init(
         id: String,
         readPolicy: ReadPolicy,
@@ -28,8 +30,8 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
             if let persistable = self.cache?.find(byId: self.id) {
                 completionHandler?(.success(persistable))
@@ -37,14 +39,15 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
                 completionHandler?(.failure(buildError(client: self.client)))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataGetById(
             collectionName: T.collectionName(),
             id: id,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         request.execute() { data, response, error in
             if let response = response,
@@ -59,7 +62,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

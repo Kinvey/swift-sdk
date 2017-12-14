@@ -11,12 +11,12 @@ import Foundation
 class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
-    private let httpRequest: () -> HttpRequest
+    private let httpRequest: () -> HttpRequest<Any>
     lazy var request: HttpRequest = self.httpRequest()
     
     init(
         query: Query,
-        httpRequest: @autoclosure @escaping () -> HttpRequest,
+        httpRequest: @autoclosure @escaping () -> HttpRequest<Any>,
         writePolicy: WritePolicy,
         sync: AnySync? = nil,
         cache: AnyCache<T>? = nil,
@@ -32,7 +32,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<Result<[T], Swift.Error>> {
         let request = LocalRequest()
         request.execute { () -> Void in
             var count = 0
@@ -62,7 +62,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
         return request
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<Result<[T], Swift.Error>> {
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let results = self.client.responseParser.parse(data),

@@ -13,6 +13,8 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     let aggregation: Aggregation
     let predicate: NSPredicate?
     
+    typealias ResultType = Result<[JsonDictionary], Swift.Error>
+    
     init(
         aggregation: Aggregation,
         condition predicate: NSPredicate? = nil,
@@ -31,8 +33,8 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = LocalRequest<Result<[JsonDictionary], Swift.Error>>()
         request.execute { () -> Void in
             if let _ = self.cache {
                 completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
@@ -40,17 +42,18 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
                 completionHandler?(.success([]))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataGroup(
             collectionName: T.collectionName(),
             keys: aggregation.keys,
             initialObject: aggregation.initialObject,
             reduceJSFunction: aggregation.reduceJSFunction,
             condition: predicate,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         request.execute() { data, response, error in
             if let response = response, response.isOK,
@@ -63,7 +66,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

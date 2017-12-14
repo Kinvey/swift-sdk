@@ -97,7 +97,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     private class func login<U: User>(
-        request: HttpRequest,
+        request: HttpRequest<Any>,
         client: Client,
         userType: U.Type,
         completionHandler: ((Result<U, Swift.Error>) -> Void)?
@@ -451,7 +451,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     private class func execute(
-        request: HttpRequest,
+        request: HttpRequest<Any>,
         client: Client,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)?
     ) {

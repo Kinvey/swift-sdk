@@ -270,7 +270,11 @@ enum Body {
     
 }
 
-internal class HttpRequest: TaskProgressRequest, Request {
+internal class HttpRequest<Result>: TaskProgressRequest, Request {
+    
+    typealias ResultType = Result
+    
+    var result: Result?
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint

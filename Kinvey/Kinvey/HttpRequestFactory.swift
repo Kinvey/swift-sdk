@@ -24,8 +24,8 @@ class HttpRequestFactory: RequestFactory {
         password: String? = nil,
         user: User? = nil,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.user(client: client, query: nil),
             options: options
@@ -49,8 +49,8 @@ class HttpRequestFactory: RequestFactory {
         userId: String,
         hard: Bool,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .delete,
             endpoint: Endpoint.userDelete(client: client, userId: userId, hard: hard),
             credential: client.activeUser,
@@ -67,13 +67,13 @@ class HttpRequestFactory: RequestFactory {
         authData: [String : Any],
         endpoint: Endpoint,
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         let bodyObject = [
             "_socialIdentity" : [
                 authSource.rawValue : authData
             ]
         ]
-        let request = HttpRequest(
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: endpoint,
             body: Body.json(json: bodyObject),
@@ -86,7 +86,7 @@ class HttpRequestFactory: RequestFactory {
         _ authSource: AuthSource,
         authData: [String : Any],
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         return buildUserSocial(
             authSource,
             authData: authData,
@@ -99,7 +99,7 @@ class HttpRequestFactory: RequestFactory {
         _ authSource: AuthSource,
         authData: [String : Any],
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         return buildUserSocial(
             authSource,
             authData: authData,
@@ -112,8 +112,8 @@ class HttpRequestFactory: RequestFactory {
         username: String,
         password: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userLogin(client: client),
             options: options
@@ -130,8 +130,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserLogout(
         user: User,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userLogout(client: client),
             credential: client.activeUser,
@@ -143,8 +143,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserExists(
         username: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userExistsByUsername(client: client),
             options: options
@@ -159,8 +159,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserGet(
         userId: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             endpoint: Endpoint.userById(client: client, userId: userId),
             credential: client.activeUser,
             options: options
@@ -171,8 +171,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserFind(
         query: Query,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             endpoint: Endpoint.user(client: client, query: query),
             credential: client.activeUser,
             options: options
@@ -184,8 +184,8 @@ class HttpRequestFactory: RequestFactory {
         user: User,
         newPassword: String?,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .put,
             endpoint: Endpoint.userById(client: client, userId: user.userId),
             credential: client.activeUser,
@@ -205,8 +205,8 @@ class HttpRequestFactory: RequestFactory {
         user: User,
         userQuery: UserQuery,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userLookup(client: client),
             credential: client.activeUser,
@@ -220,8 +220,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserResetPassword(
         usernameOrEmail: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userResetPassword(usernameOrEmail: usernameOrEmail, client: client),
             credential: client,
@@ -233,8 +233,8 @@ class HttpRequestFactory: RequestFactory {
     func buildUserForgotUsername(
         email: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.userForgotUsername(client: client),
             credential: client,
@@ -247,8 +247,8 @@ class HttpRequestFactory: RequestFactory {
     
     func buildUserMe(
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             endpoint: Endpoint.userMe(client: client),
             credential: client.activeUser,
             options: options
@@ -256,8 +256,8 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataPing(options: Options?) -> HttpRequest {
-        let request = HttpRequest(
+    func buildAppDataPing<Result>(options: Options?, resultType: Result.Type) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: Endpoint.appDataPing(client: client),
             options: options
@@ -265,12 +265,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataGetById(
+    func buildAppDataGetById<Result>(
         collectionName: String,
         id: String,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             endpoint: Endpoint.appDataById(client: client, collectionName: collectionName, id: id),
             credential: client.activeUser,
             options: options
@@ -282,8 +283,8 @@ class HttpRequestFactory: RequestFactory {
         collectionName: String,
         query: Query,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query.isEmpty ? nil : query),
             credential: client.activeUser,
             options: options
@@ -291,12 +292,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataCountByQuery(
+    func buildAppDataCountByQuery<Result>(
         collectionName: String,
         query: Query?,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             endpoint: Endpoint.appDataCount(client: client, collectionName: collectionName, query: query),
             credential: client.activeUser,
             options: options
@@ -304,15 +306,16 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataGroup(
+    func buildAppDataGroup<Result>(
         collectionName: String,
         keys: [String],
         initialObject: [String : Any],
         reduceJSFunction: String,
         condition: NSPredicate?,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.appDataGroup(client: client, collectionName: collectionName),
             credential: client.activeUser,
@@ -330,15 +333,16 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataSave<T: Persistable>(
+    func buildAppDataSave<T: Persistable, Result>(
         _ persistable: T,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         let collectionName = T.collectionName()
         var bodyObject = persistable.toJSON()
         let objId = bodyObject[Entity.Key.entityId] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
-        let request = HttpRequest(
+        let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? Endpoint.appData(client: client, collectionName: collectionName) : Endpoint.appDataById(client: client, collectionName: collectionName, id: objId!),
             credential: client.activeUser,
@@ -357,8 +361,8 @@ class HttpRequestFactory: RequestFactory {
         collectionName: String,
         query: Query,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .delete,
             endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query),
             credential: client.activeUser,
@@ -371,8 +375,8 @@ class HttpRequestFactory: RequestFactory {
         collectionName: String,
         objectId: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .delete,
             endpoint: Endpoint.appDataById(client: client, collectionName: collectionName, id: objectId),
             credential: client.activeUser,
@@ -386,8 +390,8 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         client: Client,
         endpoint: Endpoint
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: endpoint,
             credential: client.activeUser,
@@ -402,7 +406,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest<Any> {
         let client = options?.client ?? self.client
         return buildPushDevice(
             deviceToken,
@@ -412,7 +416,7 @@ class HttpRequestFactory: RequestFactory {
         )
     }
     
-    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest {
+    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest<Any> {
         let client = options?.client ?? self.client
         return buildPushDevice(
             deviceToken,
@@ -425,8 +429,8 @@ class HttpRequestFactory: RequestFactory {
     func buildBlobUploadFile(
         _ file: File,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: file.fileId == nil ? .post : .put,
             endpoint: Endpoint.blobUpload(
                 client: client,
@@ -450,12 +454,13 @@ class HttpRequestFactory: RequestFactory {
         return nil
     }
     
-    func buildBlobDownloadFile(
+    func buildBlobDownloadFile<Result>(
         _ file: File,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         let ttl = options?.ttl
-        let request = HttpRequest(
+        let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: Endpoint.blobDownload(
                 client: client,
@@ -470,11 +475,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobDeleteFile(
+    func buildBlobDeleteFile<Result>(
         _ file: File,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: Endpoint.blobById(client: client, fileId: file.fileId!),
             credential: client.activeUser,
@@ -483,12 +489,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobQueryFile(
+    func buildBlobQueryFile<Result>(
         _ query: Query,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         let ttl = options?.ttl
-        let request = HttpRequest(
+        let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: Endpoint.blobDownload(
                 client: client,
@@ -503,11 +510,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildCustomEndpoint(
+    func buildCustomEndpoint<Result>(
         _ name: String,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.customEndpooint(client: client, name: name),
             credential: client.activeUser,
@@ -519,8 +527,8 @@ class HttpRequestFactory: RequestFactory {
     func buildSendEmailConfirmation(
         forUsername username: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.sendEmailConfirmation(client: client, username: username),
             credential: client,
@@ -543,14 +551,14 @@ class HttpRequestFactory: RequestFactory {
         redirectURI: URL,
         code: String,
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         var params = [
             "grant_type" : "authorization_code",
             "redirect_uri" : redirectURI.absoluteString,
             "code" : code
         ]
         set(&params, clientId: options?.authServiceId)
-        let request = HttpRequest(
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
             credential: client,
@@ -563,14 +571,14 @@ class HttpRequestFactory: RequestFactory {
     func buildOAuthGrantAuth(
         redirectURI: URL,
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         var json = [
             "redirect_uri" : redirectURI.absoluteString,
             "response_type" : "code"
         ]
         let clientId = options?.authServiceId
         set(&json, clientId: clientId)
-        let request = HttpRequest(
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.oauthAuth(
                 client: client,
@@ -591,7 +599,7 @@ class HttpRequestFactory: RequestFactory {
         username: String,
         password: String,
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         var params = [
             "response_type" : "code",
             "redirect_uri" : redirectURI.absoluteString,
@@ -599,7 +607,7 @@ class HttpRequestFactory: RequestFactory {
             "password" : password
         ]
         set(&params, clientId: options?.authServiceId)
-        let request = HttpRequest(
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.url(url: tempLoginUri),
             credential: client,
@@ -612,13 +620,13 @@ class HttpRequestFactory: RequestFactory {
     func buildOAuthGrantRefreshToken(
         refreshToken: String,
         options: Options?
-    ) -> HttpRequest {
+    ) -> HttpRequest<Any> {
         var params = [
             "grant_type" : "refresh_token",
             "refresh_token" : refreshToken
         ]
         set(&params, clientId: options?.authServiceId)
-        let request = HttpRequest(
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
             credential: client,
@@ -630,12 +638,13 @@ class HttpRequestFactory: RequestFactory {
     
     // MARK: Realtime
     
-    private func build(
+    private func build<Result>(
         deviceId: String,
         endpoint: Endpoint,
-        options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: endpoint,
             credential: (options?.client ?? self.client).activeUser,
@@ -647,51 +656,59 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserRegisterRealtime(
+    func buildUserRegisterRealtime<Result>(
         user: User,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.userRegisterRealtime(client: options?.client ?? self.client, user: user),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
     
-    func buildUserUnregisterRealtime(
+    func buildUserUnregisterRealtime<Result>(
         user: User,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.userUnregisterRealtime(client: options?.client ?? self.client, user: user),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
     
-    func buildAppDataSubscribe(
+    func buildAppDataSubscribe<Result>(
         collectionName: String,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.appDataSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
     
-    func buildAppDataUnSubscribe(
+    func buildAppDataUnSubscribe<Result>(
         collectionName: String,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.appDataUnSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
     
@@ -700,8 +717,8 @@ class HttpRequestFactory: RequestFactory {
         userId: String,
         acl: LiveStreamAcl,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .put,
             endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
@@ -715,8 +732,8 @@ class HttpRequestFactory: RequestFactory {
         streamName: String,
         userId: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .get,
             endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
@@ -729,8 +746,8 @@ class HttpRequestFactory: RequestFactory {
         streamName: String,
         userId: String,
         options: Options?
-    ) -> HttpRequest {
-        let request = HttpRequest(
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.liveStreamPublish(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
@@ -739,29 +756,33 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildLiveStreamSubscribe(
+    func buildLiveStreamSubscribe<Result>(
         streamName: String,
         userId: String,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.liveStreamSubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
     
-    func buildLiveStreamUnsubscribe(
+    func buildLiveStreamUnsubscribe<Result>(
         streamName: String,
         userId: String,
         deviceId: String,
-        options: Options?
-    ) -> HttpRequest {
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         return build(
             deviceId: deviceId,
             endpoint: Endpoint.liveStreamUnsubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
-            options: options
+            options: options,
+            resultType: resultType
         )
     }
 

@@ -23,8 +23,8 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
         )
     }
     
-    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
-        let requests = MultiRequest()
+    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> AnyRequest<Any> {
+        let requests = MultiRequest<Any>()
         var promises: [Promise<Void>] = []
         if let sync = sync {
             for pendingOperation in sync.pendingOperations() {
@@ -82,7 +82,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return requests
+        return AnyRequest(requests)
     }
     
 }

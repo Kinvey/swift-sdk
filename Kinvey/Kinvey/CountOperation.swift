@@ -12,6 +12,8 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     
     let query: Query?
     
+    typealias ResultType = Result<Int, Swift.Error>
+    
     init(
         query: Query? = nil,
         readPolicy: ReadPolicy,
@@ -28,8 +30,8 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
             if let cache = self.cache {
                 let count = cache.count(query: self.query)
@@ -38,14 +40,15 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
                 completionHandler?(.success(0))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(
             collectionName: T.collectionName(),
             query: query,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         request.execute() { data, response, error in
             if let response = response, response.isOK,
@@ -59,7 +62,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

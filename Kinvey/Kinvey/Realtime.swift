@@ -157,7 +157,7 @@ public class LiveStream<Type: BaseMappable> {
     }
     
     private func execute(
-        request: HttpRequest,
+        request: HttpRequest<Any>,
         userId: String,
         realtimeRouter: RealtimeRouter,
         fulfill: @escaping ((RealtimeRouter, String)) -> Void,
