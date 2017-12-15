@@ -98,12 +98,13 @@ public class LiveStream<Type: BaseMappable> {
         acl: LiveStreamAcl,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let request = client.networkRequestFactory.buildLiveStreamGrantAccess(
             streamName: name,
             userId: userId,
             acl: acl,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -121,7 +122,7 @@ public class LiveStream<Type: BaseMappable> {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Grant access to a user for the `LiveStream`
@@ -130,12 +131,13 @@ public class LiveStream<Type: BaseMappable> {
         userId: String,
         options: Options? = nil,
         completionHandler: ((Result<LiveStreamAcl, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<LiveStreamAcl, Swift.Error>> {
         let client = options?.client ?? self.client
         let request = client.networkRequestFactory.buildLiveStreamAccess(
             streamName: name,
             userId: userId,
-            options: options
+            options: options,
+            resultType: Result<LiveStreamAcl, Swift.Error>.self
         )
         Promise<LiveStreamAcl> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -153,7 +155,7 @@ public class LiveStream<Type: BaseMappable> {
         }.catch {
             completionHandler?(.failure($0))
         }
-        return request
+        return AnyRequest(request)
     }
     
     private func execute(
@@ -315,7 +317,8 @@ public class LiveStream<Type: BaseMappable> {
                         streamName: self.name,
                         userId: userId,
                         deviceId: deviceId,
-                        options: options
+                        options: options,
+                        resultType: Any.self
                     )
                     self.execute(
                         request: request,
@@ -357,7 +360,8 @@ public class LiveStream<Type: BaseMappable> {
                     streamName: self.name,
                     userId: userId,
                     deviceId: deviceId,
-                    options: options
+                    options: options,
+                    resultType: Any.self
                 )
                 request.execute() { (data, response, error) in
                     if let response = response, response.isOK {

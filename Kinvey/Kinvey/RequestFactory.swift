@@ -10,23 +10,91 @@ import Foundation
 
 protocol RequestFactory {
     
-    func buildUserSignUp(username: String?, password: String?, user: User?, options: Options?) -> HttpRequest<Any>
-    func buildUserDelete(userId: String, hard: Bool, options: Options?) -> HttpRequest<Any>
+    func buildUserSignUp<Result>(
+        username: String?,
+        password: String?,
+        user: User?,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserDelete<Result>(
+        userId: String,
+        hard: Bool,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
     
     func buildUserSocialLogin(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest<Any>
     func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest<Any>
     
-    func buildUserLogin(username: String, password: String, options: Options?) -> HttpRequest<Any>
-    func buildUserLogout(user: User, options: Options?) -> HttpRequest<Any>
-    func buildUserExists(username: String, options: Options?) -> HttpRequest<Any>
-    func buildUserGet(userId: String, options: Options?) -> HttpRequest<Any>
-    func buildUserFind(query: Query, options: Options?) -> HttpRequest<Any>
-    func buildUserSave(user: User, newPassword: String?, options: Options?) -> HttpRequest<Any>
-    func buildUserLookup(user: User, userQuery: UserQuery, options: Options?) -> HttpRequest<Any>
-    func buildSendEmailConfirmation(forUsername: String, options: Options?) -> HttpRequest<Any>
-    func buildUserResetPassword(usernameOrEmail: String, options: Options?) -> HttpRequest<Any>
-    func buildUserForgotUsername(email: String, options: Options?) -> HttpRequest<Any>
-    func buildUserMe(options: Options?) -> HttpRequest<Any>
+    func buildUserLogin<Result>(
+        username: String,
+        password: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserLogout<Result>(
+        user: User,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserExists<Result>(
+        username: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserGet<Result>(
+        userId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserFind<Result>(
+        query: Query,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserSave<Result>(
+        user: User,
+        newPassword: String?,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserLookup<Result>(
+        user: User,
+        userQuery: UserQuery,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildSendEmailConfirmation<Result>(
+        forUsername: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserResetPassword<Result>(
+        usernameOrEmail: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserForgotUsername<Result>(
+        email: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserMe<Result>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
     
     func buildUserRegisterRealtime<Result>(
         user: User,
@@ -79,8 +147,19 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildAppDataRemoveByQuery(collectionName: String, query: Query, options: Options?) -> HttpRequest<Any>
-    func buildAppDataRemoveById(collectionName: String, objectId: String, options: Options?) -> HttpRequest<Any>
+    func buildAppDataRemoveByQuery<Result>(
+        collectionName: String,
+        query: Query,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildAppDataRemoveById<Result>(
+        collectionName: String,
+        objectId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
     
     func buildAppDataSubscribe<Result>(
         collectionName: String,
@@ -131,8 +210,21 @@ protocol RequestFactory {
     func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String, options: Options?) -> HttpRequest<Any>
     func buildOAuthGrantRefreshToken(refreshToken: String, options: Options?) -> HttpRequest<Any>
     
-    func buildLiveStreamGrantAccess(streamName: String, userId: String, acl: LiveStreamAcl, options: Options?) -> HttpRequest<Any>
-    func buildLiveStreamAccess(streamName: String, userId: String, options: Options?) -> HttpRequest<Any>
+    func buildLiveStreamGrantAccess<Result>(
+        streamName: String,
+        userId: String,
+        acl: LiveStreamAcl,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildLiveStreamAccess<Result>(
+        streamName: String,
+        userId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
     func buildLiveStreamPublish(streamName: String, userId: String, options: Options?) -> HttpRequest<Any>
     
     func buildLiveStreamSubscribe<Result>(

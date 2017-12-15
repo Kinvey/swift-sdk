@@ -84,6 +84,14 @@ public class AnyRequest<Result>: NSObject, Request {
         return _getProgress()
     }
     
+    init<RequestType: Request>(_ request: RequestType, conversionHandler: @escaping (RequestType.ResultType?) -> Result?) {
+        _getExecuting = { request.executing }
+        _getCancelled = { request.cancelled }
+        _cancel = request.cancel
+        _getResult = { conversionHandler(request.result) }
+        _getProgress = { request.progress }
+    }
+    
     init<RequestType: Request>(_ request: RequestType) where Result == Any {
         _getExecuting = { request.executing }
         _getCancelled = { request.cancelled }

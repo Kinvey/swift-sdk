@@ -305,7 +305,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<T>? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<T, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -327,7 +327,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<T, Swift.Error>> {
         return execute(
             name,
             params: params,

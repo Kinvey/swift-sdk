@@ -11,12 +11,14 @@ import Foundation
 class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
-    private let httpRequest: () -> HttpRequest<Any>
+    private let httpRequest: () -> HttpRequest<ResultType>
     lazy var request: HttpRequest = self.httpRequest()
+    
+    typealias ResultType = Result<Int, Swift.Error>
     
     init(
         query: Query,
-        httpRequest: @autoclosure @escaping () -> HttpRequest<Any>,
+        httpRequest: @autoclosure @escaping () -> HttpRequest<ResultType>,
         writePolicy: WritePolicy,
         sync: AnySync? = nil,
         cache: AnyCache<T>? = nil,
@@ -32,8 +34,8 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<Result<[T], Swift.Error>> {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
             var count = 0
             if let cache = self.cache {
@@ -59,10 +61,10 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             }
             completionHandler?(.success(count))
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<Result<[T], Swift.Error>> {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         request.execute() { data, response, error in
             if let response = response, response.isOK,
                 let results = self.client.responseParser.parse(data),
@@ -74,7 +76,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                 completionHandler?(.failure(buildError(data, response, error, self.client)))
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

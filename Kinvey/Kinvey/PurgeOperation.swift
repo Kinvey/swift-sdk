@@ -11,6 +11,8 @@ import PromiseKit
 
 internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error> where T: NSObject {
     
+    typealias ResultType = Result<Int, Swift.Error>
+    
     internal override init(
         sync: AnySync?,
         cache: AnyCache<T>?,
@@ -23,8 +25,8 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
         )
     }
     
-    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> AnyRequest<Any> {
-        let requests = MultiRequest<Any>()
+    func execute(timeout: TimeInterval? = nil, completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let requests = MultiRequest<ResultType>()
         var promises: [Promise<Void>] = []
         if let sync = sync {
             for pendingOperation in sync.pendingOperations() {
@@ -39,11 +41,14 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                             let request = client.networkRequestFactory.buildAppDataGetById(
                                 collectionName: T.collectionName(),
                                 id: objectId,
-                                options: options
+                                options: options,
+                                resultType: ResultType.self
                             )
                             requests.addRequest(request)
                             request.execute() { data, response, error in
-                                if let response = response, response.isOK, let json = self.client.responseParser.parse(data) {
+                                if let response = response, response.isOK,
+                                    let json = self.client.responseParser.parse(data)
+                                {
                                     if let cache = self.cache, let persistable = T(JSON: json) {
                                         cache.save(entity: persistable)
                                     }

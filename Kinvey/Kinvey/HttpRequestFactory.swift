@@ -19,13 +19,14 @@ class HttpRequestFactory: RequestFactory {
     
     typealias CompletionHandler = (Data?, URLResponse?, NSError?) -> Void
     
-    func buildUserSignUp(
+    func buildUserSignUp<Result>(
         username: String? = nil,
         password: String? = nil,
         user: User? = nil,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.user(client: client, query: nil),
             options: options
@@ -45,12 +46,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserDelete(
+    func buildUserDelete<Result>(
         userId: String,
         hard: Bool,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: Endpoint.userDelete(client: client, userId: userId, hard: hard),
             credential: client.activeUser,
@@ -108,12 +110,13 @@ class HttpRequestFactory: RequestFactory {
         )
     }
     
-    func buildUserLogin(
+    func buildUserLogin<Result>(
         username: String,
         password: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userLogin(client: client),
             options: options
@@ -127,11 +130,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserLogout(
+    func buildUserLogout<Result>(
         user: User,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userLogout(client: client),
             credential: client.activeUser,
@@ -140,11 +144,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserExists(
+    func buildUserExists<Result>(
         username: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userExistsByUsername(client: client),
             options: options
@@ -156,11 +161,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserGet(
+    func buildUserGet<Result>(
         userId: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             endpoint: Endpoint.userById(client: client, userId: userId),
             credential: client.activeUser,
             options: options
@@ -168,11 +174,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserFind(
+    func buildUserFind<Result>(
         query: Query,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             endpoint: Endpoint.user(client: client, query: query),
             credential: client.activeUser,
             options: options
@@ -180,12 +187,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserSave(
+    func buildUserSave<Result>(
         user: User,
         newPassword: String?,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .put,
             endpoint: Endpoint.userById(client: client, userId: user.userId),
             credential: client.activeUser,
@@ -201,12 +209,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserLookup(
+    func buildUserLookup<Result>(
         user: User,
         userQuery: UserQuery,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userLookup(client: client),
             credential: client.activeUser,
@@ -217,11 +226,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserResetPassword(
+    func buildUserResetPassword<Result>(
         usernameOrEmail: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userResetPassword(usernameOrEmail: usernameOrEmail, client: client),
             credential: client,
@@ -230,11 +240,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserForgotUsername(
+    func buildUserForgotUsername<Result>(
         email: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.userForgotUsername(client: client),
             credential: client,
@@ -245,10 +256,11 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserMe(
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+    func buildUserMe<Result>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             endpoint: Endpoint.userMe(client: client),
             credential: client.activeUser,
             options: options
@@ -256,7 +268,10 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataPing<Result>(options: Options?, resultType: Result.Type) -> HttpRequest<Result> {
+    func buildAppDataPing<Result>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
         let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: Endpoint.appDataPing(client: client),
@@ -357,12 +372,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataRemoveByQuery(
+    func buildAppDataRemoveByQuery<Result>(
         collectionName: String,
         query: Query,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query),
             credential: client.activeUser,
@@ -371,12 +387,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataRemoveById(
+    func buildAppDataRemoveById<Result>(
         collectionName: String,
         objectId: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: Endpoint.appDataById(client: client, collectionName: collectionName, id: objectId),
             credential: client.activeUser,
@@ -524,11 +541,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildSendEmailConfirmation(
+    func buildSendEmailConfirmation<Result>(
         forUsername username: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.sendEmailConfirmation(client: client, username: username),
             credential: client,
@@ -712,13 +730,14 @@ class HttpRequestFactory: RequestFactory {
         )
     }
     
-    func buildLiveStreamGrantAccess(
+    func buildLiveStreamGrantAccess<Result>(
         streamName: String,
         userId: String,
         acl: LiveStreamAcl,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .put,
             endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
@@ -728,12 +747,13 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildLiveStreamAccess(
+    func buildLiveStreamAccess<Result>(
         streamName: String,
         userId: String,
-        options: Options?
-    ) -> HttpRequest<Any> {
-        let request = HttpRequest<Any>(
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
             credential: client.activeUser,
