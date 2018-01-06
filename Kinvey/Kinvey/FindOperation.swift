@@ -60,12 +60,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
+            let result: ResultType
             if let cache = self.cache {
                 let json = cache.find(byQuery: self.query)
-                completionHandler?(.success(json))
+                result = .success(json)
             } else {
-                completionHandler?(.success(AnyRandomAccessCollection<T>([])))
+                result = .success(AnyRandomAccessCollection<T>([]))
             }
+            request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }
@@ -350,10 +353,14 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             } else {
                 return self.fetch(multiRequest: request)
             }
-        }.then {
-            completionHandler?(.success($0))
-        }.catch { error in
-            completionHandler?(.failure(error))
+        }.then { (results) -> Void in
+            let result: ResultType = .success(results)
+            request.result = result
+            completionHandler?(result)
+        }.catch {
+            let result: ResultType = .failure($0)
+            request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }

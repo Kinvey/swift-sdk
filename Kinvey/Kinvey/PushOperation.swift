@@ -86,12 +86,16 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         var errors: [Swift.Error] = []
         
         let collectionName = T.collectionName()
-        let pushOperation = PushRequest(collectionName: collectionName) {
+        var pushOperation: PushRequest!
+        pushOperation = PushRequest(collectionName: collectionName) {
+            let result: ResultType
             if errors.isEmpty {
-                completionHandler?(.success(count))
+                result = .success(count)
             } else {
-                completionHandler?(.failure(errors))
+                result = .failure(errors)
             }
+            pushOperation.result = result
+            completionHandler?(result)
         }
         
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)

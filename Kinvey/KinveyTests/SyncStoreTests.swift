@@ -55,6 +55,150 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testCreateSync() {
+        let person = self.person
+        
+        let request = store.save(person, options: nil)
+        do {
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let person):
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 29)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testCount() {
+        var _count = 0
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            store.count() { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let count = count {
+                    _count = count
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCount = nil
+            }
+        }
+        
+        do {
+            let person = self.person
+            
+            weak var expectationCreate = expectation(description: "Create")
+            
+            store.save(person) { (person, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.personId)
+                    XCTAssertNotEqual(person.personId, "")
+                    
+                    XCTAssertNotNil(person.age)
+                    XCTAssertEqual(person.age, 29)
+                }
+                
+                expectationCreate?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCreate = nil
+            }
+        }
+        
+        do {
+            weak var expectationCount = expectation(description: "Count")
+            
+            store.count() { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let count = count {
+                    XCTAssertEqual(_count + 1, count)
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationCount = nil
+            }
+        }
+    }
+    
+    func testCountSync() {
+        var _count = 0
+        
+        do {
+            let request = store.count(options: nil)
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let count):
+                _count = count
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        guard _count != 0 else {
+            return
+        }
+        
+        do {
+            let person = self.person
+            
+            let request = store.save(person, options: nil)
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let person):
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 29)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let request = store.count(options: nil)
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let count):
+                XCTAssertEqual(_count + 1, count)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testUpdate() {
         save()
         
@@ -483,6 +627,31 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testPurgeTimeoutErrorSync() {
+        let person = save()
+        person.age = person.age + 1
+        save(person)
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        let request = store.purge(query, options: nil)
+        do {
+            let result = try request.waitForResult(timeout: defaultTimeout)
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testSync() {
         save()
         
@@ -728,6 +897,74 @@ class SyncStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationPush = nil
+        }
+        
+        XCTAssertEqual(store.syncCount(), 0)
+    }
+    
+    func testPushSync() {
+        save()
+        
+        let bookDataStore = DataStore<Book>.collection(.sync)
+        
+        do {
+            let book = Book()
+            book.title = "Les Miserables"
+            
+            weak var expectationSave = expectation(description: "Save Book")
+            
+            bookDataStore.save(book, options: nil) { (result: Result<Book, Swift.Error>) in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        if useMockData {
+            mockResponse { request -> HttpResponse in
+                XCTAssertEqual(request.httpMethod, "POST")
+                var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                json[PersistableIdKey] = UUID().uuidString
+                json[PersistableAclKey] = [
+                    Acl.Key.creator : self.client.activeUser!.userId
+                ]
+                json[PersistableMetadataKey] = [
+                    Metadata.LmtKey : Date().toString(),
+                    Metadata.EctKey : Date().toString()
+                ]
+                return HttpResponse(statusCode: 201, json: json)
+            }
+        }
+        defer {
+            if useMockData { setURLProtocol(nil) }
+        }
+        
+        let request = store.push(options: nil)
+        do {
+            let result = try request.waitForResult(timeout: defaultTimeout)
+            switch result {
+            case .success(let count):
+                XCTAssertEqual(Int(count), 1)
+            case .failure(let errors):
+                XCTAssertGreaterThan(errors.count, 0)
+                XCTAssertNil(errors.first)
+                if let error = errors.first {
+                    XCTFail(error.localizedDescription)
+                }
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
         XCTAssertEqual(store.syncCount(), 0)
@@ -1090,6 +1327,32 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testFindByIdSync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        guard let personId = person.personId else { return }
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find(personId, options: nil)
+        do {
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let person):
+                XCTAssertEqual(person.personId, personId)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testFindByQuery() {
         let person = save()
         
@@ -1126,6 +1389,37 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testFindByQuerySync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        guard let personId = person.personId else { return }
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let query = Query(format: "personId == %@", personId)
+        
+        let request = store.find(query, options: nil)
+        do {
+            let result = try request.waitForResult(timeout: 5)
+            switch result {
+            case .success(let results):
+                XCTAssertNotNil(results.first)
+                if let result = results.first {
+                    XCTAssertEqual(result.personId, personId)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testRemovePersistable() {
         let person = save()
         
@@ -1157,6 +1451,30 @@ class SyncStoreTests: StoreTestCase {
             
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
+        }
+    }
+    
+    func testRemovePersistableSync() {
+        let person = save()
+        
+        XCTAssertNotNil(person.personId)
+        
+        setURLProtocol(CheckForNetworkURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        do {
+            let request = try store.remove(person, options: nil)
+            let result = try request.waitForResult()
+            switch result {
+            case .success(let count):
+                XCTAssertEqual(count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
     
@@ -2097,6 +2415,96 @@ class SyncStoreTests: StoreTestCase {
     func testNewTypeDataStore() {
         var store = DataStore<Person>.getInstance()
         store = store.collection(newType: Book.self).collection(newType: Person.self)
+    }
+    
+    func testGroupCustomAggregationError() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationGroup = expectation(description: "Group")
+        
+        store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
+            options: nil
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidOperation(let description):
+                        XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
+                    default:
+                        XCTFail()
+                    }
+                }
+            }
+            
+            expectationGroup?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationGroup = nil
+        }
+    }
+    
+    func testGroupCustomAggregationErrorSync() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let request = store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
+            options: nil
+        )
+        do {
+            let result = try request.waitForResult(timeout: defaultTimeout)
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidOperation(let description):
+                        XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
+                    default:
+                        XCTFail()
+                    }
+                }
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
     
 }

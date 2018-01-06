@@ -82,10 +82,14 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
             }
         }
         
-        when(fulfilled: promises).then { results in
-            completionHandler?(.success(results.count))
+        when(fulfilled: promises).then { (results: [Void]) -> Void in
+            let result: ResultType = .success(results.count)
+            requests.result = result
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(.failure(error))
+            let result: ResultType = .failure(error)
+            requests.result = result
+            completionHandler?(result)
         }
         return AnyRequest(requests)
     }

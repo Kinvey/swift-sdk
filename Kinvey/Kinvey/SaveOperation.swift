@@ -79,6 +79,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         )
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
+                let result: ResultType
                 if let response = response, response.isOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
@@ -99,10 +100,12 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
                         }
                         self.merge(&self.persistable, json: json)
                     }
-                    completionHandler?(.success(self.persistable))
+                    result = .success(self.persistable)
                 } else {
-                    completionHandler?(.failure(buildError(data, response, error, self.client)))
+                    result = .failure(buildError(data, response, error, self.client))
                 }
+                request.result = result
+                completionHandler?(result)
             }
         }
         return AnyRequest(request)

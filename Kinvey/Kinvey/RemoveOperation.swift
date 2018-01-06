@@ -59,22 +59,27 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                     }
                 }
             }
-            completionHandler?(.success(count))
+            let result: ResultType = .success(count)
+            request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         request.execute() { data, response, error in
+            let result: ResultType
             if let response = response, response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? Int
             {
                 self.cache?.remove(byQuery: self.query)
-                completionHandler?(.success(count))
+                result = .success(count)
             } else {
-                completionHandler?(.failure(buildError(data, response, error, self.client)))
+                result = .failure(buildError(data, response, error, self.client))
             }
+            self.request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }

@@ -315,7 +315,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func find(
         _ id: String,
         options: Options? = nil,
-        completionHandler: @escaping (Result<T, Swift.Error>) -> Void
+        completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<T, Swift.Error>> {
         validate(id: id)
         
@@ -328,8 +328,10 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let request = operation.execute { result in
-            DispatchQueue.main.async {
-                completionHandler(result)
+            if let completionHandler = completionHandler {
+                DispatchQueue.main.async {
+                    completionHandler(result)
+                }
             }
         }
         return request
@@ -408,12 +410,23 @@ open class DataStore<T: Persistable> where T: NSObject {
         options: Options? = nil,
         completionHandler: @escaping (Result<[T], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[T], Swift.Error>> {
-        return find(query, options: options) { (result: Result<[T], Swift.Error>) in
+        let convert = { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Result<[T], Swift.Error> in
             switch result {
             case .success(let results):
-                completionHandler(.success(Array(results)))
+                return .success(Array(results))
             case .failure(let error):
-                completionHandler(.failure(error))
+                return .failure(error)
+            }
+        }
+        let request = find(query, options: options) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
+            completionHandler(convert(result))
+        }
+        return AnyRequest(request) {
+            switch $0 {
+            case .some(let result):
+                return convert(result)
+            case .none:
+                return nil
             }
         }
     }
@@ -430,7 +443,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func find(
         _ query: Query = Query(),
         options: Options? = nil,
-        completionHandler: @escaping (Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void
+        completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let deltaSet = options?.deltaSet ?? self.deltaSet
@@ -444,7 +457,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let request = operation.execute { result in
-            completionHandler(result)
+            completionHandler?(result)
         }
         return request
     }
@@ -516,7 +529,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func count(
         _ query: Query? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<Int, Swift.Error>) -> Void)?
+        completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let operation = CountOperation<T>(
@@ -625,7 +638,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         reduceJSFunction: String,
         condition: NSPredicate? = nil,
         options: Options? = nil,
-        completionHandler: @escaping (Result<[AggregationCustomResult<T>], Swift.Error>) -> Void
+        completionHandler: ((Result<[AggregationCustomResult<T>], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<[AggregationCustomResult<T>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let keys = keys ?? []
@@ -653,15 +666,17 @@ open class DataStore<T: Persistable> where T: NSObject {
             }
             return array
         }
-        let request = operation.execute { result in
-            switch result {
+        let request = operation.execute {
+            let result: Result<[AggregationCustomResult<T>], Swift.Error>
+            switch $0 {
             case .success(let results):
-                DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
-                }
+                result = .success(convert(results))
             case .failure(let error):
+                result = .failure(error)
+            }
+            if let completionHandler = completionHandler {
                 DispatchQueue.main.async {
-                    completionHandler(.failure(error))
+                    completionHandler(result)
                 }
             }
         }
@@ -1450,7 +1465,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func remove(
         _ persistable: T,
         options: Options? = nil,
-        completionHandler: ((Result<Int, Swift.Error>) -> Void)?
+        completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
     ) throws -> AnyRequest<Result<Int, Swift.Error>> {
         guard let id = persistable.entityId else {
             log.error("Object Id is missing")
@@ -1579,7 +1594,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     open func remove(
         byId id: String,
         options: Options? = nil,
-        completionHandler: ((Result<Int, Swift.Error>) -> Void)?
+        completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         validate(id: id)
 
@@ -1592,8 +1607,10 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let request = operation.execute { result in
-            DispatchQueue.main.async {
-                completionHandler?(result)
+            if let completionHandler = completionHandler {
+                DispatchQueue.main.async {
+                    completionHandler(result)
+                }
             }
         }
         return request
@@ -2135,8 +2152,11 @@ open class DataStore<T: Persistable> where T: NSObject {
         var request: AnyRequest<Result<Int, Swift.Error>>!
         Promise<Int> { fulfill, reject in
             if type == .network {
-                request = AnyRequest(LocalRequest<Result<Int, Swift.Error>>())
-                reject(Error.invalidDataStoreType)
+                let localRequest = LocalRequest<Result<Int, Swift.Error>>()
+                request = AnyRequest(localRequest)
+                let error = Error.invalidDataStoreType
+                localRequest.result = .failure(error)
+                reject(error)
             } else {
                 let executor = Executor()
                 
@@ -2145,18 +2165,21 @@ open class DataStore<T: Persistable> where T: NSObject {
                     cache: cache,
                     options: options
                 )
-                request = operation.execute { result in
+                let requests = MultiRequest<Result<Int, Swift.Error>>()
+                requests += operation.execute { result in
                     switch result {
                     case .success(let count):
                         executor.execute {
-                            self.pull(
+                            requests += self.pull(
                                 query,
                                 options: options
                             ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                                 switch result {
                                 case .success:
+                                    requests.result = .success(count)
                                     fulfill(count)
                                 case .failure(let error):
+                                    requests.result = .failure(error)
                                     reject(error)
                                 }
                             }
@@ -2165,6 +2188,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                         reject(error)
                     }
                 }
+                request = AnyRequest(requests)
             }
         }.then { count in
             completionHandler?(.success(count))

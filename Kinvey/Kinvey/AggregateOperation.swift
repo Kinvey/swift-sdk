@@ -36,11 +36,14 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = LocalRequest<Result<[JsonDictionary], Swift.Error>>()
         request.execute { () -> Void in
+            let result: ResultType
             if let _ = self.cache {
-                completionHandler?(.failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache")))
+                result = .failure(Error.invalidOperation(description: "Custom Aggregation not supported against local cache"))
             } else {
-                completionHandler?(.success([]))
+                result = .success([])
             }
+            request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }
@@ -56,15 +59,18 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
             resultType: ResultType.self
         )
         request.execute() { data, response, error in
+            let result: ResultType
             if let response = response, response.isOK,
                 let data = data,
                 let json = try? JSONSerialization.jsonObject(with: data),
-                let result = json as? [JsonDictionary]
+                let resultValue = json as? [JsonDictionary]
             {
-                completionHandler?(.success(result))
+                result = .success(resultValue)
             } else {
-                completionHandler?(.failure(buildError(data, response, error, self.client)))
+                result = .failure(buildError(data, response, error, self.client))
             }
+            request.result = result
+            completionHandler?(result)
         }
         return AnyRequest(request)
     }

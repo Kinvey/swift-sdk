@@ -45,7 +45,15 @@ extension Request {
         CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
         CFRunLoopRunInMode(.defaultMode, timeout, false)
         CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+     
         return fulfilled
+    }
+    
+    public func waitForResult(timeout: TimeInterval = TimeInterval.infinity) throws -> ResultType {
+        guard wait(timeout: timeout) else {
+            throw Error.requestTimeout
+        }
+        return result!
     }
     
 }
