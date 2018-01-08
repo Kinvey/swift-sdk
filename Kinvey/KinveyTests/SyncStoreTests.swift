@@ -59,19 +59,18 @@ class SyncStoreTests: StoreTestCase {
         let person = self.person
         
         let request = store.save(person, options: nil)
-        do {
-            let result = try request.waitForResult(timeout: 5)
-            switch result {
-            case .success(let person):
-                XCTAssertNotNil(person.personId)
-                XCTAssertNotEqual(person.personId, "")
-                
-                XCTAssertNotNil(person.age)
-                XCTAssertEqual(person.age, 29)
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
-            }
-        } catch {
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let person):
+            XCTAssertNotNil(person.personId)
+            XCTAssertNotEqual(person.personId, "")
+            
+            XCTAssertNotNil(person.age)
+            XCTAssertEqual(person.age, 29)
+        case .failure(let error):
             XCTFail(error.localizedDescription)
         }
     }
@@ -151,15 +150,16 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = store.count(options: nil)
-            let result = try request.waitForResult(timeout: 5)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 _count = count
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         guard _count != 0 else {
@@ -170,7 +170,10 @@ class SyncStoreTests: StoreTestCase {
             let person = self.person
             
             let request = store.save(person, options: nil)
-            let result = try request.waitForResult(timeout: 5)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let person):
                 XCTAssertNotNil(person.personId)
@@ -181,13 +184,14 @@ class SyncStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         do {
             let request = store.count(options: nil)
-            let result = try request.waitForResult(timeout: 5)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 XCTAssertEqual(_count + 1, count)
@@ -639,16 +643,15 @@ class SyncStoreTests: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         let request = store.purge(query, options: nil)
-        do {
-            let result = try request.waitForResult(timeout: defaultTimeout)
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertTimeoutError(error)
-            }
-        } catch {
-            XCTFail(error.localizedDescription)
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTimeoutError(error)
         }
     }
     
@@ -951,20 +954,19 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let request = store.push(options: nil)
-        do {
-            let result = try request.waitForResult(timeout: defaultTimeout)
-            switch result {
-            case .success(let count):
-                XCTAssertEqual(Int(count), 1)
-            case .failure(let errors):
-                XCTAssertGreaterThan(errors.count, 0)
-                XCTAssertNil(errors.first)
-                if let error = errors.first {
-                    XCTFail(error.localizedDescription)
-                }
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let count):
+            XCTAssertEqual(Int(count), 1)
+        case .failure(let errors):
+            XCTAssertGreaterThan(errors.count, 0)
+            XCTAssertNil(errors.first)
+            if let error = errors.first {
+                XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         XCTAssertEqual(store.syncCount(), 0)
@@ -1340,15 +1342,14 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let request = store.find(personId, options: nil)
-        do {
-            let result = try request.waitForResult(timeout: 5)
-            switch result {
-            case .success(let person):
-                XCTAssertEqual(person.personId, personId)
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
-            }
-        } catch {
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let person):
+            XCTAssertEqual(person.personId, personId)
+        case .failure(let error):
             XCTFail(error.localizedDescription)
         }
     }
@@ -1404,18 +1405,17 @@ class SyncStoreTests: StoreTestCase {
         let query = Query(format: "personId == %@", personId)
         
         let request = store.find(query, options: nil)
-        do {
-            let result = try request.waitForResult(timeout: 5)
-            switch result {
-            case .success(let results):
-                XCTAssertNotNil(results.first)
-                if let result = results.first {
-                    XCTAssertEqual(result.personId, personId)
-                }
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let results):
+            XCTAssertNotNil(results.first)
+            if let result = results.first {
+                XCTAssertEqual(result.personId, personId)
             }
-        } catch {
+        case .failure(let error):
             XCTFail(error.localizedDescription)
         }
     }
@@ -1466,7 +1466,10 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = try store.remove(person, options: nil)
-            let result = try request.waitForResult()
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 XCTAssertEqual(count, 1)
@@ -2486,24 +2489,23 @@ class SyncStoreTests: StoreTestCase {
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
             options: nil
         )
-        do {
-            let result = try request.waitForResult(timeout: defaultTimeout)
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertNotNil(error as? Kinvey.Error)
-                if let error = error as? Kinvey.Error {
-                    switch error {
-                    case .invalidOperation(let description):
-                        XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
-                    default:
-                        XCTFail()
-                    }
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertNotNil(error as? Kinvey.Error)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .invalidOperation(let description):
+                    XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
+                default:
+                    XCTFail()
                 }
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
     }
     

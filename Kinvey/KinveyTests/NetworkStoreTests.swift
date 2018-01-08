@@ -272,19 +272,18 @@ class NetworkStoreTests: StoreTestCase {
         person.address = address
         
         let request = store.save(person, options: Options(writePolicy: .forceNetwork))
-        do {
-            let result = try request.waitForResult(timeout: defaultTimeout)
-            switch result {
-            case .success(let person):
-                XCTAssertNotNil(person.address)
-                
-                if let address = person.address {
-                    XCTAssertNotNil(address.city)
-                }
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let person):
+            XCTAssertNotNil(person.address)
+            
+            if let address = person.address {
+                XCTAssertNotNil(address.city)
             }
-        } catch {
+        case .failure(let error):
             XCTFail(error.localizedDescription)
         }
     }
@@ -423,7 +422,10 @@ class NetworkStoreTests: StoreTestCase {
             }
             
             let request = store.count(options: nil)
-            let result = try request.waitForResult(timeout: defaultTimeout)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 XCTAssertEqual(count, 85)
@@ -431,21 +433,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         do {
             let request = store.count(options: Options(readPolicy: .forceLocal))
-            let result = try request.waitForResult(timeout: defaultTimeout)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 XCTAssertEqual(count, 0)
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         XCTAssertNotNil(eventsCount)
@@ -474,15 +475,16 @@ class NetworkStoreTests: StoreTestCase {
             event.name = "Friday Party!"
             
             let request = store.save(event, options: nil)
-            let result = try request.waitForResult(timeout: defaultTimeout)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success:
                 break
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
         
         do {
@@ -496,7 +498,10 @@ class NetworkStoreTests: StoreTestCase {
             }
             
             let request = store.count(options: nil)
-            let result = try request.waitForResult(timeout: defaultTimeout)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
             switch result {
             case .success(let count):
                 guard let eventsCount = eventsCount else {
@@ -507,8 +512,6 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
     }
     
@@ -874,26 +877,25 @@ class NetworkStoreTests: StoreTestCase {
         }
         
         let request = store.find(options: Options(readPolicy: .forceNetwork))
-        do {
-            let result = try request.waitForResult(timeout: 5)
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error is Kinvey.Error)
-                
-                if let error = error as? Kinvey.Error {
-                    switch error {
-                    case .methodNotAllowed(_, _, let debug, let description):
-                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                        XCTAssertEqual(description, "The method is not allowed for this resource.")
-                    default:
-                        XCTFail()
-                    }
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
                 }
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
     }
     
@@ -952,26 +954,25 @@ class NetworkStoreTests: StoreTestCase {
         }
         
         let request = store.find("id-not-found", options: Options(readPolicy: .forceNetwork))
-        do {
-            let result = try request.waitForResult(timeout: 5)
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error is Kinvey.Error)
-                
-                if let error = error as? Kinvey.Error {
-                    switch error {
-                    case .entityNotFound(let debug, let description):
-                        XCTAssertEqual(debug, "")
-                        XCTAssertEqual(description, "This entity not found in the collection")
-                    default:
-                        XCTFail()
-                    }
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .entityNotFound(let debug, let description):
+                    XCTAssertEqual(debug, "")
+                    XCTAssertEqual(description, "This entity not found in the collection")
+                default:
+                    XCTFail()
                 }
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
     }
     
@@ -1122,26 +1123,25 @@ class NetworkStoreTests: StoreTestCase {
         }
         
         let request = store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork))
-        do {
-            let result = try request.waitForResult(timeout: defaultTimeout)
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error is Kinvey.Error)
-                
-                if let error = error as? Kinvey.Error {
-                    switch error {
-                    case .methodNotAllowed(_, _, let debug, let description):
-                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                        XCTAssertEqual(description, "The method is not allowed for this resource.")
-                    default:
-                        XCTFail()
-                    }
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
                 }
             }
-        } catch {
-            XCTFail(error.localizedDescription)
         }
     }
     
@@ -2172,18 +2172,17 @@ class NetworkStoreTests: StoreTestCase {
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
             options: nil
         )
-        do {
-            let result = try request.waitForResult()
-            switch result {
-            case .success(let results):
-                if let (person, result) = results.first {
-                    XCTAssertNil(person.name)
-                    XCTAssertNotNil(result["sum"] as? Int)
-                }
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let results):
+            if let (person, result) = results.first {
+                XCTAssertNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
             }
-        } catch {
+        case .failure(let error):
             XCTFail(error.localizedDescription)
         }
     }

@@ -30,6 +30,7 @@ public protocol Request : ProgressReporting {
 
 extension Request {
     
+    /// Returns `true` if the result is returned or `false` if the timeout ended before the result was returned.
     @discardableResult
     public func wait(timeout: TimeInterval = TimeInterval.infinity) -> Bool {
         var fulfilled = false
@@ -47,13 +48,6 @@ extension Request {
         CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
      
         return fulfilled
-    }
-    
-    public func waitForResult(timeout: TimeInterval = TimeInterval.infinity) throws -> ResultType {
-        guard wait(timeout: timeout) else {
-            throw Error.requestTimeout
-        }
-        return result!
     }
     
 }
