@@ -80,7 +80,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.save(person, options: nil)
         do {
-            let person = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let person = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(person.personId)
             XCTAssertNotEqual(person.personId, "")
             
@@ -222,7 +222,7 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = store.count(options: nil)
-            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
             _count = count
         } catch {
             XCTFail(error.localizedDescription)
@@ -236,7 +236,7 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = store.save(person, options: nil)
-            let person = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let person = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(person.personId)
             XCTAssertNotEqual(person.personId, "")
             
@@ -248,7 +248,7 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = store.count(options: nil)
-            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(_count + 1, count)
         } catch {
             XCTFail(error.localizedDescription)
@@ -720,7 +720,7 @@ class SyncStoreTests: StoreTestCase {
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         let request = store.purge(query, options: nil)
         do {
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
         } catch {
             XCTAssertTimeoutError(error)
         }
@@ -1052,7 +1052,7 @@ class SyncStoreTests: StoreTestCase {
             let book = Book()
             book.title = "Les Miserables"
             
-            let _ = try bookDataStore.save(book, options: nil).waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try bookDataStore.save(book, options: nil).waitForResult(timeout: defaultTimeout).value()
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -1079,7 +1079,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let count = try store.push(options: nil).waitForResult().successValue()
+            let count = try store.push(options: nil).waitForResult().value()
             XCTAssertEqual(Int(count), 1)
         } catch {
             XCTAssertTrue(error is MultipleErrors)
@@ -1492,7 +1492,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.find(personId, options: nil)
         do {
-            let person = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let person = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(person.personId, personId)
         } catch {
             XCTFail(error.localizedDescription)
@@ -1581,7 +1581,7 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.find(query, options: nil)
         do {
-            let results = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let results = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(results.first)
             if let result = results.first {
                 XCTAssertEqual(result.personId, personId)
@@ -1664,7 +1664,7 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             let request = try store.remove(person, options: nil)
-            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(count, 1)
         } catch {
             XCTFail(error.localizedDescription)
@@ -2722,7 +2722,7 @@ class SyncStoreTests: StoreTestCase {
             options: nil
         )
         do {
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail()
         } catch {
             XCTAssertNotNil(error as? Kinvey.Error)

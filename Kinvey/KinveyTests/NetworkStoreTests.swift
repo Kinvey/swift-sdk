@@ -322,7 +322,7 @@ class NetworkStoreTests: StoreTestCase {
         
         let request = store.save(person, options: Options(writePolicy: .forceNetwork))
         do {
-            let person = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let person = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(person.address)
             
             if let address = person.address {
@@ -577,7 +577,7 @@ class NetworkStoreTests: StoreTestCase {
             
             let request = store.count(options: nil)
             do {
-                let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+                let count = try request.waitForResult(timeout: defaultTimeout).value()
                 XCTAssertEqual(count, 85)
                 eventsCount = count
             } catch {
@@ -587,7 +587,7 @@ class NetworkStoreTests: StoreTestCase {
         
         do {
             let request = store.count(options: Options(readPolicy: .forceLocal))
-            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(count, 0)
         } catch {
             XCTFail(error.localizedDescription)
@@ -619,7 +619,7 @@ class NetworkStoreTests: StoreTestCase {
             event.name = "Friday Party!"
             
             let request = store.save(event, options: nil)
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -635,7 +635,7 @@ class NetworkStoreTests: StoreTestCase {
             }
             
             let request = store.count(options: nil)
-            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
             guard let eventsCount = eventsCount else {
                 XCTFail()
                 return
@@ -1038,7 +1038,7 @@ class NetworkStoreTests: StoreTestCase {
         
         let request = store.find(options: Options(readPolicy: .forceNetwork))
         do {
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail()
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
@@ -1147,7 +1147,7 @@ class NetworkStoreTests: StoreTestCase {
         
         let request = store.find("id-not-found", options: Options(readPolicy: .forceNetwork))
         do {
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail()
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
@@ -1341,7 +1341,7 @@ class NetworkStoreTests: StoreTestCase {
         
         let request = store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork))
         do {
-            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail()
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
@@ -2423,7 +2423,7 @@ class NetworkStoreTests: StoreTestCase {
             options: nil
         )
         do {
-            let results = try request.waitForResult(timeout: defaultTimeout).successValue()
+            let results = try request.waitForResult(timeout: defaultTimeout).value()
             if let (person, result) = results.first {
                 XCTAssertNil(person.name)
                 XCTAssertNotNil(result["sum"] as? Int)
