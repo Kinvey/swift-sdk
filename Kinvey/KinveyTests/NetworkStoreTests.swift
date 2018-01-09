@@ -288,6 +288,51 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveAddressTryCatchSync() {
+        if useMockData {
+            mockResponse(json: [
+                "name": "Victor Barros",
+                "age": 0,
+                "address": [
+                    "city": "Vancouver"
+                ],
+                "_acl": [
+                    "creator": "58450d87c077970e38a388ba"
+                ],
+                "_kmd": [
+                    "lmt": "2016-12-05T06:47:35.711Z",
+                    "ect": "2016-12-05T06:47:35.711Z"
+                ],
+                "_id": "58450d87f29e22207c83a236"
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let person = Person()
+        person.name = "Victor Barros"
+        
+        let address = Address()
+        address.city = "Vancouver"
+        
+        person.address = address
+        
+        let request = store.save(person, options: Options(writePolicy: .forceNetwork))
+        do {
+            let person = try request.waitForResult(timeout: defaultTimeout).successValue()
+            XCTAssertNotNil(person.address)
+            
+            if let address = person.address {
+                XCTAssertNotNil(address.city)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testCount() {
         let store = DataStore<Event>.collection(.network)
         
@@ -512,6 +557,92 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
+        }
+    }
+    
+    func testCountTryCatchSync() {
+        let store = DataStore<Event>.collection(.network)
+        
+        var eventsCount: Int? = nil
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 85])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            do {
+                let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+                XCTAssertEqual(count, 85)
+                eventsCount = count
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        do {
+            let request = store.count(options: Options(readPolicy: .forceLocal))
+            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            XCTAssertEqual(count, 0)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        XCTAssertNotNil(eventsCount)
+        
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Friday Party!",
+                    "_acl": [
+                        "creator": "58450c8000a5907e7dfb37bf"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:43:12.395Z",
+                        "ect": "2016-12-05T06:43:12.395Z"
+                    ],
+                    "_id": "58450c80d5ee86507a8b4e7e"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let event = Event()
+            event.name = "Friday Party!"
+            
+            let request = store.save(event, options: nil)
+            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 86])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            let count = try request.waitForResult(timeout: defaultTimeout).successValue()
+            guard let eventsCount = eventsCount else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(eventsCount + 1, count)
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
     
@@ -899,6 +1030,31 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodNotAllowedTryCatchSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find(options: Options(readPolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            XCTFail()
+        } catch {
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
     func testFindByIdEntityNotFoundError() {
         mockResponse(
             statusCode: 404,
@@ -962,6 +1118,38 @@ class NetworkStoreTests: StoreTestCase {
         case .success:
             XCTFail()
         case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .entityNotFound(let debug, let description):
+                    XCTAssertEqual(debug, "")
+                    XCTAssertEqual(description, "This entity not found in the collection")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
+    func testFindByIdEntityNotFoundErrorTryCatchSync() {
+        mockResponse(
+            statusCode: 404,
+            json: [
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection",
+                "debug" : ""
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find("id-not-found", options: Options(readPolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            XCTFail()
+        } catch {
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
@@ -1131,6 +1319,31 @@ class NetworkStoreTests: StoreTestCase {
         case .success:
             XCTFail()
         case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
+    func testRemoveByIdMethodNotAllowedTryCatchSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).successValue()
+            XCTFail()
+        } catch {
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
@@ -2183,6 +2396,39 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertNotNil(result["sum"] as? Int)
             }
         case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testGroupCustomAggregationTryCatchSync() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let request = store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
+            options: nil
+        )
+        do {
+            let results = try request.waitForResult(timeout: defaultTimeout).successValue()
+            if let (person, result) = results.first {
+                XCTAssertNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
+            }
+        } catch {
             XCTFail(error.localizedDescription)
         }
     }

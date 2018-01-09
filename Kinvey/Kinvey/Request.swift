@@ -50,6 +50,14 @@ extension Request {
         return fulfilled
     }
     
+    /// Returns the `ResultType` if the result is returned or throws an `Error.requestTimeout` error if the timeout ended before the result was returned.
+    public func waitForResult(timeout: TimeInterval = TimeInterval.infinity) throws -> ResultType {
+        guard wait(timeout: timeout), let result = result else {
+            throw Error.requestTimeout
+        }
+        return result
+    }
+    
 }
 
 public class AnyRequest<Result>: NSObject, Request {

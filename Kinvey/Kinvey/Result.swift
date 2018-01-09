@@ -29,3 +29,31 @@ public enum Result<SuccessType, FailureType> {
     case failure(FailureType)
     
 }
+
+extension Result where FailureType == Swift.Error {
+    
+    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` error
+    public func successValue() throws -> SuccessType {
+        switch self {
+        case .success(let successType):
+            return successType
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+}
+
+extension Result where FailureType == [Swift.Error] {
+    
+    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` errors wrapped in a `MultipleErrors`
+    public func successValue() throws -> SuccessType {
+        switch self {
+        case .success(let successType):
+            return successType
+        case .failure(let errors):
+            throw MultipleErrors(errors: errors)
+        }
+    }
+    
+}

@@ -196,8 +196,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
 }
 
-struct MultipleErrors: Swift.Error {
+/// Wrapper able to hold an array of `Swift.Error` objects.
+public struct MultipleErrors: Swift.Error {
     
-    let errors: [Swift.Error]
+    public let errors: [Swift.Error]
     
 }
