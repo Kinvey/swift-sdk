@@ -102,9 +102,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func fetchAutoPagination(multiRequest: MultiRequest, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            let nPages = Int64(ceil(Double(count) / Double(MaxSizePerResultSet)))
+            let maxSizePerResultSet = options?.maxSizePerResultSet ?? MaxSizePerResultSet
+            let nPages = Int64(ceil(Double(count) / Double(maxSizePerResultSet)))
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
-            var offsetIterator = stride(from: 0, to: count, by: MaxSizePerResultSet).makeIterator()
+            var offsetIterator = stride(from: 0, to: count, by: maxSizePerResultSet).makeIterator()
             let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
                 guard let offset = offsetIterator.next() else {
                     return nil
@@ -112,7 +113,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
                     let query = Query(self.query)
                     query.skip = offset
-                    query.limit = min(MaxSizePerResultSet, count - offset)
+                    query.limit = min(maxSizePerResultSet, count - offset)
                     let operation = FindOperation(
                         query: query,
                         deltaSet: self.deltaSet,

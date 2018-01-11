@@ -99,6 +99,9 @@ public struct Options {
     /// Custom request properties for this client instance.
     public var customRequestProperties: [String : Any]?
     
+    /// Maximum size per result set coming from the backend. Default to 10k records.
+    public var maxSizePerResultSet: Int?
+    
     /**
      Constructor that takes the values that need to be specified and assign
      default values for all the other properties
@@ -113,7 +116,8 @@ public struct Options {
         writePolicy: WritePolicy? = nil,
         timeout: TimeInterval? = nil,
         clientAppVersion: String? = nil,
-        customRequestProperties: [String : Any]? = nil
+        customRequestProperties: [String : Any]? = nil,
+        maxSizePerResultSet: Int? = nil
     ) {
         self.client = client
         self.urlSession = urlSession
@@ -125,6 +129,7 @@ public struct Options {
         self.timeout = timeout
         self.clientAppVersion = clientAppVersion
         self.customRequestProperties = customRequestProperties
+        self.maxSizePerResultSet = maxSizePerResultSet
     }
     
 }

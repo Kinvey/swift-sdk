@@ -2476,16 +2476,23 @@ class NetworkStoreTests: StoreTestCase {
     
     func testAutoPaginationEnabled() {
         var count = 0
+        let pageSizeLimit = 2_000
+        let expectedCount = 21_000
         mockResponse { (request) -> HttpResponse in
             defer {
                 count += 1
             }
+            let lastPage = Int(ceil(Double(21_000) / Double(pageSizeLimit)))
             switch count {
             case 0:
                 return HttpResponse(json: ["count" : 21000])
-            case 1...3:
+            case 1...lastPage:
                 var json = [[String : Any]]()
-                let limit = count == 3 ? 1000 : 10000
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                let queryLimit = urlComponents?.queryItems?.filter({ $0.name == "limit" && $0.value != nil }).map({ Int($0.value!)! }).first
+                let isLastPage = count == lastPage
+                XCTAssertEqual(queryLimit, isLastPage ? 1_000 : pageSizeLimit)
+                let limit = isLastPage ? 1_000 : (queryLimit ?? 10_000)
                 for i in 0 ..< limit {
                     json.append([
                         "_id" : UUID().uuidString,
@@ -2501,6 +2508,7 @@ class NetworkStoreTests: StoreTestCase {
                 }
                 return HttpResponse(json: json)
             default:
+                XCTFail(String(describing: request))
                 Swift.fatalError()
             }
         }
@@ -2512,10 +2520,10 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
+        store.find(options: Options(readPolicy: .forceNetwork, maxSizePerResultSet: pageSizeLimit)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success(let products):
-                XCTAssertEqual(products.count, 21000)
+                XCTAssertEqual(products.count, Int64(expectedCount))
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
