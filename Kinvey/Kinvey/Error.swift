@@ -11,14 +11,21 @@ import Foundation
 /// Enum that contains all error types in the library.
 public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomDebugStringConvertible {
     
-    /// Constant for 401 responses where the credentials are not enough to complete the request.
-    public static let InsufficientCredentials = "InsufficientCredentials"
-    
-    /// Constant for 401 responses where the credentials are not valid to complete the request.
-    public static let InvalidCredentials = "InvalidCredentials"
-    
-    /// Constant for 400 response where the number of results exceeded the limit.
-    public static let ResultSetSizeExceeded = "ResultSetSizeExceeded"
+    public enum Keys: String {
+        
+        /// Constant for 401 responses where the credentials are not enough to complete the request.
+        case insufficientCredentials = "InsufficientCredentials"
+        
+        /// Constant for 401 responses where the credentials are not valid to complete the request.
+        case invalidCredentials = "InvalidCredentials"
+        
+        /// Constant for 400 response where the number of results exceeded the limit.
+        case resultSetSizeExceeded = "ResultSetSizeExceeded"
+        
+        /// Constant for 404 response where the entity was not found in the collection
+        case entityNotFound = "EntityNotFound"
+        
+    }
     
     /// Error where Object ID is required.
     case objectIdMissing
@@ -74,6 +81,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when the number of results exceeded the limit
     case resultSetSizeExceeded(debug: String, description: String)
     
+    case entityNotFound(debug: String, description: String)
+    
     /// Error localized description.
     public var description: String {
         let bundle = Bundle(for: Client.self)
@@ -86,7 +95,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .missingConfiguration(_, _, _, let description),
              .appNotFound(let description),
              .forbidden(let description),
-             .resultSetSizeExceeded(_, let description):
+             .resultSetSizeExceeded(_, let description),
+             .entityNotFound(_, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -123,7 +133,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .dataLinkEntityNotFound(_, _, let debug, _),
              .missingConfiguration(_, _, let debug, _),
              .unauthorized(_, _, _, let debug, _),
-             .resultSetSizeExceeded(let debug, _):
+             .resultSetSizeExceeded(let debug, _),
+             .entityNotFound(let debug, _):
             return debug
         default:
             return description

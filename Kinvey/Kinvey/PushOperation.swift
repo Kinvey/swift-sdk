@@ -20,7 +20,7 @@ fileprivate class PushRequest: NSObject, Request {
     let completionOperation: PushBlockOperation
     private let dispatchSerialQueue: DispatchQueue
     
-    var progress: ((ProgressStatus) -> Void)?
+    var progress = Progress()
     
     var executing: Bool {
         return !completionOperation.isFinished
@@ -130,7 +130,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             let debug = json["debug"],
                             let description = json["description"]
                         {
-                            if error == Error.InsufficientCredentials {
+                            if error == Error.Keys.insufficientCredentials.rawValue {
                                 self.sync?.removePendingOperation(pendingOperation)
                             }
                             let error = Error.unauthorized(

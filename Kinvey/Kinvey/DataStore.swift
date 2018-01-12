@@ -1779,11 +1779,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     ) -> Request {
         return pull(
             query,
-            deltaSet: deltaSet
-        ) { (result: Result<[T], Swift.Error>) in
+            options: Options(
+                deltaSet: deltaSet
+            )
+        ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
             switch result {
-            case .success(let array):
-                completionHandler?(array, nil)
+            case .success(let entities):
+                completionHandler?(Array(entities), nil)
             case .failure(let error):
                 completionHandler?(nil, error)
             }
@@ -1801,13 +1803,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     ) -> Request {
         return pull(
             query,
-        deltaSetCompletionHandler: {
-            guard let deltaSetCompletionHandler = deltaSetCompletionHandler else {
-                return
-            }
-            
-            deltaSetCompletionHandler(Array($0))
-        },
+            deltaSetCompletionHandler: {
+                guard let deltaSetCompletionHandler = deltaSetCompletionHandler else {
+                    return
+                }
+                
+                deltaSetCompletionHandler(Array($0))
+            },
             options: Options(
                 deltaSet: deltaSet
             )
@@ -1906,9 +1908,19 @@ open class DataStore<T: Persistable> where T: NSObject {
             query,
             options: Options(
                 deltaSet: deltaSet
-            ),
-            completionHandler: completionHandler
-        )
+            )
+        ) { (result: Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) in
+            guard let completionHandler = completionHandler else {
+                return
+            }
+            
+            switch result {
+            case .success(let count, let results):
+                completionHandler(.success((count, Array(results))))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.

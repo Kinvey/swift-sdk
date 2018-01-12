@@ -64,47 +64,21 @@ class NetworkStoreTests: StoreTestCase {
                 expectationCreate?.fulfill()
             }
             
-            var uploadProgressCount = 0
-            var uploadProgressSent: Int64? = nil
-            var uploadProgressTotal: Int64? = nil
+            var progressReportCount = 0
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend && $0.countOfBytesExpectedToReceive > 0 {
-                    if downloadProgressCount == 0 {
-                        downloadProgressSent = $0.countOfBytesReceived
-                        downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                    } else {
-                        XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                        XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                        downloadProgressSent = $0.countOfBytesReceived
-                    }
-                    downloadProgressCount += 1
-                    print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
-                } else {
-                    if uploadProgressCount == 0 {
-                        uploadProgressSent = $0.countOfBytesSent
-                        uploadProgressTotal = $0.countOfBytesExpectedToSend
-                    } else {
-                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
-                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
-                        uploadProgressSent = $0.countOfBytesSent
-                    }
-                    uploadProgressCount += 1
-                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
-                }
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                progressReportCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+                XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+                XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
             
-            XCTAssertGreaterThan(uploadProgressCount, 0)
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(progressReportCount, 0)
         }
         
         XCTAssertNotNil(event.entityId)
@@ -192,28 +166,22 @@ class NetworkStoreTests: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            var downloadProgressCount = 0
-            var downloadProgressSent: Int64? = nil
-            var downloadProgressTotal: Int64? = nil
-            request.progress = {
-                XCTAssertTrue(Thread.isMainThread)
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0.countOfBytesReceived
-                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
-                } else {
-                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = $0.countOfBytesReceived
-                }
-                downloadProgressCount += 1
-                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            var reportProgressCount = 0
+            
+            keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
+                reportProgressCount += 1
+                XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+                XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+                XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                return request.progress.fractionCompleted >= 1.0
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
             
-            XCTAssertGreaterThan(downloadProgressCount, 0)
+            XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
     
@@ -733,6 +701,47 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
                     XCTFail()
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindByIdEntityNotFoundError() {
+        mockResponse(
+            statusCode: 404,
+            json: [
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection",
+                "debug" : ""
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find("id-not-found", options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .entityNotFound(let debug, let description):
+                        XCTAssertEqual(debug, "")
+                        XCTAssertEqual(description, "This entity not found in the collection")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -2467,16 +2476,23 @@ class NetworkStoreTests: StoreTestCase {
     
     func testAutoPaginationEnabled() {
         var count = 0
+        let pageSizeLimit = 2_000
+        let expectedCount = 21_000
         mockResponse { (request) -> HttpResponse in
             defer {
                 count += 1
             }
+            let lastPage = Int(ceil(Double(21_000) / Double(pageSizeLimit)))
             switch count {
             case 0:
                 return HttpResponse(json: ["count" : 21000])
-            case 1...3:
+            case 1...lastPage:
                 var json = [[String : Any]]()
-                let limit = count == 3 ? 1000 : 10000
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                let queryLimit = urlComponents?.queryItems?.filter({ $0.name == "limit" && $0.value != nil }).map({ Int($0.value!)! }).first
+                let isLastPage = count == lastPage
+                XCTAssertEqual(queryLimit, isLastPage ? 1_000 : pageSizeLimit)
+                let limit = isLastPage ? 1_000 : (queryLimit ?? 10_000)
                 for i in 0 ..< limit {
                     json.append([
                         "_id" : UUID().uuidString,
@@ -2492,6 +2508,7 @@ class NetworkStoreTests: StoreTestCase {
                 }
                 return HttpResponse(json: json)
             default:
+                XCTFail(String(describing: request))
                 Swift.fatalError()
             }
         }
@@ -2503,10 +2520,10 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
+        store.find(options: Options(readPolicy: .forceNetwork, maxSizePerResultSet: pageSizeLimit)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success(let products):
-                XCTAssertEqual(products.count, 21000)
+                XCTAssertEqual(products.count, Int64(expectedCount))
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }

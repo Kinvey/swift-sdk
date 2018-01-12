@@ -145,9 +145,13 @@ class PerformanceProductTestCase: KinveyTestCase {
             expectationDownload?.fulfill()
         }
         
-        request.progress = { status in
-            let percentage = Double(status.countOfBytesReceived) / Double(status.countOfBytesExpectedToReceive) * Double(100)
-            print("\(status.countOfBytesReceived) / \(status.countOfBytesExpectedToReceive) \(String(format:"%3.2f", percentage))%")
+        keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
+            XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
+            XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
+            XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
+            let percentage = request.progress.fractionCompleted * 100.0
+            print("\(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format:"%3.2f", percentage))%")
+            return request.progress.fractionCompleted >= 1.0
         }
         
         waitForExpectations(timeout: defaultTimeout) { (error) in

@@ -34,7 +34,7 @@ extension String {
     
     /// Converts a `String` to `Date`, if possible
     public func toDate() -> Date? {
-        switch self.characters.count {
+        switch self.count {
             case 20:
                 return dateFormatters.rfc3339DateFormatter.date(from: self)
             case 24:
