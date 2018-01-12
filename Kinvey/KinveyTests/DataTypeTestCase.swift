@@ -268,6 +268,7 @@ class DataTypeTestCase: StoreTestCase {
         title = false,
         authorNames = false,
         editions = false,
+        nextEdition = false,
         editionsYear = false,
         editionsRetailPrice = false,
         editionsRating = false,
@@ -287,22 +288,25 @@ class DataTypeTestCase: StoreTestCase {
                 XCTAssertEqual(right, "title")
                 title = true
             case "authorNames":
-                XCTAssertEqual(right, "authorNames")
+                XCTAssertEqual(right, "author_names")
                 authorNames = true
             case "editions":
                 XCTAssertEqual(right, "editions")
                 editions = true
+            case "nextEdition":
+                XCTAssertEqual(right, "next_edition")
+                nextEdition = true
             case "editionsYear":
-                XCTAssertEqual(right, "editionsYear")
+                XCTAssertEqual(right, "editions_year")
                 editionsYear = true
             case "editionsRetailPrice":
-                XCTAssertEqual(right, "editionsRetailPrice")
+                XCTAssertEqual(right, "editions_retail_price")
                 editionsRetailPrice = true
             case "editionsRating":
-                XCTAssertEqual(right, "editionsRating")
+                XCTAssertEqual(right, "editions_rating")
                 editionsRating = true
             case "editionsAvailable":
-                XCTAssertEqual(right, "editionsAvailable")
+                XCTAssertEqual(right, "editions_available")
                 editionsAvailable = true
             default:
                 XCTFail()
@@ -315,6 +319,7 @@ class DataTypeTestCase: StoreTestCase {
         XCTAssertTrue(title)
         XCTAssertTrue(authorNames)
         XCTAssertTrue(editions)
+        XCTAssertTrue(nextEdition)
         XCTAssertTrue(editionsYear)
         XCTAssertTrue(editionsRetailPrice)
         XCTAssertTrue(editionsRating)

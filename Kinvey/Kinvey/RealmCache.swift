@@ -10,6 +10,7 @@ import Foundation
 import Realm
 import RealmSwift
 import MapKit
+import ObjectMapper
 
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
@@ -593,7 +594,8 @@ extension RealmCache: DynamicCacheType {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         let realm = self.newRealm
-        let entityType = self.entityType.className()
+        let entityType = self.entityType
+        let entityTypeClassName = entityType.className()
         let propertyMapping = T.propertyMapping()
         try! realm.write {
             for entity in entities {
@@ -618,17 +620,28 @@ extension RealmCache: DynamicCacheType {
                         }
                     } else if let transform = transform {
                         translatedEntity[translatedKey] = transform.transformFromJSON(entity[key])
+                    } else if let property = properties[translatedKey],
+                        !property.isArray,
+                        property.type == .object,
+                        let clazz = ObjCRuntime.typeForPropertyName(entityType, propertyName: translatedKey),
+                        let anyObjectClass = clazz as? NSObject.Type,
+                        var obj = anyObjectClass.init() as? BaseMappable,
+                        let json = entity[key] as? [String : Any]
+                    {
+                        let map = Map(mappingType: .fromJSON, JSON: json)
+                        obj.mapping(map: map)
+                        translatedEntity[translatedKey] = obj
                     } else {
                         translatedEntity[translatedKey] = entity[key]
                     }
                 }
                 cascadeDelete(
                     realm: realm,
-                    entityType: entityType,
+                    entityType: entityTypeClassName,
                     entity: entity,
                     propertyMapping: propertyMapping
                 )
-                realm.dynamicCreate(entityType, value: translatedEntity, update: true)
+                realm.dynamicCreate(entityTypeClassName, value: translatedEntity, update: true)
             }
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
