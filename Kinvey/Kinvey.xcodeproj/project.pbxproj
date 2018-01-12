@@ -261,6 +261,7 @@
 		579D308D1DDA68950055C8CF /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; };
 		579D30921DDA6FF30055C8CF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		579D30931DDA6FF80055C8CF /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57A1E7422008877E00B19CFB /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A1E7412008877E00B19CFB /* Options.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -958,6 +959,7 @@
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
 		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoCacheTestCase.swift; sourceTree = "<group>"; };
+		57A1E7412008877E00B19CFB /* Options.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1581,6 +1583,7 @@
 				57E1C3A21C17B3FF00578974 /* Query.swift */,
 				57E1C3A61C17B4F300578974 /* Persistable.swift */,
 				57B768801D10C0C70086AA38 /* Entity.swift */,
+				57A1E7412008877E00B19CFB /* Options.swift */,
 				57E1C3AE1C18153900578974 /* RequestFactory.swift */,
 				57E1C3B01C18156700578974 /* HttpRequestFactory.swift */,
 				57E1C3B21C1822B100578974 /* ResponseParser.swift */,
@@ -3156,6 +3159,7 @@
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
 				57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */,
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
+				57A1E7422008877E00B19CFB /* Options.swift in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				57E6BD441EC648F9000E5C52 /* PubNubRealtimeRouter.swift in Sources */,
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
