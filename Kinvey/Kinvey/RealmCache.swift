@@ -396,7 +396,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func save(entities: AnyRandomAccessCollection<Type>) {
+    func save(entities: AnyRandomAccessCollection<T>, syncQuery: (query: Query, lastSync: Date)?) {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
@@ -542,16 +542,55 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     }
                     let ids: [String] = results.map { $0.entityId! }
                     
-                    var pendingOperations = self.realm.objects(RealmPendingOperation.self)
-                    pendingOperations = pendingOperations.filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
+                    let pendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
+                    let syncedQueries = self.realm.objects(_QueryCache.self).filter("collectionName == %@", self.collectionName)
                     
                     self.realm.delete(results)
                     self.realm.delete(pendingOperations)
+                    self.realm.delete(syncedQueries)
                 } else {
                     self.realm.deleteAll()
                 }
             }
         }
+    }
+    
+    func lastSync(query: Query) -> Date? {
+        log.verbose("Retriving last sync date")
+        var lastSync: Date? = nil
+        executor.executeAndWait {
+            var results = self.realm.objects(_QueryCache.self)
+            guard results.count > 0 else {
+                return
+            }
+            if let predicate = query.predicate {
+                results = results.filter("collectionName == %@ AND query == %@", self.collectionName, "\(predicate)")
+            } else {
+                results = results.filter("collectionName == %@ AND query == nil", self.collectionName)
+            }
+            if let syncQuery = results.first {
+                lastSync = syncQuery.lastSync
+            }
+        }
+        return lastSync
+    }
+    
+    func invalidateLastSync(query: Query) -> Date? {
+        log.verbose("Invalidating last sync date")
+        var lastSync: Date? = nil
+        executor.executeAndWait {
+            try! self.realm.write {
+                let syncedQueries: Results<_QueryCache>
+                if let predicate = query.predicate {
+                    syncedQueries = self.realm.objects(_QueryCache.self).filter("collectionName == %@ AND query == %@", self.collectionName, String(describing: predicate))
+                } else {
+                    syncedQueries = self.realm.objects(_QueryCache.self).filter("collectionName == %@ AND query == nil", self.collectionName)
+                }
+                lastSync = syncedQueries.first?.lastSync
+                self.realm.delete(syncedQueries)
+            }
+        }
+        return lastSync
     }
     
     func observe(_ query: Query? = nil, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken {
@@ -658,7 +697,7 @@ extension RealmCache: DynamicCacheType {
         }
     }
     
-    func save(entities: AnyRandomAccessCollection<JsonDictionary>) {
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: (query: Query, lastSync: Date)?) {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         let realm = self.newRealm
@@ -710,6 +749,15 @@ extension RealmCache: DynamicCacheType {
                     propertyMapping: propertyMapping
                 )
                 realm.dynamicCreate(entityTypeClassName, value: translatedEntity, update: true)
+            }
+            if let syncQuery = syncQuery {
+                let realmSyncQuery = _QueryCache()
+                realmSyncQuery.collectionName = entityTypeClassName
+                if let predicate = syncQuery.query.predicate {
+                    realmSyncQuery.query = String(describing: predicate)
+                }
+                realmSyncQuery.lastSync = syncQuery.lastSync
+                realm.add(realmSyncQuery)
             }
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
@@ -851,5 +899,18 @@ class RealmPendingOperationThreadSafeReference: PendingOperationType {
     func buildRequest() -> URLRequest {
         return realmPendingOperation.buildRequest()
     }
+    
+}
+
+internal class _QueryCache: Object {
+    
+    @objc
+    dynamic var collectionName: String?
+    
+    @objc
+    dynamic var query: String?
+    
+    @objc
+    dynamic var lastSync: Date?
     
 }

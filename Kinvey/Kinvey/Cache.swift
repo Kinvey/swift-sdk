@@ -18,7 +18,7 @@ internal protocol CacheType: class {
     
     func save(entity: Type)
     
-    func save(entities: AnyRandomAccessCollection<Type>)
+    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: (query: Query, lastSync: Date)?)
     
     func find(byId objectId: String) -> Type?
     
@@ -40,6 +40,11 @@ internal protocol CacheType: class {
     func clear(query: Query?)
     
     func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type>
+
+    func lastSync(query: Query) -> Date?
+    
+    @discardableResult
+    func invalidateLastSync(query: Query) -> Date?
     
     func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<Type>>) -> Void) -> AnyNotificationToken
     
@@ -67,7 +72,7 @@ public class AnyNotificationToken: NotificationToken {
 
 internal protocol DynamicCacheType: class {
     
-    func save(entities: AnyRandomAccessCollection<JsonDictionary>)
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: (query: Query, lastSync: Date)?)
     
 }
 
@@ -114,7 +119,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
-    private let _saveEntities: (AnyRandomAccessCollection<Type>) -> Void
+    private let _saveEntities: (AnyRandomAccessCollection<Type>, (query: Query, lastSync: Date)?) -> Void
     private let _findById: (String) -> T?
     private let _findByQuery: (Query) -> AnyRandomAccessCollection<Type>
     private let _findIdsLmtsByQuery: (Query) -> [String : String]
@@ -124,6 +129,8 @@ class AnyCache<T: Persistable>: CacheType {
     private let _removeByQuery: (Query) -> Int
     private let _clear: (Query?) -> Void
     private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
+    private let _lastSync: (Query) -> Date?
+    private let _invalidateLastSync: (Query) -> Date?
     private let _observe: (Query?, @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken
     
     typealias `Type` = T
@@ -136,7 +143,7 @@ class AnyCache<T: Persistable>: CacheType {
         _getTTL = { return cache.ttl }
         _setTTL = { cache.ttl = $0 }
         _saveEntity = cache.save(entity:)
-        _saveEntities = cache.save(entities:)
+        _saveEntities = cache.save(entities: syncQuery:)
         _findById = cache.find(byId:)
         _findByQuery = cache.find(byQuery:)
         _findIdsLmtsByQuery = cache.findIdsLmts(byQuery:)
@@ -146,6 +153,8 @@ class AnyCache<T: Persistable>: CacheType {
         _removeByQuery = cache.remove(byQuery:)
         _clear = cache.clear(query:)
         _detach = cache.detach(entities: query:)
+        _lastSync = cache.lastSync(query:)
+        _invalidateLastSync = cache.invalidateLastSync(query:)
         _observe = cache.observe(_:completionHandler:)
     }
     
@@ -153,8 +162,8 @@ class AnyCache<T: Persistable>: CacheType {
         _saveEntity(entity)
     }
     
-    func save(entities: AnyRandomAccessCollection<Type>) {
-        _saveEntities(entities)
+    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: (query: Query, lastSync: Date)?) {
+        _saveEntities(entities, syncQuery)
     }
     
     func find(byId objectId: String) -> T? {
@@ -194,6 +203,15 @@ class AnyCache<T: Persistable>: CacheType {
     
     func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type> {
         return _detach(entities, query)
+    }
+    
+    func lastSync(query: Query) -> Date? {
+        return _lastSync(query)
+    }
+    
+    @discardableResult
+    func invalidateLastSync(query: Query) -> Date? {
+        return _invalidateLastSync(query)
     }
     
     func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken {

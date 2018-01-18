@@ -261,6 +261,14 @@ func buildError(
     {
         return Error.resultSetSizeExceeded(debug: debug, description: description)
     } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.Keys.parameterValueOutOfRange.rawValue,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.parameterValueOutOfRange(debug: debug, description: description)
+    } else if let response = response,
         response.isNotFound,
         let json = json,
         json["error"] == Error.Keys.entityNotFound.rawValue,

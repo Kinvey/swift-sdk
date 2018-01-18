@@ -1516,26 +1516,29 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         if useMockData {
             mockResponse { request in
                 mockCount += 1
-                return HttpResponse(json: [
-                    [
-                        "_id" : mockObjectId!,
-                        "name" : "Victor",
-                        "age" : 0,
-                        "_acl" : [
-                            "creator" : self.client.activeUser?.userId
-                        ],
-                        "_kmd" : [
-                            "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
-                            "ect" : mockDate?.toString()
+                return HttpResponse(
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    json: [
+                        [
+                            "_id" : mockObjectId!,
+                            "name" : "Victor",
+                            "age" : 0,
+                            "_acl" : [
+                                "creator" : self.client.activeUser?.userId
+                            ],
+                            "_kmd" : [
+                                "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
+                                "ect" : mockDate?.toString()
+                            ]
                         ]
                     ]
-                ])
+                )
             }
         }
         defer {
             if useMockData {
                 setURLProtocol(nil)
-                XCTAssertEqual(mockCount, 2)
+                XCTAssertEqual(mockCount, 1)
             }
         }
         
@@ -1621,51 +1624,21 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        var mockCount = 0
         if useMockData {
-            mockResponse { request in
-                defer {
-                    mockCount += 1
-                }
-                switch mockCount {
-                case 0:
-                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
-                    let fields = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first
-                    XCTAssertNotNil(fields)
-                    if let fields = fields {
-                        XCTAssertNotNil(fields.value)
-                        if let fieldsValue = fields.value {
-                            let fields = fieldsValue.components(separatedBy: ",")
-                            XCTAssertEqual(fields.count, 2)
-                            XCTAssertTrue(fields.contains("_id"))
-                            XCTAssertTrue(fields.contains("_kmd.lmt"))
-                        }
-                    }
-                    return HttpResponse(json: [
-                        [
-                            "_id" : mockObjectId!
-                        ]
-                    ])
-                case 1:
-                    return HttpResponse(json: [
-                        [
-                            "_id" : mockObjectId!,
-                            "name" : "Victor",
-                            "age" : 0,
-                            "_acl" : [
-                                "creator" : self.client.activeUser?.userId
-                            ]
-                        ]
-                    ])
-                default:
-                    Swift.fatalError()
-                }
-            }
+            mockResponse(json: [
+                [
+                    "_id" : mockObjectId!,
+                    "name" : "Victor",
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser?.userId
+                    ]
+                ]
+            ])
         }
         defer {
             if useMockData {
                 setURLProtocol(nil)
-                XCTAssertEqual(mockCount, 2)
             }
         }
         
@@ -1713,27 +1686,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        var count = 0
-        mockResponse { (request) -> HttpResponse in
-            defer {
-                count += 1
-            }
-            switch count {
-            case 0:
-                return HttpResponse(json: [
-                    [
-                        "_id" : UUID().uuidString,
-                        "_kmd" : [
-                            "lmt" : Date().toString()
-                        ]
-                    ]
-                ])
-            case 1:
-                return HttpResponse(error: timeoutError)
-            default:
-                Swift.fatalError()
-            }
-        }
+        mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
@@ -1825,67 +1778,59 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 ]
             ])
         }
-        mockResponse { request in
-            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
-            
-            if let fieldsString = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first?.value {
-                let fields = fieldsString.components(separatedBy: ",")
-                let mockResponse = jsonArray.map { (item: [String : Any]) -> [String : Any] in
-                    var json = [String : Any]()
-                    for field in fields {
-                        switch field {
-                        case "_id":
-                            json[field] = item[field]
-                        case "_kmd.lmt":
-                            let itemKmd = item["_kmd"] as! [String : Any]
-                            let kmd = ["lmt" : itemKmd["lmt"]]
-                            json["_kmd"] = kmd
-                        default:
-                            Swift.fatalError()
-                        }
-                    }
-                    return json
-                }
-                return HttpResponse(json: mockResponse)
+        
+        do {
+            mockResponse(headerFields: ["X-Kinvey-Request-Start" : Date().toString()], json: jsonArray)
+            defer {
+                setURLProtocol(nil)
             }
             
-            guard let queryString = urlComponents?.queryItems?.filter({ $0.name == "query" }).first?.value,
-                let data = queryString.data(using: .utf8),
-                let jsonObject = try? JSONSerialization.jsonObject(with: data),
-                let queryDict = jsonObject as? [String : Any]
-            else {
-                    Swift.fatalError()
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(readPolicy: .forceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(results?.count, 201)
+                
+                expectationFind?.fulfill()
             }
             
-            if let idFilter = queryDict["_id"] as? [String : Any],
-                let ids = idFilter["$in"] as? [String]
-            {
-                let mockResponse = jsonArray.filter {
-                    let id = $0["_id"] as! String
-                    return ids.contains(id)
-                }
-                return HttpResponse(json: mockResponse)
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            mockResponse { response in
+                let urlComponents = URLComponents(url: response.url!, resolvingAgainstBaseURL: false)!
+                XCTAssertEqual(urlComponents.path.components(separatedBy: "/").last, "_deltaset")
+                return HttpResponse(
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    json: [
+                        "changed" : [],
+                        "deleted" : []
+                    ]
+                )
+            }
+            defer {
+                setURLProtocol(nil)
             }
             
-            Swift.fatalError()
-        }
-        defer {
-            setURLProtocol(nil)
-        }
-        
-        weak var expectationFind = expectation(description: "Find")
-        
-        store.find(readPolicy: .forceNetwork) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
+            weak var expectationFind = expectation(description: "Find")
             
-            XCTAssertEqual(results?.count, 201)
+            store.find(readPolicy: .forceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                XCTAssertEqual(results?.count, 201)
+                
+                expectationFind?.fulfill()
+            }
             
-            expectationFind?.fulfill()
-        }
-        
-        waitForExpectations(timeout: defaultTimeout) { (error) in
-            expectationFind = nil
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
         }
     }
     
@@ -1960,59 +1905,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 ]
                 ])
         }
-        var count = 0
-        mockResponse { request in
-            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
-            
-            if let fieldsString = urlComponents?.queryItems?.filter({ $0.name == "fields" }).first?.value {
-                let fields = fieldsString.components(separatedBy: ",")
-                let mockResponse = jsonArray.map { (item: [String : Any]) -> [String : Any] in
-                    var json = [String : Any]()
-                    for field in fields {
-                        switch field {
-                        case "_id":
-                            json[field] = item[field]
-                        case "_kmd.lmt":
-                            let itemKmd = item["_kmd"] as! [String : Any]
-                            let kmd = ["lmt" : itemKmd["lmt"]]
-                            json["_kmd"] = kmd
-                        default:
-                            Swift.fatalError()
-                        }
-                    }
-                    return json
-                }
-                return HttpResponse(json: mockResponse)
-            }
-            
-            guard let queryString = urlComponents?.queryItems?.filter({ $0.name == "query" }).first?.value,
-                let data = queryString.data(using: .utf8),
-                let jsonObject = try? JSONSerialization.jsonObject(with: data),
-                let queryDict = jsonObject as? [String : Any]
-                else {
-                    Swift.fatalError()
-            }
-            
-            if let idFilter = queryDict["_id"] as? [String : Any],
-                let ids = idFilter["$in"] as? [String]
-            {
-                defer {
-                    count += 1
-                }
-                switch count {
-                case 0:
-                    let mockResponse = jsonArray.filter {
-                        let id = $0["_id"] as! String
-                        return ids.contains(id)
-                    }
-                    return HttpResponse(json: mockResponse)
-                default:
-                    return HttpResponse(error: timeoutError)
-                }
-            }
-            
-            Swift.fatalError()
-        }
+        mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }

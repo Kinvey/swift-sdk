@@ -2786,6 +2786,1292 @@ class SyncStoreTests: StoreTestCase {
         XCTAssertLessThan(memoryAfter! - memoryBefore!, 10_000_000)
     }
     
+    func testServerSideDeltaSetSyncAdd1Record() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id": "NEW-58450d87f29e22207c83a236",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": Date().toString(),
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ]
+                            ],
+                            "deleted" : []
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Barros")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncUpdate1Record() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id": "58450d87f29e22207c83a236",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": Date().toString(),
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ]
+                            ],
+                            "deleted" : []
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncDelete1Record() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [],
+                            "deleted" : [
+                                ["_id": "58450d87f29e22207c83a236"]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 0)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncAddUpdateDelete1Record() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ],
+                            [
+                                "_id": "ToBeDeleted-58450d87f29e22207c83a236",
+                                "name": "Victor Barros 2",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id": "58450d87f29e22207c83a236",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ],
+                                [
+                                    "_id": "NEW-58450d87f29e22207c83a236",
+                                    "name": "Victor C Barros",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ]
+                            ],
+                            "deleted" : [
+                                ["_id": "ToBeDeleted-58450d87f29e22207c83a236"]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor C Barros")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncClearCacheNoQuery() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id": "58450d87f29e22207c83a236",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ],
+                                [
+                                    "_id": "NEW-58450d87f29e22207c83a236",
+                                    "name": "Victor C Barros",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ]
+                            ],
+                            "deleted" : [
+                                ["_id": "ToBeDeleted-58450d87f29e22207c83a236"]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor C Barros")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        store.clearCache()
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(json: [
+                        [
+                            "_id": "58450d87f29e22207c83a236",
+                            "name": "Victor Hugo",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
+                            ]
+                        ],
+                        [
+                            "_id": "NEW-58450d87f29e22207c83a236",
+                            "name": "Victor C Barros",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
+                            ]
+                        ]
+                    ])
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor C Barros")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncClearCache() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id": "58450d87f29e22207c83a236",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ],
+                                [
+                                    "_id": "NEW-58450d87f29e22207c83a236",
+                                    "name": "Victor C Barros",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ]
+                            ],
+                            "deleted" : [
+                                ["_id": "ToBeDeleted-58450d87f29e22207c83a236"]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor C Barros")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        let query = Query(format: "name == %@", "Victor")
+        store.clearCache(query: query)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(json: [
+                        [
+                            "_id": "58450d87f29e22207c83a236",
+                            "name": "Victor Hugo",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
+                            ]
+                        ],
+                        [
+                            "_id": "NEW-58450d87f29e22207c83a236",
+                            "name": "Victor C Barros",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
+                            ]
+                        ]
+                    ])
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor C Barros")
+                    }
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncResultSetExceed() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse(
+                statusCode: 400,
+                json: [
+                    "error" : "ResultSetSizeExceeded",
+                    "description" : "Your query produced more than 10,000 results. Please rewrite your query to be more selective.",
+                    "debug" : "Your query returned 320193 results"
+                ]
+            )
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success:
+                    XCTFail()
+                case .failure(let errors):
+                    XCTAssertEqual(errors.count, 1)
+                    if let error = errors.first {
+                        XCTAssertTrue(error is Kinvey.Error)
+                        if let error = error as? Kinvey.Error {
+                            switch error {
+                            case .resultSetSizeExceeded(let debug, let description):
+                                XCTAssertEqual(description, "Your query produced more than 10,000 results. Please rewrite your query to be more selective.")
+                                XCTAssertTrue(debug.hasPrefix("Your query returned "))
+                                XCTAssertTrue(debug.hasSuffix(" results"))
+                            default:
+                                XCTFail(error.debugDescription)
+                            }
+                        } else {
+                            XCTFail(error.localizedDescription)
+                        }
+                    }
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncMissingConfiguration() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            mockResponse { response in
+                XCTAssertEqual(response.url?.path, "/appdata/_kid_/Person/_deltaset")
+                return HttpResponse(
+                    statusCode: 403,
+                    json: [
+                        "error" : "MissingConfiguration",
+                        "description" : "This feature is not properly configured for this app backend. Please configure it through the console first, or contact support for more information.",
+                        "debug" : "This collection has not been configured for Delta Set access."
+                    ]
+                )
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success:
+                    XCTFail()
+                case .failure(let errors):
+                    XCTAssertEqual(errors.count, 1)
+                    if let error = errors.first {
+                        XCTAssertTrue(error is Kinvey.Error)
+                        if let error = error as? Kinvey.Error {
+                            switch error {
+                            case .missingConfiguration(let httpResponse, _, let debug, let description):
+                                XCTAssertEqual(httpResponse?.statusCode, 403)
+                                XCTAssertEqual(description, "This feature is not properly configured for this app backend. Please configure it through the console first, or contact support for more information.")
+                                XCTAssertEqual(debug, "This collection has not been configured for Delta Set access.")
+                            default:
+                                XCTFail(error.debugDescription)
+                            }
+                        } else {
+                            XCTFail(error.localizedDescription)
+                        }
+                    }
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncSkipAndLimit() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        let query = Query(format: "name == %@", "Victor Barros")
+        query.skip = 0
+        query.limit = 2_000
+        
+        mockResponse { (request) -> HttpResponse in
+            guard let url = request.url else {
+                XCTAssertNotNil(request.url)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+            switch url.path {
+            case "/appdata/_kid_/Person":
+                return HttpResponse(
+                    headerFields: [
+                        "X-Kinvey-Request-Start" : Date().toString()
+                    ],
+                    json: [
+                        [
+                            "_id": "58450d87f29e22207c83a236",
+                            "name": "Victor Barros",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
+                            ]
+                        ]
+                    ]
+                )
+            default:
+                XCTFail(url.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        do {
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do { //2nd request
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
+    func testServerSideDeltaSetSyncParameterValueOutOfRange() {
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        
+        do {
+            mockResponse { (request) -> HttpResponse in
+                guard let url = request.url else {
+                    XCTAssertNotNil(request.url)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                switch url.path {
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(url.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+        
+        do {
+            var count = 0
+            mockResponse { response in
+                defer {
+                    count += 1
+                }
+                switch (count, response.url?.path) {
+                case (0, "/appdata/_kid_/Person/_deltaset"?):
+                    return HttpResponse(
+                        statusCode: 400,
+                        json: [
+                            "error" : "ParameterValueOutOfRange",
+                            "description" : "The value specified for one of the request parameters is out of range",
+                            "debug" : "The 'since' timestamp cannot be earlier than the date at which delta set was enabled for this collection."
+                        ]
+                    )
+                case (1, "/appdata/_kid_/Person"?):
+                    return HttpResponse(
+                        headerFields: [
+                            "X-Kinvey-Request-Start" : Date().toString()
+                        ],
+                        json: [
+                            [
+                                "_id": "58450d87f29e22207c83a236",
+                                "name": "Victor Barros",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(response.url?.path ?? "response.url?.path is nil")
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSync = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let persons):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.description)
+                }
+                expectationSync?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSync = nil
+            }
+        }
+    }
+    
     func testPullMemoryConsumption() {
         let size = 100_000
         mockResponse { request in
