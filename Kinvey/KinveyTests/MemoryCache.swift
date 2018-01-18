@@ -28,7 +28,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory[objId] = entity
     }
     
-    func save(entities: AnyRandomAccessCollection<T>) {
+    func save(entities: AnyRandomAccessCollection<T>, syncQuery: CacheType.SyncQuery?) {
         for entity in entities {
             save(entity: entity)
         }
@@ -107,12 +107,24 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory.removeAll()
     }
     
+    func clear(syncQueries: [Query]?) {
+        memory.removeAll()
+    }
+    
     func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
         return entities
     }
     
     func group(aggregation: Aggregation, predicate: NSPredicate?) -> [JsonDictionary] {
         return []
+    }
+    
+    func lastSync(query: Query) -> Date? {
+        return nil
+    }
+    
+    func invalidateLastSync(query: Query) -> Date? {
+        return nil
     }
     
     func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<Type>>) -> Void) -> AnyNotificationToken {

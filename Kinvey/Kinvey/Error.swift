@@ -25,6 +25,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         /// Constant for 404 response where the entity was not found in the collection
         case entityNotFound = "EntityNotFound"
         
+        /// Constant for 400 response where the paremeter value is out of range
+        case parameterValueOutOfRange = "ParameterValueOutOfRange"
+        
     }
     
     /// Error where Object ID is required.
@@ -38,6 +41,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
     /// Error when there's a missing configuration in the backend.
     case missingConfiguration(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
+    
+    /// Error when a request parameter is missing
+    case missingRequestParameter(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
     /// Error when the type is unknow.
     case unknownError(httpResponse: HTTPURLResponse?, data: Data?, error: String)
@@ -81,7 +87,11 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when the number of results exceeded the limit
     case resultSetSizeExceeded(debug: String, description: String)
     
+    /// Error when an entity was not found using the entity id provided
     case entityNotFound(debug: String, description: String)
+    
+    /// Error when the value prodived for a parameter is out of range
+    case parameterValueOutOfRange(debug: String, description: String)
     
     case invalidCredentials(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
@@ -95,10 +105,12 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unauthorized(_, _, _, _, let description),
              .invalidOperation(let description),
              .missingConfiguration(_, _, _, let description),
+             .missingRequestParameter(_, _, _, let description),
              .appNotFound(let description),
              .forbidden(let description),
              .resultSetSizeExceeded(_, let description),
              .entityNotFound(_, let description),
+             .parameterValueOutOfRange(_, let description),
              .invalidCredentials(_, _, _, let description):
             return description
         case .objectIdMissing:
@@ -135,9 +147,11 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         case .methodNotAllowed(_, _, let debug, _),
              .dataLinkEntityNotFound(_, _, let debug, _),
              .missingConfiguration(_, _, let debug, _),
+             .missingRequestParameter(_, _, let debug, _),
              .unauthorized(_, _, _, let debug, _),
              .resultSetSizeExceeded(let debug, _),
              .entityNotFound(let debug, _),
+             .parameterValueOutOfRange(let debug, _),
              .invalidCredentials(_, _, let debug, _):
             return debug
         default:

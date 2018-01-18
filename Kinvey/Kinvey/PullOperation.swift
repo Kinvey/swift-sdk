@@ -13,7 +13,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
     override init(
         query: Query,
         deltaSet: Bool,
-        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?,
         autoPagination: Bool,
         readPolicy: ReadPolicy,
         validationStrategy: ValidationStrategy?,
