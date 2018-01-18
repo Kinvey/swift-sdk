@@ -124,6 +124,8 @@ protocol RequestFactory {
     
     func buildAppDataFindByQuery(collectionName: String, query: Query, options: Options?) -> HttpRequest<Any>
     
+    func buildAppDataFindByQueryDeltaSet(collectionName: String, query: Query, sinceDate: Date, options: Options?) -> HttpRequest<Any>
+    
     func buildAppDataCountByQuery<Result>(
         collectionName: String,
         query: Query?,

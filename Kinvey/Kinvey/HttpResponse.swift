@@ -77,4 +77,8 @@ extension Response {
         return (self as? HttpResponse)?.response
     }
     
+    var requestStartHeader: Date? {
+        return (httpResponse?.allHeaderFields["X-Kinvey-Request-Start"] as? String)?.toDate()
+    }
+    
 }
