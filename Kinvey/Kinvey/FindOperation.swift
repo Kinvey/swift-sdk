@@ -30,6 +30,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         return isEmptyQuery
     }
     
+    var isSkipAndLimitNil: Bool {
+        return query.skip == nil && query.limit == nil
+    }
+    
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
@@ -163,13 +167,78 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetch(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
+    func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
+            guard let entity = T(JSON: json) else {
+                fatalError("_id is required")
+            }
+            return entity
+        })
+        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+        return entities
+    }
+    
+    private func fetchDelta(multiRequest: MultiRequest<ResultType>, sinceDate: Date) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-            let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
-            let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
+            let request = client.networkRequestFactory.buildAppDataFindByQueryDeltaSet(
+                collectionName: T.collectionName(),
+                query: query,
+                sinceDate: sinceDate,
+                options: options
+            )
+            request.execute() { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let cache = self.cache,
+                    let data = data,
+                    let anyObject = try? JSONSerialization.jsonObject(with: data),
+                    let results = anyObject as? [String : [JsonDictionary]],
+                    let changed = results["changed"],
+                    let deleted = results["deleted"],
+                    let requestStart = response.requestStartHeader
+                {
+                    cache.remove(entities: self.convertToEntities(fromJsonArray: deleted))
+                    cache.save(entities: self.convertToEntities(fromJsonArray: changed), syncQuery: (query: self.query, lastSync: requestStart))
+                    self.executeLocal {
+                        switch $0 {
+                        case .success(let results):
+                            fulfill(results)
+                        case .failure(let error):
+                            reject(error)
+                        }
+                    }
+                } else {
+                    let error = buildError(data, response, error, self.client)
+                    if let error = error as? Kinvey.Error {
+                        switch error {
+                        case .parameterValueOutOfRange:
+                            self.cache?.invalidateLastSync(query: self.query)
+                            self.executeNetwork { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
+                                switch result {
+                                case .success(let entities):
+                                    fulfill(entities)
+                                case .failure(let error):
+                                    reject(error)
+                                }
+                            }
+                        default:
+                            reject(error)
+                        }
+                    } else {
+                        reject(error)
+                    }
+                }
+            }
+            multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
+        }
+    }
+    
+    private func fetchAll(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
+        return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let request = client.networkRequestFactory.buildAppDataFindByQuery(
                 collectionName: T.collectionName(),
-                query: fields != nil ? Query(query) { $0.fields = fields } : query,
+                query: query,
                 options: options
             )
             request.execute() { data, response, error in
@@ -183,175 +252,47 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         return
                     }
                     self.resultsHandler?(jsonArray)
-                    if let cache = self.cache, deltaSet {
-                        let refObjs = self.reduceToIdsLmts(jsonArray)
-                        guard jsonArray.count == refObjs.count else {
-                            let operation = FindOperation(
-                                query: self.query,
-                                deltaSet: false,
-                                autoPagination: self.autoPagination,
-                                readPolicy: self.readPolicy,
-                                validationStrategy: self.validationStrategy,
-                                cache: cache,
-                                options: self.options
+                    let entities = self.convertToEntities(fromJsonArray: jsonArray)
+                    if let cache = self.cache {
+                        if self.mustRemoveCachedRecords {
+                            let refObjs = self.reduceToIdsLmts(jsonArray)
+                            let deltaSet = self.computeDeltaSet(
+                                self.query,
+                                refObjs: refObjs
                             )
-                            let request = operation.executeNetwork {
-                                switch $0 {
-                                case .success(let results):
-                                    fulfill(results)
-                                case .failure(let error):
-                                    reject(error)
-                                }
-                            }
-                            return
+                            self.removeCachedRecords(
+                                cache,
+                                keys: refObjs.keys,
+                                deleted: deltaSet.deleted
+                            )
                         }
-                        let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
-                        var allIds = Set<String>(minimumCapacity: deltaSet.created.count + deltaSet.updated.count + deltaSet.deleted.count)
-                        allIds.formUnion(deltaSet.created)
-                        allIds.formUnion(deltaSet.updated)
-                        allIds.formUnion(deltaSet.deleted)
-                        if allIds.count > MaxIdsPerQuery {
-                            let allIds = Array<String>(allIds)
-                            var promises = [Promise<AnyRandomAccessCollection<T>>]()
-                            var newRefObjs = [String : String]()
-                            for offset in stride(from: 0, to: allIds.count, by: MaxIdsPerQuery) {
-                                let limit = min(offset + MaxIdsPerQuery, allIds.count - 1)
-                                let allIds = Set<String>(allIds[offset...limit])
-                                let promise = Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
-                                    let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
-                                    let operation = FindOperation<T>(
-                                        query: query,
-                                        deltaSet: false,
-                                        autoPagination: self.autoPagination,
-                                        readPolicy: .forceNetwork,
-                                        validationStrategy: self.validationStrategy,
-                                        cache: cache,
-                                        options: self.options
-                                    ) { jsonArray in
-                                        for (key, value) in self.reduceToIdsLmts(jsonArray) {
-                                            newRefObjs[key] = value
-                                        }
-                                    }
-                                    operation.execute { (result) -> Void in
-                                        switch result {
-                                        case .success(let results):
-                                            fulfill(results)
-                                        case .failure(let error):
-                                            reject(error)
-                                        }
-                                    }
-                                }
-                                promises.append(promise)
-                            }
-                            when(fulfilled: promises).then { results -> Void in
-                                if self.mustRemoveCachedRecords {
-                                    self.removeCachedRecords(
-                                        cache,
-                                        keys: refObjs.keys,
-                                        deleted: deltaSet.deleted
-                                    )
-                                }
-                                if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
-                                    deltaSetCompletionHandler(AnyRandomAccessCollection(results.flatMap { $0 }))
-                                }
-                                self.executeLocal {
-                                    switch $0 {
-                                    case .success(let results):
-                                        fulfill(results)
-                                    case .failure(let error):
-                                        reject(error)
-                                    }
-                                }
-                                }.catch { error in
-                                    reject(error)
-                            }
-                        } else if allIds.count > 0 {
-                            let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
-                            var newRefObjs: [String : String]? = nil
-                            let operation = FindOperation<T>(
-                                query: query,
-                                deltaSet: false,
-                                autoPagination : self.autoPagination,
-                                readPolicy: .forceNetwork,
-                                validationStrategy: self.validationStrategy,
-                                cache: cache,
-                                options: self.options
-                            ) { jsonArray in
-                                newRefObjs = self.reduceToIdsLmts(jsonArray)
-                            }
-                            operation.execute { (result) -> Void in
-                                switch result {
-                                case .success:
-                                    if self.mustRemoveCachedRecords,
-                                        let refObjs = newRefObjs
-                                    {
-                                        self.removeCachedRecords(
-                                            cache,
-                                            keys: refObjs.keys,
-                                            deleted: deltaSet.deleted
-                                        )
-                                    }
-                                    self.executeLocal {
-                                        switch $0 {
-                                        case .success(let results):
-                                            fulfill(results)
-                                        case .failure(let error):
-                                            reject(error)
-                                        }
-                                    }
-                                case .failure(let error):
-                                    reject(error)
-                                }
-                            }
+                        var syncQuery: (query: Query, lastSync: Date)? = nil
+                        if self.isSkipAndLimitNil, let requestStart = response.requestStartHeader {
+                            syncQuery = (query: self.query, lastSync: requestStart)
+                        }
+                        if let cache = cache.dynamic {
+                            cache.save(entities: AnyRandomAccessCollection(jsonArray), syncQuery: syncQuery)
                         } else {
-                            self.executeLocal {
-                                switch $0 {
-                                case .success(let results):
-                                    fulfill(results)
-                                case .failure(let error):
-                                    reject(error)
-                                }
-                            }
+                            cache.save(entities: entities, syncQuery: syncQuery)
                         }
-                    } else {
-                        func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
-                            let startTime = CFAbsoluteTimeGetCurrent()
-                            let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
-                                guard let entity = T(JSON: json) else {
-                                    fatalError("_id is required")
-                                }
-                                return entity
-                            })
-                            log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
-                            return entities
-                        }
-                        let entities = convert(jsonArray)
-                        if let cache = self.cache {
-                            if self.mustRemoveCachedRecords {
-                                let refObjs = self.reduceToIdsLmts(jsonArray)
-                                let deltaSet = self.computeDeltaSet(
-                                    self.query,
-                                    refObjs: refObjs
-                                )
-                                self.removeCachedRecords(
-                                    cache,
-                                    keys: refObjs.keys,
-                                    deleted: deltaSet.deleted
-                                )
-                            }
-                            if let cache = cache.dynamic {
-                                cache.save(entities: AnyRandomAccessCollection(jsonArray))
-                            } else {
-                                cache.save(entities: entities)
-                            }
-                        }
-                        fulfill(entities)
                     }
+                    fulfill(entities)
                 } else {
                     reject(buildError(data, response, error, self.client))
                 }
             }
             multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
+        }
+    }
+    
+    private func fetch(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
+        let deltaSet = self.deltaSet &&
+            isSkipAndLimitNil &&
+            !(cache?.isEmpty() ?? true)
+        if deltaSet, let sinceDate = cache?.lastSync(query: query) {
+            return fetchDelta(multiRequest: multiRequest, sinceDate: sinceDate)
+        } else {
+            return fetchAll(multiRequest: multiRequest)
         }
     }
     

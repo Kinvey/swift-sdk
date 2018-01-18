@@ -307,6 +307,20 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataFindByQueryDeltaSet(
+        collectionName: String,
+        query: Query,
+        sinceDate: Date,
+        options: Options?
+    ) -> HttpRequest<Any> {
+        let request = HttpRequest<Any>(
+            endpoint: Endpoint.appDataByQueryDeltaSet(client: client, collectionName: collectionName, query: query.isEmpty ? nil : query, sinceDate: sinceDate),
+            credential: client.activeUser,
+            options: options
+        )
+        return request
+    }
+    
     func buildAppDataCountByQuery<Result>(
         collectionName: String,
         query: Query?,
