@@ -418,6 +418,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     entity.realmConfiguration = realm.configuration
                     entity.reference = ThreadSafeReference(to: newEntity)
                 }
+                self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")

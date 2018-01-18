@@ -69,6 +69,11 @@ public class AnyNotificationToken: NotificationToken {
         _invalidate()
     }
     
+    func lastSync(query: Query) -> Date?
+    
+    @discardableResult
+    func invalidateLastSync(query: Query) -> Date?
+    
 }
 
 internal protocol DynamicCacheType: class {

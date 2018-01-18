@@ -151,7 +151,7 @@ class PerformanceTest: XCTestCase {
                         } else {
                             switch result {
                             case .success(let results):
-                                count += results.count
+                                count += Int(results.count)
                             case .failure(let error):
                                 XCTFail(error.localizedDescription)
                             }
