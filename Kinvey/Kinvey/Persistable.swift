@@ -56,7 +56,7 @@ internal func kinveyMappingType(left: String, right: String) {
     let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
-        var classMapping = kinveyMappingType[className]
+        let classMapping = kinveyMappingType[className]
     {
         classMapping[left] = (right, nil)
         kinveyMappingType[className] = classMapping
@@ -68,7 +68,7 @@ internal func kinveyMappingType<Transform: TransformType>(left: String, right: S
     let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
-        var classMapping = kinveyMappingType[className]
+        let classMapping = kinveyMappingType[className]
     {
         classMapping[left] = (right, AnyTransform(transform))
         kinveyMappingType[className] = classMapping
