@@ -85,7 +85,7 @@ func currentVersion() -> (infoPlist: String, podspec: String) {
     var infoPlistTmp: String? = nil
     var podspecTmp: String? = nil
     for line in string.components(separatedBy: "\n") {
-        let parts = line.components(separatedBy: " ").filter { $0.characters.count > 0 }
+        let parts = line.components(separatedBy: " ").filter { $0.count > 0 }
         guard parts.count == 2 else {
             continue
         }
