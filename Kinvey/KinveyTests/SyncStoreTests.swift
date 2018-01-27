@@ -2737,4 +2737,52 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testObjectMappingMemoryLeak() {
+        var store = DataStore<Person>.collection(.network)
+        
+        mockResponse(json: [
+            [
+                "_id" : UUID().uuidString,
+                "name" : UUID().uuidString,
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let memoryBefore = reportMemory()
+        
+        for _ in 1...10_000 {
+            autoreleasepool {
+                weak var expectationFind = expectation(description: "Find")
+                
+                store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                    switch result {
+                    case .success(let persons):
+                        XCTAssertEqual(persons.count, Int64(1))
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationFind?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationFind = nil
+                }
+            }
+        }
+        
+        let memoryAfter = reportMemory()
+        
+        XCTAssertLessThan(memoryAfter! - memoryBefore!, 10_000_000)
+    }
+    
 }
