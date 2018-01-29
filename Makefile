@@ -29,9 +29,6 @@ build-dependencies-ios: checkout-dependencies
 
 build: checkout-dependencies
 	carthage build --no-skip-current
-	cd Carthage; \
-	md5 ../Cartfile.resolved | awk '{ system("zip -r " $$4 ".zip Build") }'; \
-	md5 ../Cartfile.resolved | awk '{ system("aws s3 cp " $$4 ".zip s3://kinvey-downloads/iOS/travisci-cache/" $$4 ".zip") }'
 
 build-ios: checkout-dependencies
 	carthage build --no-skip-current --platform iOS
@@ -55,7 +52,7 @@ test: test-ios test-macos
 	
 test-ios:
 	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES $(XCODEBUILD_TEST_FLAGS)
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS -enableCodeCoverage YES test

@@ -21,11 +21,6 @@ before_script:
 - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
-- if [ ! -d (md5 Cartfile.resolved | awk '{ print "Carthage/" $4 ".zip" }') ]; then
-    cd Carthage;
-    md5 Cartfile.resolved | awk '{ system("wget http://download.kinvey.com/iOS/travisci-cache/" $4 ".zip") }';
-    md5 Cartfile.resolved | awk '{ system("unzip " $4 ".zip") }';
-  fi
 - if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
     carthage checkout --no-use-binaries;
   fi
