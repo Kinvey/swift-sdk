@@ -32,7 +32,7 @@ public protocol Persistable: Mappable {
     
 }
 
-struct AnyTransform: TransformType {
+class AnyTransform: TransformType {
     
     private let _transformFromJSON: (Any?) -> Any?
     private let _transformToJSON: (Any?) -> Any?
@@ -53,24 +53,26 @@ struct AnyTransform: TransformType {
 }
 
 internal func kinveyMappingType(left: String, right: String) {
-    _kinveyMappingType(left: left, right: right)
+    let currentThread = Thread.current
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
+        let className = kinveyMappingType.first?.0,
+        let classMapping = kinveyMappingType[className]
+    {
+        classMapping[left] = (right, nil)
+        kinveyMappingType[className] = classMapping
+        currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
+    }
 }
 
 internal func kinveyMappingType<Transform: TransformType>(left: String, right: String, transform: Transform) {
-    _kinveyMappingType(left: left, right: right, transform: AnyTransform(transform))
-}
-
-@inline(__always)
-fileprivate func _kinveyMappingType(left: String, right: String, transform: AnyTransform? = nil) {
-    if let className = currentMappingClass,
-        var classMapping = kinveyProperyMapping[className]
+    let currentThread = Thread.current
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
+        let className = kinveyMappingType.first?.0,
+        let classMapping = kinveyMappingType[className]
     {
-        if let transform = transform {
-            classMapping[left] = (right, transform)
-        } else {
-            classMapping[left] = (right, nil)
-        }
-        kinveyProperyMapping[className] = classMapping
+        classMapping[left] = (right, AnyTransform(transform))
+        kinveyMappingType[className] = classMapping
+        currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
     }
 }
 
@@ -394,7 +396,7 @@ public func <- (left: List<BoolValue>, right: (String, Map)) {
 
 internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 
-struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
+class PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     
     typealias Key = String
     typealias Value = (String, AnyTransform?)
@@ -404,7 +406,7 @@ struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     private var keys = [Key]()
     private var currentIndex = 0
     
-    init(dictionaryLiteral elements: (Key, Value)...) {
+    required init(dictionaryLiteral elements: (Key, Value)...) {
         for (key, value) in elements {
             self[key] = value
         }
@@ -422,7 +424,7 @@ struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
         }
     }
     
-    mutating func next() -> Element? {
+    func next() -> Element? {
         if keys.startIndex <= currentIndex && currentIndex < keys.endIndex {
             let key = keys[currentIndex]
             if let value = map[key] {
@@ -463,10 +465,17 @@ extension Persistable {
     }
     
     static func propertyMapping() -> PropertyMap {
+        let currentThread = Thread.current
         let className = StringFromClass(cls: self as! AnyClass)
+        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
+        defer {
+            currentThread.threadDictionary.removeObject(forKey: KinveyMappingTypeKey)
+        }
         let obj = self.init()
         let _ = obj.toJSON()
-        if let kinveyMappingClassType = kinveyProperyMapping[className] {
+        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
+            let kinveyMappingClassType = kinveyMappingType[className]
+        {
             return kinveyMappingClassType
         }
         return [:]

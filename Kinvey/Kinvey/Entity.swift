@@ -147,32 +147,25 @@ open class Entity: Object, Persistable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
-        let className = StringFromClass(cls: type(of: self))
-        if kinveyProperyMapping[className] == nil {
-            currentMappingClass = className
-            mappingOperationQueue.addOperation {
-                if kinveyProperyMapping[className] == nil {
-                    kinveyProperyMapping[className] = PropertyMap()
-                }
+        let originalThread = Thread.current
+        let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
+        if runningMapping {
+            let operationQueue = OperationQueue()
+            operationQueue.name = "Kinvey Property Mapping"
+            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.addOperation {
+                let className = StringFromClass(cls: type(of: self))
+                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : PropertyMap()]
                 self.propertyMapping(map)
+                originalThread.threadDictionary[KinveyMappingTypeKey] = Thread.current.threadDictionary[KinveyMappingTypeKey]
             }
-            mappingOperationQueue.waitUntilAllOperationsAreFinished()
-            currentMappingClass = nil
+            operationQueue.waitUntilAllOperationsAreFinished()
         } else {
             self.propertyMapping(map)
         }
     }
     
 }
-
-let mappingOperationQueue: OperationQueue = {
-    let operationQueue = OperationQueue()
-    operationQueue.name = "Kinvey Property Mapping"
-    operationQueue.maxConcurrentOperationCount = 1
-    return operationQueue
-}()
-var kinveyProperyMapping = [String : PropertyMap]()
-var currentMappingClass: String?
 
 /// Wrapper type for string values that needs to be stored locally in the device
 open class StringValue: Object, ExpressibleByStringLiteral {
