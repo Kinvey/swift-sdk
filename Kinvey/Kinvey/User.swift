@@ -60,7 +60,7 @@ open class User: NSObject, Credential, Mappable {
         user: U? = nil,
         client: Client = Kinvey.sharedClient,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return signup(
             username: username,
             password: password,
@@ -84,7 +84,7 @@ open class User: NSObject, Credential, Mappable {
         user: U? = nil,
         client: Client = Kinvey.sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return signup(
             username: username,
             password: password,
@@ -96,8 +96,8 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
-    private class func login<U: User>(
-        request: HttpRequest,
+    private class func login<U: User, ResultType>(
+        request: HttpRequest<ResultType>,
         client: Client,
         userType: U.Type,
         completionHandler: ((Result<U, Swift.Error>) -> Void)?
@@ -129,20 +129,21 @@ open class User: NSObject, Credential, Mappable {
         user: U? = nil,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         if let error = client.validate() {
             DispatchQueue.main.async {
                 completionHandler?(.failure(error))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
         }
 
         let request = client.networkRequestFactory.buildUserSignUp(
             username: username,
             password: password,
             user: user,
-            options: options
+            options: options,
+            resultType: Result<U, Swift.Error>.self
         )
         login(
             request: request,
@@ -150,7 +151,7 @@ open class User: NSObject, Credential, Mappable {
             userType: U.self,
             completionHandler: completionHandler
         )
-        return request
+        return AnyRequest(request)
     }
     
     /// Deletes a `User` by the `userId` property.
@@ -161,7 +162,7 @@ open class User: NSObject, Credential, Mappable {
         hard: Bool = true,
         client: Client = Kinvey.sharedClient,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return destroy(
             userId: userId,
             hard: hard,
@@ -179,12 +180,13 @@ open class User: NSObject, Credential, Mappable {
         hard: Bool = true,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserDelete(
             userId: userId,
             hard: hard,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -204,7 +206,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Deletes the `User`.
@@ -213,7 +215,7 @@ open class User: NSObject, Credential, Mappable {
         hard: Bool = true,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return User.destroy(
             userId: userId,
             hard: hard,
@@ -237,7 +239,7 @@ open class User: NSObject, Credential, Mappable {
         authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return login(
             authSource: authSource,
             authData,
@@ -269,7 +271,7 @@ open class User: NSObject, Credential, Mappable {
         authServiceId: String? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return login(
             authSource: authSource,
             authData,
@@ -296,16 +298,16 @@ open class User: NSObject, Credential, Mappable {
         createIfNotExists: Bool = true,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         if let error = client.validate() {
             DispatchQueue.main.async {
                 completionHandler?(.failure(error))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
         }
         
-        let requests = MultiRequest()
+        let requests = MultiRequest<Result<U, Swift.Error>>()
         Promise<U> { fulfill, reject in
             let request = client.networkRequestFactory.buildUserSocialLogin(
                 authSource,
@@ -350,7 +352,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return requests
+        return AnyRequest(requests)
     }
     
     /// Sign in a user and set as a current active user.
@@ -360,7 +362,7 @@ open class User: NSObject, Credential, Mappable {
         password: String,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return login(
             username: username,
             password: password,
@@ -385,7 +387,7 @@ open class User: NSObject, Credential, Mappable {
         password: String,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return login(
             username: username,
             password: password,
@@ -403,19 +405,20 @@ open class User: NSObject, Credential, Mappable {
         password: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         if let error = client.validate() {
             DispatchQueue.main.async {
                 completionHandler?(.failure(error))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
         }
 
         let request = client.networkRequestFactory.buildUserLogin(
             username: username,
             password: password,
-            options: options
+            options: options,
+            resultType: Result<U, Swift.Error>.self
         )
         login(
             request: request,
@@ -423,7 +426,7 @@ open class User: NSObject, Credential, Mappable {
             userType: U.self,
             completionHandler: completionHandler
         )
-        return request
+        return AnyRequest(request)
     }
     
     /**
@@ -440,7 +443,7 @@ open class User: NSObject, Credential, Mappable {
         forUsername username: String,
         client: Client = sharedClient,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return sendEmailConfirmation(
             forUsername: username,
             options: Options(
@@ -450,8 +453,8 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
-    private class func execute(
-        request: HttpRequest,
+    private class func execute<ResultType>(
+        request: HttpRequest<ResultType>,
         client: Client,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)?
     ) {
@@ -484,18 +487,19 @@ open class User: NSObject, Credential, Mappable {
         forUsername username: String,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildSendEmailConfirmation(
             forUsername: username,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         execute(
             request: request,
             client: client,
             completionHandler: completionHandler
         )
-        return request
+        return AnyRequest(request)
     }
     
     /**
@@ -510,12 +514,12 @@ open class User: NSObject, Credential, Mappable {
     open func sendEmailConfirmation(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         guard let _ = email else {
             DispatchQueue.main.async {
                 completionHandler?(.failure(Error.invalidOperation(description: "Email is required to send the email confirmation")))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<Void, Swift.Error>>())
         }
         
         return User.sendEmailConfirmation(
@@ -531,7 +535,7 @@ open class User: NSObject, Credential, Mappable {
         usernameOrEmail: String,
         client: Client = sharedClient,
         completionHandler: VoidHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return resetPassword(
             usernameOrEmail: usernameOrEmail,
             client: client
@@ -551,7 +555,7 @@ open class User: NSObject, Credential, Mappable {
         usernameOrEmail: String,
         client: Client = sharedClient,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return resetPassword(
             usernameOrEmail: usernameOrEmail,
             options: Options(
@@ -567,18 +571,19 @@ open class User: NSObject, Credential, Mappable {
         usernameOrEmail: String,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserResetPassword(
             usernameOrEmail: usernameOrEmail,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         execute(
             request: request,
             client: client,
             completionHandler: completionHandler
         )
-        return request
+        return AnyRequest(request)
     }
     
     /// Sends an email to the user with a link to reset the password using the `username` property.
@@ -588,7 +593,7 @@ open class User: NSObject, Credential, Mappable {
         username: String,
         client: Client = sharedClient,
         completionHandler: VoidHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return resetPassword(
             usernameOrEmail: username,
             client: client,
@@ -603,7 +608,7 @@ open class User: NSObject, Credential, Mappable {
         email: String,
         client: Client = sharedClient,
         completionHandler: VoidHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return resetPassword(
             usernameOrEmail: email,
             client: client,
@@ -616,7 +621,7 @@ open class User: NSObject, Credential, Mappable {
     open func resetPassword(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         if let email = email {
             return User.resetPassword(
                 usernameOrEmail: email,
@@ -634,7 +639,7 @@ open class User: NSObject, Credential, Mappable {
                 completionHandler(.failure(Error.userWithoutEmailOrUsername))
             })
         }
-        return LocalRequest()
+        return AnyRequest(LocalRequest<Result<Void, Swift.Error>>())
     }
     
     /**
@@ -647,7 +652,7 @@ open class User: NSObject, Credential, Mappable {
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return changePassword(
             newPassword: newPassword,
             options: nil
@@ -671,7 +676,7 @@ open class User: NSObject, Credential, Mappable {
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return changePassword(
             newPassword: newPassword,
             options: nil,
@@ -690,7 +695,7 @@ open class User: NSObject, Credential, Mappable {
         newPassword: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return save(
             newPassword: newPassword,
             options: options,
@@ -709,7 +714,7 @@ open class User: NSObject, Credential, Mappable {
         email: String,
         client: Client = sharedClient,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         return forgotUsername(
             email: email,
             options: Options(
@@ -730,18 +735,19 @@ open class User: NSObject, Credential, Mappable {
         email: String,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserForgotUsername(
             email: email,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         execute(
             request: request,
             client: client,
             completionHandler: completionHandler
         )
-        return request
+        return AnyRequest(request)
     }
     
     /// Checks if a `username` already exists or not.
@@ -750,7 +756,7 @@ open class User: NSObject, Credential, Mappable {
         username: String,
         client: Client = sharedClient,
         completionHandler: BoolHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Bool, Swift.Error>> {
         return exists(
             username: username,
             client: client
@@ -770,7 +776,7 @@ open class User: NSObject, Credential, Mappable {
         username: String,
         client: Client = sharedClient,
         completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Bool, Swift.Error>> {
         return exists(
             username: username,
             options: Options(
@@ -786,11 +792,12 @@ open class User: NSObject, Credential, Mappable {
         username: String,
         options: Options? = nil,
         completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Bool, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserExists(
             username: username,
-            options: options
+            options: options,
+            resultType: Result<Bool, Swift.Error>.self
         )
         Promise<Bool> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -809,7 +816,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Gets a `User` instance using the `userId` property.
@@ -818,7 +825,7 @@ open class User: NSObject, Credential, Mappable {
         userId: String,
         client: Client = sharedClient,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return get(
             userId: userId,
             client: client
@@ -838,7 +845,7 @@ open class User: NSObject, Credential, Mappable {
         userId: String,
         client: Client = sharedClient,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return get(
             userId: userId,
             options: Options(
@@ -854,11 +861,12 @@ open class User: NSObject, Credential, Mappable {
         userId: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserGet(
             userId: userId,
-            options: options
+            options: options,
+            resultType: Result<U, Swift.Error>.self
         )
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -876,7 +884,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Gets a `User` instance using the `userId` property.
@@ -886,7 +894,7 @@ open class User: NSObject, Credential, Mappable {
         query: Query = Query(),
         client: Client = sharedClient,
         completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[U], Swift.Error>> {
         return find(
             query: query,
             options: Options(
@@ -902,11 +910,12 @@ open class User: NSObject, Credential, Mappable {
         query: Query = Query(),
         options: Options? = nil,
         completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[U], Swift.Error>> {
         let client = options?.client ?? self.client
         let request = client.networkRequestFactory.buildUserFind(
             query: query,
-            options: options
+            options: options,
+            resultType: Result<[U], Swift.Error>.self
         )
         Promise<[U]> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -924,7 +933,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Refresh the user's data.
@@ -932,9 +941,12 @@ open class User: NSObject, Credential, Mappable {
     open func refresh(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let client = options?.client ?? self.client
-        let request = client.networkRequestFactory.buildUserMe(options: options)
+        let request = client.networkRequestFactory.buildUserMe(
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
+        )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response,
@@ -956,7 +968,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Default Constructor.
@@ -1003,10 +1015,11 @@ open class User: NSObject, Credential, Mappable {
     open func logout(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let request = client.networkRequestFactory.buildUserLogout(
             user: self,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         Promise<Void> { fulfill, reject in
             request.execute { data, response, error in
@@ -1026,7 +1039,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Creates or updates a `User`.
@@ -1034,7 +1047,7 @@ open class User: NSObject, Credential, Mappable {
     open func save<U: User>(
         newPassword: String? = nil,
         completionHandler: UserHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         return save(
             newPassword: newPassword
         ) { (result: Result<U, Swift.Error>) in
@@ -1053,12 +1066,13 @@ open class User: NSObject, Credential, Mappable {
         newPassword: String? = nil,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserSave(
             user: self,
             newPassword: newPassword,
-            options: options
+            options: options,
+            resultType: Result<U, Swift.Error>.self
         )
         Promise<U> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -1079,7 +1093,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /**
@@ -1089,7 +1103,7 @@ open class User: NSObject, Credential, Mappable {
     open func lookup<U: User>(
         _ userQuery: UserQuery,
         completionHandler: UsersHandler<U>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[U], Swift.Error>> {
         return lookup(userQuery) { (result: Result<[U], Swift.Error>) in
             switch result {
             case .success(let users):
@@ -1108,12 +1122,13 @@ open class User: NSObject, Credential, Mappable {
         _ userQuery: UserQuery,
         options: Options? = nil,
         completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[U], Swift.Error>> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildUserLookup(
             user: self,
             userQuery: userQuery,
-            options: options
+            options: options,
+            resultType: Result<[U], Swift.Error>.self
         )
         Promise<[U]> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -1131,7 +1146,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Register the user to start performing realtime / live calls
@@ -1139,11 +1154,12 @@ open class User: NSObject, Credential, Mappable {
     open func registerForRealtime(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let request = client.networkRequestFactory.buildUserRegisterRealtime(
             user: self,
             deviceId: deviceId,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -1166,7 +1182,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     /// Unregister the user to stop performing realtime / live calls
@@ -1174,11 +1190,12 @@ open class User: NSObject, Credential, Mappable {
     open func unregisterForRealtime(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<Void, Swift.Error>> {
         let request = client.networkRequestFactory.buildUserUnregisterRealtime(
             user: self,
             deviceId: deviceId,
-            options: options
+            options: options,
+            resultType: Result<Void, Swift.Error>.self
         )
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -1194,7 +1211,7 @@ open class User: NSObject, Credential, Mappable {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return request
+        return AnyRequest(request)
     }
     
     internal static let authtokenPrefix = "Kinvey "

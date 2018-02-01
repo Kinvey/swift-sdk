@@ -68,9 +68,9 @@ open class MIC {
         code: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest()
+        let requests = MultiRequest<Result<U, Swift.Error>>()
         Promise<U> { fulfill, reject in
             let request = client.networkRequestFactory.buildOAuthToken(
                 redirectURI: redirectURI,
@@ -104,7 +104,7 @@ open class MIC {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return requests
+        return AnyRequest(requests)
     }
     
     @discardableResult
@@ -114,9 +114,9 @@ open class MIC {
         password: String,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest()
+        let requests = MultiRequest<Result<U, Swift.Error>>()
         let request = client.networkRequestFactory.buildOAuthGrantAuth(
             redirectURI: redirectURI,
             options: options
@@ -181,7 +181,7 @@ open class MIC {
         }.catch { error in
             completionHandler?(.failure(error))
         }
-        return requests
+        return AnyRequest(requests)
     }
     
     @discardableResult
@@ -190,8 +190,8 @@ open class MIC {
         authServiceId: String?,
         client: Client = sharedClient,
         completionHandler: User.UserHandler<U>? = nil
-    ) -> Request {
-        let requests = MultiRequest()
+    ) -> AnyRequest<Result<U, Swift.Error>> {
+        let requests = MultiRequest<Result<U, Swift.Error>>()
         let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: Options(
@@ -206,7 +206,7 @@ open class MIC {
             }
         }
         requests += request
-        return requests
+        return AnyRequest(requests)
     }
     
 }

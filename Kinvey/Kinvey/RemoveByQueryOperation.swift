@@ -21,7 +21,8 @@ internal class RemoveByQueryOperation<T: Persistable>: RemoveOperation<T> where 
         let httpRequest = client.networkRequestFactory.buildAppDataRemoveByQuery(
             collectionName: T.collectionName(),
             query: query,
-            options: options
+            options: options,
+            resultType: Result<Int, Swift.Error>.self
         )
         super.init(
             query: query,

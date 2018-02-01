@@ -12,6 +12,8 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     
     let query: Query?
     
+    typealias ResultType = Result<Int, Swift.Error>
+    
     init(
         query: Query? = nil,
         readPolicy: ReadPolicy,
@@ -28,38 +30,45 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
+            let result: ResultType
             if let cache = self.cache {
                 let count = cache.count(query: self.query)
-                completionHandler?(.success(count))
+                result = .success(count)
             } else {
-                completionHandler?(.success(0))
+                result = .success(0)
             }
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataCountByQuery(
             collectionName: T.collectionName(),
             query: query,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         request.execute() { data, response, error in
+            let result: ResultType
             if let response = response, response.isOK,
                 let data = data,
                 let json = try? JSONSerialization.jsonObject(with: data),
-                let result = json as? [String : Int],
-                let count = result["count"]
+                let jsonObject = json as? [String : Int],
+                let count = jsonObject["count"]
             {
-                completionHandler?(.success(count))
+                result = .success(count)
             } else {
-                completionHandler?(.failure(buildError(data, response, error, self.client)))
+                result = .failure(buildError(data, response, error, self.client))
             }
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

@@ -12,6 +12,8 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
     
     var persistable: T
     
+    typealias ResultType = Result<T, Swift.Error>
+    
     init(
         persistable: inout T,
         writePolicy: WritePolicy,
@@ -44,12 +46,13 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let request = LocalRequest<Result<T, Swift.Error>>()
         request.execute { () -> Void in
-            let request = self.client.networkRequestFactory.buildAppDataSave(
+            let networkRequest = self.client.networkRequestFactory.buildAppDataSave(
                 self.persistable,
-                options: options
+                options: options,
+                resultType: ResultType.self
             )
             
             let persistable = self.fillObject(&self.persistable)
@@ -58,20 +61,25 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
             }
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.entityId))
+                sync.savePendingOperation(sync.createPendingOperation(networkRequest.request, objectId: persistable.entityId))
             }
-            completionHandler?(.success(self.persistable))
+            request.result = .success(self.persistable)
+            if let completionHandler = completionHandler, let result = request.result {
+                completionHandler(result)
+            }
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataSave(
             persistable,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
+                let result: ResultType
                 if let response = response, response.isOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
@@ -92,13 +100,15 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
                         }
                         self.merge(&self.persistable, json: json)
                     }
-                    completionHandler?(.success(self.persistable))
+                    result = .success(self.persistable)
                 } else {
-                    completionHandler?(.failure(buildError(data, response, error, self.client)))
+                    result = .failure(buildError(data, response, error, self.client))
                 }
+                request.result = result
+                completionHandler?(result)
             }
         }
-        return request
+        return AnyRequest(request)
     }
     
     fileprivate func checkRequirements(_ completionHandler: CompletionHandler?) -> Bool {

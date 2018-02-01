@@ -17,6 +17,10 @@ class PushBlockOperation: PendingBlockOperation {
 
 fileprivate class PushRequest: NSObject, Request {
     
+    typealias ResultType = Result<UInt, [Swift.Error]>
+    
+    var result: ResultType?
+    
     let completionOperation: PushBlockOperation
     private let dispatchSerialQueue: DispatchQueue
     
@@ -63,6 +67,8 @@ fileprivate class PushRequest: NSObject, Request {
 
 internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]> where T: NSObject {
     
+    typealias ResultType = Result<UInt, [Swift.Error]>
+    
     internal override init(
         sync: AnySync?,
         cache: AnyCache<T>?,
@@ -75,24 +81,28 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         )
     }
     
-    func execute(completionHandler: CompletionHandler?) -> Request {
+    func execute(completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         var count = UInt(0)
         var errors: [Swift.Error] = []
         
         let collectionName = T.collectionName()
-        let pushOperation = PushRequest(collectionName: collectionName) {
+        var pushOperation: PushRequest!
+        pushOperation = PushRequest(collectionName: collectionName) {
+            let result: ResultType
             if errors.isEmpty {
-                completionHandler?(.success(count))
+                result = .success(count)
             } else {
-                completionHandler?(.failure(errors))
+                result = .failure(errors)
             }
+            pushOperation.result = result
+            completionHandler?(result)
         }
         
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
         
         if let sync = sync {
             for pendingOperation in sync.pendingOperations() {
-                let request = HttpRequest(
+                let request = HttpRequest<Result<UInt, Swift.Error>>(
                     request: pendingOperation.buildRequest(),
                     options: options
                 )
@@ -157,7 +167,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         }
         
         pushOperation.execute(pendingBlockOperations: pendingBlockOperations)
-        return pushOperation
+        return AnyRequest(pushOperation)
     }
     
 }

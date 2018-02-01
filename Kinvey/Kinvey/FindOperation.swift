@@ -19,6 +19,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
     
+    typealias ResultType = Result<AnyRandomAccessCollection<T>, Swift.Error>
+    
     lazy var isEmptyQuery: Bool = {
         return (self.query.predicate == nil || self.query.predicate == NSPredicate()) && self.query.skip == nil && self.query.limit == nil
     }()
@@ -55,22 +57,25 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
+            let result: ResultType
             if let cache = self.cache {
                 let json = cache.find(byQuery: self.query)
-                completionHandler?(.success(json))
+                result = .success(json)
             } else {
-                completionHandler?(.success(AnyRandomAccessCollection<T>([])))
+                result = .success(AnyRandomAccessCollection<T>([]))
             }
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
-    private func count(multiRequest: MultiRequest) -> Promise<Int?> {
+    private func count(multiRequest: MultiRequest<ResultType>) -> Promise<Int?> {
         return Promise<Int?> { fulfill, reject in
             if autoPagination {
                 if let limit = query.limit {
@@ -100,7 +105,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetchAutoPagination(multiRequest: MultiRequest, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetchAutoPagination(multiRequest: MultiRequest<ResultType>, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let maxSizePerResultSet = options?.maxSizePerResultSet ?? MaxSizePerResultSet
             let nPages = Int64(ceil(Double(count) / Double(maxSizePerResultSet)))
@@ -146,7 +151,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetch(multiRequest: MultiRequest) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetch(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
             let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
             let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
@@ -339,8 +344,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     @discardableResult
-    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> Request {
-        let request = MultiRequest()
+    func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let request = MultiRequest<ResultType>()
         request.progress = Progress(totalUnitCount: 100)
         count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
             request.progress.completedUnitCount = 1
@@ -349,12 +354,16 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             } else {
                 return self.fetch(multiRequest: request)
             }
-        }.then {
-            completionHandler?(.success($0))
-        }.catch { error in
-            completionHandler?(.failure(error))
+        }.then { (results) -> Void in
+            let result: ResultType = .success(results)
+            request.result = result
+            completionHandler?(result)
+        }.catch {
+            let result: ResultType = .failure($0)
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
     fileprivate func removeCachedRecords<S : Sequence>(_ cache: AnyCache<T>, keys: S, deleted: Set<String>) where S.Iterator.Element == String {

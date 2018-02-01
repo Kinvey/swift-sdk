@@ -9,7 +9,11 @@
 import Foundation
 import PromiseKit
 
-class URLSessionTaskRequest: TaskProgressRequest, Request {
+class URLSessionTaskRequest<Result>: TaskProgressRequest, Request {
+    
+    typealias ResultType = Result
+    
+    var result: Result?
     
     var executing: Bool {
         get {

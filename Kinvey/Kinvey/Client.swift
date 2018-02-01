@@ -330,7 +330,7 @@ open class Client: Credential {
      call to the server.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
             switch result {
             case .success(let envInfo):
@@ -347,14 +347,17 @@ open class Client: Credential {
      the backend.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         guard let _ = appKey, let _ = appSecret else {
             DispatchQueue.main.async {
                 completionHandler(.failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()")))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<EnvironmentInfo, Swift.Error>>())
         }
-        let request = networkRequestFactory.buildAppDataPing(options: options)
+        let request = networkRequestFactory.buildAppDataPing(
+            options: options,
+            resultType: Result<EnvironmentInfo, Swift.Error>.self
+        )
         Promise<EnvironmentInfo> { fulfill, reject in
             request.execute() { data, response, error in
                 if let response = response,
@@ -374,7 +377,7 @@ open class Client: Credential {
         }.catch {
             completionHandler(.failure($0))
         }
-        return request
+        return AnyRequest(request)
     }
 }
 
