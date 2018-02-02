@@ -32,7 +32,7 @@ public protocol Persistable: Mappable {
     
 }
 
-class AnyTransform: TransformType {
+struct AnyTransform: TransformType {
     
     private let _transformFromJSON: (Any?) -> Any?
     private let _transformToJSON: (Any?) -> Any?
@@ -56,7 +56,7 @@ internal func kinveyMappingType(left: String, right: String) {
     let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
-        let classMapping = kinveyMappingType[className]
+        var classMapping = kinveyMappingType[className]
     {
         classMapping[left] = (right, nil)
         kinveyMappingType[className] = classMapping
@@ -68,7 +68,7 @@ internal func kinveyMappingType<Transform: TransformType>(left: String, right: S
     let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : PropertyMap],
         let className = kinveyMappingType.first?.0,
-        let classMapping = kinveyMappingType[className]
+        var classMapping = kinveyMappingType[className]
     {
         classMapping[left] = (right, AnyTransform(transform))
         kinveyMappingType[className] = classMapping
@@ -396,7 +396,7 @@ public func <- (left: List<BoolValue>, right: (String, Map)) {
 
 internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 
-class PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
+struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     
     typealias Key = String
     typealias Value = (String, AnyTransform?)
@@ -406,7 +406,7 @@ class PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
     private var keys = [Key]()
     private var currentIndex = 0
     
-    required init(dictionaryLiteral elements: (Key, Value)...) {
+    init(dictionaryLiteral elements: (Key, Value)...) {
         for (key, value) in elements {
             self[key] = value
         }
@@ -424,7 +424,7 @@ class PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
         }
     }
     
-    func next() -> Element? {
+    mutating func next() -> Element? {
         if keys.startIndex <= currentIndex && currentIndex < keys.endIndex {
             let key = keys[currentIndex]
             if let value = map[key] {
