@@ -16,6 +16,28 @@ import Nimble
     typealias Image = UIImage
 #endif
 
+internal func reportMemory() -> Int64? {
+    var info = task_basic_info()
+    var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size)/4
+    
+    let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
+        $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+            task_info(
+                mach_task_self_,
+                task_flavor_t(TASK_BASIC_INFO),
+                $0,
+                &count
+            )
+        }
+    }
+    
+    if kerr == KERN_SUCCESS {
+        return Int64(info.resident_size)
+    }
+    
+    return nil
+}
+
 class FileTestCase: StoreTestCase {
     
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
@@ -39,7 +61,7 @@ class FileTestCase: StoreTestCase {
             count += 1
             let downloadGroup = DispatchGroup()
             
-            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg&el=info")!
+            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
             let request = URLRequest(url: url)
             downloadGroup.enter()
             let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
@@ -69,23 +91,20 @@ class FileTestCase: StoreTestCase {
                     }
                     
                     if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path) {
-                        if let iurlmaxres = queryItems.filter({ return $0.name == "iurlmaxres" }).first?.value,
-                            let url = URL(string: iurlmaxres)
-                        {
-                            downloadGroup.enter()
-                            let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                                if let url = url,
-                                    let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                                    let fileSize = attrs[.size] as? UInt64,
-                                    fileSize > 0
-                                {
-                                    try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
-                                }
-                                
-                                downloadGroup.leave()
+                        let url = URL(string: "https://i.ytimg.com/vi/6U1bsPCLLEg/maxresdefault.jpg")!
+                        downloadGroup.enter()
+                        let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                            if let url = url,
+                                let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                                let fileSize = attrs[.size] as? UInt64,
+                                fileSize > 0
+                            {
+                                try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
                             }
-                            downloadTask.resume()
+                            
+                            downloadGroup.leave()
                         }
+                        downloadTask.resume()
                     }
                 }
                 
@@ -130,26 +149,6 @@ class FileTestCase: StoreTestCase {
         }
         
         super.tearDown()
-    }
-    
-    fileprivate func reportMemory() -> Int64? {
-        var info = task_basic_info()
-        var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size)/4
-        
-        let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-                task_info(mach_task_self_,
-                          task_flavor_t(TASK_BASIC_INFO),
-                          $0,
-                          &count)
-            }
-        }
-        
-        if kerr == KERN_SUCCESS {
-            return Int64(info.resident_size)
-        }
-        
-        return nil
     }
     
     func testDownloadMissingFileId() {
@@ -769,7 +768,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 
-                let memoryNow = self.reportMemory()
+                let memoryNow = reportMemory()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
@@ -990,7 +989,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 
-                let memoryNow = self.reportMemory()
+                let memoryNow = reportMemory()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
@@ -1210,7 +1209,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/png")
                 
-                let memoryNow = self.reportMemory()
+                let memoryNow = reportMemory()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
@@ -1428,7 +1427,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/jpeg")
                 
-                let memoryNow = self.reportMemory()
+                let memoryNow = reportMemory()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
