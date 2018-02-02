@@ -112,7 +112,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Any> {
         return upload(
             file,
             image: image,
@@ -136,7 +136,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Any> {
         return upload(
             file,
             image: image,
@@ -156,7 +156,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Any> {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(
