@@ -238,10 +238,24 @@ open class Client: Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping (Result<U?, Swift.Error>) -> Void) {
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        encryptionKey: Data? = nil,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+    ) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
+        self.options = options
+        if let timeout = options?.timeout {
+            self.timeoutInterval = timeout
+        }
         
         Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: schema?.migrationHandler)
         
