@@ -17,6 +17,9 @@ class Book: Entity {
     
     let editions = List<BookEdition>()
     
+    @objc
+    dynamic var nextEdition: BookEdition?
+    
     let editionsYear = List<IntValue>()
     let editionsRetailPrice = List<FloatValue>()
     let editionsRating = List<DoubleValue>()
@@ -30,14 +33,15 @@ class Book: Entity {
         super.propertyMapping(map)
         
         title <- ("title", map["title"])
-        authorNames <- ("authorNames", map["authorNames"])
+        authorNames <- ("authorNames", map["author_names"])
         
         editions <- ("editions", map["editions"])
+        nextEdition <- ("nextEdition", map["next_edition"])
         
-        editionsYear <- ("editionsYear", map["editionsYear"])
-        editionsRetailPrice <- ("editionsRetailPrice", map["editionsRetailPrice"])
-        editionsRating <- ("editionsRating", map["editionsRating"])
-        editionsAvailable <- ("editionsAvailable", map["editionsAvailable"])
+        editionsYear <- ("editionsYear", map["editions_year"])
+        editionsRetailPrice <- ("editionsRetailPrice", map["editions_retail_price"])
+        editionsRating <- ("editionsRating", map["editions_rating"])
+        editionsAvailable <- ("editionsAvailable", map["editions_available"])
     }
     
 }
@@ -62,7 +66,7 @@ class BookEdition: Object, Mappable {
     
     func mapping(map: Map) {
         year <- ("year", map["year"])
-        retailPrice <- ("retailPrice", map["retailPrice"])
+        retailPrice <- ("retailPrice", map["retail_price"])
         rating <- ("rating", map["rating"])
         available <- ("available", map["available"])
     }

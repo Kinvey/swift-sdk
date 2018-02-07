@@ -3071,6 +3071,150 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testNestedMapping() {
+        mockResponse(json: [
+            [
+                "_id": "5a585afc8401f74dfdf21edb",
+                "editions_rating": [],
+                "editions": [
+                    [
+                        "year": 2015,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 10
+                    ],
+                    [
+                        "year": 2016,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 20
+                    ],
+                    [
+                        "year": 2017,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 30
+                    ]
+                ],
+                "editions_available": [],
+                "editions_retail_price": [],
+                "next_edition": [
+                    "year": 2018,
+                    "rating": 0,
+                    "available": false,
+                    "retail_price": 40
+                ],
+                "title": "Learning Swift",
+                "author_names": [],
+                "editions_year": [],
+                "_acl": [
+                    "creator": "5a57ed14bb95120140f7f803"
+                ],
+                "_kmd": [
+                    "lmt": "2018-01-12T06:51:40.220Z",
+                    "ect": "2018-01-12T06:51:40.220Z"
+                ]
+            ]
+        ])
+        
+        let book = Book()
+        book.title = "Learning Swift"
+        
+        let firstEdition = BookEdition()
+        firstEdition.year = 2015
+        firstEdition.retailPrice = 10
+        book.editions.append(firstEdition)
+        
+        let secondEdition = BookEdition()
+        secondEdition.year = 2016
+        secondEdition.retailPrice = 20
+        book.editions.append(secondEdition)
+        
+        let thirdEdition = BookEdition()
+        thirdEdition.year = 2017
+        thirdEdition.retailPrice = 30
+        book.editions.append(thirdEdition)
+        
+        let nextEdition = BookEdition()
+        nextEdition.year = 2018
+        nextEdition.retailPrice = 40
+        book.nextEdition = nextEdition
+        
+        let store = DataStore<Book>.collection(.sync)
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(Query(format: "title == %@", book.title!), options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
+                switch result {
+                case .success(let books):
+                    XCTAssertEqual(books.count, 1)
+                    if let book = books.first {
+                        XCTAssertEqual(book.editions.count, 3)
+                        if let _firstEdition = book.editions.first {
+                            XCTAssertEqual(_firstEdition.year, firstEdition.year)
+                            XCTAssertEqual(_firstEdition.retailPrice, firstEdition.retailPrice)
+                        }
+                        if let _thirdEdition = book.editions.last {
+                            XCTAssertEqual(_thirdEdition.year, thirdEdition.year)
+                            XCTAssertEqual(_thirdEdition.retailPrice, thirdEdition.retailPrice)
+                        }
+                        XCTAssertNotNil(book.nextEdition)
+                        if let _nextEdition = book.nextEdition {
+                            XCTAssertEqual(_nextEdition.year, nextEdition.year)
+                            XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
+                        }
+                    }
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(Query(format: "title == %@", book.title!), options: nil) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
+                switch result {
+                case .success(let books):
+                    XCTAssertEqual(books.count, 1)
+                    if let book = books.first {
+                        XCTAssertEqual(book.editions.count, 3)
+                        if let _firstEdition = book.editions.first {
+                            XCTAssertEqual(_firstEdition.year, firstEdition.year)
+                            XCTAssertEqual(_firstEdition.retailPrice, firstEdition.retailPrice)
+                        }
+                        if let _thirdEdition = book.editions.last {
+                            XCTAssertEqual(_thirdEdition.year, thirdEdition.year)
+                            XCTAssertEqual(_thirdEdition.retailPrice, thirdEdition.retailPrice)
+                        }
+                        XCTAssertNotNil(book.nextEdition)
+                        if let _nextEdition = book.nextEdition {
+                            XCTAssertEqual(_nextEdition.year, nextEdition.year)
+                            XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
+                        }
+                    }
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
 }
 
 class Products: Entity {
