@@ -142,9 +142,27 @@ open class Client: Credential {
     }
     
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
-    public convenience init(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName) {
+    public convenience init<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
+    ) {
         self.init()
-        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName) { activerUser, error in
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            schema: schema,
+            options: options
+        ) { (result: Result<U?, Swift.Error>) in
+            completionHandler?(result)
         }
     }
     
