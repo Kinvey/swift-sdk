@@ -90,6 +90,7 @@ open class Client: Credential {
     open var cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy
     
     /// Timeout interval for this client instance.
+    @available(*, deprecated: 3.12.2, message: "Please use `options` instead")
     open var timeoutInterval: TimeInterval = 60
     
     /**
