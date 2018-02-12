@@ -239,6 +239,100 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveAddressSync() {
+        if useMockData {
+            mockResponse(json: [
+                "name": "Victor Barros",
+                "age": 0,
+                "address": [
+                    "city": "Vancouver"
+                ],
+                "_acl": [
+                    "creator": "58450d87c077970e38a388ba"
+                ],
+                "_kmd": [
+                    "lmt": "2016-12-05T06:47:35.711Z",
+                    "ect": "2016-12-05T06:47:35.711Z"
+                ],
+                "_id": "58450d87f29e22207c83a236"
+            ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let person = Person()
+        person.name = "Victor Barros"
+        
+        let address = Address()
+        address.city = "Vancouver"
+        
+        person.address = address
+        
+        let request = store.save(person, options: Options(writePolicy: .forceNetwork))
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let person):
+            XCTAssertNotNil(person.address)
+            
+            if let address = person.address {
+                XCTAssertNotNil(address.city)
+            }
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testSaveAddressTryCatchSync() {
+        if useMockData {
+            mockResponse(json: [
+                "name": "Victor Barros",
+                "age": 0,
+                "address": [
+                    "city": "Vancouver"
+                ],
+                "_acl": [
+                    "creator": "58450d87c077970e38a388ba"
+                ],
+                "_kmd": [
+                    "lmt": "2016-12-05T06:47:35.711Z",
+                    "ect": "2016-12-05T06:47:35.711Z"
+                ],
+                "_id": "58450d87f29e22207c83a236"
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let person = Person()
+        person.name = "Victor Barros"
+        
+        let address = Address()
+        address.city = "Vancouver"
+        
+        person.address = address
+        
+        let request = store.save(person, options: Options(writePolicy: .forceNetwork))
+        do {
+            let person = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTAssertNotNil(person.address)
+            
+            if let address = person.address {
+                XCTAssertNotNil(address.city)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testCount() {
         let store = DataStore<Event>.collection(.network)
         
@@ -354,6 +448,201 @@ class NetworkStoreTests: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
+        }
+    }
+    
+    func testCountSync() {
+        let store = DataStore<Event>.collection(.network)
+        
+        var eventsCount: Int? = nil
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 85])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
+            switch result {
+            case .success(let count):
+                XCTAssertEqual(count, 85)
+                eventsCount = count
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        do {
+            let request = store.count(options: Options(readPolicy: .forceLocal))
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
+            switch result {
+            case .success(let count):
+                XCTAssertEqual(count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTAssertNotNil(eventsCount)
+        
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Friday Party!",
+                    "_acl": [
+                        "creator": "58450c8000a5907e7dfb37bf"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:43:12.395Z",
+                        "ect": "2016-12-05T06:43:12.395Z"
+                    ],
+                    "_id": "58450c80d5ee86507a8b4e7e"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let event = Event()
+            event.name = "Friday Party!"
+            
+            let request = store.save(event, options: nil)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 86])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            XCTAssertTrue(request.wait(timeout: defaultTimeout))
+            guard let result = request.result else {
+                return
+            }
+            switch result {
+            case .success(let count):
+                guard let eventsCount = eventsCount else {
+                    XCTFail()
+                    return
+                }
+                XCTAssertEqual(eventsCount + 1, count)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
+    func testCountTryCatchSync() {
+        let store = DataStore<Event>.collection(.network)
+        
+        var eventsCount: Int? = nil
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 85])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            do {
+                let count = try request.waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(count, 85)
+                eventsCount = count
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        do {
+            let request = store.count(options: Options(readPolicy: .forceLocal))
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 0)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        XCTAssertNotNil(eventsCount)
+        
+        do {
+            if useMockData {
+                mockResponse(statusCode: 201, json: [
+                    "name": "Friday Party!",
+                    "_acl": [
+                        "creator": "58450c8000a5907e7dfb37bf"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:43:12.395Z",
+                        "ect": "2016-12-05T06:43:12.395Z"
+                    ],
+                    "_id": "58450c80d5ee86507a8b4e7e"
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let event = Event()
+            event.name = "Friday Party!"
+            
+            let request = store.save(event, options: nil)
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(json: ["count" : 86])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let request = store.count(options: nil)
+            let count = try request.waitForResult(timeout: defaultTimeout).value()
+            guard let eventsCount = eventsCount else {
+                XCTFail()
+                return
+            }
+            XCTAssertEqual(eventsCount + 1, count)
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
     
@@ -712,6 +1001,60 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodNotAllowedSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find(options: Options(readPolicy: .forceNetwork))
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
+    func testFindMethodNotAllowedTryCatchSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find(options: Options(readPolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTFail()
+        } catch {
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
     func testFindByIdEntityNotFoundError() {
         mockResponse(
             statusCode: 404,
@@ -750,6 +1093,74 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
+        }
+    }
+    
+    func testFindByIdEntityNotFoundErrorSync() {
+        mockResponse(
+            statusCode: 404,
+            json: [
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection",
+                "debug" : ""
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find("id-not-found", options: Options(readPolicy: .forceNetwork))
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .entityNotFound(let debug, let description):
+                    XCTAssertEqual(debug, "")
+                    XCTAssertEqual(description, "This entity not found in the collection")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
+    func testFindByIdEntityNotFoundErrorTryCatchSync() {
+        mockResponse(
+            statusCode: 404,
+            json: [
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection",
+                "debug" : ""
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.find("id-not-found", options: Options(readPolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTFail()
+        } catch {
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .entityNotFound(let debug, let description):
+                    XCTAssertEqual(debug, "")
+                    XCTAssertEqual(description, "This entity not found in the collection")
+                default:
+                    XCTFail()
+                }
+            }
         }
     }
     
@@ -890,6 +1301,60 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
+        }
+    }
+    
+    func testRemoveByIdMethodNotAllowedSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork))
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail()
+        case .failure(let error):
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
+        }
+    }
+    
+    func testRemoveByIdMethodNotAllowedTryCatchSync() {
+        setURLProtocol(MethodNotAllowedError.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let request = store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork))
+        do {
+            let _ = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTFail()
+        } catch {
+            XCTAssertTrue(error is Kinvey.Error)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .methodNotAllowed(_, _, let debug, let description):
+                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                    XCTAssertEqual(description, "The method is not allowed for this resource.")
+                default:
+                    XCTFail()
+                }
+            }
         }
     }
     
@@ -1898,6 +2363,76 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testGroupCustomAggregationSync() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let request = store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
+            options: nil
+        )
+        XCTAssertTrue(request.wait(timeout: defaultTimeout))
+        guard let result = request.result else {
+            return
+        }
+        switch result {
+        case .success(let results):
+            if let (person, result) = results.first {
+                XCTAssertNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
+            }
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testGroupCustomAggregationTryCatchSync() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        if useMockData {
+            mockResponse(json: [
+                ["sum" : 926]
+                ])
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let request = store.group(
+            initialObject: ["sum" : 0],
+            reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
+            condition: NSPredicate(format: "age > %@", NSNumber(value: 18)),
+            options: nil
+        )
+        do {
+            let results = try request.waitForResult(timeout: defaultTimeout).value()
+            if let (person, result) = results.first {
+                XCTAssertNil(person.name)
+                XCTAssertNotNil(result["sum"] as? Int)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testGroupCustomAggregationByName() {
         signUp()
         
@@ -2533,6 +3068,150 @@ class NetworkStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout * 5) { error in
             expectationFind = nil
+        }
+    }
+    
+    func testNestedMapping() {
+        mockResponse(json: [
+            [
+                "_id": "5a585afc8401f74dfdf21edb",
+                "editions_rating": [],
+                "editions": [
+                    [
+                        "year": 2015,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 10
+                    ],
+                    [
+                        "year": 2016,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 20
+                    ],
+                    [
+                        "year": 2017,
+                        "rating": 0,
+                        "available": false,
+                        "retail_price": 30
+                    ]
+                ],
+                "editions_available": [],
+                "editions_retail_price": [],
+                "next_edition": [
+                    "year": 2018,
+                    "rating": 0,
+                    "available": false,
+                    "retail_price": 40
+                ],
+                "title": "Learning Swift",
+                "author_names": [],
+                "editions_year": [],
+                "_acl": [
+                    "creator": "5a57ed14bb95120140f7f803"
+                ],
+                "_kmd": [
+                    "lmt": "2018-01-12T06:51:40.220Z",
+                    "ect": "2018-01-12T06:51:40.220Z"
+                ]
+            ]
+        ])
+        
+        let book = Book()
+        book.title = "Learning Swift"
+        
+        let firstEdition = BookEdition()
+        firstEdition.year = 2015
+        firstEdition.retailPrice = 10
+        book.editions.append(firstEdition)
+        
+        let secondEdition = BookEdition()
+        secondEdition.year = 2016
+        secondEdition.retailPrice = 20
+        book.editions.append(secondEdition)
+        
+        let thirdEdition = BookEdition()
+        thirdEdition.year = 2017
+        thirdEdition.retailPrice = 30
+        book.editions.append(thirdEdition)
+        
+        let nextEdition = BookEdition()
+        nextEdition.year = 2018
+        nextEdition.retailPrice = 40
+        book.nextEdition = nextEdition
+        
+        let store = DataStore<Book>.collection(.sync)
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(Query(format: "title == %@", book.title!), options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
+                switch result {
+                case .success(let books):
+                    XCTAssertEqual(books.count, 1)
+                    if let book = books.first {
+                        XCTAssertEqual(book.editions.count, 3)
+                        if let _firstEdition = book.editions.first {
+                            XCTAssertEqual(_firstEdition.year, firstEdition.year)
+                            XCTAssertEqual(_firstEdition.retailPrice, firstEdition.retailPrice)
+                        }
+                        if let _thirdEdition = book.editions.last {
+                            XCTAssertEqual(_thirdEdition.year, thirdEdition.year)
+                            XCTAssertEqual(_thirdEdition.retailPrice, thirdEdition.retailPrice)
+                        }
+                        XCTAssertNotNil(book.nextEdition)
+                        if let _nextEdition = book.nextEdition {
+                            XCTAssertEqual(_nextEdition.year, nextEdition.year)
+                            XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
+                        }
+                    }
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(Query(format: "title == %@", book.title!), options: nil) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
+                switch result {
+                case .success(let books):
+                    XCTAssertEqual(books.count, 1)
+                    if let book = books.first {
+                        XCTAssertEqual(book.editions.count, 3)
+                        if let _firstEdition = book.editions.first {
+                            XCTAssertEqual(_firstEdition.year, firstEdition.year)
+                            XCTAssertEqual(_firstEdition.retailPrice, firstEdition.retailPrice)
+                        }
+                        if let _thirdEdition = book.editions.last {
+                            XCTAssertEqual(_thirdEdition.year, thirdEdition.year)
+                            XCTAssertEqual(_thirdEdition.retailPrice, thirdEdition.retailPrice)
+                        }
+                        XCTAssertNotNil(book.nextEdition)
+                        if let _nextEdition = book.nextEdition {
+                            XCTAssertEqual(_nextEdition.year, nextEdition.year)
+                            XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
+                        }
+                    }
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
         }
     }
     

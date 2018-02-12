@@ -1,10 +1,11 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
-IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone X (11.0)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
+IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone X (11.2)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] == "*") print array[2]}')
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
+CARTFILE_RESOLVED_MD5=$(shell md5 Cartfile.resolved | awk '{ print $$4 }')
 
 all: build archive pack docs
 
@@ -27,8 +28,20 @@ build-debug:
 build-dependencies-ios: checkout-dependencies
 	carthage build --platform iOS
 
+cartfile-md5:
+	@echo $(CARTFILE_RESOLVED_MD5)
+	
+travisci-cache:
+	cd Carthage; \
+	rm -f $(CARTFILE_RESOLVED_MD5).tar.lzma; \
+	wget http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma; \
+	tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma
+
 build: checkout-dependencies
 	carthage build --no-skip-current
+	cd Carthage; \
+	tar --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
+	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
 
 build-ios: checkout-dependencies
 	carthage build --no-skip-current --platform iOS
@@ -52,7 +65,7 @@ test: test-ios test-macos
 	
 test-ios:
 	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES test
+	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES $(XCODEBUILD_TEST_FLAGS)
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS -enableCodeCoverage YES test

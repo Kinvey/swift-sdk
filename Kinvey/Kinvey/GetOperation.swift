@@ -12,6 +12,8 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     let id: String
     
+    typealias ResultType = Result<T, Swift.Error>
+    
     init(
         id: String,
         readPolicy: ReadPolicy,
@@ -28,25 +30,31 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
         )
     }
     
-    func executeLocal(_ completionHandler: CompletionHandler?) -> Request {
-        let request = LocalRequest()
+    func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let request = LocalRequest<ResultType>()
         request.execute { () -> Void in
+            let result: ResultType
             if let persistable = self.cache?.find(byId: self.id) {
-                completionHandler?(.success(persistable))
+                result = .success(persistable)
+                
             } else {
-                completionHandler?(.failure(buildError(client: self.client)))
+                result = .failure(buildError(client: self.client))
             }
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
-    func executeNetwork(_ completionHandler: CompletionHandler?) -> Request {
+    func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataGetById(
             collectionName: T.collectionName(),
             id: id,
-            options: options
+            options: options,
+            resultType: ResultType.self
         )
         request.execute() { data, response, error in
+            let result: ResultType
             if let response = response,
                 response.isOK,
                 let json = self.client.responseParser.parse(data),
@@ -54,12 +62,14 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
                 let obj = T(JSON: json)
             {
                 self.cache?.save(entity: obj)
-                completionHandler?(.success(obj))
+                result = .success(obj)
             } else {
-                completionHandler?(.failure(buildError(data, response, error, self.client)))
+                result = .failure(buildError(data, response, error, self.client))
             }
+            request.result = result
+            completionHandler?(result)
         }
-        return request
+        return AnyRequest(request)
     }
     
 }

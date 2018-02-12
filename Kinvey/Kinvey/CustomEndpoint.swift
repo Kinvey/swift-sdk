@@ -54,16 +54,18 @@ open class CustomEndpoint {
     /// Completion handler block for execute custom endpoints.
     public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
     
-    private static func callEndpoint(
+    private static func callEndpoint<Result>(
         _ name: String,
         params: Params? = nil,
         options: Options?,
+        resultType: Result.Type,
         completionHandler: DataResponseCompletionHandler? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result> {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildCustomEndpoint(
             name,
-            options: options
+            options: options,
+            resultType: resultType
         )
         if let params = params {
             switch params.value {
@@ -75,7 +77,7 @@ open class CustomEndpoint {
         }
         request.request.setValue(nil, forHTTPHeaderField: KinveyHeaderField.requestId)
         request.execute(completionHandler)
-        return request
+        return AnyRequest(request)
     }
     
     /// Executes a custom endpoint by name and passing the expected parameters.
@@ -86,16 +88,17 @@ open class CustomEndpoint {
         params: JsonDictionary? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<JsonDictionary>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         let params = params != nil ? Params(params!) : nil
-        var request: Request!
+        var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
         Promise<JsonDictionary> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
                 options: Options(
                     client: client
-                )
+                ),
+                resultType: Result<JsonDictionary, Swift.Error>.self
             ) { data, response, error in
                 if let response = response, response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
                     fulfill(json)
@@ -119,16 +122,17 @@ open class CustomEndpoint {
         params: JsonDictionary? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[JsonDictionary]>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         let params = params != nil ? Params(params!) : nil
-        var request: Request!
+        var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
         Promise<[JsonDictionary]> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
                 options: Options(
                     client: client
-                )
+                ),
+                resultType: Result<[JsonDictionary], Swift.Error>.self
             ) { data, response, error in
                 if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
                     fulfill(json)
@@ -151,7 +155,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<JsonDictionary>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -173,7 +177,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -191,14 +195,15 @@ open class CustomEndpoint {
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: Request!
+        var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
         Promise<JsonDictionary> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
-                options: options
+                options: options,
+                resultType: Result<JsonDictionary, Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -224,7 +229,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[JsonDictionary]>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -246,7 +251,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -264,14 +269,15 @@ open class CustomEndpoint {
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: Request!
+        var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
         Promise<[JsonDictionary]> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
-                options: options
+                options: options,
+                resultType: Result<[JsonDictionary], Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -299,7 +305,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<T>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<T, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -321,7 +327,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<T, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -339,14 +345,15 @@ open class CustomEndpoint {
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<T, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: Request!
+        var request: AnyRequest<Result<T, Swift.Error>>!
         Promise<T> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
-                options: options
+                options: options,
+                resultType: Result<T, Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -372,7 +379,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[T]>? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[T], Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -394,7 +401,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[T], Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -412,14 +419,15 @@ open class CustomEndpoint {
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> Request {
+    ) -> AnyRequest<Result<[T], Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: Request!
+        var request: AnyRequest<Result<[T], Swift.Error>>!
         Promise<[T]> { fulfill, reject in
             request = callEndpoint(
                 name,
                 params: params,
-                options: options
+                options: options,
+                resultType: Result<[T], Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,

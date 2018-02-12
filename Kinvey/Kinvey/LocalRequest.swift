@@ -8,7 +8,11 @@
 
 import Foundation
 
-internal class LocalRequest: NSObject, Request {
+internal class LocalRequest<Result>: NSObject, Request {
+    
+    typealias ResultType = Result
+    
+    internal var result: Result?
     
     let executing = false
     let cancelled = false

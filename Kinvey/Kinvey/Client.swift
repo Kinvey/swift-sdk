@@ -90,6 +90,7 @@ open class Client: Credential {
     open var cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy
     
     /// Timeout interval for this client instance.
+    @available(*, deprecated: 3.12.2, message: "Please use `options` instead")
     open var timeoutInterval: TimeInterval = 60
     
     /**
@@ -142,9 +143,27 @@ open class Client: Credential {
     }
     
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
-    public convenience init(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName) {
+    public convenience init<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
+    ) {
         self.init()
-        initialize(appKey: appKey, appSecret: appSecret, accessGroup: accessGroup, apiHostName: apiHostName, authHostName: authHostName) { activerUser, error in
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            schema: schema,
+            options: options
+        ) { (result: Result<U?, Swift.Error>) in
+            completionHandler?(result)
         }
     }
     
@@ -238,10 +257,24 @@ open class Client: Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping (Result<U?, Swift.Error>) -> Void) {
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        encryptionKey: Data? = nil,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+    ) {
         validateInitialize(appKey: appKey, appSecret: appSecret)
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
+        self.options = options
+        if let timeout = options?.timeout {
+            self.timeoutInterval = timeout
+        }
         
         Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: schema?.migrationHandler)
         
@@ -330,7 +363,7 @@ open class Client: Credential {
      call to the server.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
             switch result {
             case .success(let envInfo):
@@ -347,14 +380,17 @@ open class Client: Credential {
      the backend.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> Request {
+    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         guard let _ = appKey, let _ = appSecret else {
             DispatchQueue.main.async {
                 completionHandler(.failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()")))
             }
-            return LocalRequest()
+            return AnyRequest(LocalRequest<Result<EnvironmentInfo, Swift.Error>>())
         }
-        let request = networkRequestFactory.buildAppDataPing(options: options)
+        let request = networkRequestFactory.buildAppDataPing(
+            options: options,
+            resultType: Result<EnvironmentInfo, Swift.Error>.self
+        )
         Promise<EnvironmentInfo> { fulfill, reject in
             request.execute() { data, response, error in
                 if let response = response,
@@ -374,7 +410,7 @@ open class Client: Credential {
         }.catch {
             completionHandler(.failure($0))
         }
-        return request
+        return AnyRequest(request)
     }
 }
 
