@@ -112,7 +112,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -136,7 +136,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -156,7 +156,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(
@@ -177,7 +177,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -201,7 +201,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -221,7 +221,7 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(
@@ -241,7 +241,7 @@ open class FileStore<FileType: File> {
         path: String,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             path: path,
@@ -263,7 +263,7 @@ open class FileStore<FileType: File> {
         path: String,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             path: path,
@@ -281,7 +281,7 @@ open class FileStore<FileType: File> {
         path: String,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
@@ -297,7 +297,7 @@ open class FileStore<FileType: File> {
         stream: InputStream,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             stream: stream,
@@ -319,7 +319,7 @@ open class FileStore<FileType: File> {
         stream: InputStream,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             stream: stream,
@@ -337,7 +337,7 @@ open class FileStore<FileType: File> {
         stream: InputStream,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .stream(stream),
@@ -386,7 +386,7 @@ open class FileStore<FileType: File> {
         data: Data,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             data: data,
@@ -408,7 +408,7 @@ open class FileStore<FileType: File> {
         data: Data,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             data: data,
@@ -426,7 +426,7 @@ open class FileStore<FileType: File> {
         data: Data,
         options: Options? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .data(data),
@@ -449,7 +449,7 @@ open class FileStore<FileType: File> {
         fromSource source: InputSource,
         ttl: TTL? = nil,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: source,
@@ -735,7 +735,7 @@ open class FileStore<FileType: File> {
         fromSource source: InputSource,
         options: Options?,
         completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let requests = MultiRequest<Result<FileType, Swift.Error>>()
         requests.progress = Progress(totalUnitCount: 100)
         createBucket(
@@ -761,9 +761,13 @@ open class FileStore<FileType: File> {
             return promise
         }.then { file -> Void in
             requests.progress.completedUnitCount = requests.progress.totalUnitCount
-            completionHandler?(.success(file))
+            let result: Result<FileType, Swift.Error> = .success(file)
+            requests.result = result
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(.failure(error))
+            let result: Result<FileType, Swift.Error> = .failure(error)
+            requests.result = result
+            completionHandler?(result)
         }
         return AnyRequest(requests)
     }
@@ -931,7 +935,7 @@ open class FileStore<FileType: File> {
         storeType: StoreType = .cache,
         ttl: TTL? = nil,
         completionHandler: FilePathCompletionHandler? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
         return download(
             file,
             storeType: storeType,
@@ -953,7 +957,7 @@ open class FileStore<FileType: File> {
         storeType: StoreType = .cache,
         ttl: TTL? = nil,
         completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
         return download(
             file,
             storeType: storeType,
@@ -971,7 +975,7 @@ open class FileStore<FileType: File> {
         storeType: StoreType = .cache,
         options: Options? = nil,
         completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Any> {
+    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
         crashIfInvalid(file: file)
         
         if storeType == .sync || storeType == .cache,
@@ -1024,10 +1028,14 @@ open class FileStore<FileType: File> {
                         fulfill((file, localUrl))
                     }
                 }
-            }.then {
-                completionHandler?(.success($0))
-            }.catch { error in
-                completionHandler?(.failure(error))
+            }.then { (args) -> Void in
+                let result: Result<(FileType, URL), Swift.Error> = .success(args)
+                multiRequest.result = result
+                completionHandler?(result)
+            }.catch { (error) -> Void in
+                let result: Result<(FileType, URL), Swift.Error> = .failure(error)
+                multiRequest.result = result
+                completionHandler?(result)
             }
             return AnyRequest(multiRequest)
         } else {
@@ -1152,9 +1160,13 @@ open class FileStore<FileType: File> {
             }
         }.then { data -> Void in
             multiRequest.progress.completedUnitCount = multiRequest.progress.totalUnitCount
-            completionHandler?(.success((file, data)))
+            let result: Result<(FileType, Data), Swift.Error> = .success((file, data))
+            multiRequest.result = result
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(.failure(error))
+            let result: Result<(FileType, Data), Swift.Error> = .failure(error)
+            multiRequest.result = result
+            completionHandler?(result)
         }
         return AnyRequest(multiRequest)
     }

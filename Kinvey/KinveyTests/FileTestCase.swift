@@ -264,7 +264,7 @@ class FileTestCase: StoreTestCase {
         
         weak var expectationDownload = expectation(description: "Download")
         
-        fileStore.download(file) { (file, url: URL?, error) in
+        let request = fileStore.download(file) { (file, url: URL?, error) in
             XCTAssertTrue(Thread.isMainThread)
             
             XCTAssertNil(file)
@@ -277,6 +277,16 @@ class FileTestCase: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
+        }
+        
+        XCTAssertNotNil(request.result)
+        if let result = request.result {
+            do {
+                let _ = try result.value()
+                XCTFail()
+            } catch {
+                XCTAssertTimeoutError(error)
+            }
         }
     }
     
@@ -1060,7 +1070,7 @@ class FileTestCase: StoreTestCase {
         }
     }
     
-    func testUploadUIImagePNG() {
+    func testUploadImagePNG() {
         signUp()
         
         var file = File() {
@@ -1238,6 +1248,14 @@ class FileTestCase: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                let file = try? result.value()
+                XCTAssertNotNil(file?.download)
+                XCTAssertNotNil(file?.downloadURL)
+                XCTAssertEqual(file?.mimeType, "image/png")
+            }
         }
         
         if !useMockData {
@@ -1279,7 +1297,7 @@ class FileTestCase: StoreTestCase {
         }
     }
     
-    func testUploadUIImageJPEG() {
+    func testUploadImageJPEG() {
         signUp()
         
         var file = File() {
@@ -1455,6 +1473,14 @@ class FileTestCase: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
+            }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                let file = try? result.value()
+                XCTAssertNotNil(file?.download)
+                XCTAssertNotNil(file?.downloadURL)
+                XCTAssertEqual(file?.mimeType, "image/jpeg")
             }
         }
         
@@ -1773,7 +1799,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(self.myFile!) { (file, data: Data?, error) in
+            let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -1791,6 +1817,17 @@ class FileTestCase: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
+            }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                do {
+                    let (file, data) = try result.value()
+                    XCTAssertEqual(file.label, "trailer")
+                    XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
+                } catch {
+                    XCTFail(error.localizedDescription)
+                }
             }
         }
     }
