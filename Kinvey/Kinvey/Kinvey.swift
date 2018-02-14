@@ -149,13 +149,24 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.unauthorized(
-            httpResponse: response.httpResponse,
-            data: data,
-            error: error,
-            debug: debug,
-            description: description
-        )
+        client.activeUser?.logout()
+        switch error {
+        case Error.Keys.invalidCredentials.rawValue:
+            return Error.invalidCredentials(
+                httpResponse: response.httpResponse,
+                data: data,
+                debug: debug,
+                description: description
+            )
+        default:
+            return Error.unauthorized(
+                httpResponse: response.httpResponse,
+                data: data,
+                error: error,
+                debug: debug,
+                description: description
+            )
+        }
     } else if let response = response,
         response.isMethodNotAllowed,
         let json = json,

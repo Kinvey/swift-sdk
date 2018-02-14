@@ -83,6 +83,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
     case entityNotFound(debug: String, description: String)
     
+    case invalidCredentials(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
+    
     /// Error localized description.
     public var description: String {
         let bundle = Bundle(for: Client.self)
@@ -96,7 +98,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .appNotFound(let description),
              .forbidden(let description),
              .resultSetSizeExceeded(_, let description),
-             .entityNotFound(_, let description):
+             .entityNotFound(_, let description),
+             .invalidCredentials(_, _, _, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -134,7 +137,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .missingConfiguration(_, _, let debug, _),
              .unauthorized(_, _, _, let debug, _),
              .resultSetSizeExceeded(let debug, _),
-             .entityNotFound(let debug, _):
+             .entityNotFound(let debug, _),
+             .invalidCredentials(_, _, let debug, _):
             return debug
         default:
             return description
@@ -149,7 +153,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .dataLinkEntityNotFound(let httpResponse, _, _, _),
              .methodNotAllowed(let httpResponse, _, _, _),
              .unauthorized(let httpResponse, _, _, _, _),
-             .invalidResponse(let httpResponse, _):
+             .invalidResponse(let httpResponse, _),
+             .invalidCredentials(let httpResponse, _, _, _):
             return httpResponse
         default:
             return nil
@@ -170,7 +175,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .methodNotAllowed(_, let data, _, _),
              .unauthorized(_, let data, _, _, _),
              .invalidResponse(_, let data),
-             .missingConfiguration(_, let data, _, _):
+             .missingConfiguration(_, let data, _, _),
+             .invalidCredentials(_, let data, _, _):
             return data
         default:
             return nil
