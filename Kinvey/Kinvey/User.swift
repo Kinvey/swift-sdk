@@ -96,8 +96,8 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
-    private class func login<U: User, ResultType>(
-        request: HttpRequest<ResultType>,
+    private class func login<U: User>(
+        request: HttpRequest<Result<U, Swift.Error>>,
         client: Client,
         userType: U.Type,
         completionHandler: ((Result<U, Swift.Error>) -> Void)?
@@ -114,10 +114,14 @@ open class User: NSObject, Credential, Mappable {
                     reject(buildError(data, response, error, client))
                 }
             }
-        }.then { user in
-            completionHandler?(.success(user))
+        }.then { (user) -> Void in
+            let result: Result<U, Swift.Error> = .success(user)
+            request.result = result
+            completionHandler?(result)
         }.catch { error in
-            completionHandler?(.failure(error))
+            let result: Result<U, Swift.Error> = .failure(error)
+            request.result = result
+            completionHandler?(result)
         }
     }
     

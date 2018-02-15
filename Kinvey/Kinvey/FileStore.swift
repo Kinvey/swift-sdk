@@ -443,29 +443,12 @@ open class FileStore<FileType: File> {
         
     }
     
-    /// Uploads a file using a `NSData`.
-    fileprivate func upload(
-        _ file: FileType,
-        fromSource source: InputSource,
-        ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        return upload(
-            file,
-            fromSource: source,
-            options: Options(
-                ttl: ttl
-            ),
-            completionHandler: completionHandler
-        )
-    }
-    
     @discardableResult
     open func create(
         _ file: FileType,
         data: Data,
         options: Options? = nil,
-        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let requests = MultiRequest<Result<FileType, Swift.Error>>()
         createBucket(
@@ -473,10 +456,14 @@ open class FileStore<FileType: File> {
             fromSource: .data(data),
             options: options,
             requests: requests
-        ).then { file, skip in
-            completionHandler(.success(file))
+        ).then { (file, skip) -> Void in
+            let result: Result<FileType, Swift.Error> = .success(file)
+            requests.result = result
+            completionHandler?(result)
         }.catch {
-            completionHandler(.failure($0))
+            let result: Result<FileType, Swift.Error> = .failure($0)
+            requests.result = result
+            completionHandler?(result)
         }
         return AnyRequest(requests)
     }
@@ -486,7 +473,7 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         path: String,
         options: Options? = nil,
-        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let requests = MultiRequest<Result<FileType, Swift.Error>>()
         createBucket(
@@ -494,10 +481,14 @@ open class FileStore<FileType: File> {
             fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
             options: options,
             requests: requests
-        ).then { file, skip in
-            completionHandler(.success(file))
+        ).then { (file, skip) -> Void in
+            let result: Result<FileType, Swift.Error> = .success(file)
+            requests.result = result
+            completionHandler?(result)
         }.catch {
-            completionHandler(.failure($0))
+            let result: Result<FileType, Swift.Error> = .failure($0)
+            requests.result = result
+            completionHandler?(result)
         }
         return AnyRequest(requests)
     }
@@ -507,7 +498,7 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         stream: InputStream,
         options: Options? = nil,
-        completionHandler: @escaping (Result<FileType, Swift.Error>) -> Void
+        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<FileType, Swift.Error>> {
         let requests = MultiRequest<Result<FileType, Swift.Error>>()
         createBucket(
@@ -515,10 +506,14 @@ open class FileStore<FileType: File> {
             fromSource: .stream(stream),
             options: options,
             requests: requests
-        ).then { file, skip in
-            completionHandler(.success(file))
+        ).then { (file, skip) -> Void in
+            let result: Result<FileType, Swift.Error> = .success(file)
+            requests.result = result
+            completionHandler?(result)
         }.catch {
-            completionHandler(.failure($0))
+            let result: Result<FileType, Swift.Error> = .failure($0)
+            requests.result = result
+            completionHandler?(result)
         }
         return AnyRequest(requests)
     }
