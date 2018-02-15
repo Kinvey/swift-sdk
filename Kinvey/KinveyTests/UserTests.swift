@@ -2643,7 +2643,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocolDidFinishLoading(self)
                 default:
                     type(of: self).invalidCredentialsCount += 1
-                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 4)
+                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 2)
                     let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [

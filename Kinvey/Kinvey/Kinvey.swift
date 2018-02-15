@@ -149,7 +149,10 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        client.activeUser?.logout()
+        let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
+        if refreshToken == nil {
+            client.activeUser?.logout()
+        }
         switch error {
         case Error.Keys.invalidCredentials.rawValue:
             return Error.invalidCredentials(
