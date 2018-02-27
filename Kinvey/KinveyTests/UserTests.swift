@@ -3820,6 +3820,84 @@ extension UserTests {
         }
     }
     
+    func testUserMICLoginInstanceId() {
+        weak var expectationInitialize = self.expectation(description: "Initialize")
+        
+        let appKey = UUID().uuidString
+        let client = Client(appKey: appKey, appSecret: UUID().uuidString, instanceId: "my-instance-id") { result in
+            expectationInitialize?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationInitialize = nil
+        }
+        
+        var count = 0
+        mockResponse(client: client) { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                XCTAssertEqual(request.url?.host, "my-instance-id-auth.kinvey.com")
+                XCTAssertEqual(request.url?.path, "/v1/oauth/token")
+                return HttpResponse(
+                    statusCode: 200,
+                    json: [
+                        "_socialIdentity" : [
+                            "kinveyAuth" : [
+                                "access_token" : UUID().uuidString,
+                                "token_type" : "Bearer",
+                                "expires_in" : 59,
+                                "refresh_token" : UUID().uuidString
+                            ]
+                        ]
+                    ]
+                )
+            case 1:
+                XCTAssertEqual(request.url?.host, "my-instance-id.kinvey.com")
+                XCTAssertEqual(request.url?.path, "/user/\(appKey)/login")
+                return HttpResponse(json: [
+                    "_id" : UUID().uuidString,
+                    "username" : "test",
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString(),
+                        "authtoken" : UUID().uuidString
+                    ],
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ]
+                ])
+            default:
+                Swift.fatalError()
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        expectation(forNotification: User.MICSafariViewControllerSuccessNotificationName, object: nil) { (notification) -> Bool in
+            XCTAssertNotNil(notification.object)
+            XCTAssertTrue(notification.object is User)
+            if let user = notification.object as? User {
+                XCTAssertEqual(user.username, "test")
+                MockKinveyBackend.user[user.userId] = user.toJSON()
+            }
+            return true
+        }
+        
+        let result = User.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            micURL: URL(string: "myCustomURIScheme://?code=1234")!,
+            client: client
+        )
+        XCTAssertTrue(result)
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+        }
+    }
+    
     func testUserMicViewControllerCoding() {
         expect { () -> Void in
             let _ = Kinvey.MICLoginViewController(coder: NSKeyedArchiver())

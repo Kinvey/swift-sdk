@@ -146,6 +146,29 @@ open class Client: Credential {
     public convenience init<U: User>(
         appKey: String,
         appSecret: String,
+        instanceId: String,
+        accessGroup: String? = nil,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
+    ) {
+        self.init()
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            instanceId: instanceId,
+            accessGroup: accessGroup,
+            schema: schema,
+            options: options
+        ) { (result: Result<U?, Swift.Error>) in
+            completionHandler?(result)
+        }
+    }
+    
+    /// Constructor that already initialize the client. The `initialize` method is called automatically.
+    public convenience init<U: User>(
+        appKey: String,
+        appSecret: String,
         accessGroup: String? = nil,
         apiHostName: URL = Client.defaultApiHostName,
         authHostName: URL = Client.defaultAuthHostName,
@@ -254,6 +277,30 @@ open class Client: Credential {
                 completionHandler(nil, error)
             }
         }
+    }
+    
+    /// Initialize a `Client` instance with all the needed parameters.
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        instanceId: String,
+        accessGroup: String? = nil,
+        encryptionKey: Data? = nil,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+    ) {
+        return initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: URL(string: "https://\(instanceId).kinvey.com")!,
+            authHostName: URL(string: "https://\(instanceId)-auth.kinvey.com")!,
+            encryptionKey: encryptionKey,
+            schema: schema,
+            options: options,
+            completionHandler: completionHandler
+        )
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
