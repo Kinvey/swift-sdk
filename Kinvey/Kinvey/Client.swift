@@ -279,7 +279,18 @@ open class Client: Credential {
         }
     }
     
-    /// Initialize a `Client` instance with all the needed parameters.
+    /**
+     Initialize a `Client` instance.
+     - parameters:
+       - appKey: `App Key` value from Kinvey Console
+       - appSecret: `App Secret` value from Kinvey Console
+       - instanceId: Prefix value of `Host URL` from Kinvey Console. eg: my-instance if the Host URL looks like my-instance.kinvey.com
+       - accessGroup: Access Group for Keychain
+       - encryptionKey: Encryption Key for cache
+       - schema: Migration Schema to be used in case a migration is required
+       - options: Custom Options to be used instead of default values
+       - completionHandler: Completion Handler async call
+    */
     open func initialize<U: User>(
         appKey: String,
         appSecret: String,
@@ -290,12 +301,22 @@ open class Client: Credential {
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
+        let apiHostNameString = "https://\(instanceId).kinvey.com"
+        guard let apiHostName = URL(string: apiHostNameString) else {
+            fatalError("Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")
+        }
+        
+        let authHostNameString = "https://\(instanceId)-auth.kinvey.com"
+        guard let authHostName = URL(string: authHostNameString) else {
+            fatalError("Invalid InstanceID: \(instanceId). \(authHostNameString) is not a valid URL.")
+        }
+        
         return initialize(
             appKey: appKey,
             appSecret: appSecret,
             accessGroup: accessGroup,
-            apiHostName: URL(string: "https://\(instanceId).kinvey.com")!,
-            authHostName: URL(string: "https://\(instanceId)-auth.kinvey.com")!,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
             encryptionKey: encryptionKey,
             schema: schema,
             options: options,
