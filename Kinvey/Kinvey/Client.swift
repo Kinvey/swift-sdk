@@ -284,7 +284,7 @@ open class Client: Credential {
      - parameters:
        - appKey: `App Key` value from Kinvey Console
        - appSecret: `App Secret` value from Kinvey Console
-       - instanceId: Prefix value of `Host URL` from Kinvey Console. eg: my-instance if the Host URL looks like my-instance.kinvey.com
+       - instanceId: Prefix value of `Host URL` from Kinvey Console. eg: my-instance if the Host URL looks like my-instance-baas.kinvey.com
        - accessGroup: Access Group for Keychain
        - encryptionKey: Encryption Key for cache
        - schema: Migration Schema to be used in case a migration is required
@@ -301,7 +301,7 @@ open class Client: Credential {
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
-        let apiHostNameString = "https://\(instanceId).kinvey.com"
+        let apiHostNameString = "https://\(instanceId)-baas.kinvey.com"
         guard let apiHostName = URL(string: apiHostNameString) else {
             fatalError("Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")
         }
