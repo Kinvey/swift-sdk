@@ -63,7 +63,7 @@ class ClientTestCase: KinveyTestCase {
         
         if useMockData {
             mockResponse { request in
-                XCTAssertEqual(request.url?.host, "my-instance-id.kinvey.com")
+                XCTAssertEqual(request.url?.host, "my-instance-id-baas.kinvey.com")
                 XCTAssertEqual(request.url?.path, "/appdata/\(appKey)")
                 return HttpResponse(json: [
                     "version" : "3.9.28",
