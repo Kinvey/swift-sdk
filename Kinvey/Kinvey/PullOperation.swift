@@ -19,6 +19,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
         validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?,
+        mustSetRequestResult: Bool = true,
         resultsHandler: ResultsHandler? = nil
     ) {
         super.init(
