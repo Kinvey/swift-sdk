@@ -12,18 +12,6 @@ import RealmSwift
 
 public typealias Schema = (version: CUnsignedLongLong, migrationHandler: Migration.MigrationHandler?)
 
-//public struct Schema {
-//    
-//    let version: CUnsignedLongLong
-//    let migrationHandler: Migration.MigrationHandler?
-//    
-//    init(version: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
-//        self.version = version
-//        self.migrationHandler = migrationHandler
-//    }
-//    
-//}
-
 /// Class used to perform migrations in your local cache.
 open class Migration: NSObject {
     
