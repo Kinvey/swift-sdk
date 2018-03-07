@@ -3855,7 +3855,7 @@ extension UserTests {
                     ]
                 )
             case 1:
-                XCTAssertEqual(request.url?.host, "my-instance-id.kinvey.com")
+                XCTAssertEqual(request.url?.host, "my-instance-id-baas.kinvey.com")
                 XCTAssertEqual(request.url?.path, "/user/\(appKey)/login")
                 return HttpResponse(json: [
                     "_id" : UUID().uuidString,
