@@ -1853,7 +1853,11 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertEqual(textCheckingResults.count, 1)
                 if let textCheckingResult = textCheckingResults.first {
                     let device = deviceInfo.substring(with: textCheckingResult.range(at: 1))
-                    XCTAssertEqual(device, "iPhone")
+                    #if os(macOS)
+                        XCTAssertEqual(device, "OSX")
+                    #elseif os(iOS)
+                        XCTAssertEqual(device, "iPhone")
+                    #endif
                 }
             }
             
