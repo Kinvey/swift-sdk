@@ -1799,60 +1799,79 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testDefaultHeaders() {
-        class CheckUserAgentHeaderURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                let userAgent = request.allHTTPHeaderFields?["User-Agent"]
-                XCTAssertNotNil(userAgent)
-                if let userAgent = userAgent {
-                    let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*)")
-                    XCTAssertEqual(regex.matches(in: userAgent, range: NSRange(location: 0, length: userAgent.characters.count)).count, 1)
+        mockResponse { request in
+            let userAgent = request.allHTTPHeaderFields?["User-Agent"]
+            XCTAssertNotNil(userAgent)
+            if let userAgent = userAgent {
+                let regex = try! NSRegularExpression(pattern: "Kinvey SDK (.*) \\(Swift (.*)\\)")
+                let textCheckingResults = regex.matches(in: userAgent, range: NSRange(location: 0, length: userAgent.count))
+                XCTAssertEqual(textCheckingResults.count, 1)
+                if let textCheckingResult = textCheckingResults.first {
+                    XCTAssertEqual(textCheckingResult.numberOfRanges, 3)
+                    
+                    let regex = try! NSRegularExpression(pattern: "(\\d+)\\.(\\d+)(?:\\.(\\d+))?")
+                    
+                    if textCheckingResult.numberOfRanges > 1 {
+                        let kinveySdkVersion = userAgent.substring(with: textCheckingResult.range(at: 1))
+                        let textCheckingResults = regex.matches(in: kinveySdkVersion, range: NSRange(location: 0, length: kinveySdkVersion.count))
+                        XCTAssertEqual(textCheckingResults.count, 1)
+                        if let textCheckingResult = textCheckingResults.first {
+                            XCTAssertGreaterThanOrEqual(textCheckingResult.numberOfRanges, 3)
+                            XCTAssertLessThanOrEqual(textCheckingResult.numberOfRanges, 4)
+                            if textCheckingResult.numberOfRanges > 1 {
+                                let majorVersion = kinveySdkVersion.substring(with: textCheckingResult.range(at: 1))
+                                XCTAssertEqual(majorVersion, "3")
+                            }
+                        }
+                    }
+                    
+                    if textCheckingResult.numberOfRanges > 2 {
+                        let swiftVersion = userAgent.substring(with: textCheckingResult.range(at: 2))
+                        let textCheckingResults = regex.matches(in: swiftVersion, range: NSRange(location: 0, length: swiftVersion.count))
+                        XCTAssertEqual(textCheckingResults.count, 1)
+                        if let textCheckingResult = textCheckingResults.first {
+                            XCTAssertGreaterThanOrEqual(textCheckingResult.numberOfRanges, 3)
+                            XCTAssertLessThanOrEqual(textCheckingResult.numberOfRanges, 4)
+                            if textCheckingResult.numberOfRanges > 1 {
+                                let majorVersion = swiftVersion.substring(with: textCheckingResult.range(at: 1))
+                                XCTAssertEqual(majorVersion, "4")
+                            }
+                        }
+                    }
                 }
-                
-                let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
-                XCTAssertNotNil(deviceInfo)
-                if let deviceInfo = deviceInfo {
-                    #if os(macOS)
-                        let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
-                    #else
-                        let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
-                    #endif
-                    XCTAssertEqual(regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.characters.count)).count, 1)
+            }
+            
+            let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
+            XCTAssertNotNil(deviceInfo)
+            if let deviceInfo = deviceInfo {
+                #if os(macOS)
+                    let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
+                #else
+                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
+                #endif
+                let textCheckingResults = regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.count))
+                XCTAssertEqual(textCheckingResults.count, 1)
+                if let textCheckingResult = textCheckingResults.first {
+                    let device = deviceInfo.substring(with: textCheckingResult.range(at: 1))
+                    XCTAssertEqual(device, "iPhone")
                 }
-                
-                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [:])!
-                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                
-                let responseBody = [[String : Any]]()
-                let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
-                client!.urlProtocol(self, didLoad: responseBodyData)
-                
-                client!.urlProtocolDidFinishLoading(self)
             }
             
-            override func stopLoading() {
-            }
-            
+            return HttpResponse(json: [])
         }
-        
-        setURLProtocol(CheckUserAgentHeaderURLProtocol.self)
         defer {
             setURLProtocol(nil)
         }
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
+        store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationFind?.fulfill()
         }

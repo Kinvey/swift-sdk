@@ -126,7 +126,7 @@ enum HttpHeader {
             case .requestId(let requestId):
                 return requestId
             case .userAgent:
-                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!)"
+                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
             case .deviceInfo:
                 #if os(iOS) || os(tvOS)
                     let device = UIDevice.current
