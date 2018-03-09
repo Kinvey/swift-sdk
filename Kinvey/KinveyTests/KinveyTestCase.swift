@@ -386,17 +386,20 @@ class KinveyTestCase: XCTestCase {
         
     }
     
-    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
+    func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustIncludeSocialIdentity: Bool = false, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
         let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
         
+        let originalMustIncludeSocialIdentity = MockKinveyBackend.usersMustIncludeSocialIdentity
         if useMockData {
+            MockKinveyBackend.usersMustIncludeSocialIdentity = mustIncludeSocialIdentity
             setURLProtocol(MockKinveyBackend.self)
         }
         defer {
             if useMockData {
+                MockKinveyBackend.usersMustIncludeSocialIdentity = originalMustIncludeSocialIdentity
                 setURLProtocol(nil)
             }
         }

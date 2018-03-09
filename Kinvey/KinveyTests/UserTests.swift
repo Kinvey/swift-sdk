@@ -2643,7 +2643,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocolDidFinishLoading(self)
                 default:
                     type(of: self).invalidCredentialsCount += 1
-                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 2)
+                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 4)
                     let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -4001,8 +4001,8 @@ extension UserTests {
         }
     }
     
-    func testUserLockDown() {
-        signUp()
+    func userLockDown(mustIncludeSocialIdentity: Bool) {
+        signUp(mustIncludeSocialIdentity: mustIncludeSocialIdentity)
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
@@ -4095,6 +4095,14 @@ extension UserTests {
         
         XCTAssertNil(Kinvey.sharedClient.activeUser)
         XCTAssertEqual(try? store.count().waitForResult().value(), 0)
+    }
+    
+    func testUserLockDown() {
+        userLockDown(mustIncludeSocialIdentity: false)
+    }
+    
+    func testUserLockDownWithRefreshToken() {
+        userLockDown(mustIncludeSocialIdentity: true)
     }
     
 }
