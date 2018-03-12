@@ -3840,7 +3840,7 @@ extension UserTests {
             switch count {
             case 0:
                 XCTAssertEqual(request.url?.host, "my-instance-id-auth.kinvey.com")
-                XCTAssertEqual(request.url?.path, "/v1/oauth/token")
+                XCTAssertEqual(request.url?.path, "/\(client.micApiVersion!.rawValue)/oauth/token")
                 return HttpResponse(
                     statusCode: 200,
                     json: [
