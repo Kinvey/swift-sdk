@@ -3243,6 +3243,10 @@ class NetworkStoreTests: StoreTestCase {
         let ds2 = DataStore<Person>.collection(.network, deltaSet: false)
         XCTAssertTrue(ds1.deltaSet)
         XCTAssertFalse(ds2.deltaSet)
+        
+        let addr1 = Unmanaged.passUnretained(ds1).toOpaque()
+        let addr2 = Unmanaged.passUnretained(ds2).toOpaque()
+        XCTAssertNotEqual(addr1, addr2)
     }
     
 }
