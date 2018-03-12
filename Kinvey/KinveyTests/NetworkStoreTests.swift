@@ -3238,6 +3238,13 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testDataStoreCacheInstances() {
+        let ds1 = DataStore<Person>.collection(.network, deltaSet: true)
+        let ds2 = DataStore<Person>.collection(.network, deltaSet: false)
+        XCTAssertTrue(ds1.deltaSet)
+        XCTAssertFalse(ds2.deltaSet)
+    }
+    
 }
 
 class Products: Entity {

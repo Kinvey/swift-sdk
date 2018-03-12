@@ -45,7 +45,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     internal let cache: AnyCache<T>?
     internal let sync: AnySync?
     
-    fileprivate var deltaSet: Bool
+    open fileprivate(set) var deltaSet: Bool
     
     fileprivate let uuid = UUID()
     
