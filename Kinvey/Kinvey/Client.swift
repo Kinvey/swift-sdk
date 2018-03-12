@@ -35,6 +35,7 @@ open class Client: Credential {
                 if let sharedKeychain = sharedKeychain {
                     try! sharedKeychain.removeAll()
                 }
+                dataStoreInstances.removeAll()
             } else {
                 if let sharedKeychain = sharedKeychain {
                     try! sharedKeychain.removeAll()
@@ -122,6 +123,8 @@ open class Client: Credential {
     
     ///Default Value for DataStore tag
     open static let defaultTag = Kinvey.defaultTag
+    
+    var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Enables logging for any network calls.
     open var logNetworkEnabled = false
