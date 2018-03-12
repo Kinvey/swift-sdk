@@ -90,17 +90,7 @@ open class Client: Credential {
     
     /// Timeout interval for this client instance.
     @available(*, deprecated: 3.12.2, message: "Please use `options` instead")
-    open var timeoutInterval: TimeInterval {
-        get {
-            return options?.timeout ?? Client.urlSessionConfiguration.timeoutIntervalForRequest
-        }
-        set {
-            if options == nil {
-                options = Options()
-            }
-            options?.timeout = newValue
-        }
-    }
+    open var timeoutInterval: TimeInterval = 60
     
     /**
      Hold default optional values for all calls made by this `Client` instance
