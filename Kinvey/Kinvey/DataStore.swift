@@ -9,40 +9,12 @@
 import Foundation
 import PromiseKit
 
-class DataStoreTypeTag: Hashable {
-    
-    let persistableType: Persistable.Type
-    let tag: String
-    let type: StoreType
-    
-    init(persistableType: Persistable.Type, tag: String, type: StoreType) {
-        self.persistableType = persistableType
-        self.tag = tag
-        self.type = type
-    }
-    
-    var hashValue: Int {
-        var hash = NSDecimalNumber(value: 5)
-        hash = 23 * hash + NSDecimalNumber(value: NSStringFromClass(persistableType as! AnyClass).hashValue)
-        hash = 23 * hash + NSDecimalNumber(value: tag.hashValue)
-        hash = 23 * hash + NSDecimalNumber(value: type.hashValue)
-        return hash.hashValue
-    }
-    
-}
-
 func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
     return lhs.adding(rhs)
 }
 
 func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
     return lhs.multiplying(by: rhs)
-}
-
-func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
-    return lhs.persistableType == rhs.persistableType &&
-        lhs.tag == rhs.tag &&
-        lhs.type == rhs.type
 }
 
 /// Class to interact with a specific collection in the backend.
@@ -136,22 +108,16 @@ open class DataStore<T: Persistable> where T: NSObject {
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
-        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
-        var dataStore = client.dataStoreInstances[key] as? DataStore
-        if dataStore == nil {
-            let fileURL = client.fileURL(tag)
-            dataStore = DataStore<T>(
-                type: type,
-                deltaSet: deltaSet ?? false,
-                autoPagination: autoPagination,
-                client: client,
-                fileURL: fileURL,
-                encryptionKey: client.encryptionKey,
-                validationStrategy: validationStrategy
-            )
-            client.dataStoreInstances[key] = dataStore
-        }
-        return dataStore!
+        let fileURL = client.fileURL(tag)
+        return DataStore<T>(
+            type: type,
+            deltaSet: deltaSet ?? false,
+            autoPagination: autoPagination,
+            client: client,
+            fileURL: fileURL,
+            encryptionKey: client.encryptionKey,
+            validationStrategy: validationStrategy
+        )
     }
     
     /**
