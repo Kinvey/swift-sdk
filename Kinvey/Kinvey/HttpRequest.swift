@@ -423,6 +423,15 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                             self.credential = user
                             self.execute(urlSession: urlSession, completionHandler)
                         } else {
+                            if let error = error as? Kinvey.Error {
+                                switch error {
+                                case .invalidCredentials:
+                                    if let user = self.credential as? User {
+                                        user.logout()
+                                    }
+                                default: break
+                                }
+                            }
                             completionHandler?(data, HttpResponse(response: response), error)
                         }
                     }

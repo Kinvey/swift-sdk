@@ -2643,7 +2643,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocolDidFinishLoading(self)
                 default:
                     type(of: self).invalidCredentialsCount += 1
-                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 2)
+                    XCTAssertLessThanOrEqual(type(of: self).invalidCredentialsCount, 4)
                     let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -4077,6 +4077,110 @@ extension UserTests {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationLogout = nil
         }
+    }
+    
+    func userLockDown(mustIncludeSocialIdentity: Bool) {
+        signUp(mustIncludeSocialIdentity: mustIncludeSocialIdentity)
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        do {
+            mockResponse(json: [
+                [
+                    "_id": UUID().uuidString,
+                    "name": "Victor",
+                    "age": 0,
+                    "_acl": [
+                        "creator": client.activeUser?.userId
+                    ],
+                    "_kmd": [
+                        "lmt": Date().toString(),
+                        "ect": Date().toString()
+                    ]
+                ]
+            ])
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationLogout = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success(let count, let results):
+                    XCTAssertEqual(count, 0)
+                    XCTAssertEqual(results.count, 1)
+                case .failure(let errors):
+                    XCTFail(errors.first!.localizedDescription)
+                }
+                expectationLogout?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationLogout = nil
+            }
+        }
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        XCTAssertEqual(try? store.count().waitForResult().value(), 1)
+        
+        do {
+            mockResponse(
+                statusCode: 401,
+                json: [
+                    "error" : "InvalidCredentials",
+                    "description" : "Invalid credentials. Please retry your request with correct credentials",
+                    "debug" : "Authorization token invalid or expired"
+                ]
+            )
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationLogout = expectation(description: "Sync")
+            
+            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+                switch result {
+                case .success:
+                    XCTFail()
+                case .failure(let errors):
+                    XCTAssertEqual(errors.count, 1)
+                    XCTAssertNotNil(errors.first as? Kinvey.Error)
+                    if let error = errors.first as? Kinvey.Error {
+                        switch error {
+                        case .invalidCredentials(let httpRequest, let data, let debug, let description):
+                            XCTAssertEqual(httpRequest?.statusCode, 401)
+                            XCTAssertNotNil(data)
+                            if let data = data {
+                                XCTAssertGreaterThan(data.count, 0)
+                            }
+                            XCTAssertEqual(debug, "Authorization token invalid or expired")
+                            XCTAssertEqual(description, "Invalid credentials. Please retry your request with correct credentials")
+                        default:
+                            XCTFail(error.description)
+                        }
+                    }
+                }
+                expectationLogout?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationLogout = nil
+            }
+        }
+        
+        XCTAssertNil(Kinvey.sharedClient.activeUser)
+        XCTAssertEqual(try? store.count().waitForResult().value(), 0)
+    }
+    
+    func testUserLockDown() {
+        userLockDown(mustIncludeSocialIdentity: false)
+    }
+    
+    func testUserLockDownWithRefreshToken() {
+        userLockDown(mustIncludeSocialIdentity: true)
     }
     
 }
