@@ -130,7 +130,7 @@ open class Client: Credential {
     open var logNetworkEnabled = false
     
     /// Stores the MIC API Version to be used in MIC calls 
-    open var micApiVersion: MICApiVersion? = .v1
+    open var micApiVersion: MICApiVersion? = .v3
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public init() {

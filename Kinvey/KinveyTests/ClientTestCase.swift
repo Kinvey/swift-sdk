@@ -185,4 +185,8 @@ class ClientTestCase: KinveyTestCase {
         }.to(throwAssertion())
     }
     
+    func testDefaultMICVersion() {
+        XCTAssertEqual(Client().micApiVersion, .v3)
+    }
+    
 }
