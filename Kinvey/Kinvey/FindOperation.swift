@@ -267,7 +267,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             )
                         }
                         var syncQuery: (query: Query, lastSync: Date)? = nil
-                        if self.isSkipAndLimitNil, let requestStart = response.requestStartHeader {
+                        if self.deltaSet, self.isSkipAndLimitNil, let requestStart = response.requestStartHeader {
                             syncQuery = (query: self.query, lastSync: requestStart)
                         }
                         if let cache = cache.dynamic {
