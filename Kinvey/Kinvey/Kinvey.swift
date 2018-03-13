@@ -117,6 +117,30 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 public let defaultTag = "kinvey"
 let groupId = "_group_"
 
+#if swift(>=5)
+    let swiftVersion = "5 or above"
+#elseif swift(>=4.0.3)
+    let swiftVersion = "4.0.3"
+#elseif swift(>=4.0.2)
+    let swiftVersion = "4.0.2"
+#elseif swift(>=4.0)
+    let swiftVersion = "4.0"
+#elseif swift(>=3.1.1)
+    let swiftVersion = "3.1.1"
+#elseif swift(>=3.1)
+    let swiftVersion = "3.1"
+#elseif swift(>=3.0.2)
+    let swiftVersion = "3.0.2"
+#elseif swift(>=3.0.1)
+    let swiftVersion = "3.0.1"
+#elseif swift(>=3.0)
+    let swiftVersion = "3.0"
+#elseif swift(>=2.2.1)
+    let swiftVersion = "2.2.1"
+#elseif swift(>=2.2)
+    let swiftVersion = "2.2"
+#endif
+
 #if os(macOS)
     let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
 #else
