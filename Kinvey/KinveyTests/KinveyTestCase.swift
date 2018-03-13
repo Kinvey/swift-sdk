@@ -274,7 +274,7 @@ class KinveyTestCase: XCTestCase {
     var encrypted = false
     var useMockData = appKey == nil || appSecret == nil
     
-    static let defaultTimeout: TimeInterval = 30
+    static let defaultTimeout: TimeInterval = 60
     let defaultTimeout: TimeInterval = KinveyTestCase.defaultTimeout
     
     static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
