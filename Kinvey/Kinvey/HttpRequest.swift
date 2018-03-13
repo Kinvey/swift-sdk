@@ -344,7 +344,9 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         let url = endpoint.url
         request = URLRequest(url: url)
         request.httpMethod = httpMethod.stringValue
-        request.timeoutInterval = options?.timeout ?? client.options?.timeout ?? client.timeoutInterval
+        if let timeout = options?.timeout ?? client.options?.timeout {
+            request.timeoutInterval = timeout
+        }
         if let body = body {
             body.attachTo(request: &request)
         }
