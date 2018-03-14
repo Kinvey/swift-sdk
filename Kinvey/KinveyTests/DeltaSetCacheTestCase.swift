@@ -1399,52 +1399,101 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        var mockCount = 0
-        if useMockData {
-            mockResponse { request in
-                mockCount += 1
-                return HttpResponse(json: [
-                    [
-                        "_id" : mockObjectId!,
-                        "name" : "Victor",
-                        "age" : 0,
-                        "_acl" : [
-                            "creator" : self.client.activeUser?.userId
-                        ],
-                        "_kmd" : [
-                            "lmt" : mockDate?.toString(),
-                            "ect" : mockDate?.toString()
-                        ]
-                    ]
-                ])
-            }
-        }
-        defer {
+        do {
+            var mockCount = 0
             if useMockData {
-                setURLProtocol(nil)
-                XCTAssertEqual(mockCount, 1)
+                mockResponse { request in
+                    mockCount += 1
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: [
+                            [
+                                "_id" : mockObjectId!,
+                                "name" : "Victor",
+                                "age" : 0,
+                                "_acl" : [
+                                    "creator" : self.client.activeUser?.userId
+                                ],
+                                "_kmd" : [
+                                    "lmt" : mockDate?.toString(),
+                                    "ect" : mockDate?.toString()
+                                ]
+                            ]
+                        ]
+                    )
+                }
             }
-        }
-        
-        weak var expectationFind = expectation(description: "Find")
-        
-        store.find(query, readPolicy: .forceNetwork) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
-                XCTAssertEqual(results.count, 1)
-                
-                if let person = results.first {
-                    XCTAssertEqual(person.name, "Victor")
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                    XCTAssertEqual(mockCount, 1)
                 }
             }
             
-            expectationFind?.fulfill()
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, readPolicy: .forceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Victor")
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
         }
         
-        waitForExpectations(timeout: defaultTimeout) { (error) in
-            expectationFind = nil
+        do {
+            var mockCount = 0
+            if useMockData {
+                mockResponse { request in
+                    mockCount += 1
+                    XCTAssertEqual(request.url!.path, "/appdata/_kid_/Person/_deltaset")
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: [
+                            "changed" : [],
+                            "deleted" : []
+                        ]
+                    )
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                    XCTAssertEqual(mockCount, 1)
+                }
+            }
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(query, options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let results):
+                    XCTAssertEqual(results.count, 1)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Victor")
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
         }
     }
     
