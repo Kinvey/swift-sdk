@@ -2803,7 +2803,7 @@ class SyncStoreTests: StoreTestCase {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     switch url.path {
-                    case "/appdata/_kid_/Person":
+                    case "/appdata/_kid_/\(Person.collectionName())":
                         let json = [
                             [
                                 "_id": "58450d87f29e22207c83a236",
@@ -2817,7 +2817,6 @@ class SyncStoreTests: StoreTestCase {
                                 ]
                             ]
                         ]
-                        initialCount = Int64(json.count)
                         return HttpResponse(
                             headerFields: [
                                 "X-Kinvey-Request-Start" : Date().toString()
