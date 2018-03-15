@@ -16,6 +16,7 @@ class MockKinveyBackend: URLProtocol {
     static var baseURLBaas = URL(string: "https://baas.kinvey.com")!
     static var user = [String : [String : Any]]()
     static var appdata = [String : [[String : Any]]]()
+    static var usersMustIncludeSocialIdentity: Bool = false
     
     var requestJsonBody: [String : Any]? {
         if
@@ -132,6 +133,16 @@ class MockKinveyBackend: URLProtocol {
                                 user["_acl"] = [
                                     "creator" : "masterKey-creator-id"
                                 ]
+                                if MockKinveyBackend.usersMustIncludeSocialIdentity {
+                                    user["_socialIdentity"] = [
+                                        "kinveyAuth" : [
+                                            "access_token" : UUID().uuidString,
+                                            "token_type" : "Bearer",
+                                            "expires_in" : 59,
+                                            "refresh_token" : UUID().uuidString
+                                        ]
+                                    ]
+                                }
                                 MockKinveyBackend.user[userId] = user
                                 
                                 response(json: user)

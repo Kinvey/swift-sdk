@@ -2785,4 +2785,67 @@ class SyncStoreTests: StoreTestCase {
         XCTAssertLessThan(memoryAfter! - memoryBefore!, 10_000_000)
     }
     
+    func testPullMemoryConsumption() {
+        let size = 100_000
+        mockResponse { request in
+            switch request.url!.path {
+            case "/appdata/_kid_/Person/_count":
+                return HttpResponse(json: ["count" : size])
+            case "/appdata/_kid_/Person":
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let skip = Int(urlComponents.queryItems!.filter({ $0.name == "skip" }).first!.value!)!
+                let limit = Int(urlComponents.queryItems!.filter({ $0.name == "limit" }).first!.value!)!
+                
+                var entities = [JsonDictionary]()
+                for index in 1 ... limit {
+                    var entity = JsonDictionary()
+                    entity["_id"] = "ID-\(skip + index)"
+                    entity["name"] = "Person \(skip + index)"
+                    entity["_acl"] = [
+                        "creator" : UUID().uuidString
+                    ]
+                    entity["_kmd"] = [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                    entities.append(entity)
+                }
+                return HttpResponse(json: entities)
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = DataStore<Person>.collection(.sync, autoPagination: true)
+        
+        let startMemory = reportMemory()
+        XCTAssertNotNil(startMemory)
+        
+        weak var expectationPull = expectation(description: "Pull")
+        
+        store.pull(options: nil) {
+            switch $0 {
+            case .success(let results):
+                XCTAssertEqual(results.count, Int64(size))
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            if let startMemory = startMemory, let endMemory = reportMemory() {
+                let diffMemory = endMemory - startMemory
+                XCTAssertLessThan(diffMemory, 300_000_000)
+            }
+            
+            expectationPull?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout * (Double(size) / 10_000.0)) { error in
+            expectationPull = nil
+        }
+    }
+    
 }

@@ -264,7 +264,7 @@ class FileTestCase: StoreTestCase {
         
         weak var expectationDownload = expectation(description: "Download")
         
-        fileStore.download(file) { (file, url: URL?, error) in
+        let request = fileStore.download(file) { (file, url: URL?, error) in
             XCTAssertTrue(Thread.isMainThread)
             
             XCTAssertNil(file)
@@ -277,6 +277,16 @@ class FileTestCase: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
+        }
+        
+        XCTAssertNotNil(request.result)
+        if let result = request.result {
+            do {
+                let _ = try result.value()
+                XCTFail()
+            } catch {
+                XCTAssertTimeoutError(error)
+            }
         }
     }
     
@@ -1060,7 +1070,7 @@ class FileTestCase: StoreTestCase {
         }
     }
     
-    func testUploadUIImagePNG() {
+    func testUploadImagePNG() {
         signUp()
         
         var file = File() {
@@ -1238,6 +1248,14 @@ class FileTestCase: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                let file = try? result.value()
+                XCTAssertNotNil(file?.download)
+                XCTAssertNotNil(file?.downloadURL)
+                XCTAssertEqual(file?.mimeType, "image/png")
+            }
         }
         
         if !useMockData {
@@ -1279,7 +1297,7 @@ class FileTestCase: StoreTestCase {
         }
     }
     
-    func testUploadUIImageJPEG() {
+    func testUploadImageJPEG() {
         signUp()
         
         var file = File() {
@@ -1455,6 +1473,14 @@ class FileTestCase: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
+            }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                let file = try? result.value()
+                XCTAssertNotNil(file?.download)
+                XCTAssertNotNil(file?.downloadURL)
+                XCTAssertEqual(file?.mimeType, "image/jpeg")
             }
         }
         
@@ -1773,7 +1799,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectation(description: "Download")
             
-            fileStore.download(self.myFile!) { (file, data: Data?, error) in
+            let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -1791,6 +1817,17 @@ class FileTestCase: StoreTestCase {
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
+            }
+            
+            XCTAssertNotNil(request.result)
+            if let result = request.result {
+                do {
+                    let (file, data) = try result.value()
+                    XCTAssertEqual(file.label, "trailer")
+                    XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
+                } catch {
+                    XCTFail(error.localizedDescription)
+                }
             }
         }
     }
@@ -3017,6 +3054,246 @@ class FileTestCase: StoreTestCase {
             $0.fileId = UUID().uuidString
         }
         XCTAssertNil(fileStore.cachedFile(file))
+    }
+    
+    func testCreateBucketData() {
+        let text = "test"
+        let data = text.data(using: .utf8)!
+        
+        mockResponse { request in
+            switch (request.url?.path, request.url?.query) {
+            case ("/blob/_kid_"?, "tls=true"?):
+                guard
+                    let object = try? JSONSerialization.jsonObject(with: request),
+                    let json = object as? [String : Any]
+                else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertNotNil(json["_public"] as? Bool)
+                guard let _public = json["_public"] as? Bool else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertFalse(_public)
+                XCTAssertEqual(json["size"] as? Int, data.count)
+                return HttpResponse(
+                    statusCode: 201,
+                    json: [
+                        "size" : data.count,
+                        "_public" : _public,
+                        "_id" : UUID().uuidString,
+                        "_filename" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
+                        "_expiresAt" : Date().toString(),
+                        "_requiredHeaders" : [
+                        ]
+                    ]
+                )
+            default:
+                XCTFail(request.url?.absoluteString ?? "nil")
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), data: data)
+        let file = try? request.waitForResult().value()
+        XCTAssertNotNil(file)
+        if let file = file {
+            XCTAssertNotNil(file.fileId)
+            XCTAssertNotNil(file.uploadURL)
+            XCTAssertFalse(file.publicAccessible)
+            XCTAssertEqual(file.size.value, Int64(data.count))
+        }
+    }
+    
+    func testCreateBucketDataTimeout() {
+        let text = "test"
+        let data = text.data(using: .utf8)!
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), data: data)
+        do {
+            let _ = try request.waitForResult().value()
+            XCTFail()
+        } catch {
+            XCTAssertTimeoutError(error)
+        }
+    }
+    
+    func testCreateBucketPath() {
+        let size = try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerImageURL.path)[.size] as! Int64
+        
+        mockResponse { request in
+            switch (request.url?.path, request.url?.query) {
+            case ("/blob/_kid_"?, "tls=true"?):
+                guard
+                    let object = try? JSONSerialization.jsonObject(with: request),
+                    let json = object as? [String : Any]
+                else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertNotNil(json["_public"] as? Bool)
+                guard let _public = json["_public"] as? Bool else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertFalse(_public)
+                XCTAssertEqual(json["size"] as? Int64, size)
+                return HttpResponse(
+                    statusCode: 201,
+                    json: [
+                        "size" : size,
+                        "_public" : _public,
+                        "_id" : UUID().uuidString,
+                        "_filename" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
+                        "_expiresAt" : Date().toString(),
+                        "_requiredHeaders" : [
+                        ]
+                    ]
+                )
+            default:
+                XCTFail(request.url?.absoluteString ?? "nil")
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), path: caminandes3TrailerImageURL.path)
+        let file = try? request.waitForResult().value()
+        XCTAssertNotNil(file)
+        if let file = file {
+            XCTAssertNotNil(file.fileId)
+            XCTAssertNotNil(file.uploadURL)
+            XCTAssertFalse(file.publicAccessible)
+            XCTAssertEqual(file.size.value, size)
+        }
+    }
+    
+    func testCreateBucketPathTimeout() {
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), path: caminandes3TrailerImageURL.path)
+        do {
+            let _ = try request.waitForResult().value()
+            XCTFail()
+        } catch {
+            XCTAssertTimeoutError(error)
+        }
+    }
+    
+    func testCreateBucketInputStream() {
+        let inputStream = InputStream(data: "test".data(using: .utf8)!)
+        defer {
+            inputStream.close()
+        }
+        
+        mockResponse { request in
+            switch (request.url?.path, request.url?.query) {
+            case ("/blob/_kid_"?, "tls=true"?):
+                guard
+                    let object = try? JSONSerialization.jsonObject(with: request),
+                    let json = object as? [String : Any]
+                else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertNotNil(json["_public"] as? Bool)
+                guard let _public = json["_public"] as? Bool else {
+                    XCTFail()
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                XCTAssertFalse(_public)
+                return HttpResponse(
+                    statusCode: 201,
+                    json: [
+                        "_public" : _public,
+                        "_id" : UUID().uuidString,
+                        "_filename" : UUID().uuidString,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString()
+                        ],
+                        "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
+                        "_expiresAt" : Date().toString(),
+                        "_requiredHeaders" : [
+                        ]
+                    ]
+                )
+            default:
+                XCTFail(request.url?.absoluteString ?? "nil")
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), stream: inputStream)
+        let file = try? request.waitForResult().value()
+        XCTAssertNotNil(file)
+        if let file = file {
+            XCTAssertNotNil(file.fileId)
+            XCTAssertNotNil(file.uploadURL)
+            XCTAssertFalse(file.publicAccessible)
+        }
+    }
+    
+    func testCreateBucketInputStreamTimeout() {
+        let inputStream = InputStream(data: "test".data(using: .utf8)!)
+        defer {
+            inputStream.close()
+        }
+        
+        mockResponse(error: timeoutError)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let fileStore = FileStore()
+        let request = fileStore.create(File(), stream: inputStream)
+        do {
+            let _ = try request.waitForResult().value()
+            XCTFail()
+        } catch {
+            XCTAssertTimeoutError(error)
+        }
     }
     
 }

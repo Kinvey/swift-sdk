@@ -35,7 +35,6 @@ open class Client: Credential {
                 if let sharedKeychain = sharedKeychain {
                     try! sharedKeychain.removeAll()
                 }
-                dataStoreInstances.removeAll()
             } else {
                 if let sharedKeychain = sharedKeychain {
                     try! sharedKeychain.removeAll()
@@ -91,7 +90,17 @@ open class Client: Credential {
     
     /// Timeout interval for this client instance.
     @available(*, deprecated: 3.12.2, message: "Please use `options` instead")
-    open var timeoutInterval: TimeInterval = 60
+    open var timeoutInterval: TimeInterval {
+        get {
+            return options?.timeout ?? Client.urlSessionConfiguration.timeoutIntervalForRequest
+        }
+        set {
+            if options == nil {
+                options = Options()
+            }
+            options?.timeout = newValue
+        }
+    }
     
     /**
      Hold default optional values for all calls made by this `Client` instance
@@ -124,13 +133,11 @@ open class Client: Credential {
     ///Default Value for DataStore tag
     open static let defaultTag = Kinvey.defaultTag
     
-    var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
-    
     /// Enables logging for any network calls.
     open var logNetworkEnabled = false
     
     /// Stores the MIC API Version to be used in MIC calls 
-    open var micApiVersion: MICApiVersion? = .v1
+    open var micApiVersion: MICApiVersion? = .v3
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public init() {
@@ -340,9 +347,6 @@ open class Client: Credential {
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
         self.options = options
-        if let timeout = options?.timeout {
-            self.timeoutInterval = timeout
-        }
         
         Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: schema?.migrationHandler)
         

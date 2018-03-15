@@ -18,6 +18,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     let deltaSet: Bool
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
+    let mustSetRequestResult: Bool
     
     typealias ResultType = Result<AnyRandomAccessCollection<T>, Swift.Error>
     
@@ -41,6 +42,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
         options: Options?,
+        mustSetRequestResult: Bool = true,
         resultsHandler: ResultsHandler? = nil
     ) {
         self.query = query
@@ -48,6 +50,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.autoPagination = autoPagination
         self.resultsHandler = resultsHandler
+        self.mustSetRequestResult = mustSetRequestResult
         super.init(
             readPolicy: readPolicy,
             validationStrategy: validationStrategy,
@@ -67,7 +70,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             } else {
                 result = .success(AnyRandomAccessCollection<T>([]))
             }
-            request.result = result
+            if mustSetRequestResult {
+                request.result = result
+            }
             completionHandler?(result)
         }
         return AnyRequest(request)
@@ -111,6 +116,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             let nPages = Int64(ceil(Double(count) / Double(maxSizePerResultSet)))
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
             var offsetIterator = stride(from: 0, to: count, by: maxSizePerResultSet).makeIterator()
+            let isCacheNotNil = cache != nil
             let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
                 guard let offset = offsetIterator.next() else {
                     return nil
@@ -126,12 +132,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         readPolicy: .forceNetwork,
                         validationStrategy: self.validationStrategy,
                         cache: self.cache,
-                        options: self.options
+                        options: self.options,
+                        mustSetRequestResult: false
                     )
                     let request = operation.execute { result in
                         switch result {
                         case .success(let results):
-                            fulfill(results)
+                            fulfill(isCacheNotNil ? AnyRandomAccessCollection<T>([]) : results)
                         case .failure(let error):
                             reject(error)
                         }
@@ -142,9 +149,14 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).then(on: DispatchQueue.global(qos: .default)) { results -> Void in
-                let results = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
+                let result: AnyRandomAccessCollection<T>
+                if let cache = self.cache {
+                    result = cache.find(byQuery: self.query)
+                } else {
+                    result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
+                }
                 progress.completedUnitCount += 1
-                fulfill(results)
+                fulfill(result)
             }.catch { error in
                 reject(error)
             }
@@ -356,11 +368,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             }
         }.then { (results) -> Void in
             let result: ResultType = .success(results)
-            request.result = result
+            if self.mustSetRequestResult {
+                request.result = result
+            }
             completionHandler?(result)
         }.catch {
             let result: ResultType = .failure($0)
-            request.result = result
+            if self.mustSetRequestResult {
+                request.result = result
+            }
             completionHandler?(result)
         }
         return AnyRequest(request)

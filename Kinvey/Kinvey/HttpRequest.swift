@@ -126,7 +126,7 @@ enum HttpHeader {
             case .requestId(let requestId):
                 return requestId
             case .userAgent:
-                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!)"
+                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
             case .deviceInfo:
                 #if os(iOS) || os(tvOS)
                     let device = UIDevice.current
@@ -344,7 +344,9 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         let url = endpoint.url
         request = URLRequest(url: url)
         request.httpMethod = httpMethod.stringValue
-        request.timeoutInterval = options?.timeout ?? client.options?.timeout ?? client.timeoutInterval
+        if let timeout = options?.timeout ?? client.options?.timeout {
+            request.timeoutInterval = timeout
+        }
         if let body = body {
             body.attachTo(request: &request)
         }
@@ -423,6 +425,15 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                             self.credential = user
                             self.execute(urlSession: urlSession, completionHandler)
                         } else {
+                            if let error = error as? Kinvey.Error {
+                                switch error {
+                                case .invalidCredentials:
+                                    if let user = self.credential as? User {
+                                        user.logout()
+                                    }
+                                default: break
+                                }
+                            }
                             completionHandler?(data, HttpResponse(response: response), error)
                         }
                     }

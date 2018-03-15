@@ -117,6 +117,30 @@ public var logLevel: LogLevel = log.outputLevel.logLevel {
 public let defaultTag = "kinvey"
 let groupId = "_group_"
 
+#if swift(>=5)
+    let swiftVersion = "5 or above"
+#elseif swift(>=4.0.3)
+    let swiftVersion = "4.0.3"
+#elseif swift(>=4.0.2)
+    let swiftVersion = "4.0.2"
+#elseif swift(>=4.0)
+    let swiftVersion = "4.0"
+#elseif swift(>=3.1.1)
+    let swiftVersion = "3.1.1"
+#elseif swift(>=3.1)
+    let swiftVersion = "3.1"
+#elseif swift(>=3.0.2)
+    let swiftVersion = "3.0.2"
+#elseif swift(>=3.0.1)
+    let swiftVersion = "3.0.1"
+#elseif swift(>=3.0)
+    let swiftVersion = "3.0"
+#elseif swift(>=2.2.1)
+    let swiftVersion = "2.2.1"
+#elseif swift(>=2.2)
+    let swiftVersion = "2.2"
+#endif
+
 #if os(macOS)
     let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
 #else
@@ -149,13 +173,27 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        return Error.unauthorized(
-            httpResponse: response.httpResponse,
-            data: data,
-            error: error,
-            debug: debug,
-            description: description
-        )
+        let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
+        if refreshToken == nil {
+            client.activeUser?.logout()
+        }
+        switch error {
+        case Error.Keys.invalidCredentials.rawValue:
+            return Error.invalidCredentials(
+                httpResponse: response.httpResponse,
+                data: data,
+                debug: debug,
+                description: description
+            )
+        default:
+            return Error.unauthorized(
+                httpResponse: response.httpResponse,
+                data: data,
+                error: error,
+                debug: debug,
+                description: description
+            )
+        }
     } else if let response = response,
         response.isMethodNotAllowed,
         let json = json,
