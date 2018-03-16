@@ -2098,4 +2098,35 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testDeltaSetQuerySkipLimit() {
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        
+        weak var expectationPull = expectation(description: "Pull")
+        
+        let query = Query()
+        query.skip = 100
+        store.pull(query) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidOperation(let description):
+                        XCTAssertEqual(description, "You cannot use the skip and limit modifiers on a query when performing a delta set request.")
+                    default:
+                        XCTFail(error.description)
+                    }
+                }
+            }
+            expectationPull?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationPull = nil
+        }
+    }
+    
 }
