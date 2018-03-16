@@ -286,6 +286,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     private func fetch(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
+        if self.deltaSet && !isSkipAndLimitNil {
+            return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+                reject(Error.invalidOperation(description: "You cannot use the skip and limit modifiers on a query when performing a delta set request."))
+            }
+        }
         let deltaSet = self.deltaSet &&
             isSkipAndLimitNil &&
             !(cache?.isEmpty() ?? true)
