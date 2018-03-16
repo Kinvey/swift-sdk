@@ -50,6 +50,8 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Impose a limit of records in the results of the query.
     open var limit: Int?
     
+    internal var emptyPredicateMustReturnNil = true
+    
     public override var description: String {
         return "Fields: \(String(describing: fields))\nPredicate: \(String(describing: predicate))\nSort Descriptors: \(String(describing: sortDescriptors))\nSkip: \(String(describing: skip))\nLimit: \(String(describing: limit))"
     }
@@ -133,7 +135,7 @@ public final class Query: NSObject, BuilderType, Mappable {
     
     fileprivate var queryStringEncoded: String? {
         guard let predicate = predicate else {
-            return nil
+            return emptyPredicateMustReturnNil ? nil : "{}"
         }
         
         let translatedPredicate = translate(predicate: predicate)
