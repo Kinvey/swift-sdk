@@ -53,6 +53,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     let executor: Executor
     
     lazy var entityType = T.self as! Entity.Type
+    lazy var entityTypeClassName = entityType.className()
     
     var dynamic: DynamicCacheType? {
         return self
@@ -361,7 +362,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func save(entities: AnyRandomAccessCollection<T>, syncQuery: (query: Query, lastSync: Date)?) {
+    func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         executor.executeAndWait {
@@ -371,6 +372,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 for entity in entities {
                     realm.create(entityType, value: entity, update: true)
                 }
+                self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
@@ -629,12 +631,10 @@ extension RealmCache: DynamicCacheType {
         }
     }
     
-    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: (query: Query, lastSync: Date)?) {
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: SyncQuery?) {
         let startTime = CFAbsoluteTimeGetCurrent()
         log.verbose("Saving \(entities.count) object(s)")
         let realm = self.newRealm
-        let entityType = self.entityType
-        let entityTypeClassName = entityType.className()
         let propertyMapping = T.propertyMapping()
         try! realm.write {
             for entity in entities {
@@ -682,17 +682,22 @@ extension RealmCache: DynamicCacheType {
                 )
                 realm.dynamicCreate(entityTypeClassName, value: translatedEntity, update: true)
             }
-            if let syncQuery = syncQuery {
-                let realmSyncQuery = _QueryCache()
-                realmSyncQuery.collectionName = entityTypeClassName
-                if let predicate = syncQuery.query.predicate {
-                    realmSyncQuery.query = String(describing: predicate)
-                }
-                realmSyncQuery.lastSync = syncQuery.lastSync
-                realm.add(realmSyncQuery)
-            }
+            saveQuery(syncQuery: syncQuery, realm: realm)
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+    }
+    
+    private func saveQuery(syncQuery: SyncQuery?, realm: Realm) {
+        if let syncQuery = syncQuery {
+            let realmSyncQuery = _QueryCache()
+            realmSyncQuery.collectionName = entityTypeClassName
+            if let predicate = syncQuery.query.predicate {
+                realmSyncQuery.query = String(describing: predicate)
+            }
+            realmSyncQuery.lastSync = syncQuery.lastSync
+            realmSyncQuery.generateKey()
+            realm.add(realmSyncQuery, update: true)
+        }
     }
     
 }
@@ -837,6 +842,13 @@ class RealmPendingOperationThreadSafeReference: PendingOperationType {
 internal class _QueryCache: Object {
     
     @objc
+    dynamic var key: String?
+    
+    internal func generateKey() {
+        key = "\(collectionName ?? "nil")|\(query ?? "nil")"
+    }
+    
+    @objc
     dynamic var collectionName: String?
     
     @objc
@@ -844,5 +856,10 @@ internal class _QueryCache: Object {
     
     @objc
     dynamic var lastSync: Date?
+    
+    @objc
+    override class func primaryKey() -> String? {
+        return "key"
+    }
     
 }
