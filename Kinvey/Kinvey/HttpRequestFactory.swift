@@ -378,6 +378,8 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let query = Query(query)
+        query.emptyPredicateMustReturnNil = false
         let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: Endpoint.appDataByQuery(client: client, collectionName: collectionName, query: query),

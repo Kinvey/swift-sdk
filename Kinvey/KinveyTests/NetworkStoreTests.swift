@@ -1648,6 +1648,46 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testRemoveAll() {
+        if useMockData {
+            mockResponse { request in
+                switch request.url!.path {
+                case "/appdata/\(self.client.appKey!)/Person":
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                    let query = urlComponents?.queryItems?.filter{ $0.name == "query" }.first?.value
+                    XCTAssertEqual(query, "{}")
+                    return HttpResponse(json: ["count" : 100])
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        weak var expectationRemove = expectation(description: "Remove")
+        
+        store.removeAll(options: nil) {
+            switch $0 {
+            case .success(let count):
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationRemove?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationRemove = nil
+        }
+    }
+    
     func testRemoveAllTimeoutError() {
         mockResponse(error: timeoutError)
         defer {
