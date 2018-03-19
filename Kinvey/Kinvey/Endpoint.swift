@@ -178,9 +178,7 @@ internal enum Endpoint {
                 }
                 queryItems.append(URLQueryItem(name: "redirect_uri", value: redirectURI.absoluteString))
                 queryItems.append(URLQueryItem(name: "response_type", value: "code"))
-                if let micApiVersion = client.micApiVersion, micApiVersion == .v3 {
-                    queryItems.append(URLQueryItem(name: "scope", value: "openid"))
-                }
+                queryItems.append(URLQueryItem(name: "scope", value: "openid"))
                 components.queryItems = queryItems
                 url = components.url!
             }
