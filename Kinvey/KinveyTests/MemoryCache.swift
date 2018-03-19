@@ -28,7 +28,7 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory[objId] = entity
     }
     
-    func save(entities: AnyRandomAccessCollection<T>, syncQuery: (query: Query, lastSync: Date)?) {
+    func save(entities: AnyRandomAccessCollection<T>, syncQuery: CacheType.SyncQuery?) {
         for entity in entities {
             save(entity: entity)
         }

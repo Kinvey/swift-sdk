@@ -13,12 +13,13 @@ internal protocol CacheType: class {
     var ttl: TimeInterval? { get set }
     
     associatedtype `Type`: Persistable
+    typealias SyncQuery = (query: Query, lastSync: Date)
     
     var dynamic: DynamicCacheType? { get }
     
     func save(entity: Type)
     
-    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: (query: Query, lastSync: Date)?)
+    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?)
     
     func find(byId objectId: String) -> Type?
     
@@ -72,7 +73,7 @@ public class AnyNotificationToken: NotificationToken {
 
 internal protocol DynamicCacheType: class {
     
-    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: (query: Query, lastSync: Date)?)
+    func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: CacheType.SyncQuery?)
     
 }
 
@@ -119,7 +120,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
-    private let _saveEntities: (AnyRandomAccessCollection<Type>, (query: Query, lastSync: Date)?) -> Void
+    private let _saveEntities: (AnyRandomAccessCollection<Type>, SyncQuery?) -> Void
     private let _findById: (String) -> T?
     private let _findByQuery: (Query) -> AnyRandomAccessCollection<Type>
     private let _findIdsLmtsByQuery: (Query) -> [String : String]
@@ -162,7 +163,7 @@ class AnyCache<T: Persistable>: CacheType {
         _saveEntity(entity)
     }
     
-    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: (query: Query, lastSync: Date)?) {
+    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?) {
         _saveEntities(entities, syncQuery)
     }
     

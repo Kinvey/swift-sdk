@@ -2042,7 +2042,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "lmt" : Date().toString(),
                     "ect" : Date().toString()
                 ]
-                ])
+            ])
             defer {
                 setURLProtocol(nil)
             }
@@ -2077,7 +2077,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "lmt" : Date().toString(),
                     "ect" : Date().toString()
                 ]
-                ])
+            ])
         }
         mockResponse(error: timeoutError)
         defer {
@@ -2126,6 +2126,144 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationPull = nil
+        }
+    }
+    
+    func testDeltaSet3rdPull() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        
+        var date1: String?
+        var date2: String?
+        var date3: String?
+        
+        do {
+            mockResponse { request in
+                switch request.url!.path {
+                case "/appdata/_kid_/Person":
+                    date1 = Date().toString()
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : date1!],
+                        json: [
+                            [
+                                "_id" : UUID().uuidString,
+                                "name" : UUID().uuidString,
+                                "age" : 0,
+                                "_acl" : [
+                                    "creator" : self.client.activeUser!.userId
+                                ],
+                                "_kmd" : [
+                                    "lmt" : Date().toString(),
+                                    "ect" : Date().toString()
+                                ]
+                            ]
+                        ]
+                    )
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let results = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, 1)
+        }
+        
+        Thread.sleep(until: Date(timeIntervalSinceNow: 1))
+        
+        do {
+            mockResponse { request in
+                switch request.url!.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    date2 = Date().toString()
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                    let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
+                    XCTAssertNotNil(since)
+                    if let since = since {
+                        XCTAssertEqual(since, date1!)
+                    }
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : date2!],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id" : UUID().uuidString,
+                                    "name" : UUID().uuidString,
+                                    "age" : 0,
+                                    "_acl" : [
+                                        "creator" : self.client.activeUser!.userId
+                                    ],
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ]
+                                ]
+                            ],
+                            "deleted" : []
+                        ]
+                    )
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let results = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, 2)
+        }
+        
+        Thread.sleep(until: Date(timeIntervalSinceNow: 1))
+        
+        do {
+            mockResponse { request in
+                switch request.url!.path {
+                case "/appdata/_kid_/Person/_deltaset":
+                    date3 = Date().toString()
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                    let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
+                    XCTAssertNotNil(since)
+                    if let since = since {
+                        XCTAssertNotEqual(since, date1!)
+                        XCTAssertEqual(since, date2!)
+                    }
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : date3!],
+                        json: [
+                            "changed" : [
+                                [
+                                    "_id" : UUID().uuidString,
+                                    "name" : UUID().uuidString,
+                                    "age" : 0,
+                                    "_acl" : [
+                                        "creator" : self.client.activeUser!.userId
+                                    ],
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ]
+                                ]
+                            ],
+                            "deleted" : []
+                        ]
+                    )
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let results = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, 3)
         }
     }
     

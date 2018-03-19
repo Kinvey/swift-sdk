@@ -266,7 +266,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                 deleted: deltaSet.deleted
                             )
                         }
-                        var syncQuery: (query: Query, lastSync: Date)? = nil
+                        var syncQuery: CacheType.SyncQuery? = nil
                         if self.deltaSet, self.isSkipAndLimitNil, let requestStart = response.requestStartHeader {
                             syncQuery = (query: self.query, lastSync: requestStart)
                         }
