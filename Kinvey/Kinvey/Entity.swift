@@ -39,6 +39,14 @@ internal func StringFromClass(cls: AnyClass) -> String {
     return className
 }
 
+public enum ObjectChange<T: Entity> {
+    
+    case change(T)
+    case deleted
+    case error(Swift.Error)
+    
+}
+
 /// Base class for entity classes that are mapped to a collection in Kinvey.
 open class Entity: Object, Persistable {
     
@@ -81,6 +89,9 @@ open class Entity: Object, Persistable {
     /// The `_acl` property mapped in the Kinvey backend.
     @objc
     public dynamic var acl: Acl?
+    
+    internal var realmConfiguration: Realm.Configuration?
+    internal var reference: ThreadSafeReference<Entity>?
     
     /// Default Constructor.
     public required init() {

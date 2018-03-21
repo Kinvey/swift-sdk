@@ -115,4 +115,8 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         return []
     }
     
+    func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<Type>>) -> Void) -> AnyNotificationToken {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
 }
