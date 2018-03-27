@@ -2950,22 +2950,22 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            
-            store.find() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
-                    
-                    if let person = results.first {
+            let query = Query()
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
+
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                        
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
                 expectationFind?.fulfill()
             }
             
@@ -3029,38 +3029,38 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.find() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            weak var expectationFind = expectation(description: "Find")
+            let query = Query()
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
-                    }
                     
-                    let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithFind() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = DataStore<Person>.collection(.cache, deltaSet: true)
         
         var initialCount = Int64(0)
         do {
@@ -3113,31 +3113,33 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
-                self.assertThread()
-                
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
-                case .success(let results):
-                    XCTAssertEqual(results.count, initialCount + 1)
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), results.count)
-                    }
+                            XCTAssertEqual(Int64(cacheCount), persons.count)
+                        }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3186,36 +3188,38 @@ class CacheStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
-                self.assertThread()
-                
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            let query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
-                case .success(let results):
-                    XCTAssertEqual(results.count, initialCount + 2)
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
+                    
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), results.count)
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
@@ -3274,28 +3278,33 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3323,28 +3332,33 @@ class CacheStoreTests: StoreTestCase {
                     }
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
@@ -3422,32 +3436,37 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
-                    }
                     
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3497,32 +3516,37 @@ class CacheStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor C Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
-                    }
                     
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
+                    }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3557,29 +3581,33 @@ class CacheStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor C Barros")
                     }
-                    
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
@@ -3662,33 +3690,38 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
-            store.pull(Query(format: "age == %@", 23)) { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     
-                    if let thirdPerson = results.last {
-                        XCTAssertEqual(thirdPerson.name, "Victor Emmanuel")
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Emmanuel")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3723,28 +3756,33 @@ class CacheStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
-            store.pull(query) { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
@@ -3828,33 +3866,38 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
-            store.pull(query) { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     
-                    if let thirdPerson = results.last {
-                        XCTAssertEqual(thirdPerson.name, "Victor Emmanuel")
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Emmanuel")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -3906,31 +3949,38 @@ class CacheStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            weak var expectationPull = expectation(description: "Pull")
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
-            store.pull(query) { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor C Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Emmanuel")
+                    
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Emmanuel")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
@@ -3989,28 +4039,33 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         
@@ -4060,33 +4115,37 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
         store = DataStore<Person>.collection(.cache, deltaSet: false)
@@ -4135,32 +4194,37 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             
-            weak var expectationPull = expectation(description: "Pull")
-            
-            store.pull() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+            weak var expectationFind = expectation(description: "Find")
+            var options = Options()
+            options.readPolicy = .forceNetwork
+            var query = Query()
+            store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let persons):
+                    XCTAssertNotNil(persons)
                     
-                    if let person = results.first {
+                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    
+                    if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
-                    if let secondPerson = results.last {
-                        XCTAssertEqual(secondPerson.name, "Victor Hugo")
+                    if let person = persons.last {
+                        XCTAssertEqual(person.name, "Victor Hugo")
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
-                expectationPull?.fulfill()
+                expectationFind?.fulfill()
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
-                expectationPull = nil
+                expectationFind = nil
             }
         }
     }
