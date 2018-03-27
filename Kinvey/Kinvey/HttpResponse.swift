@@ -59,14 +59,14 @@ struct HttpResponse: Response {
     }
     
     var etag: String? {
-        return response.allHeaderFields["Etag"] as? String
+        return allHeaderFields?["etag"] as? String
     }
     
     var contentTypeIsJson: Bool {
-        if let contentType = response.allHeaderFields["Content-Type"] as? String {
-            return contentType.hasPrefix("application/json")
+        guard let contentType = allHeaderFields?["content-type"] as? String else {
+            return false
         }
-        return false
+        return contentType == "application/json" || contentType.hasPrefix("application/json;")
     }
 
 }
@@ -77,8 +77,20 @@ extension Response {
         return (self as? HttpResponse)?.response
     }
     
+    var allHeaderFields: [AnyHashable : Any]? {
+        guard let httpResponse = httpResponse else {
+            return nil
+        }
+        return [AnyHashable : Any](uniqueKeysWithValues: httpResponse.allHeaderFields.map {
+            guard let key = $0.key as? String else {
+                return $0
+            }
+            return (key.lowercased(), $0.value)
+        })
+    }
+    
     var requestStartHeader: Date? {
-        return (httpResponse?.allHeaderFields["X-Kinvey-Request-Start"] as? String)?.toDate()
+        return (allHeaderFields?["x-kinvey-request-start"] as? String)?.toDate()
     }
     
 }
