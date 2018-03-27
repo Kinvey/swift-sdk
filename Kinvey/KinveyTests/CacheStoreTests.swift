@@ -3060,7 +3060,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -3115,21 +3115,24 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationPull = expectation(description: "Pull")
             
-            store.find() { results, error in
+            store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
                 
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 1)
+                switch result {
+                case .success(let results):
+                    XCTAssertEqual(results.count, initialCount + 1)
                     
                     if let person = results.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), results.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
-                
                 expectationPull?.fulfill()
             }
             
@@ -3185,13 +3188,12 @@ class CacheStoreTests: StoreTestCase {
             }
             weak var expectationPull = expectation(description: "Pull")
             
-            store.f() { results, error in
+            store.find(options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
                 
-                if let results = results {
-                    XCTAssertEqual(Int64(results.count), initialCount + 2)
+                switch result {
+                case .success(let results):
+                    XCTAssertEqual(results.count, initialCount + 2)
                     
                     if let person = results.first {
                         XCTAssertEqual(person.name, "Victor Barros")
@@ -3201,7 +3203,12 @@ class CacheStoreTests: StoreTestCase {
                     }
                     
                     let cacheCount = self.store.cache?.count(query: nil)
-                    XCTAssertEqual(cacheCount, results.count)
+                    XCTAssertNotNil(cacheCount)
+                    if let cacheCount = cacheCount {
+                        XCTAssertEqual(Int64(cacheCount), results.count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationPull?.fulfill()
