@@ -71,6 +71,47 @@ class Person: Entity {
     
 }
 
+class PersonWithDifferentClassName: Entity {
+    
+    @objc
+    dynamic var personId: String?
+    
+    @objc
+    dynamic var name: String?
+    
+    @objc
+    dynamic var age: Int = 0
+    
+    @objc
+    dynamic var geolocation: GeoPoint?
+    
+    @objc
+    dynamic var address: Address?
+    
+    //testing properties that must be ignored
+    var personDelegate: PersonDelegate?
+    var personObjCDelegate: PersonObjCDelegate?
+    weak var weakPersonObjCDelegate: PersonObjCDelegate?
+    var personStruct: PersonStruct?
+    var personEnum: PersonEnum?
+    var personObjCEnum: PersonObjCEnum?
+    
+    override class func collectionName() -> String {
+        return "Person"
+    }
+    
+    override func propertyMapping(_ map: Map) {
+        super.propertyMapping(map)
+        
+        personId <- ("personId", map[PersistableIdKey])
+        name <- ("name", map["name"])
+        age <- ("age", map["age"])
+        address <- ("address", map["address"], AddressTransform())
+        geolocation <- ("geolocation", map["geolocation"])
+    }
+    
+}
+
 extension Person {
     convenience init(_ block: (Person) -> Void) {
         self.init()
