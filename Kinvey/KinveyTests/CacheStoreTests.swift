@@ -79,7 +79,7 @@ class CacheStoreTests: StoreTestCase {
                         "lmt" : Date().toString(),
                         "ect" : Date().toString()
                     ]
-                ])
+                    ])
             }
         }
         defer {
@@ -1462,7 +1462,7 @@ class CacheStoreTests: StoreTestCase {
             }
         }
     }
-
+    
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithPull() {
         var store = DataStore<Person>.collection(.cache, deltaSet: true)
@@ -1633,27 +1633,27 @@ class CacheStoreTests: StoreTestCase {
                                 "X-Kinvey-Request-Start" : Date().toString()
                             ],
                             json: [
-                                    [
-                                        "_id": "58450d87f29e22207c83a236",
-                                        "name": "Victor Barros",
-                                        "_acl": [
-                                            "creator": "58450d87c077970e38a388ba"
-                                        ],
-                                        "_kmd": [
-                                            "lmt": "2016-12-05T06:47:35.711Z",
-                                            "ect": "2016-12-05T06:47:35.711Z"
-                                        ]
+                                [
+                                    "_id": "58450d87f29e22207c83a236",
+                                    "name": "Victor Barros",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
                                     ],
-                                    [
-                                        "_id": "58450d87f29e22207c83a237",
-                                        "name": "Victor Hugo",
-                                        "_acl": [
-                                            "creator": "58450d87c077970e38a388ba"
-                                        ],
-                                        "_kmd": [
-                                            "lmt": "2016-12-05T06:47:35.711Z",
-                                            "ect": "2016-12-05T06:47:35.711Z"
-                                        ]
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
+                                ],
+                                [
+                                    "_id": "58450d87f29e22207c83a237",
+                                    "name": "Victor Hugo",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
                                 ]
                             ]
                         )
@@ -2962,9 +2962,9 @@ class CacheStoreTests: StoreTestCase {
                 switch result {
                 case .success(let persons):
                     XCTAssertNotNil(persons)
-
+                    
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
-                        
+                    
                     if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
                     }
@@ -3135,8 +3135,8 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                            XCTAssertEqual(Int64(cacheCount), persons.count)
-                        }
+                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                    }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
