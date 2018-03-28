@@ -592,7 +592,7 @@ class CacheStoreTests: StoreTestCase {
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithPull() {
         let store = DataStore<Person>.collection(.cache, deltaSet: true)
-        
+        var sinceTime = Date().toString()
         var initialCount = Int64(0)
         do {
             if !useMockData {
@@ -609,6 +609,7 @@ class CacheStoreTests: StoreTestCase {
                     }
                     switch url.path {
                     case "/appdata/_kid_/\(Person.collectionName())":
+                        sinceTime = Date().toString()
                         let json = [
                             [
                                 "_id": "58450d87f29e22207c83a236",
@@ -624,7 +625,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : sinceTime
                             ],
                             json: json
                         )
@@ -678,6 +679,9 @@ class CacheStoreTests: StoreTestCase {
                     }
                     switch url.path {
                     case "/appdata/_kid_/Person/_deltaset":
+                        let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+                        let sinceInRequest = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
+                        XCTAssert(sinceTime == sinceInRequest)
                         return HttpResponse(
                             headerFields: [
                                 "X-Kinvey-Request-Start" : Date().toString()
@@ -1458,6 +1462,7 @@ class CacheStoreTests: StoreTestCase {
             }
         }
     }
+    
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithPull() {
         var store = DataStore<Person>.collection(.cache, deltaSet: true)
@@ -3574,7 +3579,7 @@ class CacheStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout).value()
+                try! DataStore<Person>.collection(.network).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout)
             }
             defer {
                 if useMockData {
