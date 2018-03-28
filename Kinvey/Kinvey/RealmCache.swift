@@ -54,6 +54,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     lazy var entityType = T.self as! Entity.Type
     lazy var entityTypeClassName = entityType.className()
+    lazy var entityTypeCollectionName = entityType.collectionName()
     
     var dynamic: DynamicCacheType? {
         return self
@@ -690,7 +691,7 @@ extension RealmCache: DynamicCacheType {
     private func saveQuery(syncQuery: SyncQuery?, realm: Realm) {
         if let syncQuery = syncQuery {
             let realmSyncQuery = _QueryCache()
-            realmSyncQuery.collectionName = entityTypeClassName
+            realmSyncQuery.collectionName = entityTypeCollectionName
             if let predicate = syncQuery.query.predicate {
                 realmSyncQuery.query = String(describing: predicate)
             }
