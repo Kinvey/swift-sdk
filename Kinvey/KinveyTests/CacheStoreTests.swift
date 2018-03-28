@@ -1462,7 +1462,7 @@ class CacheStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithPull() {
         var store = DataStore<Person>.collection(.cache, deltaSet: true)
