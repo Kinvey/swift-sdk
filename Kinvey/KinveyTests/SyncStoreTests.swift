@@ -2789,10 +2789,10 @@ class SyncStoreTests: StoreTestCase {
     func testServerSideDeltaSetSyncAdd1Record() {
         let store = DataStore<Person>.collection(.sync, deltaSet: true)
         
-        var initialCount = Int64(0)
+        var initialCount = 0
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         

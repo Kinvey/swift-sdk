@@ -86,7 +86,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func count(multiRequest: MultiRequest<ResultType>) -> Promise<Int?> {
         return Promise<Int?> { fulfill, reject in
-            if autoPagination {
+            if !deltaSet, autoPagination {
                 if let limit = query.limit {
                     fulfill(limit)
                 } else {
@@ -131,7 +131,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     query.limit = min(maxSizePerResultSet, count - offset)
                     let operation = FindOperation(
                         query: query,
-                        deltaSet: self.deltaSet,
+                        deltaSet: false,
                         autoPagination: false,
                         readPolicy: .forceNetwork,
                         validationStrategy: self.validationStrategy,
@@ -291,11 +291,31 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 reject(Error.invalidOperation(description: "You cannot use the skip and limit modifiers on a query when performing a delta set request."))
             }
         }
-        let deltaSet = self.deltaSet &&
-            isSkipAndLimitNil &&
-            !(cache?.isEmpty() ?? true)
+        let deltaSet = self.deltaSet && isSkipAndLimitNil
         if deltaSet, let sinceDate = cache?.lastSync(query: query) {
             return fetchDelta(multiRequest: multiRequest, sinceDate: sinceDate)
+        } else if deltaSet, autoPagination {
+            return Promise<Int> { fulfill, reject in
+                let countOperation = CountOperation<T>(
+                    query: query,
+                    readPolicy: .forceNetwork,
+                    validationStrategy: validationStrategy,
+                    cache: nil,
+                    options: nil
+                )
+                let request = countOperation.execute { result in
+                    switch result {
+                    case .success(let count):
+                        fulfill(count)
+                    case .failure(let error):
+                        reject(error)
+                    }
+                }
+                multiRequest.progress.addChild(request.progress, withPendingUnitCount: 1)
+                multiRequest += request
+            }.then {
+                return self.fetchAutoPagination(multiRequest: multiRequest, count: $0)
+            }
         } else {
             return fetchAll(multiRequest: multiRequest)
         }

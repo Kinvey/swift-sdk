@@ -2496,4 +2496,72 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testDeltaSetAndAutoPagination() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.sync, autoPagination: true, options: Options(deltaSet: true))
+        
+        let count = useMockData ? 3 : try! store.count(options: Options(readPolicy: .forceNetwork)).waitForResult().value()
+        
+        do {
+            if useMockData {
+                var count = 0
+                mockResponse { request in
+                    defer {
+                        count += 1
+                    }
+                    let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                    switch count {
+                    case 0:
+                        switch urlComponents.path {
+                        case "/appdata/\(sharedClient.appKey!)/\(Person.collectionName())/_count":
+                            return HttpResponse(json: ["count" : 3])
+                        default:
+                            XCTFail(urlComponents.path)
+                            return HttpResponse(statusCode: 404, data: Data())
+                        }
+                    case 1, 2, 3:
+                        switch urlComponents.path {
+                        case "/appdata/\(sharedClient.appKey!)/\(Person.collectionName())/":
+                            let skip = urlComponents.queryItems?.filter({ $0.name == "skip" }).first?.value
+                            let limit = urlComponents.queryItems?.filter({ $0.name == "limit" }).first?.value
+                            XCTAssertNotNil(skip)
+                            XCTAssertNotNil(limit)
+                            XCTAssertEqual(limit, "1")
+                            XCTAssertEqual(skip, "\(count - 1)")
+                            return HttpResponse(json: [
+                                [
+                                    "_id" : UUID().uuidString,
+                                    "name" : "Victor",
+                                    "age" : 0,
+                                    "_acl" : [
+                                        "creator" : self.client.activeUser!.userId
+                                    ],
+                                    "_kmd" : [
+                                        "lmt" : Date().toString(),
+                                        "ect" : Date().toString()
+                                    ]
+                                ]
+                            ])
+                        default:
+                            XCTFail(urlComponents.path)
+                            return HttpResponse(statusCode: 404, data: Data())
+                        }
+                    default:
+                        XCTFail(urlComponents.path)
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let results = try store.pull(options: Options(maxSizePerResultSet: 1)).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
 }
