@@ -2766,7 +2766,7 @@ class SyncStoreTests: StoreTestCase {
                 store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                     switch result {
                     case .success(let persons):
-                        XCTAssertEqual(persons.count, Int64(1))
+                        XCTAssertEqual(persons.count, 1)
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
@@ -2830,7 +2830,7 @@ class SyncStoreTests: StoreTestCase {
         store.pull(options: nil) {
             switch $0 {
             case .success(let results):
-                XCTAssertEqual(results.count, Int64(size))
+                XCTAssertEqual(results.count, size)
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }

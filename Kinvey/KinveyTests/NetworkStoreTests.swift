@@ -2827,7 +2827,7 @@ class NetworkStoreTests: StoreTestCase {
         store.group(
             keys: ["name"],
             min: "age",
-            minType: Float.self,
+            minType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
         ) { (result, error) in
             XCTAssertNotNil(result)
@@ -3121,7 +3121,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find(options: Options(readPolicy: .forceNetwork, maxSizePerResultSet: pageSizeLimit)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success(let products):
-                XCTAssertEqual(products.count, Int64(expectedCount))
+                XCTAssertEqual(products.count, expectedCount)
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
