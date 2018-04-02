@@ -2529,20 +2529,23 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             XCTAssertNotNil(limit)
                             XCTAssertEqual(limit, "1")
                             XCTAssertEqual(skip, "\(count - 1)")
-                            return HttpResponse(json: [
-                                [
-                                    "_id" : UUID().uuidString,
-                                    "name" : "Victor",
-                                    "age" : 0,
-                                    "_acl" : [
-                                        "creator" : self.client.activeUser!.userId
-                                    ],
-                                    "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                            return HttpResponse(
+                                headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                                json: [
+                                    [
+                                        "_id" : UUID().uuidString,
+                                        "name" : "Victor",
+                                        "age" : 0,
+                                        "_acl" : [
+                                            "creator" : self.client.activeUser!.userId
+                                        ],
+                                        "_kmd" : [
+                                            "lmt" : Date().toString(),
+                                            "ect" : Date().toString()
+                                        ]
                                     ]
                                 ]
-                            ])
+                            )
                         default:
                             XCTFail(urlComponents.path)
                             return HttpResponse(statusCode: 404, data: Data())
@@ -2559,6 +2562,47 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let results = try store.pull(options: Options(maxSizePerResultSet: 1)).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(results.count, count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            if useMockData {
+                mockResponse { request in
+                    switch request.url!.path {
+                    case "/appdata/\(sharedClient.appKey!)/\(Person.collectionName())/_deltaset":
+                        return HttpResponse(
+                            headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                            json: [
+                                "changed" : [
+                                    [
+                                        "_id" : UUID().uuidString,
+                                        "name" : "Victor",
+                                        "age" : 0,
+                                        "_acl" : [
+                                            "creator" : self.client.activeUser!.userId
+                                        ],
+                                        "_kmd" : [
+                                            "lmt" : Date().toString(),
+                                            "ect" : Date().toString()
+                                        ]
+                                    ]
+                                ],
+                                "deleted" : []
+                            ]
+                        )
+                    default:
+                        XCTFail(request.url!.path)
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let results = try store.pull(options: Options(maxSizePerResultSet: 1)).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, count + 1)
         } catch {
             XCTFail(error.localizedDescription)
         }
