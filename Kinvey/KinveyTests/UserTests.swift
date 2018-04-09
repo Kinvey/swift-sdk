@@ -4183,6 +4183,25 @@ extension UserTests {
         userLockDown(mustIncludeSocialIdentity: true)
     }
     
+    func testUserHashable() {
+        let userId = UUID().uuidString
+        let user1 = User(userId: userId)
+        let user2 = User(userId: userId)
+        XCTAssertEqual(user1.hash, user2.hash)
+        XCTAssertEqual(user1.hashValue, user2.hashValue)
+    }
+    
+    func testUserEquatable() {
+        let userId = UUID().uuidString
+        let user1 = User(userId: userId)
+        let user2 = User(userId: userId)
+        let set = Set<User>([user1])
+        XCTAssertEqual(user1, user2)
+        XCTAssertTrue(user1 == user2)
+        XCTAssertTrue(user1.isEqual(user2))
+        XCTAssertTrue(set.contains(user2))
+    }
+    
 }
 
 #endif

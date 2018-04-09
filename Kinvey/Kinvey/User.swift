@@ -1586,6 +1586,35 @@ open class User: NSObject, Credential, Mappable {
 
 }
 
+extension User /* Hashable */ {
+
+    open override var hashValue: Int {
+        return userId.hashValue
+    }
+    
+    // Obj-C
+    open override var hash: Int {
+        return hashValue
+    }
+
+}
+
+extension User /* Equatable */ {
+
+    open static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.userId == rhs.userId
+    }
+
+    // Obj-C
+    open override func isEqual(_ object: Any?) -> Bool {
+        guard let otherUser = object as? User else {
+            return false
+        }
+        return self == otherUser
+    }
+
+}
+
 /// Holds the Social Identities attached to a specific User
 public struct UserSocialIdentity : StaticMappable {
     
