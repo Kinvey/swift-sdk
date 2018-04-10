@@ -4409,9 +4409,6 @@ extension UserTests {
         userLockDown(mustIncludeSocialIdentity: true)
     }
     
-    func testAuthServiceId() {
-    }
-    
 }
 
 #endif
