@@ -2226,19 +2226,30 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { realtimeRouter in
+        ).then { (realtimeRouter) -> Void in
+            let onNext: (Any?) -> Void = {
+                if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
+                    self.cache?.save(entity: obj)
+                    onNext(obj)
+                }
+            }
             realtimeRouter.subscribe(
                 channel: self.channelName,
                 context: self,
-                onNext: {
-                    if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
-                        self.cache?.save(entity: obj)
-                        onNext(obj)
-                    }
-                },
+                onNext: onNext,
                 onStatus: onStatus,
                 onError: onError
             )
+            let client = options?.client ?? self.client
+            if let activeUser = client.activeUser {
+                realtimeRouter.subscribe(
+                    channel: "\(self.channelName).u-\(activeUser.userId)",
+                    context: self,
+                    onNext: onNext,
+                    onStatus: onStatus,
+                    onError: onError
+                )
+            }
         }.then {
             subscription()
         }.catch { error in
