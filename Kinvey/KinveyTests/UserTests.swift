@@ -4187,19 +4187,32 @@ extension UserTests {
         let userId = UUID().uuidString
         let user1 = User(userId: userId)
         let user2 = User(userId: userId)
+        let user3 = User(userId: UUID().uuidString)
         XCTAssertEqual(user1.hash, user2.hash)
         XCTAssertEqual(user1.hashValue, user2.hashValue)
+        XCTAssertNotEqual(user1.hash, user3.hash)
+        XCTAssertNotEqual(user2.hash, user3.hash)
+        XCTAssertNotEqual(user1.hashValue, user3.hashValue)
+        XCTAssertNotEqual(user2.hashValue, user3.hashValue)
     }
     
     func testUserEquatable() {
         let userId = UUID().uuidString
         let user1 = User(userId: userId)
         let user2 = User(userId: userId)
+        let user3 = User(userId: UUID().uuidString)
         let set = Set<User>([user1])
         XCTAssertEqual(user1, user2)
+        XCTAssertNotEqual(user1, user3)
+        XCTAssertNotEqual(user2, user3)
         XCTAssertTrue(user1 == user2)
+        XCTAssertFalse(user1 == user3)
+        XCTAssertFalse(user2 == user3)
         XCTAssertTrue(user1.isEqual(user2))
+        XCTAssertFalse(user1.isEqual(user3))
+        XCTAssertFalse(user2.isEqual(user3))
         XCTAssertTrue(set.contains(user2))
+        XCTAssertFalse(set.contains(user3))
     }
     
 }
