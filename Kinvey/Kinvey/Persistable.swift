@@ -32,6 +32,35 @@ public protocol Persistable: Mappable {
     
 }
 
+extension Persistable where Self: Entity {
+    
+    public func observe(_ block: @escaping (ObjectChange<Self>) -> Void) -> AnyNotificationToken? {
+        let completionHandler = { (objectChange: RealmSwift.ObjectChange) in
+            switch objectChange {
+            case .change(let propertyChanges):
+                for propertyChange in propertyChanges {
+                    if let newValue = propertyChange.newValue, !(newValue is NSNull) {
+                        self[propertyChange.name] = newValue
+                    } else {
+                        self[propertyChange.name] = nil
+                    }
+                }
+                block(.change(self))
+            case .deleted:
+                block(.deleted)
+            case .error(let error):
+                block(.error(error))
+            }
+        }
+        guard let realmConfiguration = realmConfiguration, let reference = reference else {
+            return nil
+        }
+        let realm = try! Realm(configuration: realmConfiguration)
+        return AnyNotificationToken(realm.resolve(reference)!.observe(completionHandler))
+    }
+    
+}
+
 struct AnyTransform: TransformType {
     
     private let _transformFromJSON: (Any?) -> Any?
