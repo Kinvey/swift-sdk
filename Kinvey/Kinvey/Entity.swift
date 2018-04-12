@@ -165,6 +165,35 @@ open class Entity: Object, Persistable {
     
 }
 
+extension Entity /* Hashable */ {
+    
+    open override var hashValue: Int {
+        return entityId?.hashValue ?? 0
+    }
+    
+    // Obj-C
+    open override var hash: Int {
+        return hashValue
+    }
+    
+}
+
+extension Entity /* Equatable */ {
+    
+    open static func == (lhs: Entity, rhs: Entity) -> Bool {
+        return lhs.entityId == rhs.entityId
+    }
+    
+    // Obj-C
+    open override func isEqual(_ object: Any?) -> Bool {
+        guard let otherEntity = object as? Entity else {
+            return false
+        }
+        return self == otherEntity
+    }
+    
+}
+
 let mappingOperationQueue: OperationQueue = {
     let operationQueue = OperationQueue()
     operationQueue.name = "Kinvey Property Mapping"
