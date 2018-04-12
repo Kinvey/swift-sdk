@@ -2178,6 +2178,10 @@ open class DataStore<T: Persistable> where T: NSObject {
         return "\(self.client.appKey!).c-\(self.collectionName)"
     }()
     
+    private func channelName(forUser user: User) -> String {
+        return "\(self.channelName).u-\(user.userId)"
+    }
+    
     private func realtimeRouter() throws -> RealtimeRouter {
         guard let user = client.activeUser else {
             throw Error.invalidOperation(description: "Active User not found")
@@ -2243,7 +2247,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             let client = options?.client ?? self.client
             if let activeUser = client.activeUser {
                 realtimeRouter.subscribe(
-                    channel: "\(self.channelName).u-\(activeUser.userId)",
+                    channel: self.channelName(forUser: activeUser),
                     context: self,
                     onNext: onNext,
                     onStatus: onStatus,
@@ -2274,8 +2278,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { realtimeRouter in
+        ).then { (realtimeRouter) -> Void in
             realtimeRouter.unsubscribe(channel: self.channelName, context: self)
+            let client = options?.client ?? self.client
+            if let activeUser = client.activeUser {
+                realtimeRouter.unsubscribe(channel: self.channelName(forUser: activeUser), context: self)
+            }
         }.then {
             completionHandler(.success($0))
         }.catch { error in
