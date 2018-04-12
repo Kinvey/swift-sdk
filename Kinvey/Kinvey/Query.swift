@@ -60,21 +60,43 @@ public final class Query: NSObject, BuilderType, Mappable {
         switch expression.expressionType {
         case .keyPath:
             var keyPath = expression.keyPath
-            var persistableType = self.persistableType
+            var type: AnyClass? = self.persistableType as? AnyClass
             if keyPath.contains(".") {
                 var keyPaths = [String]()
                 for item in keyPath.components(separatedBy: ".") {
-                    if let (keyPath, _) = persistableType?.propertyMapping(item) {
+                    if let persistableType = type as? Persistable.Type,
+                        let (keyPath, _) = persistableType.propertyMapping(item)
+                    {
                         keyPaths.append(keyPath)
+                    } else if let type = type, let objectType = type as? NSObject.Type, type is BaseMappable.Type {
+                        let className = StringFromClass(cls: type)
+                        if kinveyProperyMapping[className] == nil {
+                            currentMappingClass = className
+                            mappingOperationQueue.addOperation {
+                                if kinveyProperyMapping[className] == nil {
+                                    kinveyProperyMapping[className] = PropertyMap()
+                                }
+                                let obj = objectType.init()
+                                let _ = (obj as! BaseMappable).toJSON()
+                            }
+                            mappingOperationQueue.waitUntilAllOperationsAreFinished()
+                        }
+                        if let kinveyMappingClassType = kinveyProperyMapping[className],
+                            let (keyPath, _) = kinveyMappingClassType[item]
+                        {
+                            keyPaths.append(keyPath)
+                        } else {
+                            keyPaths.append(item)
+                        }
                     } else {
                         keyPaths.append(item)
                     }
-                    if let persistableTypeTmp = persistableType {
-                        persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
+                    if let _type = type {
+                        type = ObjCRuntime.typeForPropertyName(_type, propertyName: item)
                     }
                 }
                 keyPath = keyPaths.joined(separator: ".")
-            } else if let (translatedKeyPath, _) = persistableType?.propertyMapping(keyPath) {
+            } else if let persistableType = type as? Persistable.Type, let (translatedKeyPath, _) = persistableType.propertyMapping(keyPath) {
                 keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
