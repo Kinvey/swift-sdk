@@ -578,10 +578,23 @@ class HttpRequestFactory: RequestFactory {
             "code" : code
         ]
         set(&params, clientId: options?.authServiceId)
+        let client = options?.client ?? self.client
+        var credential: Credential
+        if let authServiceId = options?.authServiceId,
+            let appKey = client.appKey,
+            let appSecret = client.appSecret
+        {
+            credential = BasicAuthCredential(
+                username: "\(appKey).\(authServiceId)",
+                password: appSecret
+            )
+        } else {
+            credential = client
+        }
         let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
-            credential: client,
+            credential: credential,
             body: Body.formUrlEncoded(params: params),
             options: options
         )
@@ -646,10 +659,23 @@ class HttpRequestFactory: RequestFactory {
             "refresh_token" : refreshToken
         ]
         set(&params, clientId: options?.authServiceId)
+        let client = options?.client ?? self.client
+        var credential: Credential
+        if let authServiceId = options?.authServiceId,
+            let appKey = client.appKey,
+            let appSecret = client.appSecret
+        {
+            credential = BasicAuthCredential(
+                username: "\(appKey).\(authServiceId)",
+                password: appSecret
+            )
+        } else {
+            credential = client
+        }
         let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: Endpoint.oauthToken(client: client),
-            credential: client,
+            credential: credential,
             body: Body.formUrlEncoded(params: params),
             options: options
         )
