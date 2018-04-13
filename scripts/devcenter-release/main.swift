@@ -119,6 +119,9 @@ func convertBody(body: String) -> String {
 }
 
 func changeDownloadsJson(pathURL: URL) {
+    guard FileManager.default.fileExists(atPath: pathURL.path) else {
+        fatalError("Path does not exists: \(pathURL.path)")
+    }
     var data = try! Data(contentsOf: pathURL)
     var json = String(data: data, encoding: .utf8)!
     let regex = try! NSRegularExpression(pattern: "\"ios\"\\s*:\\s*\\{(\\s*\\n*\\s*\"[^\"]*\"\\s*:\\s*(\"[^\"]*\"|\\{(\\s*\\n*\\s*\"[^\"]*\"\\s*:\\s*\"[^\"]*\"\\s*,?\\s*\\n*\\s*)*\\})\\s*,?\\s*\\n*\\s*)*\\}")
@@ -154,6 +157,9 @@ func changeDownloadsJson(pathURL: URL) {
 }
 
 func changeChangelog(pathURL: URL, body: String) {
+    guard FileManager.default.fileExists(atPath: pathURL.path) else {
+        fatalError("Path does not exists: \(pathURL.path)")
+    }	
     var data = try! Data(contentsOf: pathURL)
     var content = String(data: data, encoding: .utf8)!
     
@@ -169,11 +175,17 @@ func changeChangelog(pathURL: URL, body: String) {
 }
 
 func changeLanguageSupport(pathURL: URL) {
+    guard FileManager.default.fileExists(atPath: pathURL.path) else {
+        fatalError("Path does not exists: \(pathURL.path)")
+    }
     var data = try! Data(contentsOf: pathURL)
     var content = String(data: data, encoding: .utf8)!
     
     let regex = try! NSRegularExpression(pattern: "\\| Swift 3\\.1 and above \\| (\\d+\\.\\d+) \\| \\[Download Version (\\d+\\.\\d+\\.\\d+)\\]\\(([^\\)]*)\\) \\|")
-    let match = regex.firstMatch(in: content, range: NSRange(location: 0, length: content.count))!
+    guard let match = regex.firstMatch(in: content, range: NSRange(location: 0, length: content.count)) else {
+        print("Language Support not detected!")
+        return
+    }
     let versionWithoutPatchRange = match.range(at: 1)
     let versionRange = match.range(at: 2)
     let downloadURLRange = match.range(at: 3)
