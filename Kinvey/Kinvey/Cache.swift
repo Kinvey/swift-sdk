@@ -41,6 +41,28 @@ internal protocol CacheType: class {
     
     func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type>
     
+    func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<Type>>) -> Void) -> AnyNotificationToken
+    
+}
+
+public protocol NotificationToken {
+    
+    func invalidate()
+    
+}
+
+public class AnyNotificationToken: NotificationToken {
+    
+    private let _invalidate: () -> Void
+    
+    init<NotificationTokenType: NotificationToken>(_ notificationToken: NotificationTokenType) {
+        self._invalidate = notificationToken.invalidate
+    }
+    
+    public func invalidate() {
+        _invalidate()
+    }
+    
 }
 
 internal protocol DynamicCacheType: class {
@@ -102,6 +124,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _removeByQuery: (Query) -> Int
     private let _clear: (Query?) -> Void
     private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
+    private let _observe: (Query?, @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken
     
     typealias `Type` = T
     
@@ -123,6 +146,7 @@ class AnyCache<T: Persistable>: CacheType {
         _removeByQuery = cache.remove(byQuery:)
         _clear = cache.clear(query:)
         _detach = cache.detach(entities: query:)
+        _observe = cache.observe(_:completionHandler:)
     }
     
     func save(entity: T) {
@@ -170,6 +194,10 @@ class AnyCache<T: Persistable>: CacheType {
     
     func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type> {
         return _detach(entities, query)
+    }
+    
+    func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken {
+        return _observe(query, completionHandler)
     }
     
 }

@@ -9,6 +9,7 @@
 import XCTest
 @testable import Kinvey
 import Nimble
+import RealmSwift
 
 class SyncStoreTests: StoreTestCase {
     
@@ -2766,7 +2767,7 @@ class SyncStoreTests: StoreTestCase {
                 store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                     switch result {
                     case .success(let persons):
-                        XCTAssertEqual(persons.count, Int64(1))
+                        XCTAssertEqual(persons.count, 1)
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
@@ -2830,7 +2831,7 @@ class SyncStoreTests: StoreTestCase {
         store.pull(options: nil) {
             switch $0 {
             case .success(let results):
-                XCTAssertEqual(results.count, Int64(size))
+                XCTAssertEqual(results.count, size)
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
@@ -2845,6 +2846,115 @@ class SyncStoreTests: StoreTestCase {
         
         waitForExpectations(timeout: defaultTimeout * (Double(size) / 10_000.0)) { error in
             expectationPull = nil
+        }
+    }
+    
+    func testObjectObserve() {
+        let dataStore = DataStore<Person>.collection(.sync)
+        
+        let personId = UUID().uuidString
+        
+        let person = Person()
+        person.personId = personId
+        person.name = "Victor"
+        XCTAssertNil(person.realm)
+        XCTAssertNil(person.realmConfiguration)
+        XCTAssertNil(person.reference)
+        
+        let person2 = try! dataStore.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertNil(person2.realm)
+        XCTAssertNotNil(person2.realmConfiguration)
+        XCTAssertNotNil(person2.reference)
+        
+        var notified = false
+        
+        weak var expectationObserve = expectation(description: "Observe")
+        
+        let notificationToken = person2.observe { (objectChange: Kinvey.ObjectChange<Person>) in
+            notified = true
+            switch objectChange {
+            case .change(let person):
+                XCTAssertEqual(person.name, "Victor Barros")
+            case .deleted:
+                XCTFail()
+            case .error(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationObserve?.fulfill()
+        }
+        
+        let realm = try! Realm(configuration: person2.realmConfiguration!)
+        let person3 = Person()
+        person3.personId = personId
+        person3.name = "Victor Barros"
+        try! realm.write {
+            realm.add(person3, update: true)
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            notificationToken?.invalidate()
+            expectationObserve = nil
+        }
+        
+        XCTAssertTrue(notified)
+        
+        XCTAssertEqual(person.name, "Victor Barros")
+        XCTAssertEqual(person2.name, "Victor Barros")
+    }
+    
+    func testCollectionObserve() {
+        let dataStore = DataStore<Person>.collection(.sync)
+        
+        let personId = UUID().uuidString
+        let personName = "Victor"
+        
+        var count = 0
+        weak var expectationObserveInitial = expectation(description: "Observe Initial")
+        weak var expectationObserveUpdate = expectation(description: "Observe Update")
+        
+        let notificationToken = dataStore.observe {
+            defer {
+                count += 1
+            }
+            switch $0 {
+            case .initial(let results):
+                XCTAssertEqual(count, 0)
+                XCTAssertEqual(results.count, 0)
+                expectationObserveInitial?.fulfill()
+            case .update(let results, let deletions, let insertions, let modifications):
+                XCTAssertEqual(count, 1)
+                XCTAssertEqual(results.count, 1)
+                XCTAssertNotNil(results.first)
+                if let person = results.first {
+                    XCTAssertEqual(person.personId, personId)
+                    XCTAssertEqual(person.name, personName)
+                }
+                XCTAssertEqual(deletions.count, 0)
+                XCTAssertEqual(insertions.count, 1)
+                XCTAssertEqual(insertions.first, 0)
+                XCTAssertEqual(modifications.count, 0)
+                expectationObserveUpdate?.fulfill()
+            case .error(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        let person = Person()
+        person.personId = personId
+        person.name = personName
+        XCTAssertNil(person.realm)
+        XCTAssertNil(person.realmConfiguration)
+        XCTAssertNil(person.reference)
+        
+        let person2 = try! dataStore.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertNil(person2.realm)
+        XCTAssertNotNil(person2.realmConfiguration)
+        XCTAssertNotNil(person2.reference)
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            notificationToken?.invalidate()
+            expectationObserveInitial = nil
+            expectationObserveUpdate = nil
         }
     }
     

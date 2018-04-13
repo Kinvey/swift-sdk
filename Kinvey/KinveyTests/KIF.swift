@@ -30,10 +30,10 @@ extension KIFTestActor {
 
 extension XCTestCase {
     @discardableResult
-    @nonobjc func waitForCondition(_ condition: @autoclosure @escaping (()) -> Bool, negateCondition: Bool = false, timeout: CFTimeInterval = 10) -> Bool {
+    @nonobjc func waitForCondition(_ condition: @autoclosure @escaping () -> Bool, negateCondition: Bool = false, timeout: CFTimeInterval = 10) -> Bool {
         var fulfilled = false
         let observer = CFRunLoopObserverCreateWithHandler(nil, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { observer, activity in
-            fulfilled = condition(())
+            fulfilled = condition()
             if fulfilled {
                 CFRunLoopStop(CFRunLoopGetCurrent())
             } else {

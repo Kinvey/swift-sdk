@@ -97,6 +97,10 @@ class QueryTest: XCTestCase {
         }
     }
     
+    func testQueryAcl() {
+        XCTAssertEqual(encodeQuery(Query(query: Query(format: "acl.readers IN %@", ["1"]), persistableType: Person.self)), "query=\(encodeURL(["_acl.r" : ["$in" : ["1"]]]))")
+    }
+    
     func testQueryGt() {
         XCTAssertEqual(encodeQuery(Query(format: "age > %@", 30)), "query=\(encodeURL(["age" : ["$gt" : 30]]))")
     }

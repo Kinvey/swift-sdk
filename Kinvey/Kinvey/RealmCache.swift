@@ -38,6 +38,16 @@ fileprivate let typesNeedsTranslation = [
     }
 #endif
 
+public enum CollectionChange<CollectionType> {
+    
+    case initial(CollectionType)
+    
+    case update(CollectionType, deletions: [Int], insertions: [Int], modifications: [Int])
+    
+    case error(Swift.Error)
+    
+}
+
 internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
     typealias `Type` = T
@@ -267,10 +277,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    fileprivate func results(_ query: Query) -> AnyRandomAccessCollection<Entity> {
-        log.verbose("Fetching by query: \(query)")
-        
+    fileprivate func realmResults(_ query: Query) -> Results<Entity>? {
         var realmResults = self.realm.objects(self.entityType)
+        
         if let predicate = query.predicate {
             if let exception = tryBlock({
                 realmResults = realmResults.filter(self.translate(predicate: predicate))
@@ -278,12 +287,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             {
                 switch exception.name.rawValue {
                 case "Invalid property name":
-                    return AnyRandomAccessCollection([])
+                    return nil
                 default:
                     fatalError(reason)
                 }
             }
         }
+        
         if let sortDescriptors = query.sortDescriptors {
             for sortDescriptor in sortDescriptors {
                 realmResults = realmResults.sorted(byKeyPath: sortDescriptor.key!, ascending: sortDescriptor.ascending)
@@ -294,7 +304,17 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
-        return AnyRandomAccessCollection(realmResults)
+        return realmResults
+    }
+    
+    fileprivate func results(_ query: Query) -> AnyRandomAccessCollection<Entity> {
+        log.verbose("Fetching by query: \(query)")
+        
+        if let realmResults = self.realmResults(query) {
+            return AnyRandomAccessCollection(realmResults)
+        } else {
+            return AnyRandomAccessCollection([])
+        }
     }
 
     fileprivate func detach(_ entity: Object, props: [String]) -> Object {
@@ -319,6 +339,16 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
             
         obj.setValuesForKeys(json)
+        
+        if let entityObj = obj as? Entity,
+            entityObj.reference == nil || entityObj.reference?.isInvalidated ?? false,
+            let entity = entity as? Entity,
+            entity.realm != nil,
+            let realmConfiguration = entity.realmConfiguration
+        {
+            entityObj.realmConfiguration = realmConfiguration
+            entityObj.reference = ThreadSafeReference<Entity>(to: entity)
+        }
             
         return obj
 
@@ -334,7 +364,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             let end = max(min(skip + limit, Int(entities.count)), 0)
             arrayEnumerate = AnyRandomAccessCollection(Array(entities)[begin ..< end])
         } else {
-            arrayEnumerate = AnyRandomAccessCollection(entities)
+            arrayEnumerate = entities
         }
         let detachedResults = arrayEnumerate.lazy.map {
             self.detach($0 as! Object, props: self.propertyNames) as! T
@@ -349,14 +379,19 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         if let predicate = query?.predicate {
             results = results.filter(predicate: predicate)
         }
-        return detach(entities: AnyRandomAccessCollection(results), query: query)
+        return detach(entities: results, query: query)
     }
     
     func save(entity: T) {
         log.verbose("Saving object: \(entity)")
+        var newEntity: Entity!
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
+                newEntity = self.realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
+            }
+            if let entity = entity as? Entity {
+                entity.realmConfiguration = self.realm.configuration
+                entity.reference = ThreadSafeReference(to: newEntity)
             }
         }
     }
@@ -367,9 +402,17 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         executor.executeAndWait {
             let realm = self.realm
             let entityType = self.entityType
+            var newEntities = [Entity]()
             try! realm.write {
                 for entity in entities {
-                    realm.create(entityType, value: entity, update: true)
+                    let newEntity = realm.create(entityType, value: entity, update: true)
+                    newEntities.append(newEntity)
+                }
+            }
+            for (entity, newEntity) in zip(entities, newEntities) {
+                if let entity = entity as? Entity {
+                    entity.realmConfiguration = realm.configuration
+                    entity.reference = ThreadSafeReference(to: newEntity)
                 }
             }
         }
@@ -511,6 +554,31 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
+    func observe(_ query: Query? = nil, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken {
+        var notificationToken: RealmSwift.NotificationToken!
+        executor.executeAndWait {
+            let query = query ?? Query()
+            if let results = self.realmResults(query) {
+                notificationToken = results.observe {
+                    switch $0 {
+                    case .initial(let realmResults):
+                        let results = self.detach(AnyRandomAccessCollection(realmResults), query: query)
+                        completionHandler(.initial(results))
+                    case .update(let realmResults, let deletions, let insertions, let modifications):
+                        let results = self.detach(AnyRandomAccessCollection(realmResults), query: query)
+                        completionHandler(.update(results, deletions: deletions, insertions: insertions, modifications: modifications))
+                    case .error(let error):
+                        completionHandler(.error(error))
+                    }
+                }
+            }
+        }
+        return AnyNotificationToken(notificationToken)
+    }
+    
+}
+
+extension RealmSwift.NotificationToken: NotificationToken {
 }
 
 extension RealmCache: DynamicCacheType {

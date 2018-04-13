@@ -103,4 +103,36 @@ class EntityTestCase: XCTestCase {
         XCTAssertNil(clazz)
     }
     
+    func testEntityHashable() {
+        let entityId = UUID().uuidString
+        let entity1 = Person { $0.entityId = entityId }
+        let entity2 = Person { $0.entityId = entityId }
+        let entity3 = Person { $0.entityId = UUID().uuidString }
+        XCTAssertEqual(entity1.hash, entity2.hash)
+        XCTAssertEqual(entity1.hashValue, entity2.hashValue)
+        XCTAssertNotEqual(entity1.hash, entity3.hash)
+        XCTAssertNotEqual(entity2.hash, entity3.hash)
+        XCTAssertNotEqual(entity1.hashValue, entity3.hashValue)
+        XCTAssertNotEqual(entity2.hashValue, entity3.hashValue)
+    }
+    
+    func testEntityEquatable() {
+        let entityId = UUID().uuidString
+        let entity1 = Person { $0.entityId = entityId }
+        let entity2 = Person { $0.entityId = entityId }
+        let entity3 = Person { $0.entityId = UUID().uuidString }
+        let set = Set<Person>([entity1])
+        XCTAssertEqual(entity1, entity2)
+        XCTAssertNotEqual(entity1, entity3)
+        XCTAssertNotEqual(entity2, entity3)
+        XCTAssertTrue(entity1 == entity2)
+        XCTAssertFalse(entity1 == entity3)
+        XCTAssertFalse(entity2 == entity3)
+        XCTAssertTrue(entity1.isEqual(entity2))
+        XCTAssertFalse(entity1.isEqual(entity3))
+        XCTAssertFalse(entity2.isEqual(entity3))
+        XCTAssertTrue(set.contains(entity2))
+        XCTAssertFalse(set.contains(entity3))
+    }
+    
 }

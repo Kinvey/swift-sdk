@@ -15,3 +15,15 @@ public protocol Credential {
     var authorizationHeader: String? { get }
 
 }
+
+struct BasicAuthCredential: Credential {
+    
+    let username: String
+    let password: String
+    
+    var authorizationHeader: String? {
+        let token = "\(username):\(password)".data(using: .utf8)?.base64EncodedString() ?? ""
+        return "Basic \(token)"
+    }
+    
+}

@@ -135,7 +135,7 @@ class PerformanceTest: XCTestCase {
             dataStore.clearCache()
             
             for (sapCustomerNumber, expectedCount) in sapCustomerNumbers {
-                var count = Int64(0)
+                var count = 0
                 for offset in stride(from: 0, to: expectedCount, by: limit) {
                     var expectationFindLocal: XCTestExpectation? = self.expectation(description: "Find Local \(sapCustomerNumber) \(offset)/\(expectedCount)")
                     let expectationFindNetwork = self.expectation(description: "Find Network \(sapCustomerNumber) \(offset)/\(expectedCount)")
@@ -160,7 +160,7 @@ class PerformanceTest: XCTestCase {
                         }
                     }
                 }
-                XCTAssertEqual(count, Int64(expectedCount))
+                XCTAssertEqual(count, expectedCount)
             }
             
             self.waitForExpectations(timeout: TimeInterval(UInt16.max))
@@ -299,7 +299,7 @@ class PerformanceTest: XCTestCase {
                     } else {
                         switch result {
                         case .success(let results):
-                            XCTAssertEqual(results.count, Int64(expectedCount))
+                            XCTAssertEqual(results.count, expectedCount)
                         case .failure(let error):
                             XCTFail(error.localizedDescription)
                         }
