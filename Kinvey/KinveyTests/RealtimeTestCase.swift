@@ -282,11 +282,8 @@ class RealtimeTestCase: KinveyTestCase {
             
             do {
                 weak var expectationSave = self.expectation(description: "Save")
+                weak var expectationSave2 = self.expectation(description: "Save 2")
                 weak var expectationMessage = self.expectation(description: "Message")
-                weak var expectationError = self.expectation(description: "Error")
-                weak var expectationStatusConnected = self.expectation(description: "Status Connected")
-                weak var expectationStatusReconnected = self.expectation(description: "Status Reconnected")
-                weak var expectationStatusUnexpectedDisconnected = self.expectation(description: "Status Unexpected Disconnected")
                 
                 let person = Person()
                 person.name = UUID().uuidString
@@ -300,11 +297,21 @@ class RealtimeTestCase: KinveyTestCase {
                         switch count {
                         case 0:
                             return HttpResponse(statusCode: 204, data: Data())
-                        case 1:
+                        case 1, 2:
                             var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                             json["_id"] = UUID().uuidString
                             if self.useMockData {
-                                MockPubNub.default.publish(json, toChannel: "\(self.client.appKey!).c-\(Person.collectionName())")
+                                if let acl = json["_acl"] as? JsonDictionary,
+                                    let globalRead = acl["gr"] as? Bool,
+                                    !globalRead, // globalRead == false
+                                    let readers = acl["r"] as? [String]
+                                {
+                                    for reader in readers {
+                                        MockPubNub.default.publish(json, toChannel: "\(self.client.appKey!).c-\(Person.collectionName()).u-\(reader)")
+                                    }
+                                } else {
+                                    MockPubNub.default.publish(json, toChannel: "\(self.client.appKey!).c-\(Person.collectionName())")
+                                }
                             }
                             return HttpResponse(json: json)
                         default:
@@ -319,32 +326,31 @@ class RealtimeTestCase: KinveyTestCase {
                 }
                 
                 var subscribed = false
-                
+                var messageCount = 0
                 dataStoreSync.subscribe(subscription: {
                     subscribed = true
                 }, onNext: {
+                    messageCount += 1
                     XCTAssertEqual($0.name, person.name)
                     
                     expectationMessage?.fulfill()
+                    expectationMessage = nil
                 }, onStatus: {
                     switch $0 {
-                    case .connected:
-                        expectationStatusConnected?.fulfill()
-                    case .reconnected:
-                        expectationStatusReconnected?.fulfill()
-                    case .unexpectedDisconnect:
-                        expectationStatusUnexpectedDisconnected?.fulfill()
+                    case .connected, .reconnected, .disconnected:
+                        break
                     default:
-                        XCTFail()
+                        XCTFail("\($0)")
                     }
                 }, onError: {
-                    XCTAssertEqual($0.localizedDescription, "Timeout")
-                    
-                    expectationError?.fulfill()
+                    XCTFail($0.localizedDescription)
                 })
                 
                 if useMockData {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(10)) {
+                        guard expectationMessage != nil else {
+                            return
+                        }
                         MockPubNub.default.status(category: .PNConnectedCategory)
                         MockPubNub.default.error(
                             channels: ["\(self.client.appKey!).c-\(Person.collectionName())"],
@@ -357,7 +363,7 @@ class RealtimeTestCase: KinveyTestCase {
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                    dataStoreNetwork.save(person, writePolicy: nil) { (result: Result<Person, Swift.Error>) in
+                    dataStoreNetwork.save(person, options: Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
                         switch result {
                         case .success:
                             break
@@ -367,18 +373,35 @@ class RealtimeTestCase: KinveyTestCase {
                         
                         expectationSave?.fulfill()
                     }
+                    
+                    let person2 = Person {
+                        $0.name = person.name
+                        
+                        let acl = Acl()
+                        acl.globalRead.value = false
+                        acl.globalWrite.value = false
+                        acl.readers = [user.userId]
+                        $0.acl = acl
+                    }
+                    dataStoreNetwork.save(person2, options: Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
+                        switch result {
+                        case .success:
+                            break
+                        case .failure:
+                            XCTFail()
+                        }
+                        
+                        expectationSave2?.fulfill()
+                    }
                 }
                 
                 waitForExpectations(timeout: defaultTimeout) { (error) in
                     expectationMessage = nil
                     expectationSave = nil
-                    expectationError = nil
-                    expectationStatusConnected = nil
-                    expectationStatusReconnected = nil
-                    expectationStatusUnexpectedDisconnected = nil
                 }
                 
                 XCTAssertTrue(subscribed)
+                XCTAssertEqual(messageCount, 2)
             }
             
             do {

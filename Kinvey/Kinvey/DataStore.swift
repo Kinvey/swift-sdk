@@ -2178,6 +2178,10 @@ open class DataStore<T: Persistable> where T: NSObject {
         return "\(self.client.appKey!).c-\(self.collectionName)"
     }()
     
+    private func channelName(forUser user: User) -> String {
+        return "\(self.channelName).u-\(user.userId)"
+    }
+    
     private func realtimeRouter() throws -> RealtimeRouter {
         guard let user = client.activeUser else {
             throw Error.invalidOperation(description: "Active User not found")
@@ -2226,19 +2230,30 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { realtimeRouter in
+        ).then { (realtimeRouter) -> Void in
+            let onNext: (Any?) -> Void = {
+                if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
+                    self.cache?.save(entity: obj)
+                    onNext(obj)
+                }
+            }
             realtimeRouter.subscribe(
                 channel: self.channelName,
                 context: self,
-                onNext: {
-                    if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
-                        self.cache?.save(entity: obj)
-                        onNext(obj)
-                    }
-                },
+                onNext: onNext,
                 onStatus: onStatus,
                 onError: onError
             )
+            let client = options?.client ?? self.client
+            if let activeUser = client.activeUser {
+                realtimeRouter.subscribe(
+                    channel: self.channelName(forUser: activeUser),
+                    context: self,
+                    onNext: onNext,
+                    onStatus: onStatus,
+                    onError: onError
+                )
+            }
         }.then {
             subscription()
         }.catch { error in
@@ -2263,8 +2278,12 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { realtimeRouter in
+        ).then { (realtimeRouter) -> Void in
             realtimeRouter.unsubscribe(channel: self.channelName, context: self)
+            let client = options?.client ?? self.client
+            if let activeUser = client.activeUser {
+                realtimeRouter.unsubscribe(channel: self.channelName(forUser: activeUser), context: self)
+            }
         }.then {
             completionHandler(.success($0))
         }.catch { error in
