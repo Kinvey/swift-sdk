@@ -405,18 +405,19 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             let realm = self.realm
             let entityType = self.entityType
             var newEntities = [Entity]()
+            newEntities.reserveCapacity(entities.count)
             try! realm.write {
                 for entity in entities {
                     let newEntity = realm.create(entityType, value: entity, update: true)
                     newEntities.append(newEntity)
                 }
+                self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
             for (entity, newEntity) in zip(entities, newEntities) {
                 if let entity = entity as? Entity {
                     entity.realmConfiguration = realm.configuration
                     entity.reference = ThreadSafeReference(to: newEntity)
                 }
-                self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
         }
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
