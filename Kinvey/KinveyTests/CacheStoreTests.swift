@@ -1697,10 +1697,10 @@ class CacheStoreTests: StoreTestCase {
     func testCacheStoreDisabledDeltasetWithSync() {
         let store = DataStore<Person>.collection(.cache)
         
-        var initialCount = Int64(0)
+        var initialCount = 0
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         
@@ -3134,7 +3134,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3214,7 +3214,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3299,7 +3299,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3353,7 +3353,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3461,7 +3461,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3541,7 +3541,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3602,7 +3602,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3716,7 +3716,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3777,7 +3777,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3891,7 +3891,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -3974,7 +3974,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -4059,7 +4059,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -4139,7 +4139,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
@@ -4218,7 +4218,7 @@ class CacheStoreTests: StoreTestCase {
                     let cacheCount = self.store.cache?.count(query: nil)
                     XCTAssertNotNil(cacheCount)
                     if let cacheCount = cacheCount {
-                        XCTAssertEqual(Int64(cacheCount), persons.count)
+                        XCTAssertEqual(cacheCount, persons.count)
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
