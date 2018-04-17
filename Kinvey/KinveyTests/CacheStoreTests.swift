@@ -3066,10 +3066,10 @@ class CacheStoreTests: StoreTestCase {
     func testCacheStoreDeltaset1ExtraItemAddedWithFind() {
         let store = DataStore<Person>.collection(.cache, deltaSet: true)
         
-        var initialCount = Int64(0)
+        var initialCount = 0
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         
@@ -3126,7 +3126,7 @@ class CacheStoreTests: StoreTestCase {
                 case .success(let persons):
                     XCTAssertNotNil(persons)
                     
-                    XCTAssertEqual(Int64(persons.count), initialCount + 1)
+                    XCTAssertEqual(persons.count, initialCount + 1)
                     
                     if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
@@ -3201,7 +3201,7 @@ class CacheStoreTests: StoreTestCase {
                 case .success(let persons):
                     XCTAssertNotNil(persons)
                     
-                    XCTAssertEqual(Int64(persons.count), initialCount + 2)
+                    XCTAssertEqual(persons.count, initialCount + 2)
                     
                     if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Barros")
@@ -4234,40 +4234,37 @@ class CacheStoreTests: StoreTestCase {
     
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreFindByIdNotUsingDeltaset() {
-        var store = DataStore<Person>.collection(.cache, deltaSet: true)
+        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToFind = ""
-        var initialCount = Int64(0)
+        var initialCount = 0
         var readPolicy = ReadPolicy.forceNetwork
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         
         do {
             if useMockData {
                 idToFind = "58450d87f29e22207c83a236"
-                readPolicy = ReadPolicy.forceLocal
                 mockResponse { (request) -> HttpResponse in
                     guard let url = request.url else {
                         XCTAssertNotNil(request.url)
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     switch url.path {
-                    case "/appdata/_kid_/\(Person.collectionName())/"+idToFind:
+                    case "/appdata/_kid_/\(Person.collectionName())/\(idToFind)":
                         let json = [
-                            [
-                                "_id": "58450d87f29e22207c83a236",
-                                "name": "Victor Barros",
-                                "_acl": [
-                                    "creator": "58450d87c077970e38a388ba"
-                                ],
-                                "_kmd": [
-                                    "lmt": "2016-12-05T06:47:35.711Z",
-                                    "ect": "2016-12-05T06:47:35.711Z"
-                                ]
+                            "_id": idToFind,
+                            "name": "Victor Barros",
+                            "_acl": [
+                                "creator": "58450d87c077970e38a388ba"
+                            ],
+                            "_kmd": [
+                                "lmt": "2016-12-05T06:47:35.711Z",
+                                "ect": "2016-12-05T06:47:35.711Z"
                             ]
-                        ]
+                        ] as JsonDictionary
                         return HttpResponse(
                             headerFields: [
                                 "X-Kinvey-Request-Start" : Date().toString()
@@ -4293,13 +4290,14 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(idToFind, readPolicy:readPolicy) { result, error in
+            store.find(idToFind, options: Options(readPolicy: readPolicy)) {
                 self.assertThread()
-                XCTAssertNotNil(result)
-                XCTAssertNil(error)
                 
-                if let result = result {
+                switch $0 {
+                case .success(let result):
                     XCTAssertEqual(result.personId, idToFind)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -4318,22 +4316,20 @@ class CacheStoreTests: StoreTestCase {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     switch url.path {
-                    case "/appdata/_kid_/Person/"+idToFind:
+                    case "/appdata/_kid_/\(Person.collectionName())/\(idToFind)":
                         return HttpResponse(
                             headerFields: [
                                 "X-Kinvey-Request-Start" : Date().toString()
                             ],
                             json: [
-                                [
-                                    "_id": "58450d87f29e22207c83a237",
-                                    "name": "Victor Hugo",
-                                    "_acl": [
-                                        "creator": "58450d87c077970e38a388ba"
-                                    ],
-                                    "_kmd": [
-                                        "lmt": "2016-12-05T06:47:35.711Z",
-                                        "ect": "2016-12-05T06:47:35.711Z"
-                                    ]
+                                "_id": idToFind,
+                                "name": "Victor Hugo",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
                                 ]
                             ]
                         )
@@ -4354,13 +4350,14 @@ class CacheStoreTests: StoreTestCase {
             }
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(idToFind, readPolicy:readPolicy) { result, error in
+            store.find(idToFind, options: Options(readPolicy: readPolicy)) {
                 self.assertThread()
-                XCTAssertNotNil(result)
-                XCTAssertNil(error)
                 
-                if let result = result {
+                switch $0 {
+                case .success(let result):
                     XCTAssertEqual(result.personId, idToFind)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
