@@ -189,4 +189,8 @@ class ClientTestCase: KinveyTestCase {
         XCTAssertEqual(Client().micApiVersion, .v3)
     }
     
+    func testLogNetworkDisabled() {
+        XCTAssertFalse(Client().logNetworkEnabled)
+    }
+    
 }
