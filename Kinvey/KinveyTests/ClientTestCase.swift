@@ -193,4 +193,72 @@ class ClientTestCase: KinveyTestCase {
         XCTAssertFalse(Client().logNetworkEnabled)
     }
     
+    func testDeviceInfoHeader() {
+        if useMockData {
+            mockResponse { request in
+                guard let allHTTPHeaderFields = request.allHTTPHeaderFields else {
+                    XCTAssertNotNil(request.allHTTPHeaderFields)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                
+                let headers = Dictionary<String, String>(uniqueKeysWithValues: allHTTPHeaderFields.map({ (pair: (key: String, value: String)) -> (key: String, value: String) in
+                    return (key: pair.key.lowercased(), value: pair.value)
+                }))
+                
+                let deviceInfoJsonString = headers["x-kinvey-device-info"]
+                guard let data = deviceInfoJsonString?.data(using: .utf8) else {
+                    XCTAssertNotNil(deviceInfoJsonString?.data(using: .utf8))
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+                do {
+                    let jsonObject = try JSONSerialization.jsonObject(with: data)
+                    XCTAssertTrue(jsonObject is JsonDictionary)
+                    if let jsonObject = jsonObject as? JsonDictionary {
+                        XCTAssertNotNil(jsonObject["hv"] as? Int)
+                        XCTAssertNotNil(jsonObject["md"] as? String)
+                        XCTAssertNotNil(jsonObject["os"] as? String)
+                        XCTAssertNotNil(jsonObject["ov"] as? String)
+                        XCTAssertNotNil(jsonObject["sdk"] as? String)
+                        XCTAssertNotNil(jsonObject["pv"] as? String)
+                    }
+                } catch {
+                    XCTFail(error.localizedDescription)
+                }
+                
+                return HttpResponse(json: [
+                    "version" : "3.9.28",
+                    "kinvey" : "hello My App",
+                    "appName" : "My App",
+                    "environmentName" : "My Environment"
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationPing = self.expectation(description: "Ping")
+        
+        Kinvey.sharedClient.ping { (envInfo, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(envInfo)
+            XCTAssertNil(error)
+            
+            if let envInfo = envInfo {
+                XCTAssertEqual(envInfo.version, "3.9.28")
+                XCTAssertEqual(envInfo.kinvey, "hello My App")
+                XCTAssertEqual(envInfo.appName, "My App")
+                XCTAssertEqual(envInfo.environmentName, "My Environment")
+            }
+            
+            expectationPing?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationPing = nil
+        }
+    }
+    
 }

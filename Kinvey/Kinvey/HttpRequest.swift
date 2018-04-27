@@ -20,13 +20,13 @@ struct HeaderField {
     
 }
 
-struct KinveyHeaderField {
+enum KinveyHeaderField: String {
     
-    static let requestId = "X-Kinvey-Request-Id"
-    static let clientAppVersion = "X-Kinvey-Client-App-Version"
-    static let customRequestProperties = "X-Kinvey-Custom-Request-Properties"
-    static let apiVersion = "X-Kinvey-API-Version"
-    static let deviceInformation = "X-Kinvey-Device-Information"
+    case requestId = "X-Kinvey-Request-Id"
+    case clientAppVersion = "X-Kinvey-Client-App-Version"
+    case customRequestProperties = "X-Kinvey-Custom-Request-Properties"
+    case apiVersion = "X-Kinvey-API-Version"
+    case deviceInfo = "X-Kinvey-Device-Info"
     
 }
 
@@ -105,13 +105,13 @@ enum HttpHeader {
             case .authorization:
                 return HttpHeaderKey.authorization.rawValue
             case .apiVersion:
-                return KinveyHeaderField.apiVersion
+                return KinveyHeaderField.apiVersion.rawValue
             case .requestId:
-                return KinveyHeaderField.requestId
+                return KinveyHeaderField.requestId.rawValue
             case .userAgent:
                 return HeaderField.userAgent
             case .deviceInfo:
-                return KinveyHeaderField.deviceInformation
+                return KinveyHeaderField.deviceInfo.rawValue
             }
         }
     }
@@ -128,16 +128,8 @@ enum HttpHeader {
             case .userAgent:
                 return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
             case .deviceInfo:
-                #if os(iOS) || os(tvOS)
-                    let device = UIDevice.current
-                    return "\(device.model) \(device.systemName) \(device.systemVersion)"
-                #elseif os(OSX)
-                    let operatingSystemVersion = ProcessInfo.processInfo.operatingSystemVersion
-                    return "OSX \(operatingSystemVersion.majorVersion).\(operatingSystemVersion.minorVersion).\(operatingSystemVersion.patchVersion)"
-                #elseif os(watchOS)
-                    let device = WKInterfaceDevice.current()
-                    return "\(device.model) \(device.systemName) \(device.systemVersion)"
-                #endif
+                let data = try! JSONEncoder().encode(DeviceInfo())
+                return String(data: data, encoding: .utf8)
             }
         }
     }
@@ -180,6 +172,18 @@ extension URLRequest {
             description += "\n\n\(bodyString)"
         }
         return description
+    }
+    
+    mutating func setValue<Header: RawRepresentable>(_ value: String?, forHTTPHeaderField header: Header) where Header.RawValue == String {
+        setValue(value, forHTTPHeaderField: header.rawValue)
+    }
+    
+    mutating func addValue<Header: RawRepresentable>(_ value: String, forHTTPHeaderField header: Header) where Header.RawValue == String {
+        addValue(value, forHTTPHeaderField: header.rawValue)
+    }
+    
+    func value<Header: RawRepresentable>(forHTTPHeaderField header: Header) -> String? where Header.RawValue == String {
+        return value(forHTTPHeaderField: header.rawValue)
     }
     
 }
