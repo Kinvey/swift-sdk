@@ -99,7 +99,11 @@ extension XCGLogger.Level {
     }
 }
 
-let log = XCGLogger.default
+let log: XCGLogger = {
+    let log = XCGLogger.default
+    log.outputLevel = .warning
+    return log
+}()
 
 func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) -> Never  {
     let message = message()
