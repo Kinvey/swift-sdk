@@ -91,7 +91,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         let params = params != nil ? Params(params!) : nil
         var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
-        Promise<JsonDictionary> { fulfill, reject in
+        Promise<JsonDictionary> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -101,12 +101,12 @@ open class CustomEndpoint {
                 resultType: Result<JsonDictionary, Swift.Error>.self
             ) { data, response, error in
                 if let response = response, response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
-                    fulfill(json)
+                    resolver.fulfill(json)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { json in
+        }.done { json in
             completionHandler?(json, nil)
         }.catch { error in
             completionHandler?(nil, error)
@@ -125,7 +125,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         let params = params != nil ? Params(params!) : nil
         var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
-        Promise<[JsonDictionary]> { fulfill, reject in
+        Promise<[JsonDictionary]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -135,12 +135,12 @@ open class CustomEndpoint {
                 resultType: Result<[JsonDictionary], Swift.Error>.self
             ) { data, response, error in
                 if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
-                    fulfill(json)
+                    resolver.fulfill(json)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { jsonArray in
+        }.done { jsonArray in
             completionHandler?(jsonArray, nil)
         }.catch { error in
             completionHandler?(nil, error)
@@ -198,7 +198,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
-        Promise<JsonDictionary> { fulfill, reject in
+        Promise<JsonDictionary> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -209,12 +209,12 @@ open class CustomEndpoint {
                     response.isOK,
                     let json = client.responseParser.parse(data)
                 {
-                    fulfill(json)
+                    resolver.fulfill(json)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { json in
+        }.done { json in
             completionHandler?(.success(json))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -272,7 +272,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
-        Promise<[JsonDictionary]> { fulfill, reject in
+        Promise<[JsonDictionary]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -283,12 +283,12 @@ open class CustomEndpoint {
                     response.isOK,
                     let json = client.responseParser.parseArray(data)
                 {
-                    fulfill(json)
+                    resolver.fulfill(json)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { json in
+        }.done { json in
             completionHandler?(.success(json))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -348,7 +348,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<T, Swift.Error>> {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<T, Swift.Error>>!
-        Promise<T> { fulfill, reject in
+        Promise<T> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -359,12 +359,12 @@ open class CustomEndpoint {
                     response.isOK,
                     let obj: T = client.responseParser.parse(data)
                 {
-                    fulfill(obj)
+                    resolver.fulfill(obj)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { obj in
+        }.done { obj in
             completionHandler?(.success(obj))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -422,7 +422,7 @@ open class CustomEndpoint {
     ) -> AnyRequest<Result<[T], Swift.Error>> {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<[T], Swift.Error>>!
-        Promise<[T]> { fulfill, reject in
+        Promise<[T]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
@@ -433,12 +433,12 @@ open class CustomEndpoint {
                     response.isOK,
                     let objArray: [T] = client.responseParser.parse(data)
                 {
-                    fulfill(objArray)
+                    resolver.fulfill(objArray)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { objArray in
+        }.done { objArray in
             completionHandler?(.success(objArray))
         }.catch { error in
             completionHandler?(.failure(error))

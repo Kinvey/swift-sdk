@@ -139,7 +139,7 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = { "SWIFT_VERSION" => "4.0" }
 	
-  s.dependency "PromiseKit", "~> 4.0"
+  s.dependency "PromiseKit", "~> 6.0"
   s.dependency "KeychainAccess", "~> 3.0"
   s.dependency "Realm", "~> 3.0"
   s.dependency "RealmSwift", "~> 3.0"

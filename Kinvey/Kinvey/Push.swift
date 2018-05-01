@@ -318,9 +318,9 @@ open class Push {
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             guard let deviceToken = deviceToken else {
-                reject(Error.invalidOperation(description: "Device token not found"))
+                resolver.reject(Error.invalidOperation(description: "Device token not found"))
                 return
             }
             
@@ -333,12 +333,12 @@ open class Push {
                     response.isOK
                 {
                     self.deviceToken = nil
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { success in
+        }.done { success in
             completionHandler?(.success(success))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -355,19 +355,19 @@ open class Push {
     ) {
         self.deviceToken = deviceToken
         let block: () -> Void = {
-            Promise<Bool> { fulfill, reject in
+            Promise<Bool> { resolver in
                 let request = self.client.networkRequestFactory.buildPushRegisterDevice(
                     deviceToken,
                     options: options
                 )
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK {
-                        fulfill(true)
+                        resolver.fulfill(true)
                     } else {
-                        reject(buildError(data, response, error, self.client))
+                        resolver.reject(buildError(data, response, error, self.client))
                     }
                 }
-            }.then { success in
+            }.done { success in
                 completionHandler?(.success(success))
             }.catch { error in
                 completionHandler?(.failure(error))

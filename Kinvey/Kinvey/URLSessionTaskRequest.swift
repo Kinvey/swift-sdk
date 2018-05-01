@@ -75,7 +75,7 @@ class URLSessionTaskRequest<Result>: TaskProgressRequest, Request {
     
     func downloadTaskWithURL(_ file: File) -> Promise<(Data, Response)> {
         self.file = file
-        return Promise<(Data, Response)> { fulfill, reject in
+        return Promise<(Data, Response)> { resolver in
             if self.client.logNetworkEnabled {
                 do {
                     log.debug("GET \(self.url)")
@@ -90,11 +90,11 @@ class URLSessionTaskRequest<Result>: TaskProgressRequest, Request {
                         }
                     }
                     
-                    fulfill((data, HttpResponse(response: response)))
+                    resolver.fulfill((data, HttpResponse(response: response)))
                 } else if let error = error {
-                    reject(error)
+                    resolver.reject(error)
                 } else {
-                    reject(Error.invalidResponse(httpResponse: response as? HTTPURLResponse, data: nil))
+                    resolver.reject(Error.invalidResponse(httpResponse: response as? HTTPURLResponse, data: nil))
                 }
             }
             

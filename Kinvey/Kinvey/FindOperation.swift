@@ -81,10 +81,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
     
     private func count(multiRequest: MultiRequest<ResultType>) -> Promise<Int?> {
-        return Promise<Int?> { fulfill, reject in
+        return Promise<Int?> { resolver in
             if autoPagination {
                 if let limit = query.limit {
-                    fulfill(limit)
+                    resolver.fulfill(limit)
                 } else {
                     let countOperation = CountOperation<T>(
                         query: query,
@@ -96,22 +96,22 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     let request = countOperation.execute { result in
                         switch result {
                         case .success(let count):
-                            fulfill(count)
+                            resolver.fulfill(count)
                         case .failure(let error):
-                            reject(error)
+                            resolver.reject(error)
                         }
                     }
                     multiRequest.progress.addChild(request.progress, withPendingUnitCount: 1)
                     multiRequest += request
                 }
             } else {
-                fulfill(nil)
+                resolver.fulfill(nil)
             }
         }
     }
     
     private func fetchAutoPagination(multiRequest: MultiRequest<ResultType>, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
-        return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+        return Promise<AnyRandomAccessCollection<T>> { resolver in
             let maxSizePerResultSet = options?.maxSizePerResultSet ?? MaxSizePerResultSet
             let nPages = Int64(ceil(Double(count) / Double(maxSizePerResultSet)))
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
@@ -121,7 +121,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 guard let offset = offsetIterator.next() else {
                     return nil
                 }
-                return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+                return Promise<AnyRandomAccessCollection<T>> { resolver in
                     let query = Query(self.query)
                     query.skip = offset
                     query.limit = min(maxSizePerResultSet, count - offset)
@@ -138,9 +138,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     let request = operation.execute { result in
                         switch result {
                         case .success(let results):
-                            fulfill(isCacheNotNil ? AnyRandomAccessCollection<T>([]) : results)
+                            resolver.fulfill(isCacheNotNil ? AnyRandomAccessCollection<T>([]) : results)
                         case .failure(let error):
-                            reject(error)
+                            resolver.reject(error)
                         }
                     }
                     progress.addChild(request.progress, withPendingUnitCount: 1)
@@ -148,7 +148,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
-            when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).then(on: DispatchQueue.global(qos: .default)) { results -> Void in
+            when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
                     result = cache.find(byQuery: self.query)
@@ -156,15 +156,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
                 }
                 progress.completedUnitCount += 1
-                fulfill(result)
+                resolver.fulfill(result)
             }.catch { error in
-                reject(error)
+                resolver.reject(error)
             }
         }
     }
     
     private func fetch(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
-        return Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+        return Promise<AnyRandomAccessCollection<T>> { resolver in
             let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
             let fields: Set<String>? = deltaSet ? [Entity.Key.entityId, "\(Entity.Key.metadata).\(Metadata.Key.lastModifiedTime)"] : nil
             let request = client.networkRequestFactory.buildAppDataFindByQuery(
@@ -179,7 +179,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     if let validationStrategy = self.validationStrategy,
                         let error = validationStrategy.validate(jsonArray: jsonArray)
                     {
-                        reject(error)
+                        resolver.reject(error)
                         return
                     }
                     self.resultsHandler?(jsonArray)
@@ -198,9 +198,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             let request = operation.executeNetwork {
                                 switch $0 {
                                 case .success(let results):
-                                    fulfill(results)
+                                    resolver.fulfill(results)
                                 case .failure(let error):
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             }
                             return
@@ -217,7 +217,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             for offset in stride(from: 0, to: allIds.count, by: MaxIdsPerQuery) {
                                 let limit = min(offset + MaxIdsPerQuery, allIds.count - 1)
                                 let allIds = Set<String>(allIds[offset...limit])
-                                let promise = Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+                                let promise = Promise<AnyRandomAccessCollection<T>> { resolver in
                                     let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
                                     let operation = FindOperation<T>(
                                         query: query,
@@ -235,15 +235,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                     operation.execute { (result) -> Void in
                                         switch result {
                                         case .success(let results):
-                                            fulfill(results)
+                                            resolver.fulfill(results)
                                         case .failure(let error):
-                                            reject(error)
+                                            resolver.reject(error)
                                         }
                                     }
                                 }
                                 promises.append(promise)
                             }
-                            when(fulfilled: promises).then { results -> Void in
+                            when(fulfilled: promises).done { results in
                                 if self.mustRemoveCachedRecords {
                                     self.removeCachedRecords(
                                         cache,
@@ -257,13 +257,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                 self.executeLocal {
                                     switch $0 {
                                     case .success(let results):
-                                        fulfill(results)
+                                        resolver.fulfill(results)
                                     case .failure(let error):
-                                        reject(error)
+                                        resolver.reject(error)
                                     }
                                 }
-                                }.catch { error in
-                                    reject(error)
+                            }.catch { error in
+                                resolver.reject(error)
                             }
                         } else if allIds.count > 0 {
                             let query = Query(format: "\(Entity.Key.entityId) IN %@", allIds)
@@ -294,22 +294,22 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                     self.executeLocal {
                                         switch $0 {
                                         case .success(let results):
-                                            fulfill(results)
+                                            resolver.fulfill(results)
                                         case .failure(let error):
-                                            reject(error)
+                                            resolver.reject(error)
                                         }
                                     }
                                 case .failure(let error):
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             }
                         } else {
                             self.executeLocal {
                                 switch $0 {
                                 case .success(let results):
-                                    fulfill(results)
+                                    resolver.fulfill(results)
                                 case .failure(let error):
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             }
                         }
@@ -345,10 +345,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                                 cache.save(entities: entities)
                             }
                         }
-                        fulfill(entities)
+                        resolver.fulfill(entities)
                     }
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
             multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
@@ -366,7 +366,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             } else {
                 return self.fetch(multiRequest: request)
             }
-        }.then { (results) -> Void in
+        }.done { results in
             let result: ResultType = .success(results)
             if self.mustSetRequestResult {
                 request.result = result

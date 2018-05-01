@@ -356,7 +356,7 @@ open class FileStore<FileType: File> {
             options: options,
             resultType: Result<FileType, Swift.Error>.self
         )
-        let promise = Promise<FileType> { fulfill, reject in
+        let promise = Promise<FileType> { resolver in
             request.execute() { (data, response, error) -> Void in
                 if let response = response, response.isOK,
                     let json = self.client.responseParser.parse(data),
@@ -366,9 +366,9 @@ open class FileStore<FileType: File> {
                         cache.save(newFile, beforeSave: nil)
                     }
                     
-                    fulfill(newFile)
+                    resolver.fulfill(newFile)
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
             if let requests = requests {
@@ -456,7 +456,7 @@ open class FileStore<FileType: File> {
             fromSource: .data(data),
             options: options,
             requests: requests
-        ).then { (file, skip) -> Void in
+        ).done { (file, skip) -> Void in
             let result: Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
@@ -481,7 +481,7 @@ open class FileStore<FileType: File> {
             fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
             options: options,
             requests: requests
-        ).then { (file, skip) -> Void in
+        ).done { (file, skip) -> Void in
             let result: Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
@@ -506,7 +506,8 @@ open class FileStore<FileType: File> {
             fromSource: .stream(stream),
             options: options,
             requests: requests
-        ).then { (file, skip) -> Void in
+        ).done { (arg) -> Void in
+            let (file, _) = arg
             let result: Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
@@ -524,7 +525,7 @@ open class FileStore<FileType: File> {
         options: Options?,
         requests: MultiRequest<ResultType>
     ) -> Promise<(file: FileType, skip: Int?)> {
-        return Promise<(file: FileType, skip: Int?)> { fulfill, reject in //creating bucket
+        return Promise<(file: FileType, skip: Int?)> { resolver in //creating bucket
             if file.size.value == nil {
                 switch source {
                 case let .data(data):
@@ -548,9 +549,9 @@ open class FileStore<FileType: File> {
                         let json = self.client.responseParser.parse(data),
                         let newFile = FileType(JSON: json)
                     {
-                        fulfill((file: newFile, skip: nil))
+                        resolver.fulfill((file: newFile, skip: nil))
                     } else {
-                        reject(buildError(data, response, error, self.client))
+                        resolver.reject(buildError(data, response, error, self.client))
                     }
                 }
             }
@@ -606,15 +607,15 @@ open class FileStore<FileType: File> {
                         {
                             let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
                             if let endRange = Int(endRangeString) {
-                                fulfill((file: file, skip: endRange))
+                                resolver.fulfill((file: file, skip: endRange))
                             } else {
-                                reject(Error.invalidResponse(httpResponse: response, data: data))
+                                resolver.reject(Error.invalidResponse(httpResponse: response, data: data))
                             }
                         } else {
-                            fulfill((file: file, skip: nil))
+                            resolver.fulfill((file: file, skip: nil))
                         }
                     } else {
-                        reject(buildError(data, HttpResponse(response: response), error, self.client))
+                        resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
                     }
                 }
                 let urlSessionTaskRequest = URLSessionTaskRequest<ResultType>(client: client, options: options, task: dataTask)
@@ -634,7 +635,7 @@ open class FileStore<FileType: File> {
         options: Options?,
         requests: MultiRequest<ResultType>
     ) -> Promise<FileType> {
-        return Promise<FileType> { fulfill, reject in
+        return Promise<FileType> { resolver in
             var request = URLRequest(url: file.uploadURL!)
             request.httpMethod = "PUT"
             if let uploadHeaders = file.uploadHeaders {
@@ -658,9 +659,9 @@ open class FileStore<FileType: File> {
                         break
                     }
                     
-                    fulfill(file)
+                    resolver.fulfill(file)
                 } else {
-                    reject(buildError(data, HttpResponse(response: response), error, self.client))
+                    resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
                 }
             }
             
@@ -754,7 +755,7 @@ open class FileStore<FileType: File> {
                 requests: requests
             )
             return promise
-        }.then { file -> Void in
+        }.done { file -> Void in
             requests.progress.completedUnitCount = requests.progress.totalUnitCount
             let result: Result<FileType, Swift.Error> = .success(file)
             requests.result = result
@@ -816,7 +817,7 @@ open class FileStore<FileType: File> {
             options: options,
             requests: requests
         )
-        promise.then { file in
+        promise.done { file in
             completionHandler?(.success(file))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -835,7 +836,7 @@ open class FileStore<FileType: File> {
         promise: Promise<URL>
     ) {
         let downloadTaskRequest = URLSessionTaskRequest<Result<URL, Swift.Error>>(client: client, options: options, url: downloadURL)
-        let promise = Promise<URL> { fulfill, reject in
+        let promise = Promise<URL> { resolver in
             let executor = Executor()
             downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, response, error) in
                 if let response = response, response.isOK || response.isNotModified, let url = url {
@@ -847,7 +848,7 @@ open class FileStore<FileType: File> {
                             pathURL = file.pathURL
                         }
                         if let pathURL = pathURL, response.isNotModified {
-                            fulfill(pathURL)
+                            resolver.fulfill(pathURL)
                         } else {
                             let fileManager = FileManager()
                             if let entityId = entityId
@@ -874,19 +875,19 @@ open class FileStore<FileType: File> {
                                         }
                                     }
                                     
-                                    fulfill(toURL)
+                                    resolver.fulfill(toURL)
                                 } catch let error {
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             } else {
-                                reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
+                                resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
                             }
                         }
                     } else {
-                        fulfill(url)
+                        resolver.fulfill(url)
                     }
                 } else {
-                    reject(buildError(nil, response, error, self.client))
+                    resolver.reject(buildError(nil, response, error, self.client))
                 }
             }
         }
@@ -896,10 +897,9 @@ open class FileStore<FileType: File> {
     @discardableResult
     fileprivate func downloadFileData(_ file: FileType, downloadURL: URL, options: Options?) -> (request: URLSessionTaskRequest<Any>, promise: Promise<Data>) {
         let downloadTaskRequest = URLSessionTaskRequest<Any>(client: client, options: options, url: downloadURL)
-        let promise = downloadTaskRequest.downloadTaskWithURL(file).then { data, response -> Promise<Data> in
-            return Promise<Data> { fulfill, reject in
-                fulfill(data)
-            }
+        let promise = downloadTaskRequest.downloadTaskWithURL(file).then { (arg) -> Promise<Data> in
+            let (data, _) = arg
+            return Promise<Data>.value(data)
         }
         return (request: downloadTaskRequest, promise: promise)
     }
@@ -985,7 +985,7 @@ open class FileStore<FileType: File> {
         
         if storeType == .cache || storeType == .network {
             let multiRequest = MultiRequest<Result<(FileType, URL), Swift.Error>>()
-            Promise<(FileType, URL)> { fulfill, reject in
+            Promise<(FileType, URL)> { resolver in
                 if let downloadURL = file.downloadURL,
                     file.publicAccessible ||
                     (
@@ -993,21 +993,21 @@ open class FileStore<FileType: File> {
                         file.expiresAt!.timeIntervalSinceNow > 0
                     )
                 {
-                    fulfill((file, downloadURL))
+                    resolver.fulfill((file, downloadURL))
                 } else {
                     let (_, promise) = getFileMetadata(
                         file,
                         options: options,
                         requests: multiRequest
                     )
-                    promise.then { (file) -> Void in
+                    promise.done { (file) -> Void in
                         if let downloadURL = file.downloadURL {
-                            fulfill((file, downloadURL))
+                            resolver.fulfill((file, downloadURL))
                         } else {
                             throw Error.invalidResponse(httpResponse: nil, data: nil)
                         }
                     }.catch { error in
-                        reject(error)
+                        resolver.reject(error)
                     }
                 }
             }.then { (file, downloadURL) -> Promise<(FileType, URL)> in
@@ -1019,11 +1019,9 @@ open class FileStore<FileType: File> {
                 )
                 multiRequest += request
                 return promise.then { localUrl in
-                    return Promise<(FileType, URL)> { fulfill, reject in
-                        fulfill((file, localUrl))
-                    }
+                    return Promise<(FileType, URL)>.value((file, localUrl))
                 }
-            }.then { (args) -> Void in
+            }.done { (args) -> Void in
                 let result: Result<(FileType, URL), Swift.Error> = .success(args)
                 multiRequest.result = result
                 completionHandler?(result)
@@ -1092,13 +1090,13 @@ open class FileStore<FileType: File> {
         
         let multiRequest = MultiRequest<Result<(FileType, Data), Swift.Error>>()
         multiRequest.progress = Progress(totalUnitCount: 100)
-        Promise<(FileType, DownloadStage)> { fulfill, reject in
+        Promise<(FileType, DownloadStage)> { resolver in
             if let entityId = file.fileId,
                 let cachedFile = cachedFile(entityId),
                 let path = file.path,
                 let data = try? Data(contentsOf: URL(fileURLWithPath: path))
             {
-                fulfill((cachedFile, .data(data)))
+                resolver.fulfill((cachedFile, .data(data)))
                 return
             }
             
@@ -1109,14 +1107,14 @@ open class FileStore<FileType: File> {
                     file.expiresAt!.timeIntervalSinceNow > 0
                 )
             {
-                fulfill((file, .downloadURL(downloadURL)))
+                resolver.fulfill((file, .downloadURL(downloadURL)))
             } else {
                 let (_, promise) = getFileMetadata(
                     file,
                     options: options,
                     requests: multiRequest
                 )
-                promise.then { file -> Void in
+                promise.done { file in
                     if let downloadURL = file.downloadURL,
                         file.publicAccessible ||
                         (
@@ -1124,19 +1122,17 @@ open class FileStore<FileType: File> {
                             file.expiresAt!.timeIntervalSinceNow > 0
                         )
                     {
-                        fulfill((file, .downloadURL(downloadURL)))
+                        resolver.fulfill((file, .downloadURL(downloadURL)))
                     } else {
                         throw Error.invalidResponse(httpResponse: nil, data: nil)
                     }
                 }.catch { error in
-                    reject(error)
+                    resolver.reject(error)
                 }
             }
-        }.then { (file, downloadStage) in
-            return Promise<(FileType, DownloadStage)> { fulfill, reject in
-                multiRequest.progress.completedUnitCount = 1
-                fulfill((file, downloadStage))
-            }
+        }.then { (args) -> Promise<(FileType, FileStore<FileType>.DownloadStage)> in
+            multiRequest.progress.completedUnitCount = 1
+            return Promise<(FileType, DownloadStage)>.value(args)
         }.then { (file, downloadStage) -> Promise<Data> in
             switch downloadStage {
             case .downloadURL(let downloadURL):
@@ -1149,11 +1145,9 @@ open class FileStore<FileType: File> {
                 multiRequest += request
                 return promise
             case .data(let data):
-                return Promise<Data> { fulfill, reject in
-                    fulfill(data)
-                }
+                return Promise<Data>.value(data)
             }
-        }.then { data -> Void in
+        }.done { data in
             multiRequest.progress.completedUnitCount = multiRequest.progress.totalUnitCount
             let result: Result<(FileType, Data), Swift.Error> = .success((file, data))
             multiRequest.result = result
@@ -1210,7 +1204,7 @@ open class FileStore<FileType: File> {
             options: options,
             resultType: Result<UInt, Swift.Error>.self
         )
-        Promise<UInt> { fulfill, reject in
+        Promise<UInt> { resolver in
             request.execute({ (data, response, error) -> Void in
                 if let response = response, response.isOK,
                     let json = self.client.responseParser.parse(data),
@@ -1220,15 +1214,15 @@ open class FileStore<FileType: File> {
                         cache.remove(file)
                     }
                     
-                    fulfill(count)
+                    resolver.fulfill(count)
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             })
-        }.then { count in
-            completionHandler?(.success(count))
-        }.catch { error in
-            completionHandler?(.failure(error))
+        }.done {
+            completionHandler?(.success($0))
+        }.catch {
+            completionHandler?(.failure($0))
         }
         return AnyRequest(request)
     }
@@ -1281,19 +1275,19 @@ open class FileStore<FileType: File> {
             options: options,
             resultType: Result<[FileType], Swift.Error>.self
         )
-        Promise<[FileType]> { fulfill, reject in
+        Promise<[FileType]> { resolver in
             request.execute { (data, response, error) -> Void in
                 if let response = response,
                     response.isOK,
                     let jsonArray = self.client.responseParser.parseArray(data)
                 {
                     let files = [FileType](JSONArray: jsonArray)
-                    fulfill(files)
+                    resolver.fulfill(files)
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { files in
+        }.done { files in
             completionHandler?(.success(files))
         }.catch { error in
             completionHandler?(.failure(error))
