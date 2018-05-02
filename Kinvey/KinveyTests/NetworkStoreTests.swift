@@ -1164,6 +1164,41 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodObjectIdMissing() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                expect { () -> Void in
+                    for _ in results {
+                        XCTFail()
+                    }
+                    XCTFail()
+                }.to(throwAssertion())
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testFindMethodObjectIdMissingAndRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
@@ -1233,6 +1268,74 @@ class NetworkStoreTests: StoreTestCase {
                 default:
                     XCTFail()
                 }
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindMethodObjectIdMissingAndZeroRandomSampleValidationStrategy() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .randomSample(percentage: 0))
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                XCTAssertNotNil(results.first)
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindMethodObjectIdMissingAndCustomValidationStrategy() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .custom(validationBlock: { (entity: Array<Dictionary<String, Any>>) -> Swift.Error? in
+            return nil
+        }))
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                XCTAssertNotNil(results.first)
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             expectationFind?.fulfill()
         }
