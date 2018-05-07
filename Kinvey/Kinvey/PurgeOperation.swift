@@ -37,7 +37,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                 switch HttpMethod.parse(urlRequest.httpMethod ?? "GET").requestType {
                 case .update:
                     if let objectId = pendingOperation.objectId {
-                        promises.append(Promise<Void> { fulfill, reject in
+                        promises.append(Promise<Void> { resolver in
                             let request = client.networkRequestFactory.buildAppDataGetById(
                                 collectionName: T.collectionName(),
                                 id: objectId,
@@ -53,9 +53,9 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                                         cache.save(entity: persistable)
                                     }
                                     self.sync?.removePendingOperation(pendingOperation)
-                                    fulfill(())
+                                    resolver.fulfill(())
                                 } else {
-                                    reject(buildError(data, response, error, self.client))
+                                    resolver.reject(buildError(data, response, error, self.client))
                                 }
                             }
                         })
@@ -63,18 +63,18 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                         sync.removePendingOperation(pendingOperation)
                     }
                 case .delete:
-                    promises.append(Promise<Void> { fulfill, reject in
+                    promises.append(Promise<Void> { resolver in
                         sync.removePendingOperation(pendingOperation)
-                        fulfill(())
+                        resolver.fulfill(())
                     })
                 case .create:
-                    promises.append(Promise<Void> { fulfill, reject in
+                    promises.append(Promise<Void> { resolver in
                         if let objectId = pendingOperation.objectId {
                             let query = Query(format: "\(T.entityIdProperty()) == %@", objectId)
                             cache?.remove(byQuery: query)
                         }
                         sync.removePendingOperation(pendingOperation)
-                        fulfill(())
+                        resolver.fulfill(())
                     })
                 default:
                     break
@@ -82,7 +82,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
             }
         }
         
-        when(fulfilled: promises).then { (results: [Void]) -> Void in
+        when(fulfilled: promises).done { (results: [Void]) -> Void in
             let result: ResultType = .success(results.count)
             requests.result = result
             completionHandler?(result)

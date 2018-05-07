@@ -297,12 +297,12 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         for productJson in self.productsJsonArray![skip ..< count] {
             if let product = Product(JSON: productJson) {
-                let promise = Promise<Void> { fulfill, reject in
+                let promise = Promise<Void> { resolver in
                     store.save(product) { product, error in
                         XCTAssertNotNil(product)
                         XCTAssertNil(error)
                         
-                        fulfill(())
+                        resolver.fulfill(())
                     }
                 }
                 promises.append(promise)
@@ -311,7 +311,7 @@ class PerformanceProductTestCase: KinveyTestCase {
             if promises.count >= batchSize {
                 weak var expectationSave = self.expectation(description: "Save")
                 
-                when(fulfilled: promises).then {
+                when(fulfilled: promises).done {
                     expectationSave?.fulfill()
                 }.catch { error in
                     expectationSave?.fulfill()

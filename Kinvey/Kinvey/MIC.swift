@@ -71,7 +71,7 @@ open class MIC {
     ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let requests = MultiRequest<Result<U, Swift.Error>>()
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             let request = client.networkRequestFactory.buildOAuthToken(
                 redirectURI: redirectURI,
                 code: code,
@@ -89,17 +89,17 @@ open class MIC {
                     ) { (result: Result<U, Swift.Error>) in
                         switch result {
                         case .success(let user):
-                            fulfill(user)
+                            resolver.fulfill(user)
                         case .failure(let error):
-                            reject(error)
+                            resolver.reject(error)
                         }
                     }
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
             requests += request
-        }.then { user in
+        }.done { user in
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -121,7 +121,7 @@ open class MIC {
             redirectURI: redirectURI,
             options: options
         )
-        Promise<URL> { fulfill, reject in
+        Promise<URL> { resolver in
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
@@ -129,14 +129,14 @@ open class MIC {
                     let tempLoginUri = json["temp_login_uri"] as? String,
                     let tempLoginUrl = URL(string: tempLoginUri)
                 {
-                    fulfill(tempLoginUrl)
+                    resolver.fulfill(tempLoginUrl)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
             requests += request
         }.then { tempLoginUrl in
-            return Promise<U> { fulfill, reject in
+            return Promise<U> { resolver in
                 let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
                     redirectURI: redirectURI,
                     tempLoginUri: tempLoginUrl,
@@ -164,19 +164,19 @@ open class MIC {
                         ) { result in
                             switch result {
                             case .success(let user):
-                                fulfill(user as! U)
+                                resolver.fulfill(user as! U)
                             case .failure(let error):
-                                reject(error)
+                                resolver.reject(error)
                             }
                         }
                     } else {
-                        reject(buildError(data, response, error, client))
+                        resolver.reject(buildError(data, response, error, client))
                     }
                     urlSession.invalidateAndCancel()
                 }
                 requests += request
             }
-        }.then { user -> Void in
+        }.done { user -> Void in
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))

@@ -102,19 +102,19 @@ open class User: NSObject, Credential, Mappable {
         userType: U.Type,
         completionHandler: ((Result<U, Swift.Error>) -> Void)?
     ) {
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
                     let user = client.responseParser.parseUser(data) as? U
                 {
                     client.activeUser = user
-                    fulfill(user)
+                    resolver.fulfill(user)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { (user) -> Void in
+        }.done { (user) -> Void in
             let result: Result<U, Swift.Error> = .success(user)
             request.result = result
             completionHandler?(result)
@@ -192,7 +192,7 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Void, Swift.Error>.self
         )
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK {
                     if let activeUser = client.activeUser,
@@ -200,12 +200,12 @@ open class User: NSObject, Credential, Mappable {
                     {
                         client.activeUser = nil
                     }
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -312,7 +312,7 @@ open class User: NSObject, Credential, Mappable {
         }
         
         let requests = MultiRequest<Result<U, Swift.Error>>()
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             let request = client.networkRequestFactory.buildUserSocialLogin(
                 authSource,
                 authData: authData,
@@ -323,7 +323,7 @@ open class User: NSObject, Credential, Mappable {
                     response.isOK,
                     let user = client.responseParser.parseUser(data) as? U
                 {
-                    fulfill(user)
+                    resolver.fulfill(user)
                 } else if let response = response,
                     response.isNotFound,
                     createIfNotExists
@@ -338,18 +338,18 @@ open class User: NSObject, Credential, Mappable {
                             response.isOK,
                             let user = client.responseParser.parseUser(data) as? U
                         {
-                            fulfill(user)
+                            resolver.fulfill(user)
                         } else {
-                            reject(buildError(data, response, error, client))
+                            resolver.reject(buildError(data, response, error, client))
                         }
                     }
                     requests += request
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
             requests += request
-        }.then { user -> Void in
+        }.done { user in
             client.activeUser = user
             client.clientId = options?.authServiceId
             completionHandler?(.success(user))
@@ -462,15 +462,15 @@ open class User: NSObject, Credential, Mappable {
         client: Client,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)?
     ) {
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK {
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -803,19 +803,19 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Bool, Swift.Error>.self
         )
-        Promise<Bool> { fulfill, reject in
+        Promise<Bool> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
                     let json = client.responseParser.parse(data),
                     let usernameExists = json["usernameExists"] as? Bool
                 {
-                    fulfill(usernameExists)
+                    resolver.fulfill(usernameExists)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { exists in
+        }.done { exists in
             completionHandler?(.success(exists))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -872,18 +872,18 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<U, Swift.Error>.self
         )
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
                     let user = client.responseParser.parseUser(data) as? U
                 {
-                    fulfill(user)
+                    resolver.fulfill(user)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { user in
+        }.done { user in
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -921,18 +921,18 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<[U], Swift.Error>.self
         )
-        Promise<[U]> { fulfill, reject in
+        Promise<[U]> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
                     let user = client.responseParser.parseUsers(data) as? [U]
                 {
-                    fulfill(user)
+                    resolver.fulfill(user)
                 } else {
-                    reject(buildError(data, response, error, client))
+                    resolver.reject(buildError(data, response, error, client))
                 }
             }
-        }.then { users in
+        }.done { users in
             completionHandler?(.success(users))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -951,7 +951,7 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Void, Swift.Error>.self
         )
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
@@ -962,12 +962,12 @@ open class User: NSObject, Credential, Mappable {
                     if self == self.client.activeUser {
                         self.client.activeUser = self
                     }
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1025,20 +1025,20 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Void, Swift.Error>.self
         )
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute { data, response, error in
                 if let response = response,
                     response.isOK
                 {
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(error ?? buildError(data, response, error, self.client))
+                    resolver.reject(error ?? buildError(data, response, error, self.client))
                 }
             }
             if self == client.activeUser {
                 client.activeUser = nil
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1078,7 +1078,7 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<U, Swift.Error>.self
         )
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
@@ -1087,12 +1087,12 @@ open class User: NSObject, Credential, Mappable {
                     if user.userId == client.activeUser?.userId {
                         self.client.activeUser = user
                     }
-                    fulfill(user)
+                    resolver.fulfill(user)
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { user in
+        }.done { user in
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1134,18 +1134,18 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<[U], Swift.Error>.self
         )
-        Promise<[U]> { fulfill, reject in
+        Promise<[U]> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
                     let users: [U] = client.responseParser.parseUsers(data)
                 {
-                    fulfill(users)
+                    resolver.fulfill(users)
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then { users in
+        }.done { users in
             completionHandler?(.success(users))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1165,7 +1165,7 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Void, Swift.Error>.self
         )
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
@@ -1176,12 +1176,12 @@ open class User: NSObject, Credential, Mappable {
                     let userChannelGroup = json["userChannelGroup"] as? String
                 {
                     self.realtimeRouter = PubNubRealtimeRouter(user: self, subscribeKey: subscribeKey, publishKey: publishKey, userChannelGroup: userChannelGroup)
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1201,16 +1201,16 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             resultType: Result<Void, Swift.Error>.self
         )
-        Promise<Void> { fulfill, reject in
+        Promise<Void> { resolver in
             request.execute() { (data, response, error) in
                 if let response = response, response.isOK {
                     self.realtimeRouter = nil
-                    fulfill(())
+                    resolver.fulfill(())
                 } else {
-                    reject(buildError(data, response, error, self.client))
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1455,7 +1455,7 @@ open class User: NSObject, Credential, Mappable {
             return
         }
         
-        Promise<U> { fulfill, reject in
+        Promise<U> { resolver in
             var micVC: UIViewController!
             
             let loginWithSafariViewController: (URL) -> Void = { url in
@@ -1470,9 +1470,9 @@ open class User: NSObject, Credential, Mappable {
                         MICSafariViewControllerSuccessNotificationObserver = nil
                         
                         if let user = notification.object as? U {
-                            fulfill(user)
+                            resolver.fulfill(user)
                         } else {
-                            reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                            resolver.reject(Error.invalidResponse(httpResponse: nil, data: nil))
                         }
                     }
                 }
@@ -1485,9 +1485,9 @@ open class User: NSObject, Credential, Mappable {
                         MICSafariViewControllerFailureNotificationObserver = nil
                         
                         if let error = notification.object as? Swift.Error {
-                            reject(error)
+                            resolver.reject(error)
                         } else {
-                            reject(Error.invalidResponse(httpResponse: nil, data: nil))
+                            resolver.reject(Error.invalidResponse(httpResponse: nil, data: nil))
                         }
                     }
                 }
@@ -1523,13 +1523,13 @@ open class User: NSObject, Credential, Mappable {
                             ) { (result: Result<U, Swift.Error>) in
                                 switch result {
                                 case .success(let user):
-                                    fulfill(user)
+                                    resolver.fulfill(user)
                                 case .failure(let error):
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             }
                         } else {
-                            reject(buildError(nil, nil, error, client))
+                            resolver.reject(buildError(nil, nil, error, client))
                         }
                     }
                     if let authSession = authSession, authSession.start() {
@@ -1543,7 +1543,7 @@ open class User: NSObject, Credential, Mappable {
                             }
                         }
                     } else {
-                        reject(buildError(nil, nil, nil, client))
+                        resolver.reject(buildError(nil, nil, nil, client))
                     }
                     return
                 } else {
@@ -1560,9 +1560,9 @@ open class User: NSObject, Credential, Mappable {
                 ) { (result) in
                     switch result {
                     case .success(let user):
-                        fulfill(user as! U)
+                        resolver.fulfill(user as! U)
                     case .failure(let error):
-                        reject(error)
+                        resolver.reject(error)
                     }
                 }
                 micVC = UINavigationController(rootViewController: micLoginVC)
@@ -1576,7 +1576,7 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
             viewController?.present(micVC, animated: true)
-        }.then { user -> Void in
+        }.done { user -> Void in
             completionHandler?(.success(user))
         }.catch { error in
             completionHandler?(.failure(error))
