@@ -66,8 +66,16 @@ open class Entity: Object, Persistable {
     
     /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
     public required init?(map: Map) {
-        guard let entityId: String = map[Key.entityId].value(), !entityId.isEmpty else {
-            return nil
+        if let validationStrategy = map.context as? ValidationStrategy {
+            if let error = validationStrategy.validate(jsonArray: [map.JSON]) {
+                log.error(error.localizedDescription)
+                return nil
+            }
+        } else {
+            guard let entityId: String = map[Key.entityId].value(), !entityId.isEmpty else {
+                log.error("_id is required")
+                return nil
+            }
         }
         
         super.init()

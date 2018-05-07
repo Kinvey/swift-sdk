@@ -8,6 +8,7 @@
 
 import Foundation
 import PromiseKit
+import ObjectMapper
 
 private let MaxIdsPerQuery = 200
 private let MaxSizePerResultSet = 10_000
@@ -317,8 +318,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         func convert(_ jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
                             let startTime = CFAbsoluteTimeGetCurrent()
                             let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
-                                guard let entity = T(JSON: json) else {
-                                    fatalError("_id is required")
+                                guard let entity = T(JSON: json, context: self.validationStrategy) else {
+                                    fatalError("Invalid entity creation: \(T.self)\n\(json)")
                                 }
                                 return entity
                             })
