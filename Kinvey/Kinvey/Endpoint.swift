@@ -30,6 +30,7 @@ internal enum Endpoint {
     case appData(client: Client, collectionName: String)
     case appDataById(client: Client, collectionName: String, id: String)
     case appDataByQuery(client: Client, collectionName: String, query: Query?)
+    case appDataByQueryDeltaSet(client: Client, collectionName: String, query: Query?, sinceDate: Date)
     case appDataCount(client: Client, collectionName: String, query: Query?)
     case appDataGroup(client: Client, collectionName: String)
     
@@ -60,7 +61,9 @@ internal enum Endpoint {
             let urlQueryItems = query.urlQueryItems,
             var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         {
-            urlComponents.queryItems = urlQueryItems
+            var queryItems = urlComponents.queryItems ?? []
+            queryItems.append(contentsOf: urlQueryItems)
+            urlComponents.queryItems = queryItems
             return urlComponents.url!
         }
         return url
@@ -108,6 +111,13 @@ internal enum Endpoint {
         case .appDataByQuery(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/")
             return translate(url: url, query: query)
+        case .appDataByQueryDeltaSet(let client, let collectionName, let query, let sinceDate):
+            let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_deltaset")
+            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            var queryItems = urlComponents.queryItems ?? []
+            queryItems.append(URLQueryItem(name: "since", value: sinceDate.toString()))
+            urlComponents.queryItems = queryItems
+            return translate(url: urlComponents.url!, query: query)
         case .appDataCount(let client, let collectionName, let query):
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count")
             return translate(url: url, query: query)

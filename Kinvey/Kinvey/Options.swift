@@ -54,6 +54,14 @@ public struct Options {
      Constructor that takes the values that need to be specified and assign
      default values for all the other properties
      */
+    public init(_ block: (inout Options) -> Void) {
+        block(&self)
+    }
+    
+    /**
+     Constructor that takes the values that need to be specified and assign
+     default values for all the other properties
+     */
     public init(
         client: Client? = nil,
         urlSession: URLSession? = nil,
@@ -66,7 +74,7 @@ public struct Options {
         clientAppVersion: String? = nil,
         customRequestProperties: [String : Any]? = nil,
         maxSizePerResultSet: Int? = nil
-        ) {
+    ) {
         self.client = client
         self.urlSession = urlSession
         self.authServiceId = authServiceId

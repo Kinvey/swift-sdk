@@ -97,6 +97,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
+    @available(*, deprecated: 3.13.0, message: "Please use `collection(options:)` instead")
     open class func collection(
         _ type: StoreType = .cache,
         deltaSet: Bool? = nil,
@@ -105,19 +106,50 @@ open class DataStore<T: Persistable> where T: NSObject {
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil
     ) -> DataStore {
+        return collection(
+            type,
+            autoPagination: autoPagination,
+            tag: tag,
+            validationStrategy: validationStrategy,
+            options: Options {
+                $0.client = client
+                $0.deltaSet = deltaSet
+            }
+        )
+    }
+    
+    /**
+     Factory method that returns a `DataStore`.
+     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `Cache`
+     - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
+     - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
+     - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
+     */
+    open class func collection(
+        _ type: StoreType = .cache,
+        autoPagination: Bool = false,
+        tag: String = defaultTag,
+        validationStrategy: ValidationStrategy? = nil,
+        options: Options? = nil
+    ) -> DataStore {
+        let client = options?.client ?? sharedClient
+        let deltaSet = options?.deltaSet ?? false
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
         let fileURL = client.fileURL(tag)
-        return DataStore<T>(
+        let dataStore = DataStore<T>(
             type: type,
-            deltaSet: deltaSet ?? false,
+            deltaSet: deltaSet,
             autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
             encryptionKey: client.encryptionKey,
             validationStrategy: validationStrategy
         )
+        return dataStore
     }
     
     /**
@@ -1835,11 +1867,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: DataStore<T>.ArrayCompletionHandler? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
         return pull(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: Options(
                 deltaSet: deltaSet
             )
@@ -1869,8 +1903,9 @@ open class DataStore<T: Persistable> where T: NSObject {
                     return
                 }
                 
+                let _ = $1
                 deltaSetCompletionHandler(Array($0))
-        },
+            },
             options: Options(
                 deltaSet: deltaSet
             )
@@ -1903,7 +1938,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
@@ -1956,10 +1991,15 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: UIntArrayCompletionHandler? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
-        return sync(query, deltaSet: deltaSet) { (result: Result<(UInt, [T]), [Swift.Error]>) in
+        return sync(
+            query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
+            deltaSet: deltaSet
+        ) { (result: Result<(UInt, [T]), [Swift.Error]>) in
             switch result {
             case .success(let count, let array):
                 completionHandler?(count, array, nil)
@@ -1973,11 +2013,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
         let request = sync(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: Options(
                 deltaSet: deltaSet
             )
@@ -2011,11 +2053,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
         let request = sync(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: options
         ) { (result: Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) in
             guard let completionHandler = completionHandler else {
@@ -2046,6 +2090,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>> {
@@ -2062,6 +2107,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                     case .success(let count):
                         let request = self.pull(
                             query,
+                            deltaSetCompletionHandler: deltaSetCompletionHandler,
                             options: options
                         ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                             switch result {

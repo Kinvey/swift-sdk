@@ -37,11 +37,13 @@ travisci-cache:
 	wget http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma; \
 	tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma
 
-build: checkout-dependencies
-	carthage build --no-skip-current
+travisci-cache-upload:
 	cd Carthage; \
 	tar --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
+
+build: checkout-dependencies
+	carthage build --no-skip-current
 
 build-ios: checkout-dependencies
 	carthage build --no-skip-current --platform iOS
