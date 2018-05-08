@@ -23,8 +23,8 @@ class LogTestCase: XCTestCase {
     }
     
     func testLogLevelInitialState() {
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.debug)
-        XCTAssertEqual(Kinvey.LogLevel.debug, XCGLogger.Level.debug.logLevel)
+        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.warning)
+        XCTAssertEqual(Kinvey.LogLevel.warning, XCGLogger.Level.warning.logLevel)
     }
     
     func testLogLevelVerbose() {
