@@ -2274,6 +2274,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationPull = nil
             }
         }
+        
+        XCTAssertNotNil(store.cache?.lastSync(query: Query()))
     }
     
     func testDeltaSet3rdPull() {
