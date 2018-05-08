@@ -1984,23 +1984,14 @@ class NetworkStoreTests: StoreTestCase {
                 }
             }
             
-            let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
+            let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Info"]
             XCTAssertNotNil(deviceInfo)
             if let deviceInfo = deviceInfo {
-                #if os(macOS)
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
-                #else
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
-                #endif
-                let textCheckingResults = regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.count))
-                XCTAssertEqual(textCheckingResults.count, 1)
-                if let textCheckingResult = textCheckingResults.first {
-                    let device = deviceInfo.substring(with: textCheckingResult.range(at: 1))
-                    #if os(macOS)
-                        XCTAssertEqual(device, "OSX")
-                    #elseif os(iOS)
-                        XCTAssertEqual(device, "iPhone")
-                    #endif
+                let data = deviceInfo.data(using: .utf8)
+                XCTAssertNotNil(data)
+                if let data = data {
+                    let deviceInfoObj = try? JSONDecoder().decode(DeviceInfo.self, from: data)
+                    XCTAssertNotNil(deviceInfoObj)
                 }
             }
             
