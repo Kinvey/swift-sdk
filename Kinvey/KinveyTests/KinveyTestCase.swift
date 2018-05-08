@@ -171,7 +171,14 @@ extension XCTestCase {
         static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
         
         override class func canInit(with request: URLRequest) -> Bool {
-            return true
+            var matches = false
+            if let url = request.url,
+                let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                let host = urlComponents.host
+            {
+                matches = host.hasSuffix(".kinvey.com") || host.hasSuffix(".googleapis.com")
+            }
+            return matches
         }
         
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -179,7 +186,11 @@ extension XCTestCase {
         }
         
         override class func canInit(with task: URLSessionTask) -> Bool {
-            return true
+            var matches = false
+            if let request = task.currentRequest {
+                matches = canInit(with: request)
+            }
+            return matches
         }
         
         override func startLoading() {
