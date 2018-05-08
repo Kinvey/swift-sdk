@@ -20,6 +20,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
         cache: AnyCache<T>?,
         options: Options?,
         mustSetRequestResult: Bool = true,
+        mustSaveQueryLastSync: Bool? = nil,
         resultsHandler: ResultsHandler? = nil
     ) {
         super.init(
@@ -31,6 +32,8 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
             validationStrategy: validationStrategy,
             cache: cache,
             options: options,
+            mustSetRequestResult: mustSetRequestResult,
+            mustSaveQueryLastSync: mustSaveQueryLastSync,
             resultsHandler: resultsHandler
         )
     }

@@ -2203,6 +2203,79 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testDeltaSetQuerySkipLimit2ndRequestWithoutSkipAndLimit() {
+        mockResponse { request in
+            switch request.url!.path {
+            case "/appdata/_kid_/Person":
+                return HttpResponse(
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    json: [
+                        [
+                            "_id" : UUID().uuidString,
+                            "name" : UUID().uuidString,
+                            "age" : 0,
+                            "_acl" : [
+                                "creator" : UUID().uuidString
+                            ],
+                            "_kmd" : [
+                                "lmt" : Date().toString(),
+                                "ect" : Date().toString()
+                            ]
+                        ]
+                    ]
+                )
+            default:
+                XCTFail(request.url!.path)
+                Swift.fatalError(request.url!.path)
+            }
+        }
+        
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        
+        do {
+            weak var expectationPull = expectation(description: "Pull")
+            
+            let query = Query()
+            query.skip = 100
+            store.pull(query) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let results):
+                    XCTAssertEqual(results.count, 1)
+                    XCTAssertNotNil(results.first)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPull = nil
+            }
+        }
+        
+        XCTAssertNil(store.cache?.lastSync(query: Query()))
+        
+        do {
+            weak var expectationPull = expectation(description: "Pull")
+            
+            let query = Query()
+            store.pull(query) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success(let results):
+                    XCTAssertEqual(results.count, 1)
+                    XCTAssertNotNil(results.first)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPull = nil
+            }
+        }
+    }
+    
     func testDeltaSet3rdPull() {
         signUp()
         
@@ -3573,7 +3646,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             
             let results = try store.pull(options: Options(maxSizePerResultSet: 1)).waitForResult(timeout: defaultTimeout).value()
-            XCTAssertEqual(Int(results.count), count)
+            XCTAssertEqual(results.count, count)
             
             XCTAssertEqual(requestStartDates.count, 3)
             XCTAssertTrue(store.cache?.cache is RealmCache<Person>)
