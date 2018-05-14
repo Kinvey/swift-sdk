@@ -7095,4 +7095,74 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testPullWithSkip() {
+        signUp(client: self.client)
+        
+        var json = [JsonDictionary]()
+        for i in 1 ... 10 {
+            json.append([
+                "_id" : UUID().uuidString,
+                "name" : UUID().uuidString,
+                "age" : i,
+                "_acl" : [
+                    "creator" : self.client.activeUser!.userId
+                ],
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString()
+                ]
+            ])
+        }
+        
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/_kid_/Person/":
+                if let skipString = urlComponents.queryItems?.filter({ $0.name == "skip" }).first?.value,
+                    let skip = Int(skipString)
+                {
+                    return HttpResponse(json: Array(json[skip...]))
+                }
+                return HttpResponse(json: json)
+            default:
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let dataStore = DataStore<Person>.collection(.sync)
+        
+        do {
+            var results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count)
+            results = try dataStore.find().waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let skip = 2
+            let query = Query()
+            query.skip = skip
+            var results = try dataStore.pull(query, options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count - skip)
+            results = try dataStore.find().waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            var results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count)
+            results = try dataStore.find().waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, json.count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
 }
