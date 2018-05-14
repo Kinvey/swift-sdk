@@ -20,6 +20,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
     let mustSetRequestResult: Bool
+    let mustSaveQueryLastSync: Bool?
     
     typealias ResultType = Result<AnyRandomAccessCollection<T>, Swift.Error>
     
@@ -48,6 +49,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         cache: AnyCache<T>?,
         options: Options?,
         mustSetRequestResult: Bool = true,
+        mustSaveQueryLastSync: Bool? = nil,
         resultsHandler: ResultsHandler? = nil
     ) {
         if autoPagination, query.skip != nil {
@@ -62,6 +64,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         self.autoPagination = autoPagination
         self.resultsHandler = resultsHandler
         self.mustSetRequestResult = mustSetRequestResult
+        self.mustSaveQueryLastSync = mustSaveQueryLastSync ?? (query.skip == nil && query.limit == nil)
+        
         super.init(
             readPolicy: readPolicy,
             validationStrategy: validationStrategy,
@@ -128,7 +132,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
             var offsetIterator = stride(from: 0, to: count, by: maxSizePerResultSet).makeIterator()
             let isCacheNotNil = cache != nil
-            var firstLastSyncDate: Date? = nil
+            var mustSaveQueryLastSync = self.mustSaveQueryLastSync ?? true
             let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
                 guard let offset = offsetIterator.next() else {
                     return nil
@@ -145,14 +149,15 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         validationStrategy: self.validationStrategy,
                         cache: self.cache,
                         options: self.options,
-                        mustSetRequestResult: false
+                        mustSetRequestResult: false,
+                        mustSaveQueryLastSync: mustSaveQueryLastSync
                     )
+                    if mustSaveQueryLastSync {
+                        mustSaveQueryLastSync = false
+                    }
                     let request = operation.execute { result in
                         switch result {
                         case .success(let results):
-                            if let cache = self.cache, firstLastSyncDate == nil {
-                                firstLastSyncDate = cache.lastSync(query: self.query)
-                            }
                             resolver.fulfill(isCacheNotNil ? AnyRandomAccessCollection<T>([]) : results)
                         case .failure(let error):
                             resolver.reject(error)
@@ -164,11 +169,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
-                if let cache = self.cache,
-                    let firstLastSyncDate = firstLastSyncDate
-                {
-                    cache.save(entities: AnyRandomAccessCollection<T>([]), syncQuery: (query: self.query, lastSync: firstLastSyncDate))
-                }
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
                     result = cache.find(byQuery: self.query)
@@ -309,7 +309,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             )
                         }
                         var syncQuery: CacheType.SyncQuery? = nil
-                        if let requestStart = response.requestStartHeader {
+                        if self.mustSaveQueryLastSync ?? true, let requestStart = response.requestStartHeader {
                             syncQuery = (query: self.query, lastSync: requestStart)
                         }
                         if let cache = cache.dynamic {
