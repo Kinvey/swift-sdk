@@ -7121,10 +7121,25 @@ class SyncStoreTests: StoreTestCase {
                 if let skipString = urlComponents.queryItems?.filter({ $0.name == "skip" }).first?.value,
                     let skip = Int(skipString)
                 {
-                    return HttpResponse(json: Array(json[skip...]))
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: Array(json[skip...])
+                    )
                 }
-                return HttpResponse(json: json)
+                return HttpResponse(
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    json: json
+                )
+            case "/appdata/_kid_/Person/_deltaset":
+                return HttpResponse(
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    json: [
+                        "changed" : [],
+                        "deleted" : []
+                    ]
+                )
             default:
+                XCTFail(urlComponents.path)
                 return HttpResponse(statusCode: 404, data: Data())
             }
         }
@@ -7132,7 +7147,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             var results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
