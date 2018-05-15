@@ -134,14 +134,13 @@ deploy-devcenter:
 	git clone $(DEVCENTER_GIT)
 	cd build/devcenter; \
 	git remote add v3yk1n-devcenter $(DEVCENTER_GIT_TEST); \
-	git remote add kinvey-devcenter-prod $(DEVCENTER_GIT_PROD)
+	git remote add kinvey-devcenter-prod $(DEVCENTER_GIT_PROD); \
+	git checkout -b feature/Swift_SDK_Release_$(VERSION)
 	swift scripts/devcenter-release/main.swift $(VERSION) build/devcenter
 	cd build/devcenter; \
 	git add content; \
 	git commit -m "Swift SDK Release $(VERSION) - Release Notes"; \
-	git push origin master; \
-	git push v3yk1n-devcenter master; \
-	git push kinvey-devcenter-prod master
+	git push origin feature/Swift_SDK_Release_$(VERSION)
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
