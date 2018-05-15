@@ -3383,6 +3383,43 @@ class NetworkStoreTests: StoreTestCase {
         XCTAssertNotEqual(addr1, addr2)
     }
     
+    func testFindCancel() {
+        signUp()
+        
+        let dataStore = DataStore<Person>.collection(.network)
+        
+        var running = true
+        
+        mockResponse { (request) -> HttpResponse in
+            while running {
+                autoreleasepool {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+            }
+            return HttpResponse(statusCode: 404, data: Data())
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let request = dataStore.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            XCTFail()
+            expectationFind?.fulfill()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            request.cancel()
+            running = false
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
 
 class Products: Entity {
