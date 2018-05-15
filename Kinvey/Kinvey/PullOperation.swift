@@ -39,7 +39,7 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
     }
     
     override var mustRemoveCachedRecords: Bool {
-        return true
+        return isSkipAndLimitNil
     }
     
 }
