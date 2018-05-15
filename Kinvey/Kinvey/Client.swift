@@ -463,7 +463,7 @@ open class Client: Credential {
             options: options,
             resultType: Result<EnvironmentInfo, Swift.Error>.self
         )
-        Promise<EnvironmentInfo> { fulfill, reject in
+        Promise<EnvironmentInfo> { resolver in
             request.execute() { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -472,12 +472,12 @@ open class Client: Credential {
                     let result = json as? [String : String],
                     let environmentInfo = EnvironmentInfo(JSON: result)
                 {
-                    fulfill(environmentInfo)
+                    resolver.fulfill(environmentInfo)
                 } else {
-                    reject(buildError(data, response, error, self))
+                    resolver.reject(buildError(data, response, error, self))
                 }
             }
-        }.then {
+        }.done {
             completionHandler(.success($0))
         }.catch {
             completionHandler(.failure($0))

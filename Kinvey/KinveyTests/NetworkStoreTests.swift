@@ -1164,6 +1164,41 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodObjectIdMissing() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network)
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                expect { () -> Void in
+                    for _ in results {
+                        XCTFail()
+                    }
+                    XCTFail()
+                }.to(throwAssertion())
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testFindMethodObjectIdMissingAndRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
@@ -1233,6 +1268,74 @@ class NetworkStoreTests: StoreTestCase {
                 default:
                     XCTFail()
                 }
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindMethodObjectIdMissingAndZeroRandomSampleValidationStrategy() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .randomSample(percentage: 0))
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                XCTAssertNotNil(results.first)
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindMethodObjectIdMissingAndCustomValidationStrategy() {
+        mockResponse(json: [
+            [
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .custom(validationBlock: { (entity: Array<Dictionary<String, Any>>) -> Swift.Error? in
+            return nil
+        }))
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let results):
+                XCTAssertEqual(results.count, 1)
+                XCTAssertNotNil(results.first)
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             expectationFind?.fulfill()
         }
@@ -1881,23 +1984,14 @@ class NetworkStoreTests: StoreTestCase {
                 }
             }
             
-            let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Information"]
+            let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Info"]
             XCTAssertNotNil(deviceInfo)
             if let deviceInfo = deviceInfo {
-                #if os(macOS)
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*)")
-                #else
-                    let regex = try! NSRegularExpression(pattern: "(.*) (.*) (.*)")
-                #endif
-                let textCheckingResults = regex.matches(in: deviceInfo, range: NSRange(location: 0, length: deviceInfo.count))
-                XCTAssertEqual(textCheckingResults.count, 1)
-                if let textCheckingResult = textCheckingResults.first {
-                    let device = deviceInfo.substring(with: textCheckingResult.range(at: 1))
-                    #if os(macOS)
-                        XCTAssertEqual(device, "OSX")
-                    #elseif os(iOS)
-                        XCTAssertEqual(device, "iPhone")
-                    #endif
+                let data = deviceInfo.data(using: .utf8)
+                XCTAssertNotNil(data)
+                if let data = data {
+                    let deviceInfoObj = try? JSONDecoder().decode(DeviceInfo.self, from: data)
+                    XCTAssertNotNil(deviceInfoObj)
                 }
             }
             
@@ -3287,6 +3381,43 @@ class NetworkStoreTests: StoreTestCase {
         let addr1 = Unmanaged.passUnretained(ds1).toOpaque()
         let addr2 = Unmanaged.passUnretained(ds2).toOpaque()
         XCTAssertNotEqual(addr1, addr2)
+    }
+    
+    func testFindCancel() {
+        signUp()
+        
+        let dataStore = DataStore<Person>.collection(.network)
+        
+        var running = true
+        
+        mockResponse { (request) -> HttpResponse in
+            while running {
+                autoreleasepool {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+            }
+            return HttpResponse(statusCode: 404, data: Data())
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let request = dataStore.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            XCTFail()
+            expectationFind?.fulfill()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            request.cancel()
+            running = false
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
     }
     
 }

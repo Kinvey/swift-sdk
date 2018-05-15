@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import ObjectMapper
 
 /// Defines a strategy to validate results upfront
-public enum ValidationStrategy {
+public enum ValidationStrategy: MapContext {
     
     /// Validates all items in a backend response. Validating all entities upfront results in a performance penalty.
     case all

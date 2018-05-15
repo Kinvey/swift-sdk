@@ -99,7 +99,11 @@ extension XCGLogger.Level {
     }
 }
 
-let log = XCGLogger.default
+let log: XCGLogger = {
+    let log = XCGLogger.default
+    log.outputLevel = .warning
+    return log
+}()
 
 func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) -> Never  {
     let message = message()
@@ -260,6 +264,14 @@ func buildError(
         let description = json["description"]
     {
         return Error.resultSetSizeExceeded(debug: debug, description: description)
+    } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.Keys.parameterValueOutOfRange.rawValue,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.parameterValueOutOfRange(debug: debug, description: description)
     } else if let response = response,
         response.isNotFound,
         let json = json,

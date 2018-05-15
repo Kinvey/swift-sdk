@@ -36,7 +36,6 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
             let result: ResultType
             if let persistable = self.cache?.find(byId: self.id) {
                 result = .success(persistable)
-                
             } else {
                 result = .failure(buildError(client: self.client))
             }

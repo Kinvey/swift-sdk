@@ -97,6 +97,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
+    @available(*, deprecated: 3.13.0, message: "Please use `collection(options:)` instead")
     open class func collection(
         _ type: StoreType = .cache,
         deltaSet: Bool? = nil,
@@ -105,19 +106,50 @@ open class DataStore<T: Persistable> where T: NSObject {
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil
     ) -> DataStore {
+        return collection(
+            type,
+            autoPagination: autoPagination,
+            tag: tag,
+            validationStrategy: validationStrategy,
+            options: Options {
+                $0.client = client
+                $0.deltaSet = deltaSet
+            }
+        )
+    }
+    
+    /**
+     Factory method that returns a `DataStore`.
+     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `Cache`
+     - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
+     - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
+     - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
+     */
+    open class func collection(
+        _ type: StoreType = .cache,
+        autoPagination: Bool = false,
+        tag: String = defaultTag,
+        validationStrategy: ValidationStrategy? = nil,
+        options: Options? = nil
+    ) -> DataStore {
+        let client = options?.client ?? sharedClient
+        let deltaSet = options?.deltaSet ?? false
         if !client.isInitialized() {
             fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
         let fileURL = client.fileURL(tag)
-        return DataStore<T>(
+        let dataStore = DataStore<T>(
             type: type,
-            deltaSet: deltaSet ?? false,
+            deltaSet: deltaSet,
             autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
             encryptionKey: client.encryptionKey,
             validationStrategy: validationStrategy
         )
+        return dataStore
     }
     
     /**
@@ -1803,10 +1835,10 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<UInt, [Swift.Error]>> {
         var request: AnyRequest<Result<UInt, [Swift.Error]>>!
-        Promise<UInt> { fulfill, reject in
+        Promise<UInt> { resolver in
             if type == .network {
                 request = AnyRequest(LocalRequest<Result<UInt, [Swift.Error]>>())
-                reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
+                resolver.reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
             } else {
                 let operation = PushOperation<T>(
                     sync: sync,
@@ -1816,13 +1848,13 @@ open class DataStore<T: Persistable> where T: NSObject {
                 request = operation.execute() { result in
                     switch result {
                     case .success(let count):
-                        fulfill(count)
+                        resolver.fulfill(count)
                     case .failure(let errors):
-                        reject(MultipleErrors(errors: errors))
+                        resolver.reject(MultipleErrors(errors: errors))
                     }
                 }
             }
-        }.then { count in
+        }.done { count in
             completionHandler?(.success(count))
         }.catch { error in
             let error = error as! MultipleErrors
@@ -1835,11 +1867,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: DataStore<T>.ArrayCompletionHandler? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
         return pull(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: Options(
                 deltaSet: deltaSet
             )
@@ -1869,8 +1903,9 @@ open class DataStore<T: Persistable> where T: NSObject {
                     return
                 }
                 
+                let _ = $1
                 deltaSetCompletionHandler(Array($0))
-        },
+            },
             options: Options(
                 deltaSet: deltaSet
             )
@@ -1903,18 +1938,18 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func pull(
         _ query: Query = Query(),
-        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>) -> Void)? = nil,
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
         var request: AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>!
-        Promise<AnyRandomAccessCollection<T>> { fulfill, reject in
+        Promise<AnyRandomAccessCollection<T>> { resolver in
             if type == .network {
                 request = AnyRequest(LocalRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>())
-                reject(Error.invalidDataStoreType)
+                resolver.reject(Error.invalidDataStoreType)
             } else if self.syncCount() > 0 {
                 request = AnyRequest(LocalRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>())
-                reject(Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
+                resolver.reject(Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
             } else {
                 let deltaSet = options?.deltaSet ?? self.deltaSet
                 let operation = PullOperation<T>(
@@ -1930,13 +1965,13 @@ open class DataStore<T: Persistable> where T: NSObject {
                 request = operation.execute { result in
                     switch result {
                     case .success(let array):
-                        fulfill(array)
+                        resolver.fulfill(array)
                     case .failure(let error):
-                        reject(error)
+                        resolver.reject(error)
                     }
                 }
             }
-        }.then { array in
+        }.done { array in
             completionHandler?(.success(array))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -1956,10 +1991,15 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: UIntArrayCompletionHandler? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
-        return sync(query, deltaSet: deltaSet) { (result: Result<(UInt, [T]), [Swift.Error]>) in
+        return sync(
+            query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
+            deltaSet: deltaSet
+        ) { (result: Result<(UInt, [T]), [Swift.Error]>) in
             switch result {
             case .success(let count, let array):
                 completionHandler?(count, array, nil)
@@ -1973,11 +2013,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         deltaSet: Bool? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
         let request = sync(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: Options(
                 deltaSet: deltaSet
             )
@@ -2011,11 +2053,13 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<(UInt, [T]), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, [T]), [Swift.Error]>> {
         let request = sync(
             query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
             options: options
         ) { (result: Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) in
             guard let completionHandler = completionHandler else {
@@ -2046,14 +2090,15 @@ open class DataStore<T: Persistable> where T: NSObject {
     @discardableResult
     open func sync(
         _ query: Query = Query(),
+        deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         options: Options? = nil,
         completionHandler: ((Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>> {
         let requests = MultiRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>>()
-        Promise<(UInt, AnyRandomAccessCollection<T>)> { fulfill, reject in
+        Promise<(UInt, AnyRandomAccessCollection<T>)> { resolver in
             if type == .network {
                 requests += LocalRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>>()
-                reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
+                resolver.reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
             } else {
                 let request = push(
                     options: options
@@ -2062,23 +2107,24 @@ open class DataStore<T: Persistable> where T: NSObject {
                     case .success(let count):
                         let request = self.pull(
                             query,
+                            deltaSetCompletionHandler: deltaSetCompletionHandler,
                             options: options
                         ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                             switch result {
                             case .success(let array):
-                                fulfill((count, array))
+                                resolver.fulfill((count, array))
                             case .failure(let error):
-                                reject(error)
+                                resolver.reject(error)
                             }
                         }
                         requests.addRequest(request)
                     case .failure(let errors):
-                        reject(MultipleErrors(errors: errors))
+                        resolver.reject(MultipleErrors(errors: errors))
                     }
                 }
                 requests += request
             }
-        }.then {
+        }.done {
             completionHandler?(.success($0))
         }.catch { error in
             if let error = error as? MultipleErrors {
@@ -2116,13 +2162,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         var request: AnyRequest<Result<Int, Swift.Error>>!
-        Promise<Int> { fulfill, reject in
+        Promise<Int> { resolver in
             if type == .network {
                 let localRequest = LocalRequest<Result<Int, Swift.Error>>()
                 request = AnyRequest(localRequest)
                 let error = Error.invalidDataStoreType
                 localRequest.result = .failure(error)
-                reject(error)
+                resolver.reject(error)
             } else {
                 let executor = Executor()
                 
@@ -2143,20 +2189,20 @@ open class DataStore<T: Persistable> where T: NSObject {
                                 switch result {
                                 case .success:
                                     requests.result = .success(count)
-                                    fulfill(count)
+                                    resolver.fulfill(count)
                                 case .failure(let error):
                                     requests.result = .failure(error)
-                                    reject(error)
+                                    resolver.reject(error)
                                 }
                             }
                         }
                     case .failure(let error):
-                        reject(error)
+                        resolver.reject(error)
                     }
                 }
                 request = AnyRequest(requests)
             }
-        }.then { count in
+        }.done { count in
             completionHandler?(.success(count))
         }.catch { error in
             completionHandler?(.failure(error))
@@ -2195,18 +2241,18 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     func execute<Result>(request: HttpRequest<Result>) -> Promise<RealtimeRouter> {
-        return Promise<RealtimeRouter> { fulfill, reject in
+        return Promise<RealtimeRouter> { resolver in
             do {
                 let realtimeRouter = try self.realtimeRouter()
                 request.execute() { (data, response, error) in
                     if let response = response, response.isOK {
-                        fulfill(realtimeRouter)
+                        resolver.fulfill(realtimeRouter)
                     } else {
-                        reject(buildError(data, response, error, self.client))
+                        resolver.reject(buildError(data, response, error, self.client))
                     }
                 }
             } catch {
-                reject(error)
+                resolver.reject(error)
             }
         }
     }
@@ -2230,7 +2276,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { (realtimeRouter) -> Void in
+        ).done { (realtimeRouter) -> Void in
             let onNext: (Any?) -> Void = {
                 if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
                     self.cache?.save(entity: obj)
@@ -2254,7 +2300,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                     onError: onError
                 )
             }
-        }.then {
+        }.done {
             subscription()
         }.catch { error in
             onError(error)
@@ -2278,13 +2324,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         )
         execute(
             request: request
-        ).then { (realtimeRouter) -> Void in
+        ).done { (realtimeRouter) -> Void in
             realtimeRouter.unsubscribe(channel: self.channelName, context: self)
             let client = options?.client ?? self.client
             if let activeUser = client.activeUser {
                 realtimeRouter.unsubscribe(channel: self.channelName(forUser: activeUser), context: self)
             }
-        }.then {
+        }.done {
             completionHandler(.success($0))
         }.catch { error in
             completionHandler(.failure(error))
