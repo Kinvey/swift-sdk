@@ -260,6 +260,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
+            multiRequest += request
         }.recover { (error) -> Promise<AnyRandomAccessCollection<T>> in
             if let cache = self.cache,
                 let error = error as? Kinvey.Error
@@ -324,6 +325,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             multiRequest.progress.addChild(request.progress, withPendingUnitCount: 99)
+            multiRequest += request
         }
     }
     
