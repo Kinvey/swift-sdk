@@ -16,7 +16,7 @@ private let MaxSizePerResultSet = 10_000
 internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCollection<T>, Swift.Error>, ReadOperationType where T: NSObject {
     
     let query: Query
-    let deltaSet: Bool
+    var deltaSet: Bool
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
     let mustSetRequestResult: Bool
@@ -268,6 +268,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 switch error {
                 case .missingConfiguration:
                     cache.clear(syncQueries: nil)
+                    self.deltaSet = false
                     return self.fetchAllAutoPagination(multiRequest: multiRequest)
                 default:
                     break
