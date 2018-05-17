@@ -1232,6 +1232,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1259,6 +1260,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1282,6 +1284,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1296,6 +1299,35 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             completionHandler: completionHandler
         )
+    }
+    
+    /**
+     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
+     */
+    @discardableResult
+    open class func login<U: User>(
+        username: String,
+        password: String,
+        provider: AuthProvider,
+        options: Options? = nil,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<U, Swift.Error>> {
+        switch provider {
+        case .kinvey:
+            return login(
+                username: username,
+                password: password,
+                options: options,
+                completionHandler: completionHandler
+            )
+        case .mic:
+            return MIC.login(
+                username: username,
+                password: password,
+                options: options,
+                completionHandler: completionHandler
+            )
+        }
     }
 
 #if os(iOS)
@@ -1644,5 +1676,12 @@ public struct UserSocialIdentity : StaticMappable {
         linkedIn <- map[AuthSource.linkedIn.rawValue]
         kinvey <- map[AuthSource.kinvey.rawValue]
     }
+    
+}
+
+public enum AuthProvider {
+    
+    case kinvey
+    case mic
     
 }
