@@ -418,7 +418,7 @@ class DataType: Entity {
     dynamic var fullName2DefaultValueTransformed = FullName2()
     
     @objc
-    dynamic var fullName2DefaultValueNotOptionalTransformed: FullName2! = FullName2()
+    dynamic var fullName2DefaultValueNotOptionalTransformed = FullName2()
     
     @objc
     fileprivate dynamic var colorValueString: String?

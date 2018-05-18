@@ -14,9 +14,14 @@ class PerformanceTestMedData: PerformanceTestData {
     override func test() {
         startDate = Date()
         let store: DataStore<MedData> = self.store()
-        store.find(deltaSet: deltaSetSwitch.isOn) { results, error in
+        store.find(options: Options(deltaSet: deltaSetSwitch.isOn)) { (result: Result<AnyRandomAccessCollection<MedData>, Swift.Error>) in
             self.endDate = Date()
-            self.durationLabel.text = "\(self.durationLabel.text ?? "")\n\(results?.count ?? 0)"
+            switch result {
+            case .success(let results):
+                self.durationLabel.text = "\(self.durationLabel.text ?? "")\n\(results.count)"
+            case .failure(let error):
+                self.durationLabel.text = "\(self.durationLabel.text ?? "")\nError: \(error.localizedDescription)"
+            }
         }
     }
     
