@@ -14,7 +14,7 @@ class PerformanceTestData: UIViewController {
     let client = Client(appKey: "kid_b1d6IY_x7l", appSecret: "079412ee99f4485d85e6e362fb987de8")
     
     func store<T: Persistable>() -> DataStore<T> where T: NSObject {
-        return DataStore<T>.collection(.network, client: self.client)
+        return DataStore<T>.collection(.network, options: Options(client: self.client))
     }
     
     @IBOutlet dynamic weak var startDateLabel: UILabel!
