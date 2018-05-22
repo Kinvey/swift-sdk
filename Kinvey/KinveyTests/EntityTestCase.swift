@@ -67,13 +67,22 @@ class EntityTestCase: XCTestCase {
         XCTAssertEqual(geoPoint.longitude, longitude)
     }
     
-    func testGeoPointMapping2() {
+    func testGeoPointMappingForce() {
         var geoPoint: GeoPoint!
         let latitude = 42.3133521
         let longitude = -71.1271963
         geoPoint <- ("geoPoint", Map(mappingType: .fromJSON, JSON: ["location" : [longitude, latitude]])["location"])
         XCTAssertEqual(geoPoint.latitude, latitude)
         XCTAssertEqual(geoPoint.longitude, longitude)
+    }
+    
+    func testGeoPointMappingOptional() {
+        var geoPoint: GeoPoint?
+        let latitude = 42.3133521
+        let longitude = -71.1271963
+        geoPoint <- ("geoPoint", Map(mappingType: .fromJSON, JSON: ["location" : [longitude, latitude]])["location"])
+        XCTAssertEqual(geoPoint?.latitude, latitude)
+        XCTAssertEqual(geoPoint?.longitude, longitude)
     }
     
     func testPropertyType() {

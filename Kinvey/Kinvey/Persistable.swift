@@ -118,6 +118,13 @@ public func <- <T>(left: inout T?, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
+public func <- <T>(left: inout T!, right: (String, Map)) {
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -126,6 +133,13 @@ public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
+    let (right, map) = right
+    kinveyMappingType(left: right, right: map.currentKey!)
+    left <- map
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
     left <- map
@@ -145,6 +159,13 @@ public func <- <Transform: TransformType>(left: inout Transform.Object?, right: 
     left <- (map, transform)
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
+    let (right, map, transform) = right
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
 // MARK: Default Date Transform
 
 /// Override operator used during the `propertyMapping(_:)` method.
@@ -157,6 +178,14 @@ public func <- (left: inout Date, right: (String, Map)) {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 public func <- (left: inout Date?, right: (String, Map)) {
+    let (right, map) = right
+    let transform = KinveyDateTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout Date!, right: (String, Map)) {
     let (right, map) = right
     let transform = KinveyDateTransform()
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)

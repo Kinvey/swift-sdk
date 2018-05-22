@@ -108,6 +108,14 @@ public func <- (left: inout GeoPoint?, right: (String, Map)) {
     left <- (map, transform)
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
+public func <- (left: inout GeoPoint!, right: (String, Map)) {
+    let (right, map) = right
+    let transform = GeoPointTransform()
+    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
+    left <- (map, transform)
+}
+
 func ==(lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
     return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
 }
