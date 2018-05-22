@@ -402,37 +402,6 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
-    /// Sign in a user and set as a current active user.
-    @discardableResult
-    open class func login<U: User>(
-        username: String,
-        password: String,
-        options: Options? = nil,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
-        let client = options?.client ?? sharedClient
-        if let error = client.validate() {
-            DispatchQueue.main.async {
-                completionHandler?(.failure(error))
-            }
-            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
-        }
-
-        let request = client.networkRequestFactory.buildUserLogin(
-            username: username,
-            password: password,
-            options: options,
-            resultType: Result<U, Swift.Error>.self
-        )
-        login(
-            request: request,
-            client: client,
-            userType: U.self,
-            completionHandler: completionHandler
-        )
-        return AnyRequest(request)
-    }
-    
     /**
      Sends a request to confirm email address to the specified user.
      
@@ -1308,18 +1277,33 @@ open class User: NSObject, Credential, Mappable {
     open class func login<U: User>(
         username: String,
         password: String,
-        provider: AuthProvider,
+        provider: AuthProvider = .kinvey,
         options: Options? = nil,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<U, Swift.Error>> {
         switch provider {
         case .kinvey:
-            return login(
+            let client = options?.client ?? sharedClient
+            if let error = client.validate() {
+                DispatchQueue.main.async {
+                    completionHandler?(.failure(error))
+                }
+                return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
+            }
+            
+            let request = client.networkRequestFactory.buildUserLogin(
                 username: username,
                 password: password,
                 options: options,
+                resultType: Result<U, Swift.Error>.self
+            )
+            login(
+                request: request,
+                client: client,
+                userType: U.self,
                 completionHandler: completionHandler
             )
+            return AnyRequest(request)
         case .mic:
             return MIC.login(
                 username: username,
@@ -1679,9 +1663,13 @@ public struct UserSocialIdentity : StaticMappable {
     
 }
 
+/// Specify an authentication provider
 public enum AuthProvider {
     
+    /// Kinvey's User collection
     case kinvey
+    
+    /// Mobile Identity Connect
     case mic
     
 }
