@@ -3806,6 +3806,112 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testServerSideDeltaSetMissingConfigurationAutoPaginationOn() {
+        signUp()
+        
+        let dataStore = DataStore<Person>.collection(.sync, autoPagination: true, options: Options(deltaSet: true))
+        
+        var count: Int? = nil
+        
+        var mockRequestPathSequence = [String]()
+        if useMockData {
+            var json = [JsonDictionary]()
+            for i in 0 ..< 10 {
+                json.append([
+                    "_id" : UUID().uuidString,
+                    "name" : UUID().uuidString,
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ])
+            }
+            mockResponse { request in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                mockRequestPathSequence.append(urlComponents.path)
+                switch urlComponents.path {
+                case "/appdata/_kid_/Person/_count":
+                    return HttpResponse(json: [
+                        "count" : json.count
+                    ])
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        statusCode: 403,
+                        json: [
+                            "error": "MissingConfiguration",
+                            "description": "This feature is not properly configured for this app backend. Please configure it through the console first, or contact support for more information.",
+                            "debug": "This collection has not been configured for Delta Set access."
+                        ]
+                    )
+                case "/appdata/_kid_/Person/":
+                    let skip = urlComponents.queryItems?.filter({ $0.name == "skip" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.startIndex
+                    let limit = urlComponents.queryItems?.filter({ $0.name == "limit" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.endIndex
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: Array(json[skip ..< skip + limit])
+                    )
+                default:
+                    XCTFail(urlComponents.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                XCTAssertEqual(mockRequestPathSequence.count, 9)
+                if mockRequestPathSequence.count == 9 {
+                    XCTAssertEqual(mockRequestPathSequence[0], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[1], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[2], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[3], "/appdata/_kid_/Person/_deltaset")
+                    XCTAssertEqual(mockRequestPathSequence[4], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[5], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[6], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[7], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[8], "/appdata/_kid_/Person/")
+                }
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            count = try dataStore.count(options: Options(readPolicy: .forceNetwork)).waitForResult().value()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        XCTAssertNotNil(count)
+        
+        guard let count1 = count else {
+            return
+        }
+        
+        do {
+            let results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, count1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        XCTAssertNotNil(count)
+        
+        guard let count2 = count else {
+            return
+        }
+        
+        do {
+            let options = Options(maxSizePerResultSet: 3)
+            let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, count2)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testServerSideDeltaSetParameterValueOutOfRange() {
         signUp()
         
