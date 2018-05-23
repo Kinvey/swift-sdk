@@ -4328,4 +4328,130 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         serverSideDeltaSetResultSetSizeExceeded(autoPagination: true)
     }
     
+    func testServerSideDeltaSetAutoPagination2ndRequestFailing() {
+        signUp()
+        
+        let dataStore = DataStore<Person>.collection(
+            .sync,
+            autoPagination: true,
+            options: Options(deltaSet: true)
+        )
+        
+        var count: Int? = nil
+        
+        var mockRequestPathSequence = [String]()
+        if useMockData {
+            var json = [
+                [
+                    "_id" : UUID().uuidString,
+                    "name" : UUID().uuidString,
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ],
+                [
+                    "_id" : UUID().uuidString,
+                    "name" : UUID().uuidString,
+                    "age" : 0,
+                    "_acl" : [
+                        "creator" : self.client.activeUser!.userId
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString()
+                    ]
+                ]
+            ]
+            var count = 0
+            mockResponse { request in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                mockRequestPathSequence.append(urlComponents.path)
+                switch urlComponents.path {
+                case "/appdata/_kid_/Person/_count":
+                    return HttpResponse(json: [
+                        "count" : json.count
+                    ])
+                case "/appdata/_kid_/Person/_deltaset":
+                    return HttpResponse(
+                        statusCode: 400,
+                        json: [
+                            "changed" : [],
+                            "deleted" : []
+                        ]
+                    )
+                case "/appdata/_kid_/Person/":
+                    defer {
+                        count += 1
+                    }
+                    if count == 1 {
+                        return HttpResponse(error: timeoutError)
+                    }
+                    let skip = urlComponents.queryItems?.filter({ $0.name == "skip" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? 0
+                    let limit = urlComponents.queryItems?.filter({ $0.name == "limit" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.endIndex - skip
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: Array(json[skip ..< skip + limit])
+                    )
+                default:
+                    XCTFail(urlComponents.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                XCTAssertEqual(mockRequestPathSequence.count, 7)
+                if mockRequestPathSequence.count == 7 {
+                    XCTAssertEqual(mockRequestPathSequence[0], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[1], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[2], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[3], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[4], "/appdata/_kid_/Person/_count")
+                    XCTAssertEqual(mockRequestPathSequence[5], "/appdata/_kid_/Person/")
+                    XCTAssertEqual(mockRequestPathSequence[6], "/appdata/_kid_/Person/")
+                }
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            count = try dataStore.count(options: Options(readPolicy: .forceNetwork)).waitForResult().value()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        XCTAssertNotNil(count)
+        
+        guard let count1 = count else {
+            return
+        }
+        
+        let options = Options(maxSizePerResultSet: 1)
+        
+        do {
+            let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
+            XCTFail()
+        } catch {
+            XCTAssertTimeoutError(error)
+        }
+        
+        XCTAssertNotNil(count)
+        
+        guard let count2 = count else {
+            return
+        }
+        
+        do {
+            let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(results.count, count2)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
 }

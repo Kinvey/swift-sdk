@@ -131,4 +131,24 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         Kinvey.fatalError("Method not implemented")
     }
     
+    func write(_ block: @escaping (() throws -> Void)) throws {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
+    func beginWrite() {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
+    func commitWrite() throws {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
+    func commitWrite(withoutNotifying tokens: [NotificationToken]) throws {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
+    func cancelWrite() {
+        Kinvey.fatalError("Method not implemented")
+    }
+    
 }
