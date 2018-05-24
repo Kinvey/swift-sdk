@@ -186,6 +186,54 @@ open class MIC {
     
     @discardableResult
     class func login<U: User>(
+        username: String,
+        password: String,
+        options: Options? = nil,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<U, Swift.Error>> {
+        let client = options?.client ?? sharedClient
+        let requests = MultiRequest<Result<U, Swift.Error>>()
+        let request = client.networkRequestFactory.buildOAuthToken(
+            username: username,
+            password: password,
+            options: options
+        )
+        requests += request
+        Promise<JsonDictionary> { resolver in
+            request.execute { (data, response, error) in
+                if let response = response,
+                    response.isOK,
+                    let json = client.responseParser.parse(data)
+                {
+                    resolver.fulfill(json)
+                } else {
+                    resolver.reject(error ?? buildError(data, response, error, client))
+                }
+            }
+        }.then { socialIdentity in
+            return Promise<U> { resolver in
+                requests += User.login(
+                    authSource: .kinvey,
+                    socialIdentity
+                ) { result in
+                    switch result {
+                    case .success(let user):
+                        resolver.fulfill(user as! U)
+                    case .failure(let error):
+                        resolver.reject(error)
+                    }
+                }
+            }
+        }.done { user -> Void in
+            completionHandler?(.success(user))
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+        return AnyRequest(requests)
+    }
+    
+    @discardableResult
+    class func login<U: User>(
         refreshToken: String,
         authServiceId: String?,
         client: Client = sharedClient,

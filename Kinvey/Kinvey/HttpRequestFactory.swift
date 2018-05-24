@@ -615,6 +615,40 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildOAuthToken(
+        username: String,
+        password: String,
+        options: Options?
+    ) -> HttpRequest<Any> {
+        var params = [
+            "grant_type" : "password",
+            "username" : username,
+            "password" : password
+        ]
+        set(&params, clientId: options?.authServiceId)
+        let client = options?.client ?? self.client
+        var credential: Credential
+        if let authServiceId = options?.authServiceId,
+            let appKey = client.appKey,
+            let appSecret = client.appSecret
+        {
+            credential = BasicAuthCredential(
+                username: "\(appKey).\(authServiceId)",
+                password: appSecret
+            )
+        } else {
+            credential = client
+        }
+        let request = HttpRequest<Any>(
+            httpMethod: .post,
+            endpoint: Endpoint.oauthToken(client: client),
+            credential: credential,
+            body: Body.formUrlEncoded(params: params),
+            options: options
+        )
+        return request
+    }
+    
     func buildOAuthGrantAuth(
         redirectURI: URL,
         options: Options?

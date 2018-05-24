@@ -207,6 +207,7 @@ protocol RequestFactory {
     ) -> HttpRequest<Result>
     
     func buildOAuthToken(redirectURI: URL, code: String, options: Options?) -> HttpRequest<Any>
+    func buildOAuthToken(username: String, password: String, options: Options?) -> HttpRequest<Any>
     
     func buildOAuthGrantAuth(redirectURI: URL, options: Options?) -> HttpRequest<Any>
     func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String, options: Options?) -> HttpRequest<Any>
