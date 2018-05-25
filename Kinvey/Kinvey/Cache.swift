@@ -51,6 +51,16 @@ internal protocol CacheType: class {
     
     func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<Type>>) -> Void) -> AnyNotificationToken
     
+    func write(_ block: @escaping (() throws -> Swift.Void)) throws
+    
+    func beginWrite()
+    
+    func commitWrite() throws
+    
+    func commitWrite(withoutNotifying tokens: [NotificationToken]) throws
+    
+    func cancelWrite()
+    
 }
 
 public protocol NotificationToken {
@@ -62,8 +72,10 @@ public protocol NotificationToken {
 public class AnyNotificationToken: NotificationToken {
     
     private let _invalidate: () -> Void
+    internal let notificationToken: Any
     
     init<NotificationTokenType: NotificationToken>(_ notificationToken: NotificationTokenType) {
+        self.notificationToken = notificationToken
         self._invalidate = notificationToken.invalidate
     }
     
@@ -136,6 +148,11 @@ class AnyCache<T: Persistable>: CacheType {
     private let _lastSync: (Query) -> Date?
     private let _invalidateLastSync: (Query) -> Date?
     private let _observe: (Query?, @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken
+    private let _write: (@escaping () throws -> Void) throws -> Void
+    private let _beginWrite: () -> Void
+    private let _commitWrite: () throws -> Void
+    private let _commitWriteWithoutNotifying: ([NotificationToken]) throws -> Void
+    private let _cancelWrite: () -> Void
     
     typealias `Type` = T
     
@@ -161,6 +178,11 @@ class AnyCache<T: Persistable>: CacheType {
         _lastSync = cache.lastSync(query:)
         _invalidateLastSync = cache.invalidateLastSync(query:)
         _observe = cache.observe(_:completionHandler:)
+        _write = cache.write
+        _beginWrite = cache.beginWrite
+        _commitWrite = cache.commitWrite
+        _commitWriteWithoutNotifying = cache.commitWrite(withoutNotifying:)
+        _cancelWrite = cache.cancelWrite
     }
     
     func save(entity: T) {
@@ -225,6 +247,26 @@ class AnyCache<T: Persistable>: CacheType {
     
     func observe(_ query: Query?, completionHandler: @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken {
         return _observe(query, completionHandler)
+    }
+    
+    func write(_ block: @escaping (() throws -> Void)) throws {
+        try _write(block)
+    }
+    
+    func beginWrite() {
+        _beginWrite()
+    }
+    
+    func commitWrite() throws {
+        try _commitWrite()
+    }
+    
+    func commitWrite(withoutNotifying tokens: [NotificationToken]) throws {
+        try _commitWriteWithoutNotifying(tokens)
+    }
+    
+    func cancelWrite() {
+        _cancelWrite()
     }
     
 }

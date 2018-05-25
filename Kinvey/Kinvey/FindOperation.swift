@@ -168,9 +168,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
+            cache?.beginWrite()
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
+                    try! cache.commitWrite()
                     result = cache.find(byQuery: self.query)
                 } else {
                     result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
@@ -178,6 +180,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 progress.completedUnitCount += 1
                 resolver.fulfill(result)
             }.catch { error in
+                self.cache?.cancelWrite()
                 resolver.reject(error)
             }
         }
