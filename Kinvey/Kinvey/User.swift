@@ -1361,7 +1361,8 @@ open class User: NSObject, Credential, Mappable {
         micURL: URL,
         options: Options? = nil
     ) -> Bool {
-        if let code = MIC.parseCode(redirectURI: redirectURI, url: micURL) {
+        switch MIC.parseCode(redirectURI: redirectURI, url: micURL) {
+        case .success(let code):
             MIC.login(
                 redirectURI: redirectURI,
                 code: code,
@@ -1381,8 +1382,13 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
             return true
+        case .failure(let error):
+            NotificationCenter.default.post(
+                name: MICSafariViewControllerFailureNotificationName,
+                object: error ?? buildError(nil, nil, error, options?.client ?? sharedClient)
+            )
+            return false
         }
-        return false
     }
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
@@ -1531,18 +1537,23 @@ open class User: NSObject, Credential, Mappable {
                         authSession = nil
                         timer?.invalidate()
                         timer = nil
-                        if let url = url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
-                            MIC.login(
-                                redirectURI: redirectURI,
-                                code: code,
-                                options: options
-                            ) { (result: Result<U, Swift.Error>) in
-                                switch result {
-                                case .success(let user):
-                                    resolver.fulfill(user)
-                                case .failure(let error):
-                                    resolver.reject(error)
+                        if let url = url {
+                            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+                            case .success(let code):
+                                MIC.login(
+                                    redirectURI: redirectURI,
+                                    code: code,
+                                    options: options
+                                ) { (result: Result<U, Swift.Error>) in
+                                    switch result {
+                                    case .success(let user):
+                                        resolver.fulfill(user)
+                                    case .failure(let error):
+                                        resolver.reject(error)
+                                    }
                                 }
+                            case .failure(let error):
+                                resolver.reject(error ?? buildError(nil, nil, error, client))
                             }
                         } else {
                             resolver.reject(buildError(nil, nil, error, client))

@@ -27,24 +27,31 @@ open class MIC {
      Validate if a URL matches for a redirect URI and also contains a code value
      */
     open class func isValid(redirectURI: URL, url: URL) -> Bool {
-        return parseCode(redirectURI: redirectURI, url: url) != nil
+        switch parseCode(redirectURI: redirectURI, url: url) {
+        case .success(_):
+            return true
+        case .failure(_):
+            return false
+        }
     }
     
-    class func parseCode(redirectURI: URL, url: URL) -> String? {
+    class func parseCode(redirectURI: URL, url: URL) -> Result<String, Swift.Error?> {
         guard redirectURI.scheme?.lowercased() == url.scheme?.lowercased(),
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            var queryItems = urlComponents.queryItems
+            let queryItems = urlComponents.queryItems
         else {
-            return nil
+            return .failure(nil)
         }
         
-        queryItems = queryItems.filter { $0.name == "code" && $0.value != nil && !$0.value!.isEmpty }
-        guard queryItems.count == 1, let queryItem = queryItems.first, let code = queryItem.value else {
-            return nil
+        if let code = queryItems.filter({ $0.name == "code" && $0.value != nil && !$0.value!.isEmpty }).first?.value {
+            return .success(code)
+        } else if let error = queryItems.filter({ $0.name == "error" && $0.value != nil && !$0.value!.isEmpty }).first?.value,
+            let errorDescription = queryItems.filter({ $0.name == "error_description" && $0.value != nil && !$0.value!.isEmpty }).first?.value
+        {
+            return .failure(Error.micAuth(error: error, description: errorDescription))
         }
-        
-        return code
+        return .failure(nil)
     }
     
     /// Returns a URL that must be used for login with MIC
@@ -154,20 +161,24 @@ open class MIC {
                         let httpResponse = response as? HttpResponse,
                         httpResponse.response.statusCode == 302,
                         let location = httpResponse.response.allHeaderFields["Location"] as? String,
-                        let url = URL(string: location),
-                        let code = parseCode(redirectURI: redirectURI, url: url)
+                        let url = URL(string: location)
                     {
-                        requests += login(
-                            redirectURI: redirectURI,
-                            code: code,
-                            options: options
-                        ) { result in
-                            switch result {
-                            case .success(let user):
-                                resolver.fulfill(user as! U)
-                            case .failure(let error):
-                                resolver.reject(error)
+                        switch parseCode(redirectURI: redirectURI, url: url) {
+                        case .success(let code):
+                            requests += login(
+                                redirectURI: redirectURI,
+                                code: code,
+                                options: options
+                            ) { result in
+                                switch result {
+                                case .success(let user):
+                                    resolver.fulfill(user as! U)
+                                case .failure(let error):
+                                    resolver.reject(error)
+                                }
                             }
+                        case .failure(let error):
+                            resolver.reject(error ?? buildError(data, response, error, client))
                         }
                     } else {
                         resolver.reject(buildError(data, response, error, client))
@@ -530,12 +541,19 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - WKNavigationDelegate
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let url = navigationAction.request.url,
-            let code = MIC.parseCode(redirectURI: redirectURI, url: url)
-        {
-            success(code: code)
-            
-            decisionHandler(.cancel)
+        if let url = navigationAction.request.url {
+            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+            case .success(let code):
+                success(code: code)
+                
+                decisionHandler(.cancel)
+            case .failure(let error):
+                if let error = error {
+                    failure(error: error)
+                    
+                    decisionHandler(.cancel)
+                }
+            }
         }
         
         decisionHandler(.allow)
@@ -566,9 +584,14 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - UIWebViewDelegate
     
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        if let url = request.url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
-            success(code: code)
-            return false
+        if let url = request.url {
+            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+            case .success(let code):
+                success(code: code)
+                return false
+            case .failure(let error):
+                failure(error: error ?? buildError(nil, nil, error, options?.client ?? sharedClient))
+            }
         }
         return true
     }

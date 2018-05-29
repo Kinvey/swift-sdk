@@ -3345,6 +3345,74 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testMICLoginUsernamePasswordRedirectError() {
+        var count = 0
+        let errorCode = "server_error"
+        let errorDescription = "server_error_description"
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(
+                    statusCode: 200,
+                    json: [
+                        "temp_login_uri" : "https://auth.kinvey.com/oauth/authenticate/\(UUID().uuidString)"
+                    ]
+                )
+            case 1:
+                return HttpResponse(
+                    statusCode: 302,
+                    headerFields: ["Location" : "myCustomURIScheme://?error=\(errorCode)&error_description=\(errorDescription)"],
+                    data: Data()
+                )
+            default:
+                XCTFail()
+                return HttpResponse(statusCode: 200, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            username: UUID().uuidString,
+            password: UUID().uuidString,
+            options: Options(
+                authServiceId: nil
+            )
+        ) { result in
+            XCTAssertTrue(Thread.isMainThread)
+            
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .micAuth(let code, let description):
+                        XCTAssertEqual(errorCode, code)
+                        XCTAssertEqual(errorDescription, description)
+                    default:
+                        XCTFail(error.description)
+                    }
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+    }
+    
     func testUserWithoutUserID() {
         XCTAssertNil(User(JSON: ["username" : "Test"]))
     }
