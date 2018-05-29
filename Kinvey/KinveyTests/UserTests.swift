@@ -3075,8 +3075,12 @@ class UserTests: KinveyTestCase {
     func testMICParseCode() {
         let redirectURI = URL(string: "myCustomURIScheme://")!
         let url = URL(string: "myCustomURIScheme://?code_not_present=1234")!
-        let code = MIC.parseCode(redirectURI: redirectURI, url: url)
-        XCTAssertNil(code)
+        switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+        case .success(let code):
+            XCTFail(code)
+        case .failure(let error):
+            XCTAssertNil(error)
+        }
     }
     
     func testMICLoginTimeout() {

@@ -590,7 +590,10 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 success(code: code)
                 return false
             case .failure(let error):
-                failure(error: error ?? buildError(nil, nil, error, options?.client ?? sharedClient))
+                if let error = error {
+                    failure(error: error)
+                    return false
+                }
             }
         }
         return true
