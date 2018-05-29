@@ -44,10 +44,29 @@ open class MIC {
             return .failure(nil)
         }
         
-        if let code = queryItems.filter({ $0.name == "code" && $0.value != nil && !$0.value!.isEmpty }).first?.value {
+        var code: String? = nil
+        var error: String? = nil
+        var errorDescription: String? = nil
+        for queryItem in queryItems {
+            guard let value = queryItem.value, !value.isEmpty else {
+                continue
+            }
+            switch queryItem.name {
+            case "code":
+                code = value
+            case "error":
+                error = value
+            case "error_description":
+                errorDescription = value
+            default:
+                break
+            }
+        }
+        
+        if let code = code {
             return .success(code)
-        } else if let error = queryItems.filter({ $0.name == "error" && $0.value != nil && !$0.value!.isEmpty }).first?.value,
-            let errorDescription = queryItems.filter({ $0.name == "error_description" && $0.value != nil && !$0.value!.isEmpty }).first?.value
+        } else if let error = error,
+            let errorDescription = errorDescription
         {
             return .failure(Error.micAuth(error: error, description: errorDescription))
         }
