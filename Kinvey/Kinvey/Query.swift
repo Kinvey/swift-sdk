@@ -38,8 +38,16 @@ public final class Query: NSObject, BuilderType, Mappable {
     /// Fields to be included in the results of the query.
     open var fields: Set<String>?
     
+    internal var fieldsAsString: String? {
+        return fields?.sorted().joined(separator: ",")
+    }
+    
     /// `NSPredicate` used to filter records.
     open var predicate: NSPredicate?
+    
+    internal var predicateAsString: String? {
+        return predicate.map({ String(describing: $0) })
+    }
     
     /// Array of `NSSortDescriptor`s used to sort records.
     open var sortDescriptors: [NSSortDescriptor]?
@@ -206,9 +214,15 @@ public final class Query: NSObject, BuilderType, Mappable {
     
     var persistableType: Persistable.Type?
     
-    init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]?, persistableType: Persistable.Type? = nil) {
+    init(
+        predicate: NSPredicate? = nil,
+        sortDescriptors: [NSSortDescriptor]? = nil,
+        fields: Set<String>? = nil,
+        persistableType: Persistable.Type? = nil
+    ) {
         self.predicate = predicate
         self.sortDescriptors = sortDescriptors
+        self.fields = fields
         self.persistableType = persistableType
     }
     
@@ -220,22 +234,26 @@ public final class Query: NSObject, BuilderType, Mappable {
     
     /// Default Constructor.
     public override convenience required init() {
-        self.init(predicate: nil, sortDescriptors: nil, persistableType: nil)
+        self.init(
+            predicate: nil,
+            sortDescriptors: nil,
+            fields: nil,
+            persistableType: nil
+        )
     }
     
-    /// Constructor using a `NSPredicate` to filter records.
-    public convenience init(predicate: NSPredicate) {
-        self.init(predicate: predicate, sortDescriptors: nil, persistableType: nil)
-    }
-    
-    /// Constructor using an array of `NSSortDescriptor`s to sort records.
-    public convenience init(sortDescriptors: [NSSortDescriptor]) {
-        self.init(predicate: nil, sortDescriptors: sortDescriptors, persistableType: nil)
-    }
-    
-    /// Constructor using a `NSPredicate` to filter records and an array of `NSSortDescriptor`s to sort records.
-    public convenience init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]? = nil) {
-        self.init(predicate: predicate, sortDescriptors: sortDescriptors, persistableType: nil)
+    /// Constructor using a `NSPredicate` to filter records, an array of `NSSortDescriptor`s to sort records and the fields that should be returned.
+    public convenience init(
+        predicate: NSPredicate? = nil,
+        sortDescriptors: [NSSortDescriptor]? = nil,
+        fields: Set<String>? = nil
+    ) {
+        self.init(
+            predicate: predicate,
+            sortDescriptors: sortDescriptors,
+            fields: fields,
+            persistableType: nil
+        )
     }
     
     /// Constructor using a similar way to construct a `NSPredicate`.

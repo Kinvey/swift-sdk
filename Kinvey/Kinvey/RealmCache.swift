@@ -569,22 +569,26 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
+    internal func lastSync(query: Query, realm: Realm) -> Results<_QueryCache>? {
+        realm.refresh()
+        var results = realm.objects(_QueryCache.self)
+        guard results.count > 0 else {
+            return nil
+        }
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "collectionName == %@", self.collectionName),
+            query.predicateAsString.map({ NSPredicate(format: "query == %@", $0) }) ?? NSPredicate(format: "query == nil"),
+            query.fieldsAsString.map({ NSPredicate(format: "fields == %@", $0) }) ?? NSPredicate(format: "fields == nil")
+        ])
+        results = results.filter(predicate)
+        return results
+    }
+    
     func lastSync(query: Query) -> Date? {
         log.verbose("Retriving last sync date")
         var lastSync: Date? = nil
         executor.executeAndWait {
-            var results = self.realm.objects(_QueryCache.self)
-            guard results.count > 0 else {
-                return
-            }
-            if let predicate = query.predicate {
-                results = results.filter("collectionName == %@ AND query == %@", self.collectionName, "\(predicate)")
-            } else {
-                results = results.filter("collectionName == %@ AND query == nil", self.collectionName)
-            }
-            if let syncQuery = results.first {
-                lastSync = syncQuery.lastSync
-            }
+            lastSync = self.lastSync(query: query, realm: self.realm)?.first?.lastSync
         }
         return lastSync
     }
@@ -594,13 +598,10 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         var lastSync: Date? = nil
         executor.executeAndWait {
             try! self.write { realm in
-                let syncedQueries: Results<_QueryCache>
-                if let predicate = query.predicate {
-                    syncedQueries = realm.objects(_QueryCache.self).filter("collectionName == %@ AND query == %@", self.collectionName, String(describing: predicate))
-                } else {
-                    syncedQueries = realm.objects(_QueryCache.self).filter("collectionName == %@ AND query == nil", self.collectionName)
+                guard let syncedQueries = self.lastSync(query: query, realm: realm), let firstSyncQuery = syncedQueries.first else {
+                    return
                 }
-                lastSync = syncedQueries.first?.lastSync
+                lastSync = firstSyncQuery.lastSync
                 realm.delete(syncedQueries)
             }
         }
@@ -846,16 +847,17 @@ extension RealmCache: DynamicCacheType {
     }
     
     private func saveQuery(syncQuery: SyncQuery?, realm: Realm) {
-        if let syncQuery = syncQuery {
-            let realmSyncQuery = _QueryCache()
-            realmSyncQuery.collectionName = entityTypeCollectionName
-            if let predicate = syncQuery.query.predicate {
-                realmSyncQuery.query = String(describing: predicate)
-            }
-            realmSyncQuery.lastSync = syncQuery.lastSync
-            realmSyncQuery.generateKey()
-            realm.add(realmSyncQuery, update: true)
+        guard let syncQuery = syncQuery else {
+            return
         }
+        
+        let realmSyncQuery = _QueryCache()
+        realmSyncQuery.collectionName = entityTypeCollectionName
+        realmSyncQuery.query = syncQuery.query.predicateAsString
+        realmSyncQuery.fields = syncQuery.query.fieldsAsString
+        realmSyncQuery.lastSync = syncQuery.lastSync
+        realmSyncQuery.generateKey()
+        realm.add(realmSyncQuery, update: true)
     }
     
 }
@@ -1011,6 +1013,9 @@ internal class _QueryCache: Object {
     
     @objc
     dynamic var query: String?
+    
+    @objc
+    dynamic var fields: String?
     
     @objc
     dynamic var lastSync: Date?
