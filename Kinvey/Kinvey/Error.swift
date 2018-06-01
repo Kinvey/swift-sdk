@@ -95,6 +95,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
     case invalidCredentials(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
     
+    /// Error handling OAuth errors in redirect uri responses
+    case micAuth(error: String, description: String)
+    
     /// Error localized description.
     public var description: String {
         let bundle = Bundle(for: Client.self)
@@ -111,7 +114,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .resultSetSizeExceeded(_, let description),
              .entityNotFound(_, let description),
              .parameterValueOutOfRange(_, let description),
-             .invalidCredentials(_, _, _, let description):
+             .invalidCredentials(_, _, _, let description),
+             .micAuth(_, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")

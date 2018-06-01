@@ -16,7 +16,7 @@ private let MaxSizePerResultSet = 10_000
 internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCollection<T>, Swift.Error>, ReadOperationType where T: NSObject {
     
     let query: Query
-    let deltaSet: Bool
+    var deltaSet: Bool
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
     let mustSetRequestResult: Bool
@@ -168,9 +168,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
+            cache?.beginWrite()
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
+                    try! cache.commitWrite()
                     result = cache.find(byQuery: self.query)
                 } else {
                     result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
@@ -178,6 +180,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 progress.completedUnitCount += 1
                 resolver.fulfill(result)
             }.catch { error in
+                self.cache?.cancelWrite()
                 resolver.reject(error)
             }
         }
@@ -268,6 +271,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 switch error {
                 case .missingConfiguration:
                     cache.clear(syncQueries: nil)
+                    self.deltaSet = false
                     return self.fetchAllAutoPagination(multiRequest: multiRequest)
                 default:
                     break

@@ -2933,6 +2933,113 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testMICLoginResourceOwnerCredentialGrant() {
+        if useMockData {
+            let accessToken = UUID().uuidString
+            let refreshToken = UUID().uuidString
+            mockResponse { (request) -> HttpResponse in
+                switch request.url!.path {
+                case "/v3/oauth/token":
+                    return HttpResponse(json: [
+                        "access_token" : accessToken,
+                        "token_type" : "Bearer",
+                        "expires_in" : 3599,
+                        "refresh_token" : refreshToken
+                        ])
+                case "/user/_kid_/login":
+                    let userId = UUID().uuidString
+                    let user = [
+                        "_socialIdentity" : [
+                            "kinveyAuth" : [
+                                "id" : "custom",
+                                "access_token" : accessToken,
+                                "refresh_token" : refreshToken
+                            ]
+                        ],
+                        "password" : UUID().uuidString,
+                        "username" : UUID().uuidString,
+                        "_kmd" : [
+                            "lmt" : Date().toString(),
+                            "ect" : Date().toString(),
+                            "authtoken" : UUID().uuidString
+                        ],
+                        "_id" : userId,
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ]
+                    ] as [String : Any]
+                    MockKinveyBackend.user[userId] = user
+                    return HttpResponse(statusCode: 201, json: user)
+                case "/appdata/_kid_/Person":
+                    return HttpResponse(json: [
+                        [
+                            "_id": UUID().uuidString,
+                            "name": "Test",
+                            "age": 18,
+                            "_acl": [
+                                "creator": UUID().uuidString
+                            ],
+                            "_kmd": [
+                                "lmt": Date().toString(),
+                                "ect": Date().toString()
+                            ]
+                        ]
+                    ])
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        User.login(
+            username: "custom",
+            password: "1234",
+            provider: .mic
+        ) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        do {
+            let store = DataStore<Person>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
+    
     func testClientNotInitialized() {
         let client = Client()
         
@@ -2968,8 +3075,12 @@ class UserTests: KinveyTestCase {
     func testMICParseCode() {
         let redirectURI = URL(string: "myCustomURIScheme://")!
         let url = URL(string: "myCustomURIScheme://?code_not_present=1234")!
-        let code = MIC.parseCode(redirectURI: redirectURI, url: url)
-        XCTAssertNil(code)
+        switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+        case .success(let code):
+            XCTFail(code)
+        case .failure(let error):
+            XCTAssertNil(error)
+        }
     }
     
     func testMICLoginTimeout() {
@@ -3228,6 +3339,74 @@ class UserTests: KinveyTestCase {
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
                 XCTAssertEqual(error.code, NSURLErrorTimedOut)
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+    }
+    
+    func testMICLoginUsernamePasswordRedirectError() {
+        var count = 0
+        let errorCode = "server_error"
+        let errorDescription = "server_error_description"
+        mockResponse { (request) -> HttpResponse in
+            defer {
+                count += 1
+            }
+            switch count {
+            case 0:
+                return HttpResponse(
+                    statusCode: 200,
+                    json: [
+                        "temp_login_uri" : "https://auth.kinvey.com/oauth/authenticate/\(UUID().uuidString)"
+                    ]
+                )
+            case 1:
+                return HttpResponse(
+                    statusCode: 302,
+                    headerFields: ["Location" : "myCustomURIScheme://?error=\(errorCode)&error_description=\(errorDescription)"],
+                    data: Data()
+                )
+            default:
+                XCTFail()
+                return HttpResponse(statusCode: 200, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        MIC.login(
+            redirectURI: URL(string: "myCustomURIScheme://")!,
+            username: UUID().uuidString,
+            password: UUID().uuidString,
+            options: Options(
+                authServiceId: nil
+            )
+        ) { result in
+            XCTAssertTrue(Thread.isMainThread)
+            
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .micAuth(let code, let description):
+                        XCTAssertEqual(errorCode, code)
+                        XCTAssertEqual(errorDescription, description)
+                    default:
+                        XCTFail(error.description)
+                    }
+                }
             }
             
             expectationLogin?.fulfill()

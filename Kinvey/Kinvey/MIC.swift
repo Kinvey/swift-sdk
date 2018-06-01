@@ -27,24 +27,50 @@ open class MIC {
      Validate if a URL matches for a redirect URI and also contains a code value
      */
     open class func isValid(redirectURI: URL, url: URL) -> Bool {
-        return parseCode(redirectURI: redirectURI, url: url) != nil
+        switch parseCode(redirectURI: redirectURI, url: url) {
+        case .success(_):
+            return true
+        case .failure(_):
+            return false
+        }
     }
     
-    class func parseCode(redirectURI: URL, url: URL) -> String? {
+    class func parseCode(redirectURI: URL, url: URL) -> Result<String, Swift.Error?> {
         guard redirectURI.scheme?.lowercased() == url.scheme?.lowercased(),
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            var queryItems = urlComponents.queryItems
+            let queryItems = urlComponents.queryItems
         else {
-            return nil
+            return .failure(nil)
         }
         
-        queryItems = queryItems.filter { $0.name == "code" && $0.value != nil && !$0.value!.isEmpty }
-        guard queryItems.count == 1, let queryItem = queryItems.first, let code = queryItem.value else {
-            return nil
+        var code: String? = nil
+        var error: String? = nil
+        var errorDescription: String? = nil
+        for queryItem in queryItems {
+            guard let value = queryItem.value, !value.isEmpty else {
+                continue
+            }
+            switch queryItem.name {
+            case "code":
+                code = value
+            case "error":
+                error = value
+            case "error_description":
+                errorDescription = value
+            default:
+                break
+            }
         }
         
-        return code
+        if let code = code {
+            return .success(code)
+        } else if let error = error,
+            let errorDescription = errorDescription
+        {
+            return .failure(Error.micAuth(error: error, description: errorDescription))
+        }
+        return .failure(nil)
     }
     
     /// Returns a URL that must be used for login with MIC
@@ -154,20 +180,24 @@ open class MIC {
                         let httpResponse = response as? HttpResponse,
                         httpResponse.response.statusCode == 302,
                         let location = httpResponse.response.allHeaderFields["Location"] as? String,
-                        let url = URL(string: location),
-                        let code = parseCode(redirectURI: redirectURI, url: url)
+                        let url = URL(string: location)
                     {
-                        requests += login(
-                            redirectURI: redirectURI,
-                            code: code,
-                            options: options
-                        ) { result in
-                            switch result {
-                            case .success(let user):
-                                resolver.fulfill(user as! U)
-                            case .failure(let error):
-                                resolver.reject(error)
+                        switch parseCode(redirectURI: redirectURI, url: url) {
+                        case .success(let code):
+                            requests += login(
+                                redirectURI: redirectURI,
+                                code: code,
+                                options: options
+                            ) { result in
+                                switch result {
+                                case .success(let user):
+                                    resolver.fulfill(user as! U)
+                                case .failure(let error):
+                                    resolver.reject(error)
+                                }
                             }
+                        case .failure(let error):
+                            resolver.reject(error ?? buildError(data, response, error, client))
                         }
                     } else {
                         resolver.reject(buildError(data, response, error, client))
@@ -175,6 +205,54 @@ open class MIC {
                     urlSession.invalidateAndCancel()
                 }
                 requests += request
+            }
+        }.done { user -> Void in
+            completionHandler?(.success(user))
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+        return AnyRequest(requests)
+    }
+    
+    @discardableResult
+    class func login<U: User>(
+        username: String,
+        password: String,
+        options: Options? = nil,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<U, Swift.Error>> {
+        let client = options?.client ?? sharedClient
+        let requests = MultiRequest<Result<U, Swift.Error>>()
+        let request = client.networkRequestFactory.buildOAuthToken(
+            username: username,
+            password: password,
+            options: options
+        )
+        requests += request
+        Promise<JsonDictionary> { resolver in
+            request.execute { (data, response, error) in
+                if let response = response,
+                    response.isOK,
+                    let json = client.responseParser.parse(data)
+                {
+                    resolver.fulfill(json)
+                } else {
+                    resolver.reject(error ?? buildError(data, response, error, client))
+                }
+            }
+        }.then { socialIdentity in
+            return Promise<U> { resolver in
+                requests += User.login(
+                    authSource: .kinvey,
+                    socialIdentity
+                ) { result in
+                    switch result {
+                    case .success(let user):
+                        resolver.fulfill(user as! U)
+                    case .failure(let error):
+                        resolver.reject(error)
+                    }
+                }
             }
         }.done { user -> Void in
             completionHandler?(.success(user))
@@ -482,12 +560,19 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - WKNavigationDelegate
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let url = navigationAction.request.url,
-            let code = MIC.parseCode(redirectURI: redirectURI, url: url)
-        {
-            success(code: code)
-            
-            decisionHandler(.cancel)
+        if let url = navigationAction.request.url {
+            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+            case .success(let code):
+                success(code: code)
+                
+                decisionHandler(.cancel)
+            case .failure(let error):
+                if let error = error {
+                    failure(error: error)
+                    
+                    decisionHandler(.cancel)
+                }
+            }
         }
         
         decisionHandler(.allow)
@@ -518,9 +603,17 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - UIWebViewDelegate
     
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        if let url = request.url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
-            success(code: code)
-            return false
+        if let url = request.url {
+            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+            case .success(let code):
+                success(code: code)
+                return false
+            case .failure(let error):
+                if let error = error {
+                    failure(error: error)
+                    return false
+                }
+            }
         }
         return true
     }

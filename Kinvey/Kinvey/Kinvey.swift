@@ -123,8 +123,12 @@ let groupId = "_group_"
 
 #if swift(>=5)
     let swiftVersion = "5 or above"
+#elseif swift(>=4.1.3)
+    let swiftVersion = "4.1.3 or above"
+#elseif swift(>=4.1.2)
+    let swiftVersion = "4.1.2"
 #elseif swift(>=4.1.1)
-    let swiftVersion = "4.1.1 or above"
+    let swiftVersion = "4.1.1"
 #elseif swift(>=4.1)
     let swiftVersion = "4.1"
 #elseif swift(>=4.0.3)

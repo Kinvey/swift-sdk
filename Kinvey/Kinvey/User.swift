@@ -402,37 +402,6 @@ open class User: NSObject, Credential, Mappable {
         )
     }
     
-    /// Sign in a user and set as a current active user.
-    @discardableResult
-    open class func login<U: User>(
-        username: String,
-        password: String,
-        options: Options? = nil,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
-        let client = options?.client ?? sharedClient
-        if let error = client.validate() {
-            DispatchQueue.main.async {
-                completionHandler?(.failure(error))
-            }
-            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
-        }
-
-        let request = client.networkRequestFactory.buildUserLogin(
-            username: username,
-            password: password,
-            options: options,
-            resultType: Result<U, Swift.Error>.self
-        )
-        login(
-            request: request,
-            client: client,
-            userType: U.self,
-            completionHandler: completionHandler
-        )
-        return AnyRequest(request)
-    }
-    
     /**
      Sends a request to confirm email address to the specified user.
      
@@ -1232,6 +1201,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1259,6 +1229,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1282,6 +1253,7 @@ open class User: NSObject, Credential, Mappable {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
+    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1296,6 +1268,50 @@ open class User: NSObject, Credential, Mappable {
             options: options,
             completionHandler: completionHandler
         )
+    }
+    
+    /**
+     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
+     */
+    @discardableResult
+    open class func login<U: User>(
+        username: String,
+        password: String,
+        provider: AuthProvider = .kinvey,
+        options: Options? = nil,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<U, Swift.Error>> {
+        switch provider {
+        case .kinvey:
+            let client = options?.client ?? sharedClient
+            if let error = client.validate() {
+                DispatchQueue.main.async {
+                    completionHandler?(.failure(error))
+                }
+                return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
+            }
+            
+            let request = client.networkRequestFactory.buildUserLogin(
+                username: username,
+                password: password,
+                options: options,
+                resultType: Result<U, Swift.Error>.self
+            )
+            login(
+                request: request,
+                client: client,
+                userType: U.self,
+                completionHandler: completionHandler
+            )
+            return AnyRequest(request)
+        case .mic:
+            return MIC.login(
+                username: username,
+                password: password,
+                options: options,
+                completionHandler: completionHandler
+            )
+        }
     }
 
 #if os(iOS)
@@ -1345,7 +1361,8 @@ open class User: NSObject, Credential, Mappable {
         micURL: URL,
         options: Options? = nil
     ) -> Bool {
-        if let code = MIC.parseCode(redirectURI: redirectURI, url: micURL) {
+        switch MIC.parseCode(redirectURI: redirectURI, url: micURL) {
+        case .success(let code):
             MIC.login(
                 redirectURI: redirectURI,
                 code: code,
@@ -1365,8 +1382,13 @@ open class User: NSObject, Credential, Mappable {
                 }
             }
             return true
+        case .failure(let error):
+            NotificationCenter.default.post(
+                name: MICSafariViewControllerFailureNotificationName,
+                object: error ?? buildError(nil, nil, error, options?.client ?? sharedClient)
+            )
+            return false
         }
-        return false
     }
 
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
@@ -1515,18 +1537,23 @@ open class User: NSObject, Credential, Mappable {
                         authSession = nil
                         timer?.invalidate()
                         timer = nil
-                        if let url = url, let code = MIC.parseCode(redirectURI: redirectURI, url: url) {
-                            MIC.login(
-                                redirectURI: redirectURI,
-                                code: code,
-                                options: options
-                            ) { (result: Result<U, Swift.Error>) in
-                                switch result {
-                                case .success(let user):
-                                    resolver.fulfill(user)
-                                case .failure(let error):
-                                    resolver.reject(error)
+                        if let url = url {
+                            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
+                            case .success(let code):
+                                MIC.login(
+                                    redirectURI: redirectURI,
+                                    code: code,
+                                    options: options
+                                ) { (result: Result<U, Swift.Error>) in
+                                    switch result {
+                                    case .success(let user):
+                                        resolver.fulfill(user)
+                                    case .failure(let error):
+                                        resolver.reject(error)
+                                    }
                                 }
+                            case .failure(let error):
+                                resolver.reject(error ?? buildError(nil, nil, error, client))
                             }
                         } else {
                             resolver.reject(buildError(nil, nil, error, client))
@@ -1644,5 +1671,16 @@ public struct UserSocialIdentity : StaticMappable {
         linkedIn <- map[AuthSource.linkedIn.rawValue]
         kinvey <- map[AuthSource.kinvey.rawValue]
     }
+    
+}
+
+/// Specify an authentication provider
+public enum AuthProvider {
+    
+    /// Kinvey's User collection
+    case kinvey
+    
+    /// Mobile Identity Connect
+    case mic
     
 }

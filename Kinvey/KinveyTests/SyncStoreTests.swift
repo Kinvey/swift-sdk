@@ -3182,7 +3182,7 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
-    func testServerSideDeltaSetSyncAddUpdateDelete1Record() {
+    func testServerSideDeltaSetSyncAddUpdateDelete2Records() {
         let store = DataStore<Person>.collection(.sync, deltaSet: true)
         
         do {
@@ -3219,6 +3219,17 @@ class SyncStoreTests: StoreTestCase {
                                     "lmt": "2016-12-05T06:47:35.711Z",
                                     "ect": "2016-12-05T06:47:35.711Z"
                                 ]
+                            ],
+                            [
+                                "_id": "ToBeDeleted-58450d87f29e22207c83a237",
+                                "name": "Victor Barros 3",
+                                "_acl": [
+                                    "creator": "58450d87c077970e38a388ba"
+                                ],
+                                "_kmd": [
+                                    "lmt": "2016-12-05T06:47:35.711Z",
+                                    "ect": "2016-12-05T06:47:35.711Z"
+                                ]
                             ]
                         ]
                     )
@@ -3237,7 +3248,7 @@ class SyncStoreTests: StoreTestCase {
                 switch result {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
-                    XCTAssertEqual(persons.count, 2)
+                    XCTAssertEqual(persons.count, 3)
                 case .failure(let error):
                     XCTFail(error.description)
                 }
@@ -3284,10 +3295,22 @@ class SyncStoreTests: StoreTestCase {
                                         "lmt": "2016-12-05T06:47:35.711Z",
                                         "ect": "2016-12-05T06:47:35.711Z"
                                     ]
+                                ],
+                                [
+                                    "_id": "NEW-58450d87f29e22207c83a237",
+                                    "name": "Victor C B",
+                                    "_acl": [
+                                        "creator": "58450d87c077970e38a388ba"
+                                    ],
+                                    "_kmd": [
+                                        "lmt": "2016-12-05T06:47:35.711Z",
+                                        "ect": "2016-12-05T06:47:35.711Z"
+                                    ]
                                 ]
                             ],
                             "deleted" : [
-                                ["_id": "ToBeDeleted-58450d87f29e22207c83a236"]
+                                ["_id": "ToBeDeleted-58450d87f29e22207c83a236"],
+                                ["_id": "ToBeDeleted-58450d87f29e22207c83a237"]
                             ]
                         ]
                     )
@@ -3302,16 +3325,25 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
+            store.sync(
+                deltaSetCompletionHandler: {
+                    XCTAssertEqual($0.count, 3)
+                    XCTAssertEqual($1.count, 2)
+                },
+                options: nil
+            ) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
                 switch result {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
-                    XCTAssertEqual(persons.count, 2)
+                    XCTAssertEqual(persons.count, 3)
                     if let person = persons.first {
                         XCTAssertEqual(person.name, "Victor Hugo")
                     }
+                    if persons.count > 1 {
+                        XCTAssertEqual(persons[1].name, "Victor C Barros")
+                    }
                     if let person = persons.last {
-                        XCTAssertEqual(person.name, "Victor C Barros")
+                        XCTAssertEqual(person.name, "Victor C B")
                     }
                 case .failure(let error):
                     XCTFail(error.description)
