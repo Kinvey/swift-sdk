@@ -91,11 +91,9 @@ class DataTypeTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(query) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertEqual(results.count, 1)
                 
                 if let dataType = results.first {
@@ -115,6 +113,8 @@ class DataTypeTestCase: StoreTestCase {
                         XCTAssertEqual(fullName.fontDescriptor, FontDescriptor(name: "Arial", size: 12))
                     }
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -165,16 +165,16 @@ class DataTypeTestCase: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         
-        store.find(query) { results, error in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(query) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertGreaterThan(results.count, 0)
                 
                 if let dataType = results.first {
                     XCTAssertNotNil(dataType.date)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()

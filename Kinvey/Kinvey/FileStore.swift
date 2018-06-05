@@ -81,18 +81,6 @@ open class FileStore<FileType: File> {
     internal let client: Client
     internal let cache: AnyFileCache<FileType>?
     
-    /// Factory method that returns a `FileStore`.
-    @available(*, deprecated: 3.5.2, message: "Please use the constructor instead")
-    open class func getInstance<FileType: File>(client: Client = sharedClient) -> FileStore<FileType> {
-        return FileStore<FileType>(client: client)
-    }
-    
-    /// Factory method that returns a `FileStore`.
-    @available(*, deprecated: 3.5.2, message: "Please use the constructor instead")
-    open class func getInstance<FileType: File>(fileType: FileType.Type, client: Client = sharedClient) -> FileStore<FileType> {
-        return FileStore<FileType>(client: client)
-    }
-    
     /**
      Constructor that takes a specific `Client` instance or use the
      `sharedClient` instance

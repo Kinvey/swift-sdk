@@ -35,7 +35,7 @@ class SyncStoreTests: StoreTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -49,9 +49,13 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationRemoveAll = expectation(description: "Remove All")
             
-            store.remove(query) { (count, error) -> Void in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
+            store.remove(query) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemoveAll?.fulfill()
             }
@@ -69,17 +73,17 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationCreate = expectation(description: "Create")
         
-        store.save(person) { (person, error) -> Void in
+        store.save(person) {
             self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-        
-            if let person = person {
+            switch $0 {
+            case .success(let person):
                 XCTAssertNotNil(person.personId)
                 XCTAssertNotEqual(person.personId, "")
-        
+                
                 XCTAssertNotNil(person.age)
                 XCTAssertEqual(person.age, 29)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
         
             expectationCreate?.fulfill()
@@ -132,13 +136,13 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationCount = expectation(description: "Count")
             
-            store.count() { (count, error) -> Void in
+            store.count {
                 self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let count = count {
+                switch $0 {
+                case .success(let count):
                     _count = count
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCount?.fulfill()
@@ -154,17 +158,17 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationCreate = expectation(description: "Create")
             
-            store.save(person) { (person, error) -> Void in
+            store.save(person) {
                 self.assertThread()
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.personId)
                     XCTAssertNotEqual(person.personId, "")
                     
                     XCTAssertNotNil(person.age)
                     XCTAssertEqual(person.age, 29)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreate?.fulfill()
@@ -178,13 +182,13 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationCount = expectation(description: "Count")
             
-            store.count() { (count, error) -> Void in
+            store.count {
                 self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let count = count {
+                switch $0 {
+                case .success(let count):
                     XCTAssertEqual(_count + 1, count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCount?.fulfill()
@@ -297,14 +301,16 @@ class SyncStoreTests: StoreTestCase {
         
         var savedPerson:Person?
         
-        store.find() { (persons, error) -> Void in
+        store.find {
             self.assertThread()
-            XCTAssertNotNil(persons)
-            XCTAssertGreaterThan(persons!.count, 0)
-            XCTAssertNil(error)
-            
-            if let person = persons?.first {
-                savedPerson = person
+            switch $0 {
+            case .success(let persons):
+                XCTAssertGreaterThan(persons.count, 0)
+                if let person = persons.first {
+                    savedPerson = person
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -318,17 +324,17 @@ class SyncStoreTests: StoreTestCase {
         
         savedPerson?.age = 30
         
-        store.save(savedPerson!) { (person, error) -> Void in
+        store.save(savedPerson!) {
             self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
+            switch $0 {
+            case .success(let person):
                 XCTAssertNotNil(person.personId)
                 XCTAssertNotEqual(person.personId, "")
                 
                 XCTAssertNotNil(person.age)
                 XCTAssertEqual(person.age, 30)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationUpdate?.fulfill()
@@ -450,10 +456,14 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.save(person) { person, error in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -465,11 +475,14 @@ class SyncStoreTests: StoreTestCase {
         if let person = persons.last {
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(byId: person.entityId!) { count, error in
+            store.remove(byId: person.entityId!) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                XCTAssertEqual(count, 1)
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -589,10 +602,14 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.save(person) { person, error in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -604,11 +621,14 @@ class SyncStoreTests: StoreTestCase {
         if let person = persons.last {
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(byId: person.entityId!) { count, error in
+            store.remove(byId: person.entityId!) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                XCTAssertEqual(count, 1)
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -775,13 +795,13 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[PersistableIdKey] = UUID().uuidString
-                    json[PersistableAclKey] = [
-                        Acl.Key.creator : self.client.activeUser!.userId
+                    json[Entity.CodingKeys.entityId] = UUID().uuidString
+                    json[Entity.CodingKeys.acl] = [
+                        Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[PersistableMetadataKey] = [
-                        Metadata.LmtKey : Date().toString(),
-                        Metadata.EctKey : Date().toString()
+                    json[Entity.CodingKeys.metadata] = [
+                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
                     personMockJson = json
                     return HttpResponse(statusCode: 201, json: json)
@@ -834,13 +854,13 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[PersistableIdKey] = UUID().uuidString
-                    json[PersistableAclKey] = [
-                        Acl.Key.creator : self.client.activeUser!.userId
+                    json[Entity.CodingKeys.entityId] = UUID().uuidString
+                    json[Entity.CodingKeys.acl] = [
+                        Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[PersistableMetadataKey] = [
-                        Metadata.LmtKey : Date().toString(),
-                        Metadata.EctKey : Date().toString()
+                    json[Entity.CodingKeys.metadata] = [
+                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
                     personMockJson = json
                     return HttpResponse(statusCode: 201, json: json)
@@ -975,13 +995,13 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[PersistableIdKey] = UUID().uuidString
-                json[PersistableAclKey] = [
-                    Acl.Key.creator : self.client.activeUser!.userId
+                json[Entity.CodingKeys.entityId] = UUID().uuidString
+                json[Entity.CodingKeys.acl] = [
+                    Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[PersistableMetadataKey] = [
-                    Metadata.LmtKey : Date().toString(),
-                    Metadata.EctKey : Date().toString()
+                json[Entity.CodingKeys.metadata] = [
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -1044,13 +1064,13 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[PersistableIdKey] = UUID().uuidString
-                json[PersistableAclKey] = [
-                    Acl.Key.creator : self.client.activeUser!.userId
+                json[Entity.CodingKeys.entityId] = UUID().uuidString
+                json[Entity.CodingKeys.acl] = [
+                    Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[PersistableMetadataKey] = [
-                    Metadata.LmtKey : Date().toString(),
-                    Metadata.EctKey : Date().toString()
+                json[Entity.CodingKeys.metadata] = [
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -1098,13 +1118,13 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[PersistableIdKey] = UUID().uuidString
-                json[PersistableAclKey] = [
-                    Acl.Key.creator : self.client.activeUser!.userId
+                json[Entity.CodingKeys.entityId] = UUID().uuidString
+                json[Entity.CodingKeys.acl] = [
+                    Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[PersistableMetadataKey] = [
-                    Metadata.LmtKey : Date().toString(),
-                    Metadata.EctKey : Date().toString()
+                json[Entity.CodingKeys.metadata] = [
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -1287,13 +1307,13 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationPull = expectation(description: "Pull")
             
-            store.find() { results, error in
+            store.find {
                 self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationPull?.fulfill()
@@ -1337,13 +1357,13 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationPull = expectation(description: "Pull")
             
-            store.find() { results, error in
+            store.find {
                 self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationPull?.fulfill()
@@ -1397,13 +1417,13 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationPull = expectation(description: "Pull")
             
-            store.find() { results, error in
+            store.find {
                 self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationPull?.fulfill()
@@ -1420,10 +1440,14 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationPull = expectation(description: "Pull")
         
-        store.pull() { results, error in
+        store.pull {
             self.assertThread()
-            XCTAssertNil(results)
-            XCTAssertNotNil(error)
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                break
+            }
             
             expectationPull?.fulfill()
         }
@@ -1471,13 +1495,13 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(personId) { result, error in
+        store.find(personId) {
             self.assertThread()
-            XCTAssertNotNil(result)
-            XCTAssertNil(error)
-            
-            if let result = result {
+            switch $0 {
+            case .success(let result):
                 XCTAssertEqual(result.personId, personId)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -1550,16 +1574,16 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query) { results, error in
+        store.find(query) {
             self.assertThread()
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+            switch $0 {
+            case .success(let results):
                 XCTAssertNotNil(results.first)
                 if let result = results.first {
                     XCTAssertEqual(result.personId, personId)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -1639,13 +1663,13 @@ class SyncStoreTests: StoreTestCase {
         weak var expectationRemove = expectation(description: "Remove")
         
         do {
-            try store.remove(person) { count, error in
+            try store.remove(person) {
                 self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let count = count {
+                switch $0 {
+                case .success(let count):
                     XCTAssertEqual(count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationRemove?.fulfill()
@@ -1720,7 +1744,7 @@ class SyncStoreTests: StoreTestCase {
         
         do {
             person.personId = nil
-            try store.remove(person) { count, error in
+            try store.remove(person) { _ in
                 XCTFail()
                 
                 expectationRemove?.fulfill()
@@ -1753,13 +1777,13 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.remove([person1, person2]) { count, error in
+        store.remove([person1, person2]) {
             self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            
-            if let count = count {
+            switch $0 {
+            case .success(let count):
                 XCTAssertEqual(count, 2)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationRemove?.fulfill()
@@ -1788,13 +1812,13 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.removeAll() { count, error in
+        store.removeAll() {
             self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            
-            if let count = count {
+            switch $0 {
+            case .success(let count):
                 XCTAssertEqual(count, 2)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationRemove?.fulfill()
@@ -1818,12 +1842,12 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .forceLocal) { (persons, error) -> Void in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                if let persons = persons {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let persons):
                     XCTAssertEqual(persons.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationGet?.fulfill()
@@ -1840,12 +1864,12 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .forceLocal) { (persons, error) -> Void in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                if let persons = persons {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationGet?.fulfill()
@@ -1873,9 +1897,13 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSave = self.expectation(description: "Save")
             
-            self.store.save(person, writePolicy: .forceLocal) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+            self.store.save(person, options: Options(writePolicy: .forceLocal)) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -1899,11 +1927,9 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, limit)
                     
                     XCTAssertNotNil(results.first)
@@ -1917,6 +1943,8 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person \(skip + 1)")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 skip += limit
@@ -1937,11 +1965,9 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 5)
                     
                     XCTAssertNotNil(results.first)
@@ -1955,6 +1981,8 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person 4")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -1973,11 +2001,9 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 5)
                     
                     XCTAssertNotNil(results.first)
@@ -1991,6 +2017,8 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person 9")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2010,11 +2038,9 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 4)
                     
                     XCTAssertNotNil(results.first)
@@ -2028,6 +2054,8 @@ class SyncStoreTests: StoreTestCase {
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person 9")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2047,12 +2075,12 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2071,12 +2099,12 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceLocal) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2267,14 +2295,14 @@ class SyncStoreTests: StoreTestCase {
             
             let person = Person()
             person.name = "Person 1"
-            store.save(person) { (person, error) -> Void in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     personsArray.append(person)
                     XCTAssertEqual(person.name, "Person 1")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2292,14 +2320,14 @@ class SyncStoreTests: StoreTestCase {
             
             let person = Person()
             person.name = "Person 2"
-            store.save(person) { (person, error) -> Void in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     personsArray.append(person)
                     XCTAssertEqual(person.name, "Person 2")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2315,14 +2343,14 @@ class SyncStoreTests: StoreTestCase {
             
             let person = Person()
             person.name = "Person 3"
-            store.save(person) { (person, error) -> Void in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     personsArray.append(person)
                     XCTAssertEqual(person.name, "Person 3")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2340,14 +2368,14 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSave = expectation(description: "Save")
             
-            store.save(personsArray[0]) { (person, error) -> Void in
+            store.save(personsArray[0]) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     personsArray[0] = person
                     XCTAssertEqual(person.name, "Person 1 (Renamed)")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2363,14 +2391,16 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(byId: personsArray[2].personId!) { (count, error) -> Void in
+            store.remove(byId: personsArray[2].personId!) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(count, 1)
-                if count == 1 {
-                    personsArray.remove(at: 2)
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 1)
+                    if count == 1 {
+                        personsArray.remove(at: 2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationRemove?.fulfill()
@@ -2388,14 +2418,14 @@ class SyncStoreTests: StoreTestCase {
             
             let person = Person()
             person.name = "Person 3"
-            store.save(person) { (person, error) -> Void in
+            store.save(person) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     personsArray.append(person)
                     XCTAssertEqual(person.name, "Person 3")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2458,12 +2488,14 @@ class SyncStoreTests: StoreTestCase {
                 
                 let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
                 
-                store.remove(query) { (count, error) -> Void in
+                store.remove(query) {
                     XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNotNil(count)
-                    XCTAssertNil(error)
-                    
-                    XCTAssertEqual(count, 3)
+                    switch $0 {
+                    case .success(let count):
+                        XCTAssertEqual(count, 3)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationRemove?.fulfill()
                 }
@@ -2523,12 +2555,10 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, readPolicy: .forceNetwork) { (persons, error) -> Void in
+            store.find(query, options: Options(readPolicy: .forceNetwork)) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                if let persons = persons {
+                switch $0 {
+                case .success(let persons):
                     XCTAssertEqual(persons[0].name, "Person 1 (Renamed)")
                     XCTAssertEqual(persons[0].name, personsArray[0].name)
                     XCTAssertNotEqual(persons[0].personId, personsArray[0].personId)
@@ -2543,6 +2573,8 @@ class SyncStoreTests: StoreTestCase {
                     
                     personsArray.removeAll()
                     personsArray.append(contentsOf: persons)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2559,11 +2591,13 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query) { persons, error in
-            XCTAssertNotNil(persons)
-            XCTAssertNil(error)
-            
-            XCTAssertEqual(persons?.count, 0)
+        store.find(query) {
+            switch $0 {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationFind?.fulfill()
         }
@@ -2624,11 +2658,13 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        let request = store.find(query) { persons, error in
-            XCTAssertNotNil(persons)
-            XCTAssertNil(error)
-            
-            XCTAssertEqual(persons?.count, 0)
+        let request = store.find(query) {
+            switch $0 {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationFind?.fulfill()
             expectationFind = nil
@@ -2641,7 +2677,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testNewTypeDataStore() {
-        var store = DataStore<Person>.getInstance()
+        var store = DataStore<Person>.collection()
         store = store.collection(newType: Book.self).collection(newType: Person.self)
     }
     
@@ -2821,7 +2857,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAdd1Record() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = 0
         do {
@@ -2964,7 +3000,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncUpdate1Record() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3080,7 +3116,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncDelete1Record() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3183,7 +3219,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAddUpdateDelete2Records() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3358,7 +3394,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCacheNoQuery() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3557,7 +3593,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCache() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3757,7 +3793,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncResultSetExceed() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3944,7 +3980,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncParameterValueOutOfRange() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -4227,7 +4263,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testSyncStoreDeltaset1ExtraItemAddedWithPull() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4381,7 +4417,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithPull() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4510,7 +4546,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 2 persons, pull with regular GET, update 1, deltaset returning 1 changed, delete 1, deltaset returning 1 deleted
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithPull() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -4745,7 +4781,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, delete 1 item that satisfies the query, deltaset returns 1 deleted item
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithPull() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -4911,7 +4947,7 @@ class SyncStoreTests: StoreTestCase {
     
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, update 1 item that satisfies the query, deltaset returns 1 changed item
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithPull() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -5096,7 +5132,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithPull() {
-        var store = DataStore<Person>.collection(.sync, deltaSet: true)
+        var store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5249,7 +5285,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationPull = nil
             }
         }
-        store = DataStore<Person>.collection(.sync, deltaSet: false)
+        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -5480,7 +5516,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ExtraItemAddedWithSync() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5627,7 +5663,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithSync() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5750,7 +5786,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithSync() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -5974,7 +6010,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithSync() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -6132,7 +6168,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithSync() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -6312,7 +6348,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithSync() {
-        var store = DataStore<Person>.collection(.sync, deltaSet: true)
+        var store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -6458,7 +6494,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        store = DataStore<Person>.collection(.sync, deltaSet: false)
+        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -6532,7 +6568,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithFindNetworkReadPolicy() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -6781,7 +6817,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithFindWithNetworkPolicy() {
-        let store = DataStore<Person>.collection(.sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)

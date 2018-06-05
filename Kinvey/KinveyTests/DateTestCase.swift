@@ -96,9 +96,13 @@ class DateTestCase: KinveyTestCase {
             
             let event = Event()
             event.publishDate = publishDate
-            store.save(event) { event, error in
-                XCTAssertNotNil(event)
-                XCTAssertNil(error)
+            store.save(event) {
+                switch $0 {
+                case .success(let event):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationSave?.fulfill()
             }
@@ -121,18 +125,18 @@ class DateTestCase: KinveyTestCase {
             weak var expectationFind = self.expectation(description: "Find")
             
             let query = Query(format: "acl.creator == %@ AND publishDate >= %@", Kinvey.sharedClient.activeUser!.userId, Date(timeIntervalSinceNow: -60))
-            store.find(query) { events, error in
-                XCTAssertNotNil(events)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(events?.count, nEvents)
-                if let events = events {
+            store.find(query) {
+                switch $0 {
+                case .success(let events):
+                    XCTAssertEqual(events.count, nEvents)
                     for event in events {
                         XCTAssertNotNil(event.publishDate)
                         if let date = event.publishDate {
                             XCTAssertEqual(date.timeIntervalSinceReferenceDate, publishDate.timeIntervalSinceReferenceDate, accuracy: 0.0009)
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()

@@ -93,7 +93,7 @@ class PerformanceProductTestCase: KinveyTestCase {
     
     var productsJsonArray: [JsonDictionary]?
     
-    lazy var fileStore = FileStore.getInstance()
+    lazy var fileStore = FileStore()
     
     lazy var productsJsonFile: File? = {
         var productsJsonFile: File?
@@ -168,11 +168,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         weak var expectationCount = self.expectation(description: "Count")
         
-        store.count { (_count, error) in
-            count = _count
-            
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
+        store.count {
+            switch $0 {
+            case .success(let _count):
+                count = _count
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationCount?.fulfill()
         }
@@ -269,9 +271,13 @@ class PerformanceProductTestCase: KinveyTestCase {
             while query.skip! + query.limit! < self.count! {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                store.find(query) { (products, error) in
-                    XCTAssertNotNil(products)
-                    XCTAssertNil(error)
+                store.find(query) {
+                    switch $0 {
+                    case .success(let products):
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationFind?.fulfill()
                 }
@@ -298,9 +304,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         for productJson in self.productsJsonArray![skip ..< count] {
             if let product = Product(JSON: productJson) {
                 let promise = Promise<Void> { resolver in
-                    store.save(product) { product, error in
-                        XCTAssertNotNil(product)
-                        XCTAssertNil(error)
+                    store.save(product) {
+                        switch $0 {
+                        case .success(let product):
+                            break
+                        case .failure(let error):
+                            XCTFail(error.localizedDescription)
+                        }
                         
                         resolver.fulfill(())
                     }
@@ -342,9 +352,13 @@ class PerformanceProductTestCase: KinveyTestCase {
             while query.skip! + query.limit! < self.count! {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                store.find(query) { (products, error) in
-                    XCTAssertNotNil(products)
-                    XCTAssertNil(error)
+                store.find(query) {
+                    switch $0 {
+                    case .success(let products):
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationFind?.fulfill()
                 }
@@ -369,13 +383,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
-                
-                if let products = products {
+            store.find(query) {
+                switch $0 {
+                case .success(let products):
                     XCTAssertGreaterThan(products.count, 0)
                     XCTAssertLessThanOrEqual(products.count, query.limit!)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -401,15 +415,15 @@ class PerformanceProductTestCase: KinveyTestCase {
             weak var expectationFindLocal = self.expectation(description: "Find Local")
             weak var expectationFindNetwork = self.expectation(description: "Find Network")
             
-            store.find(query) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
-                
-                if let products = products {
+            store.find(query) {
+                switch $0 {
+                case .success(let products):
                     if expectationFindLocal == nil {
                         XCTAssertGreaterThan(products.count, 0)
                     }
                     XCTAssertLessThanOrEqual(products.count, query.limit!)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 if expectationFindLocal != nil {
@@ -441,15 +455,15 @@ class PerformanceProductTestCase: KinveyTestCase {
             weak var expectationFindLocal = self.expectation(description: "Find Local")
             weak var expectationFindNetwork = self.expectation(description: "Find Network")
             
-            store.find(query, readPolicy: .both) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
-                
-                if let products = products {
+            store.find(query, options: Options(readPolicy: .both)) {
+                switch $0 {
+                case .success(let products):
                     if expectationFindLocal == nil {
                         XCTAssertGreaterThan(products.count, 0)
                     }
                     XCTAssertLessThanOrEqual(products.count, query.limit!)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 if expectationFindLocal != nil {
@@ -474,13 +488,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
-                
-                if let products = products {
+            store.find(query) {
+                switch $0 {
+                case .success(let products):
                     XCTAssertGreaterThan(products.count, 0)
                     XCTAssertLessThanOrEqual(products.count, query.limit!)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -505,9 +519,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query, deltaSet: true) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
+            store.find(query, options: Options(deltaSet: true)) {
+                switch $0 {
+                case .success(let products):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -552,9 +570,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query) { (products, error) in
-                XCTAssertNotNil(products)
-                XCTAssertNil(error)
+            store.find(query) {
+                switch $0 {
+                case .success(let products):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -583,9 +605,13 @@ class PerformanceProductTestCase: KinveyTestCase {
                 
                 weak var expectationSave = self.expectation(description: "Save")
                 
-                store.save(product) { (product, error) in
-                    XCTAssertNotNil(product)
-                    XCTAssertNil(error)
+                store.save(product) {
+                    switch $0 {
+                    case .success(let product):
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationSave?.fulfill()
                 }
@@ -632,9 +658,13 @@ class PerformanceProductTestCase: KinveyTestCase {
                 
                 weak var expectationSave = self.expectation(description: "Save")
                 
-                store.save(product) { (product, error) in
-                    XCTAssertNotNil(product)
-                    XCTAssertNil(error)
+                store.save(product) {
+                    switch $0 {
+                    case .success(let product):
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationSave?.fulfill()
                 }

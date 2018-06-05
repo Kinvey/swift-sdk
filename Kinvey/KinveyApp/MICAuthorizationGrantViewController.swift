@@ -25,7 +25,16 @@ class MICAuthorizationGrantViewController: UIViewController {
             Kinvey.sharedClient.initialize(
                 appKey: appKey,
                 appSecret: appSecret
-            )
+            ) {
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        print(user)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
     
@@ -41,11 +50,12 @@ class MICAuthorizationGrantViewController: UIViewController {
                 let store = DataStore<MedData>.collection(.network)
                 
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
-                    store.find { results, error in
-                        if let results = results {
-                            print("\(results)")
-                        } else if let error = error {
-                            print("\(error)")
+                    store.find {
+                        switch $0 {
+                        case .success(let results):
+                            print(results)
+                        case .failure(let error):
+                            print(error)
                         }
                     }
                 }

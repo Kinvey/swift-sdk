@@ -14,7 +14,7 @@ class JsonTestCase: StoreTestCase {
     func testFromToJson() {
         signUp()
         
-        let storeProject = DataStore<RefProject>.collection(.network, client: client)
+        let storeProject = DataStore<RefProject>.collection(.network, options: Options(client: client))
         
         let project = RefProject()
         project.name = "Mall"
@@ -41,14 +41,14 @@ class JsonTestCase: StoreTestCase {
             
             weak var expectationCreateMall = expectation(description: "CreateMall")
             
-            storeProject.save(project) { (project, error) -> Void in
+            storeProject.save(project) {
                 self.assertThread()
-                XCTAssertNotNil(project)
-                XCTAssertNil(error)
-                
-                if let project = project {
+                switch $0 {
+                case .success(let project):
                     XCTAssertNotNil(project.uniqueId)
                     XCTAssertNotEqual(project.uniqueId, "")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreateMall?.fulfill()
@@ -62,7 +62,7 @@ class JsonTestCase: StoreTestCase {
         XCTAssertNotNil(project.uniqueId)
         XCTAssertNotEqual(project.uniqueId, "")
         
-        let storeDirectory = DataStore<DirectoryEntry>.collection(.network, client: client)
+        let storeDirectory = DataStore<DirectoryEntry>.collection(.network, options: Options(client: client))
         
         let directory = DirectoryEntry()
         directory.nameFirst = "Victor"
@@ -94,14 +94,14 @@ class JsonTestCase: StoreTestCase {
             
             weak var expectationCreateDirectory = expectation(description: "CreateDirectory")
             
-            storeDirectory.save(directory) { (directory, error) -> Void in
+            storeDirectory.save(directory) {
                 self.assertThread()
-                XCTAssertNotNil(directory)
-                XCTAssertNil(error)
-                
-                if let directory = directory {
+                switch $0 {
+                case .success(let directory):
                     XCTAssertNotNil(directory.uniqueId)
                     XCTAssertNotEqual(directory.uniqueId, "")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreateDirectory?.fulfill()

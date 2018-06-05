@@ -60,7 +60,14 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     }
     
     func testMigration() {
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret") {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
         
         let store = DataStore<Person>.collection(.sync)
         
@@ -70,13 +77,13 @@ class CacheMigrationTestCaseStep1: XCTestCase {
         
         weak var expectationSave = expectation(description: "Save")
         
-        store.save(person) { (person, error) in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
+        store.save(person) {
+            switch $0 {
+            case .success(let person):
                 XCTAssertEqual(person.firstName, "Victor")
                 XCTAssertEqual(person.lastName, "Barros")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationSave?.fulfill()

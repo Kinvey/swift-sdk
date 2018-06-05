@@ -14,31 +14,24 @@ import ObjectMapper
 /// This class represents the metadata information for a record
 public class Metadata: Object, Mappable {
     
-    /// Last Modification Time Key.
-    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.lastModifiedTime instead")
-    open static let LmtKey = "lmt"
-    
-    /// Entity Creation Time Key.
-    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.entityCreationTime instead")
-    open static let EctKey = "ect"
-    
-    /// Authentication Token Key.
-    @available(*, deprecated: 3.5.2, message: "Please use Metadata.Key.authToken instead")
-    open static let AuthTokenKey = "authtoken"
-    
     /// Property names for `Metadata`
+    @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys instead")
     public struct Key {
         
         /// Last Modification Time Key.
+        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.lastModifiedTime instead")
         public static let lastModifiedTime = "lmt"
         
         /// Entity Creation Time Key.
+        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.entityCreationTime instead")
         public static let entityCreationTime = "ect"
         
         /// Authentication Token Key.
+        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.authtoken instead")
         public static let authtoken = "authtoken"
         
         /// Last Read Time Key.
+        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.lastReadTime instead")
         internal static let lastReadTime = "lrt"
     
     }
@@ -128,6 +121,27 @@ public class Metadata: Object, Mappable {
         super.init(value: value, schema: schema)
     }
 
+}
+
+extension Metadata {
+    
+    /// Property names for `Metadata`
+    public enum CodingKeys: String, CodingKey {
+        
+        /// Last Modification Time Key.
+        case lastModifiedTime = "lmt"
+        
+        /// Entity Creation Time Key.
+        case entityCreationTime = "ect"
+        
+        /// Authentication Token Key.
+        case authtoken = "authtoken"
+        
+        /// Last Read Time Key.
+        case lastReadTime = "lrt"
+        
+    }
+    
 }
 
 /// Metadata information for each `User`

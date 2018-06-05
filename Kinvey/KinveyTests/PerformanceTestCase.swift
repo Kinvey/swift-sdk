@@ -42,17 +42,17 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                self.store.find(query, deltaSet: false) { results, error in
-                    XCTAssertNotNil(results)
-                    XCTAssertNil(error)
-                    
-                    if let results = results {
+                self.store.find(query, options: Options(deltaSet: false)) {
+                    switch $0 {
+                    case .success(let results):
                         XCTAssertEqual(results.count, n)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()
@@ -96,17 +96,17 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                self.store.find(query, deltaSet: false) { results, error in
-                    XCTAssertNotNil(results)
-                    XCTAssertNil(error)
-                    
-                    if let results = results {
+                self.store.find(query, options: Options(deltaSet: false)) {
+                    switch $0 {
+                    case .success(let results):
                         XCTAssertEqual(results.count, n)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()

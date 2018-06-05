@@ -183,7 +183,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, client: client) {
+            User.destroy(userId: user.userId, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -219,7 +219,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, client: client) {
+            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -255,7 +255,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: false, client: client) {
+            User.destroy(userId: user.userId, hard: false, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -291,7 +291,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, client: client) {
+            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -322,9 +322,8 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, client: client, completionHandler: {
+            User.destroy(userId: user.userId, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
-                
                 
                 switch $0 {
                 case .success:
@@ -334,7 +333,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -405,10 +404,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -472,10 +475,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -514,10 +521,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -576,10 +587,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -703,8 +718,8 @@ class UserTests: KinveyTestCase {
                 options: Options(
                     client: client
                 )
-            ) { (result: Result<[Person], Swift.Error>) in
-                switch result {
+            ) {
+                switch $0 {
                 case .success:
                     break
                 case .failure:
@@ -1765,9 +1780,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(username: user.username!) { error in
+            User.resetPassword(usernameOrEmail: user.username!, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationResetPassword?.fulfill()
             }
@@ -1795,11 +1815,12 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(email: user.username!) { error in
+            User.resetPassword(usernameOrEmail: user.username!, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                
-                if let error = error {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
                 
@@ -1831,9 +1852,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(email: user.email!) { error in
+            User.resetPassword(usernameOrEmail: user.email!, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationResetPassword?.fulfill()
             }
@@ -2299,9 +2325,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2520,9 +2550,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2745,9 +2779,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2920,9 +2958,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNil(persons)
-                XCTAssertNotNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure:
+                    break
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -3797,10 +3839,14 @@ extension UserTests {
                     
                     weak var expectationFind = expectation(description: "Find")
                     
-                    store.find { persons, error in
+                    store.find {
                         XCTAssertTrue(Thread.isMainThread)
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(persons)
+                        switch $0 {
+                        case .success:
+                            break
+                        case .failure(let error):
+                            XCTFail(error.localizedDescription)
+                        }
                         
                         expectationFind?.fulfill()
                     }
@@ -4033,21 +4079,24 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
+        
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            XCTAssertNil(user)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .unknownJsonError(_, _, let json):
-                    XCTAssertEqual(json.count, responseBody.count)
-                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
-                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
-                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .unknownJsonError(_, _, let json):
+                        XCTAssertEqual(json.count, responseBody.count)
+                        XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                        XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                        XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4075,21 +4124,23 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            XCTAssertNil(user)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .unknownJsonError(_, _, let json):
-                    XCTAssertEqual(json.count, responseBody.count)
-                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
-                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
-                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .unknownJsonError(_, _, let json):
+                        XCTAssertEqual(json.count, responseBody.count)
+                        XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                        XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                        XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4145,7 +4196,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4157,7 +4208,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?no_code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertFalse(result)
     }
@@ -4217,7 +4268,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4295,7 +4346,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4323,19 +4374,22 @@ extension UserTests {
         let redirectURI = URL(string: "throwAnError://")!
         User.presentMICViewController(
             redirectURI: redirectURI,
-            timeout: 3,
-            forceUIWebView: true
-        ) { (user, error) -> Void in
+            micUserInterface: .uiWebView,
+            options: Options(timeout: 3)
+        ) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTrue(error is Kinvey.Error)
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .requestTimeout:
-                    break
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .requestTimeout:
+                        break
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4362,17 +4416,24 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
+        User.presentMICViewController(
+            redirectURI: redirectURI,
+            micUserInterface: .uiWebView,
+            options: Options(timeout: 60)
+        ) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTrue(error is Kinvey.Error)
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .requestCancelled:
-                    break
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .requestCancelled:
+                        break
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             

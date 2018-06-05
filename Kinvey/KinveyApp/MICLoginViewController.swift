@@ -65,7 +65,16 @@ open class MICLoginViewController: UIViewController {
                 appSecret: appSecret,
                 apiHostName: apiUrl ?? Client.defaultApiHostName,
                 authHostName: authUrl ?? Client.defaultAuthHostName
-            )
+            ) {
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        print(user)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
 

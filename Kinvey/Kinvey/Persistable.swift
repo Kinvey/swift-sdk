@@ -576,3 +576,24 @@ extension AnyRandomAccessCollection where Element: Persistable {
     }
     
 }
+
+extension Map {
+    
+    public subscript<Key: RawRepresentable>(key: Key) -> Map where Key.RawValue == String {
+        return self[key.rawValue]
+    }
+    
+}
+
+extension Dictionary where Key == String {
+    
+    public subscript<Key: RawRepresentable>(key: Key) -> Value? where Key.RawValue == String {
+        get {
+            return self[key.rawValue]
+        }
+        set {
+            self[key.rawValue] = newValue
+        }
+    }
+    
+}

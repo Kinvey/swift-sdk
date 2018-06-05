@@ -126,7 +126,7 @@ class PerformanceTest: XCTestCase {
             print("Time elapsed to count \(sapCustomerNumber): \(CFAbsoluteTimeGetCurrent() - startTime) s.")
         }
         
-        Kinvey.sharedClient.timeoutInterval = 600
+        Kinvey.sharedClient.options = Options(timeout: 600)
         let limit = 10000
         
         measure {
@@ -279,7 +279,7 @@ class PerformanceTest: XCTestCase {
             print("Time elapsed to count \(sapCustomerNumber): \(CFAbsoluteTimeGetCurrent() - startTime) s.")
         }
         
-        Kinvey.sharedClient.timeoutInterval = 600
+        Kinvey.sharedClient.options = Options(timeout: 600)
         
         measure {
             let startTime = CFAbsoluteTimeGetCurrent()

@@ -25,7 +25,7 @@ class CacheStoreTests: StoreTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -39,9 +39,13 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationRemoveAll = expectation(description: "Remove All")
             
-            store.remove(query) { (count, error) -> Void in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
+            store.remove(query) {
+                switch $0 {
+                case .success(let count):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemoveAll?.fulfill()
             }
@@ -88,28 +92,38 @@ class CacheStoreTests: StoreTestCase {
             }
         }
         
-        store.save(person) { person, error in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+        store.save(person) {
+            switch $0 {
+            case .success(let person):
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             switch runCount {
             case 0:
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
                         XCTAssertTrue(personId.hasPrefix(ObjectIdTmpPrefix))
                         temporaryObjectId = personId
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSaveLocal?.fulfill()
             case 1:
-                if let person = person {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
                         XCTAssertFalse(personId.hasPrefix(ObjectIdTmpPrefix))
                         finalObjectId = personId
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSaveNetwork?.fulfill()
@@ -131,9 +145,13 @@ class CacheStoreTests: StoreTestCase {
         if let temporaryObjectId = temporaryObjectId {
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(byId: temporaryObjectId, readPolicy: .forceLocal) { (person, error) in
-                XCTAssertNil(person)
-                XCTAssertNotNil(error)
+            store.find(temporaryObjectId, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let person):
+                    XCTFail()
+                case .failure(let error):
+                    break
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -147,11 +165,13 @@ class CacheStoreTests: StoreTestCase {
         if let finalObjectId = finalObjectId {
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.removeById(finalObjectId, writePolicy: .forceLocal) { (count, error) in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(count, 1)
+            store.remove(byId: finalObjectId, options: Options(writePolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 1)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -195,15 +215,15 @@ class CacheStoreTests: StoreTestCase {
                 weak var expectationSaveLocal = expectation(description: "Save Local")
                 
                 let store = DataStore<Book>.collection(.cache)
-                store.save(book) { book, error in
-                    XCTAssertNotNil(book)
-                    XCTAssertNil(error)
-                    
-                    if let book = book {
+                store.save(book) {
+                    switch $0 {
+                    case .success(let book):
                         XCTAssertEqual(book.title, "Swift for the win!")
                         
                         XCTAssertEqual(book.authorNames.count, 1)
                         XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     if expectationSaveLocal != nil {
@@ -224,11 +244,9 @@ class CacheStoreTests: StoreTestCase {
                 weak var expectationFind = expectation(description: "Find")
                 
                 let store = DataStore<Book>.collection(.sync)
-                store.find { books, error in
-                    XCTAssertNotNil(books)
-                    XCTAssertNil(error)
-                    
-                    if let books = books {
+                store.find {
+                    switch $0 {
+                    case .success(let books):
                         XCTAssertEqual(books.count, 1)
                         if let book = books.first {
                             XCTAssertEqual(book.title, "Swift for the win!")
@@ -236,6 +254,8 @@ class CacheStoreTests: StoreTestCase {
                             XCTAssertEqual(book.authorNames.count, 1)
                             XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()
@@ -251,11 +271,9 @@ class CacheStoreTests: StoreTestCase {
                 
                 let store = DataStore<Book>.collection(.sync)
                 let query = Query(format: "authorNames contains %@", "Victor Barros")
-                store.find(query) { books, error in
-                    XCTAssertNotNil(books)
-                    XCTAssertNil(error)
-                    
-                    if let books = books {
+                store.find(query) {
+                    switch $0 {
+                    case .success(let books):
                         XCTAssertEqual(books.count, 1)
                         if let book = books.first {
                             XCTAssertEqual(book.title, "Swift for the win!")
@@ -263,6 +281,8 @@ class CacheStoreTests: StoreTestCase {
                             XCTAssertEqual(book.authorNames.count, 1)
                             XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()
@@ -278,11 +298,9 @@ class CacheStoreTests: StoreTestCase {
                 
                 let store = DataStore<Book>.collection(.sync)
                 let query = Query(format: "subquery(authorNames, $authorNames, $authorNames like[c] %@).@count > 0", "Vic*")
-                store.find(query) { books, error in
-                    XCTAssertNotNil(books)
-                    XCTAssertNil(error)
-                    
-                    if let books = books {
+                store.find(query) {
+                    switch $0 {
+                    case .success(let books):
                         XCTAssertEqual(books.count, 1)
                         if let book = books.first {
                             XCTAssertEqual(book.title, "Swift for the win!")
@@ -290,6 +308,8 @@ class CacheStoreTests: StoreTestCase {
                             XCTAssertEqual(book.authorNames.count, 1)
                             XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()
@@ -355,15 +375,15 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationSaveLocal = expectation(description: "Save Local")
             
             let store = DataStore<Book>.collection(.cache)
-            store.save(book) { book, error in
-                XCTAssertNotNil(book)
-                XCTAssertNil(error)
-                
-                if let book = book {
+            store.save(book) {
+                switch $0 {
+                case .success(let book):
                     XCTAssertEqual(book.title, "Swift for the win!")
                     
                     XCTAssertEqual(book.authorNames.count, 1)
                     XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 if expectationSaveLocal != nil {
@@ -385,11 +405,9 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationFindNetwork = expectation(description: "Save Network")
             
             let store = DataStore<Book>.collection(.cache)
-            store.find { books, error in
-                XCTAssertNotNil(books)
-                XCTAssertNil(error)
-                
-                if let books = books {
+            store.find {
+                switch $0 {
+                case .success(let books):
                     if expectationFindLocal != nil {
                         expectationFindLocal?.fulfill()
                         expectationFindLocal = nil
@@ -404,6 +422,8 @@ class CacheStoreTests: StoreTestCase {
                         XCTAssertEqual(book.authorNames.count, 1)
                         XCTAssertEqual(book.authorNames.first?.value, "Victor Barros")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
             }
             
@@ -591,7 +611,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithPull() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var sinceTime = Date().toString()
         var initialCount = Int64(0)
         do {
@@ -749,7 +769,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET,Make deltaset request
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithPull() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -878,7 +898,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 2 persons, pull with regular GET, update 1, deltaset returning 1 changed, delete 1, deltaset returning 1 deleted
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithPull() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -1113,7 +1133,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, delete 1 item that satisfies the query, deltaset returns 1 deleted item
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithPull() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -1279,7 +1299,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, update 1 item that satisfies the query, deltaset returns 1 changed item
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithPull() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -1465,7 +1485,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithPull() {
-        var store = DataStore<Person>.collection(.cache, deltaSet: true)
+        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -1618,7 +1638,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationPull = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, deltaSet: false)
+        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -1848,7 +1868,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ExtraItemAddedWithSync() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -1995,7 +2015,7 @@ class CacheStoreTests: StoreTestCase {
     }
  
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithSync() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -2118,7 +2138,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithSync() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -2343,7 +2363,7 @@ class CacheStoreTests: StoreTestCase {
     
 
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithSync() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -2501,7 +2521,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithSync() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -2681,7 +2701,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithSync() {
-        var store = DataStore<Person>.collection(.cache, deltaSet: true)
+        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -2827,7 +2847,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, deltaSet: false)
+        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -3064,7 +3084,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ExtraItemAddedWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = 0
         do {
@@ -3229,7 +3249,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -3368,7 +3388,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -3617,7 +3637,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -3792,7 +3812,7 @@ class CacheStoreTests: StoreTestCase {
     }
     
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithFind() {
-        let store = DataStore<Person>.collection(.cache, deltaSet: true)
+        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -3989,7 +4009,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithFind() {
-        var store = DataStore<Person>.collection(.cache, deltaSet: true)
+        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4151,7 +4171,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationFind = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, deltaSet: false)
+        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in

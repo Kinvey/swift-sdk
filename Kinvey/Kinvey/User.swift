@@ -159,25 +159,6 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Deletes a `User` by the `userId` property.
-    @available(*, deprecated: 3.6.0, message: "Please use destroy(userId:hard:options:completionHandler:) instead")
-    @discardableResult
-    open class func destroy(
-        userId: String,
-        hard: Bool = true,
-        client: Client = Kinvey.sharedClient,
-        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return destroy(
-            userId: userId,
-            hard: hard,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
-    }
-    
-    /// Deletes a `User` by the `userId` property.
     @discardableResult
     open class func destroy(
         userId: String,
@@ -383,25 +364,6 @@ open class User: NSObject, Credential, Mappable {
         }
     }
     
-    /// Sign in a user and set as a current active user.
-    @available(*, deprecated: 3.6.0, message: "Please use login(username:password:options:completionHandler:) instead")
-    @discardableResult
-    open class func login<U: User>(
-        username: String,
-        password: String,
-        client: Client = sharedClient,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
-        return login(
-            username: username,
-            password: password,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
-    }
-    
     /**
      Sends a request to confirm email address to the specified user.
      
@@ -524,6 +486,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
     open class func resetPassword(
         usernameOrEmail: String,
         client: Client = sharedClient,
@@ -557,36 +520,6 @@ open class User: NSObject, Credential, Mappable {
             completionHandler: completionHandler
         )
         return AnyRequest(request)
-    }
-    
-    /// Sends an email to the user with a link to reset the password using the `username` property.
-    @discardableResult
-    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
-    open class func resetPassword(
-        username: String,
-        client: Client = sharedClient,
-        completionHandler: VoidHandler? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return resetPassword(
-            usernameOrEmail: username,
-            client: client,
-            completionHandler:  completionHandler
-        )
-    }
-    
-    /// Sends an email to the user with a link to reset the password using the `email` property.
-    @discardableResult
-    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
-    open class func resetPassword(
-        email: String,
-        client: Client = sharedClient,
-        completionHandler: VoidHandler? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return resetPassword(
-            usernameOrEmail: email,
-            client: client,
-            completionHandler:  completionHandler
-        )
     }
     
     /// Sends an email to the user with a link to reset the password.
@@ -858,23 +791,6 @@ open class User: NSObject, Credential, Mappable {
             completionHandler?(.failure(error))
         }
         return AnyRequest(request)
-    }
-    
-    /// Gets a `User` instance using the `userId` property.
-    @available(*, deprecated: 3.6.0, message: "Please use find(query:options:completionHandler:) instead")
-    @discardableResult
-    open func find<U: User>(
-        query: Query = Query(),
-        client: Client = sharedClient,
-        completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[U], Swift.Error>> {
-        return find(
-            query: query,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
     }
     
     /// Gets a `User` instance using the `userId` property.
@@ -1338,24 +1254,6 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Performs a login using the MIC Redirect URL that contains a temporary token.
-    @available(*, deprecated: 3.6.0, message: "Please use login(redirectURI:micURL:options:) instead")
-    open class func login(
-        redirectURI: URL,
-        micURL: URL,
-        authServiceId: String? = nil,
-        client: Client = sharedClient
-    ) -> Bool {
-        return login(
-            redirectURI: redirectURI,
-            micURL: micURL,
-            options: Options(
-                client: client,
-                authServiceId: authServiceId
-            )
-        )
-    }
-    
-    /// Performs a login using the MIC Redirect URL that contains a temporary token.
     open class func login(
         redirectURI: URL,
         micURL: URL,
@@ -1390,28 +1288,9 @@ open class User: NSObject, Credential, Mappable {
             return false
         }
     }
-
-    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    @available(*, deprecated: 3.3.2, message: "Please use the method presentMICViewController(micUserInterface:) instead")
-    open class func presentMICViewController(
-        redirectURI: URL,
-        timeout: TimeInterval = 0,
-        forceUIWebView: Bool,
-        authServiceId: String? = nil,
-        client: Client = sharedClient,
-        completionHandler: UserHandler<User>? = nil
-    ) {
-        presentMICViewController(
-            redirectURI: redirectURI,
-            timeout: timeout,
-            micUserInterface: forceUIWebView ? .uiWebView : .wkWebView,
-            authServiceId: authServiceId,
-            client: client,
-            completionHandler: completionHandler
-        )
-    }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
+    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
@@ -1439,6 +1318,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
+    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,

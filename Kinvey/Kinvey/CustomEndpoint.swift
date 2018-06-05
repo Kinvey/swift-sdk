@@ -82,74 +82,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
-    open static func execute(
-        _ name: String,
-        params: JsonDictionary? = nil,
-        client: Client = sharedClient,
-        completionHandler: CompletionHandler<JsonDictionary>? = nil
-    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
-        let params = params != nil ? Params(params!) : nil
-        var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
-        Promise<JsonDictionary> { resolver in
-            request = callEndpoint(
-                name,
-                params: params,
-                options: Options(
-                    client: client
-                ),
-                resultType: Result<JsonDictionary, Swift.Error>.self
-            ) { data, response, error in
-                if let response = response, response.isOK, let json: JsonDictionary = client.responseParser.parse(data) {
-                    resolver.fulfill(json)
-                } else {
-                    resolver.reject(buildError(data, response, error, client))
-                }
-            }
-        }.done { json in
-            completionHandler?(json, nil)
-        }.catch { error in
-            completionHandler?(nil, error)
-        }
-        return request
-    }
-    
-    /// Executes a custom endpoint by name and passing the expected parameters.
-    @discardableResult
-    @available(*, deprecated, message: "Please use the generic version of execute(params: CustomEndpoint.Params?) method")
-    open static func execute(
-        _ name: String,
-        params: JsonDictionary? = nil,
-        client: Client = sharedClient,
-        completionHandler: CompletionHandler<[JsonDictionary]>? = nil
-    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
-        let params = params != nil ? Params(params!) : nil
-        var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
-        Promise<[JsonDictionary]> { resolver in
-            request = callEndpoint(
-                name,
-                params: params,
-                options: Options(
-                    client: client
-                ),
-                resultType: Result<[JsonDictionary], Swift.Error>.self
-            ) { data, response, error in
-                if let response = response, response.isOK, let json = client.responseParser.parseArray(data) {
-                    resolver.fulfill(json)
-                } else {
-                    resolver.reject(buildError(data, response, error, client))
-                }
-            }
-        }.done { jsonArray in
-            completionHandler?(jsonArray, nil)
-        }.catch { error in
-            completionHandler?(nil, error)
-        }
-        return request
-    }
-    
-    /// Executes a custom endpoint by name and passing the expected parameters.
-    @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute(
         _ name: String,
         params: Params? = nil,
@@ -172,6 +105,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute(
         _ name: String,
         params: Params? = nil,
@@ -224,6 +158,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute(
         _ name: String,
         params: Params? = nil,
@@ -246,6 +181,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute(
         _ name: String,
         params: Params? = nil,
@@ -300,6 +236,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
@@ -322,6 +259,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
@@ -374,6 +312,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
@@ -396,6 +335,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
     open static func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
