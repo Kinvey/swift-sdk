@@ -20,10 +20,19 @@ func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
 /// Class to interact with a specific collection in the backend.
 open class DataStore<T: Persistable> where T: NSObject {
     
+    @available(*, deprecated: 3.17.0, message: "Please use Result<AnyRandomAccessCollection<T>, Swift.Error> instead")
     public typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<T, Swift.Error> instead")
     public typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<Int, Swift.Error> instead")
     public typealias IntCompletionHandler = (Int?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<UInt, [Swift.Error]> instead")
     public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [Swift.Error]?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<(Int, AnyRandomAccessCollection<T>), [Swift.Error]> instead")
     public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [Swift.Error]?) -> Void
     
     fileprivate let readPolicy: ReadPolicy
@@ -271,7 +280,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationCustomResult<T>] in
             let array = results.map { (json) -> AggregationCustomResult<T> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationCustomResult<T>(
                     value: T(JSON: json)!,
                     custom: json
@@ -327,7 +336,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationCountResult<T, Count>] in
             let array = results.map { (json) -> AggregationCountResult<T, Count> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationCountResult<T, Count>(
                     value: T(JSON: json)!,
                     count: json[aggregation.resultKey] as! Count
@@ -382,7 +391,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationSumResult<T, Sum>] in
             let array = results.map { (json) -> AggregationSumResult<T, Sum> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationSumResult<T, Sum>(
                     value: T(JSON: json)!,
                     sum: json[aggregation.resultKey] as! Sum
@@ -437,7 +446,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationAvgResult<T, Avg>] in
             let array = results.map { (json) -> AggregationAvgResult<T, Avg> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationAvgResult<T, Avg>(
                     value: T(JSON: json)!,
                     avg: json[aggregation.resultKey] as! Avg
@@ -492,7 +501,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationMinResult<T, Min>] in
             let array = results.map { (json) -> AggregationMinResult<T, Min> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationMinResult<T, Min>(
                     value: T(JSON: json)!,
                     min: json[aggregation.resultKey] as! Min
@@ -547,7 +556,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationMaxResult<T, Max>] in
             let array = results.map { (json) -> AggregationMaxResult<T, Max> in
                 var json = json
-                json[Entity.Key.entityId] = groupId
+                json[Entity.CodingKeys.entityId] = groupId
                 return AggregationMaxResult<T, Max>(
                     value: T(JSON: json)!,
                     max: json[aggregation.resultKey] as! Max
@@ -722,6 +731,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Sends to the backend all the pending records in the local cache.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.push(options:completionHandler:) instead")
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: UIntErrorTypeArrayCompletionHandler? = nil
@@ -740,6 +750,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Sends to the backend all the pending records in the local cache.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.push(options:completionHandler:) instead")
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
@@ -789,6 +800,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.pull(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func pull(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -866,6 +878,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     @discardableResult
+    
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func sync(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -888,6 +902,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func sync(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -977,6 +992,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes all the pending changes in the local cache.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use DataStore.purge(_:options:completionHandler:) instead")
     open func purge(
         _ query: Query = Query(),
         completionHandler: DataStore<T>.IntCompletionHandler? = nil

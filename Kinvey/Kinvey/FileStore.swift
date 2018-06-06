@@ -72,10 +72,19 @@ public enum ImageRepresentation {
 /// Class to interact with the `Files` collection in the backend.
 open class FileStore<FileType: File> {
     
+    @available(*, deprecated: 3.17.0, message: "Please use Result<FileType, Swift.Error> instead")
     public typealias FileCompletionHandler = (FileType?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<(FileType, Data), Swift.Error> instead")
     public typealias FileDataCompletionHandler = (FileType?, Data?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<(FileType, URL), Swift.Error> instead")
     public typealias FilePathCompletionHandler = (FileType?, URL?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<UInt, Swift.Error> instead")
     public typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<[FileType], Swift.Error> instead")
     public typealias FileArrayCompletionHandler = ([FileType]?, Swift.Error?) -> Void
     
     internal let client: Client
@@ -159,6 +168,7 @@ open class FileStore<FileType: File> {
 
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:image:imageRepresentation:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         image: UIImage,
@@ -183,6 +193,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:image:imageRepresentation:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         image: UIImage,
@@ -224,6 +235,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using the file path.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:path:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         path: String,
@@ -246,6 +258,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using the file path.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:path:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         path: String,
@@ -280,6 +293,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using a input stream.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:stream:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         stream: InputStream,
@@ -302,6 +316,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using a input stream.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:stream:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         stream: InputStream,
@@ -369,6 +384,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using a `NSData`.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:data:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         data: Data,
@@ -391,6 +407,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a file using a `NSData`.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:data:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         data: Data,
@@ -758,6 +775,7 @@ open class FileStore<FileType: File> {
     
     /// Refresh a `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.refresh(_:options:completionHandler:) instead")
     open func refresh(
         _ file: FileType,
         ttl: TTL? = nil,
@@ -778,6 +796,7 @@ open class FileStore<FileType: File> {
     
     /// Refresh a `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.refresh(_:options:completionHandler:) instead")
     open func refresh(
         _ file: FileType,
         ttl: TTL? = nil,
@@ -913,6 +932,7 @@ open class FileStore<FileType: File> {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.download(_:storeType:options:completionHandler:) instead")
     open func download(
         _ file: FileType,
         storeType: StoreType = .cache,
@@ -935,6 +955,7 @@ open class FileStore<FileType: File> {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.download(_:storeType:options:completionHandler:) instead")
     open func download(
         _ file: FileType,
         storeType: StoreType = .cache,
@@ -1026,6 +1047,7 @@ open class FileStore<FileType: File> {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.download(_:options:completionHandler:) instead")
     open func download(
         _ file: FileType,
         ttl: TTL? = nil,
@@ -1053,6 +1075,7 @@ open class FileStore<FileType: File> {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.download(_:options:completionHandler:) instead")
     open func download(
         _ file: FileType,
         ttl: TTL? = nil,
@@ -1150,6 +1173,7 @@ open class FileStore<FileType: File> {
     
     /// Deletes a file instance in the backend.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.remove(_:options:completionHandler:) instead")
     open func remove(
         _ file: FileType,
         completionHandler: UIntCompletionHandler? = nil
@@ -1169,6 +1193,7 @@ open class FileStore<FileType: File> {
     
     /// Deletes a file instance in the backend.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.remove(_:options:completionHandler:) instead")
     open func remove(
         _ file: FileType,
         completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil
@@ -1217,6 +1242,7 @@ open class FileStore<FileType: File> {
     
     /// Gets a list of files that matches with the query passed by parameter.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.find(_:options:completionHandler:) instead")
     open func find(
         _ query: Query = Query(),
         ttl: TTL? = nil,
@@ -1237,6 +1263,7 @@ open class FileStore<FileType: File> {
     
     /// Gets a list of files that matches with the query passed by parameter.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.find(_:options:completionHandler:) instead")
     open func find(
         _ query: Query = Query(),
         ttl: TTL? = nil,

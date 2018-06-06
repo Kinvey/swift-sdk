@@ -476,16 +476,16 @@ extension Persistable {
             properties!.append(key)
             results[value] = properties
         }
-        let entityIdMapped = results[Entity.Key.entityId] != nil
-        let metadataMapped = results[Entity.Key.metadata] != nil
+        let entityIdMapped = results[Entity.CodingKeys.entityId] != nil
+        let metadataMapped = results[Entity.CodingKeys.metadata] != nil
         if !(entityIdMapped && metadataMapped) {
             let isEntity = self is Entity.Type
             let hintMessage = isEntity ? "Please call super.propertyMapping() inside your propertyMapping() method." : "Please add properties in your Persistable model class to map the missing properties."
             guard entityIdMapped else {
-                fatalError("Property \(Entity.Key.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
+                fatalError("Property \(Entity.CodingKeys.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
             }
             guard metadataMapped else {
-                fatalError("Property \(Entity.Key.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
+                fatalError("Property \(Entity.CodingKeys.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
             }
         }
         return results
@@ -506,15 +506,15 @@ extension Persistable {
     }
     
     internal static func entityIdProperty() -> String {
-        return propertyMappingReverse()[Entity.Key.entityId]!.last!
+        return propertyMappingReverse()[Entity.CodingKeys.entityId]!.last!
     }
     
     internal static func aclProperty() -> String? {
-        return propertyMappingReverse()[Entity.Key.acl]?.last
+        return propertyMappingReverse()[Entity.CodingKeys.acl]?.last
     }
     
     internal static func metadataProperty() -> String? {
-        return propertyMappingReverse()[Entity.Key.metadata]?.last
+        return propertyMappingReverse()[Entity.CodingKeys.metadata]?.last
     }
     
 }

@@ -48,7 +48,7 @@ public enum ValidationStrategy: MapContext {
     @inline(__always)
     private func validate(item: Dictionary<String, Any>) -> Swift.Error? {
         guard
-            let id = item[Entity.Key.entityId] as? String,
+            let id = item[Entity.CodingKeys.entityId] as? String,
             !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else {
             return Error.objectIdMissing

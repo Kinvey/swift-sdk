@@ -191,7 +191,7 @@ open class Client: Credential {
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
     @available(*, deprecated: 3.17.0, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:(Result<User?, Swift.Error>) -> Void")
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: User.UserHandler<U>) {
+    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
         initialize(
             appKey: appKey,
             appSecret: appSecret,
@@ -211,7 +211,17 @@ open class Client: Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: (Result<U?, Swift.Error>) -> Void) {
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        encrypted: Bool,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void)
+    {
         validateInitialize(appKey: appKey, appSecret: appSecret)
 
         var encryptionKey: Data? = nil
@@ -235,11 +245,21 @@ open class Client: Credential {
             lockEncryptionKey.unlock()
         }
         
-        initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler)) { activeUser, error in
-        }
+        initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            encryptionKey: encryptionKey,
+            schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler),
+            options: options,
+            completionHandler: completionHandler
+        )
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
+    @available(*, deprecated: 3.17.0, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:(Result<U?, Swift.Error>) -> Void) instead")
     open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
         initialize(
             appKey: appKey,
@@ -354,7 +374,7 @@ open class Client: Credential {
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth, client: self) { (result: Result<U, Swift.Error>) in
+            User.login(authSource: .kinvey, kinveyAuth, options: Options(client: self)) { (result: Result<U, Swift.Error>) in
                 switch result {
                 case .success(let user):
                     completionHandler(.success(user))

@@ -52,6 +52,7 @@ open class CustomEndpoint {
     }
     
     /// Completion handler block for execute custom endpoints.
+    @available(*, deprecated: 3.17.0, message: "Please use Result<T, Swift.Error> instead")
     public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
     
     private static func callEndpoint<Result>(

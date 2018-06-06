@@ -98,9 +98,9 @@ public class Metadata: Object, Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
-        lmt <- map[Key.lastModifiedTime]
-        ect <- map[Key.entityCreationTime]
-        authtoken <- map[Key.authtoken]
+        lmt <- map[CodingKeys.lastModifiedTime]
+        ect <- map[CodingKeys.entityCreationTime]
+        authtoken <- map[CodingKeys.authtoken]
     }
     
     // MARK: Realm
