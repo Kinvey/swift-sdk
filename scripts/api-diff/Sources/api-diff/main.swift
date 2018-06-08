@@ -3,7 +3,7 @@ import SourceKittenFramework
 
 guard CommandLine.arguments.count == 3 else {
     print("Usage:")
-    print("api-diff <old path> <new path>")
+    print("  api-diff <old path> <new path>")
     exit(EXIT_FAILURE)
 }
 
@@ -195,7 +195,7 @@ func convert(_ symbol: [String : SourceKitRepresentable]) -> (names: Set<String>
 
 func convert(docs: [SwiftDocs]) -> (names: Set<String>, deprecations: Set<String>) {
     let array = docs.compactMap {
-        $0.docsDictionary["key.substructure"] as? Array<Dictionary<String, SourceKitRepresentable>>
+        $0.docsDictionary[Key.substructure] as? Array<Dictionary<String, SourceKitRepresentable>>
     }.flatMap {
         $0.compactMap {
             convert($0)
@@ -216,23 +216,30 @@ let (newSymbols, newDeprecations) = convert(docs: newDocs)
 let deletions = oldSymbols.subtracting(newSymbols)
 let additions = newSymbols.subtracting(oldSymbols)
 let deprecations = newDeprecations.subtracting(oldDeprecations)
+let breakingChanges = oldDeprecations.subtracting(newDeprecations)
 
 print("")
-print("Deletions:")
+print("\(deletions.count) Deletions:")
 for deletion in deletions {
     print("  \(deletion)")
 }
 
 print("")
-print("Additions:")
+print("\(additions.count) Additions:")
 for addition in additions {
     print("  \(addition)")
 }
 
 print("")
-print("Deprecations:")
+print("\(deprecations.count) Deprecations:")
 for deprecation in deprecations {
     print("  \(deprecation)")
+}
+
+print("")
+print("\(breakingChanges.count) Breaking Changes:")
+for breakingChange in breakingChanges {
+    print("  \(breakingChange)")
 }
 
 print("")
