@@ -54,7 +54,7 @@ class LongData: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        id <- map[PersistableIdKey]
+        id <- map[Entity.CodingKeys.entityId]
         seq <- map["seq"]
         first <- map["first"]
         last <- map["last"]

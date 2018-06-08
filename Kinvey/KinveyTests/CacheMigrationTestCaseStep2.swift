@@ -60,7 +60,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         var migrationCalled = false
         var migrationPersonCalled = false
         
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schemaVersion: 2) { migration, oldSchemaVersion in
+        let schema: Kinvey.Schema = (version: 2, migrationHandler: { migration, oldSchemaVersion in
             migrationCalled = true
             migration.execute(Person.self) { (oldEntity) in
                 migrationPersonCalled = true
@@ -74,6 +74,14 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 
                 return newEntity
             }
+        })
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
         }
         
         XCTAssertTrue(migrationCalled)
@@ -83,16 +91,16 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find { persons, error in
-            XCTAssertNotNil(persons)
-            XCTAssertNil(error)
-            
-            if let persons = persons {
+        store.find {
+            switch $0 {
+            case .success(let persons):
                 XCTAssertEqual(persons.count, 1)
                 
                 if let person = persons.first {
                     XCTAssertEqual(person.fullName, "Victor Barros")
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()

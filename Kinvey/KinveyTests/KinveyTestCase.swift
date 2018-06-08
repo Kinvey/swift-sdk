@@ -309,7 +309,16 @@ class KinveyTestCase: XCTestCase {
                 appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
                 apiHostName: URL(string: "https://v3yk1n-kcs.kinvey.com")!,
                 encrypted: encrypted
-            )
+            ) {
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        print(user)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
     
@@ -320,7 +329,16 @@ class KinveyTestCase: XCTestCase {
                 appSecret: KinveyTestCase.appSecret ?? KinveyTestCase.appInitializeProduction.appSecret,
                 apiHostName: KinveyTestCase.hostUrl ?? Client.defaultApiHostName,
                 encrypted: encrypted
-            )
+            ) {
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        print(user)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
         
     }
@@ -543,13 +561,13 @@ class KinveyTestCase: XCTestCase {
     func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-        json[PersistableIdKey] = UUID().uuidString
-        json[PersistableAclKey] = [
+        json[Entity.CodingKeys.entityId] = UUID().uuidString
+        json[Entity.CodingKeys.acl] = [
             Acl.Key.creator : self.client.activeUser!.userId
         ]
-        json[PersistableMetadataKey] = [
-            Metadata.LmtKey : Date().toString(),
-            Metadata.EctKey : Date().toString()
+        json[Entity.CodingKeys.metadata] = [
+            Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
+            Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
         ]
         return json
     }

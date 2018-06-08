@@ -133,9 +133,9 @@ open class File: Object, Mappable {
     }
     
     open func mapping(map: Map) {
-        fileId <- map[Entity.Key.entityId]
-        acl <- map[Entity.Key.acl]
-        metadata <- map[Entity.Key.metadata]
+        fileId <- map[Entity.CodingKeys.entityId]
+        acl <- map[Entity.CodingKeys.acl]
+        metadata <- map[Entity.CodingKeys.metadata]
         publicAccessible <- map["_public"]
         fileName <- map["_filename"]
         mimeType <- map["mimeType"]

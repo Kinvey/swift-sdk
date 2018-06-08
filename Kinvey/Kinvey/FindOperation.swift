@@ -93,8 +93,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         return AnyRequest(request)
     }
     
-    typealias ArrayCompletionHandler = ([Any]?, Error?) -> Void
-    
     private func count(multiRequest: MultiRequest<ResultType>) -> Promise<Int?> {
         return Promise<Int?> { resolver in
             if !deltaSet, autoPagination {

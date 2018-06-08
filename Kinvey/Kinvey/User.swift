@@ -18,11 +18,25 @@ import ObjectMapper
 open class User: NSObject, Credential, Mappable {
     
     /// Username Key.
+    @available(*, deprecated: 3.17.0, message: "Please use User.CodingKeys.username instead")
     open static let PersistableUsernameKey = "username"
     
+    public enum CodingKeys: String, CodingKey {
+        
+        case username
+        
+    }
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<U, Swift.Error> instead")
     public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<[U], Swift.Error> instead")
     public typealias UsersHandler<U: User> = ([U]?, Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<Void, Swift.Error> instead")
     public typealias VoidHandler = (Swift.Error?) -> Void
+    
+    @available(*, deprecated: 3.17.0, message: "Please use Result<Bool, Swift.Error> instead")
     public typealias BoolHandler = (Bool, Swift.Error?) -> Void
     
     /// `_id` property of the user.
@@ -54,6 +68,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
     open class func signup<U: User>(
         username: String? = nil,
         password: String? = nil,
@@ -78,6 +93,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
     open class func signup<U: User>(
         username: String? = nil,
         password: String? = nil,
@@ -159,25 +175,6 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Deletes a `User` by the `userId` property.
-    @available(*, deprecated: 3.6.0, message: "Please use destroy(userId:hard:options:completionHandler:) instead")
-    @discardableResult
-    open class func destroy(
-        userId: String,
-        hard: Bool = true,
-        client: Client = Kinvey.sharedClient,
-        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return destroy(
-            userId: userId,
-            hard: hard,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
-    }
-    
-    /// Deletes a `User` by the `userId` property.
     @discardableResult
     open class func destroy(
         userId: String,
@@ -236,6 +233,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
     open class func login<U: User>(
         authSource: AuthSource,
         _ authData: [String : Any],
@@ -268,6 +266,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
     open class func login<U: User>(
         authSource: AuthSource,
         _ authData: [String : Any],
@@ -361,6 +360,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sign in a user and set as a current active user.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         username: String,
         password: String,
@@ -383,25 +383,6 @@ open class User: NSObject, Credential, Mappable {
         }
     }
     
-    /// Sign in a user and set as a current active user.
-    @available(*, deprecated: 3.6.0, message: "Please use login(username:password:options:completionHandler:) instead")
-    @discardableResult
-    open class func login<U: User>(
-        username: String,
-        password: String,
-        client: Client = sharedClient,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
-        return login(
-            username: username,
-            password: password,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
-    }
-    
     /**
      Sends a request to confirm email address to the specified user.
      
@@ -412,6 +393,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.sendEmailConfirmation(forUsername:options:completionHandler:) instead")
     open class func sendEmailConfirmation(
         forUsername username: String,
         client: Client = sharedClient,
@@ -504,6 +486,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
     private class func resetPassword(
         usernameOrEmail: String,
         client: Client = sharedClient,
@@ -524,6 +507,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Sends an email to the user with a link to reset the password
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
     open class func resetPassword(
         usernameOrEmail: String,
         client: Client = sharedClient,
@@ -559,36 +543,6 @@ open class User: NSObject, Credential, Mappable {
         return AnyRequest(request)
     }
     
-    /// Sends an email to the user with a link to reset the password using the `username` property.
-    @discardableResult
-    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
-    open class func resetPassword(
-        username: String,
-        client: Client = sharedClient,
-        completionHandler: VoidHandler? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return resetPassword(
-            usernameOrEmail: username,
-            client: client,
-            completionHandler:  completionHandler
-        )
-    }
-    
-    /// Sends an email to the user with a link to reset the password using the `email` property.
-    @discardableResult
-    @available(*, deprecated: 3.3.4, message: "Use resetPassword(usernameOrEmail:) instead")
-    open class func resetPassword(
-        email: String,
-        client: Client = sharedClient,
-        completionHandler: VoidHandler? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return resetPassword(
-            usernameOrEmail: email,
-            client: client,
-            completionHandler:  completionHandler
-        )
-    }
-    
     /// Sends an email to the user with a link to reset the password.
     @discardableResult
     open func resetPassword(
@@ -622,6 +576,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: UserHandler<U>? = nil
@@ -646,6 +601,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
@@ -683,6 +639,7 @@ open class User: NSObject, Credential, Mappable {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.forgotUsername(email:options:completionHandler:) instead")
     open class func forgotUsername(
         email: String,
         client: Client = sharedClient,
@@ -725,6 +682,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Checks if a `username` already exists or not.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.exists(username:options:completionHandler:) instead")
     open class func exists(
         username: String,
         client: Client = sharedClient,
@@ -745,6 +703,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Checks if a `username` already exists or not.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.exists(username:options:completionHandler:) instead")
     open class func exists(
         username: String,
         client: Client = sharedClient,
@@ -794,6 +753,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Gets a `User` instance using the `userId` property.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.get(userId:options:completionHandler:) instead")
     open class func get<U: User>(
         userId: String,
         client: Client = sharedClient,
@@ -814,6 +774,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Gets a `User` instance using the `userId` property.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.get(userId:options:completionHandler:) instead")
     open class func get<U: User>(
         userId: String,
         client: Client = sharedClient,
@@ -858,23 +819,6 @@ open class User: NSObject, Credential, Mappable {
             completionHandler?(.failure(error))
         }
         return AnyRequest(request)
-    }
-    
-    /// Gets a `User` instance using the `userId` property.
-    @available(*, deprecated: 3.6.0, message: "Please use find(query:options:completionHandler:) instead")
-    @discardableResult
-    open func find<U: User>(
-        query: Query = Query(),
-        client: Client = sharedClient,
-        completionHandler: ((Result<[U], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[U], Swift.Error>> {
-        return find(
-            query: query,
-            options: Options(
-                client: client
-            ),
-            completionHandler: completionHandler
-        )
     }
     
     /// Gets a `User` instance using the `userId` property.
@@ -963,21 +907,21 @@ open class User: NSObject, Credential, Mappable {
         var acl: Acl?
         var metadata: UserMetadata?
         
-        userId <- map[Entity.Key.entityId]
+        userId <- map[Entity.CodingKeys.entityId]
         guard let userIdValue = userId else {
             return nil
         }
         
-        acl <- map[Entity.Key.acl]
-        metadata <- map[Entity.Key.metadata]
+        acl <- map[Entity.CodingKeys.acl]
+        metadata <- map[Entity.CodingKeys.metadata]
         self.init(userId: userIdValue, acl: acl, metadata: metadata)
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        _userId <- map[Entity.Key.entityId]
-        acl <- map[Entity.Key.acl]
-        metadata <- map[Entity.Key.metadata]
+        _userId <- map[Entity.CodingKeys.entityId]
+        acl <- map[Entity.CodingKeys.acl]
+        metadata <- map[Entity.CodingKeys.metadata]
         socialIdentity <- map["_socialIdentity"]
         username <- map["username"]
         email <- map["email"]
@@ -1017,6 +961,7 @@ open class User: NSObject, Credential, Mappable {
     
     /// Creates or updates a `User`.
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.save(newPassword:options:completionHandler:) instead")
     open func save<U: User>(
         newPassword: String? = nil,
         completionHandler: UserHandler<U>? = nil
@@ -1073,6 +1018,7 @@ open class User: NSObject, Credential, Mappable {
      This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
      */
     @discardableResult
+    @available(*, deprecated: 3.17.0, message: "Please use User.lookup(_:options:completionHandler:) instead")
     open func lookup<U: User>(
         _ userQuery: UserQuery,
         completionHandler: UsersHandler<U>? = nil
@@ -1338,24 +1284,6 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Performs a login using the MIC Redirect URL that contains a temporary token.
-    @available(*, deprecated: 3.6.0, message: "Please use login(redirectURI:micURL:options:) instead")
-    open class func login(
-        redirectURI: URL,
-        micURL: URL,
-        authServiceId: String? = nil,
-        client: Client = sharedClient
-    ) -> Bool {
-        return login(
-            redirectURI: redirectURI,
-            micURL: micURL,
-            options: Options(
-                client: client,
-                authServiceId: authServiceId
-            )
-        )
-    }
-    
-    /// Performs a login using the MIC Redirect URL that contains a temporary token.
     open class func login(
         redirectURI: URL,
         micURL: URL,
@@ -1390,28 +1318,9 @@ open class User: NSObject, Credential, Mappable {
             return false
         }
     }
-
-    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    @available(*, deprecated: 3.3.2, message: "Please use the method presentMICViewController(micUserInterface:) instead")
-    open class func presentMICViewController(
-        redirectURI: URL,
-        timeout: TimeInterval = 0,
-        forceUIWebView: Bool,
-        authServiceId: String? = nil,
-        client: Client = sharedClient,
-        completionHandler: UserHandler<User>? = nil
-    ) {
-        presentMICViewController(
-            redirectURI: redirectURI,
-            timeout: timeout,
-            micUserInterface: forceUIWebView ? .uiWebView : .wkWebView,
-            authServiceId: authServiceId,
-            client: client,
-            completionHandler: completionHandler
-        )
-    }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
+    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
@@ -1439,6 +1348,7 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
+    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,

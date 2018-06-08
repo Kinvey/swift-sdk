@@ -34,7 +34,7 @@ class DirectoryEntry: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        uniqueId <- map[PersistableIdKey]
+        uniqueId <- map[Entity.CodingKeys.entityId]
         nameFirst <- map["nameFirst"]
         nameLast <- map["nameLast"]
         email <- map["email"]

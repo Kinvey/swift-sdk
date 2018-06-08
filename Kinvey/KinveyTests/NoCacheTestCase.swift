@@ -35,7 +35,14 @@ class NoCacheTestCase: XCTestCase {
     
     func testNoCache() {
         let appKey = "noCacheAppKey"
-        Kinvey.sharedClient.initialize(appKey: appKey, appSecret: "noCacheAppSecret")
+        Kinvey.sharedClient.initialize(appKey: appKey, appSecret: "noCacheAppSecret") {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
         
         let dataStore = DataStore<Person>.collection(.network)
         
@@ -55,8 +62,8 @@ class NoCacheTestCase: XCTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        dataStore.find(options: nil) { (result: Result<[Person], Swift.Error>) in
-            switch result {
+        dataStore.find {
+            switch $0 {
             case .success:
                 break
             case .failure(let error):

@@ -181,7 +181,7 @@ class ClientTestCase: KinveyTestCase {
     func testDataStoreWithoutInitilizeClient() {
         expect { () -> Void in
             let client = Client()
-            let _ = DataStore<Person>.collection(client: client)
+            let _ = DataStore<Person>.collection(options: Options(client: client))
         }.to(throwAssertion())
     }
     

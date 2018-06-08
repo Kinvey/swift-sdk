@@ -11,18 +11,6 @@ import Realm
 import RealmSwift
 import ObjectMapper
 
-/// Key to map the `_id` column in your Persistable implementation class.
-@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.entityId instead")
-public let PersistableIdKey = "_id"
-
-/// Key to map the `_acl` column in your Persistable implementation class.
-@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.acl instead")
-public let PersistableAclKey = "_acl"
-
-/// Key to map the `_kmd` column in your Persistable implementation class.
-@available(*, deprecated: 3.5.2, message: "Please use Entity.Key.metadata instead")
-public let PersistableMetadataKey = "_kmd"
-
 public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
 public typealias Object = RealmSwift.Object
 
@@ -51,15 +39,19 @@ public enum ObjectChange<T: Entity> {
 open class Entity: Object, Persistable {
     
     /// Property names for the `Entity` class
+    @available(*, deprecated: 3.17.0, message: "Please use Entity.CodingKeys instead")
     public struct Key {
         
         /// Key to map the `_id` column in your Persistable implementation class.
+        @available(*, deprecated: 3.17.0, message: "Please use Entity.CodingKeys.entityId instead")
         public static let entityId = "_id"
         
         /// Key to map the `_acl` column in your Persistable implementation class.
+        @available(*, deprecated: 3.17.0, message: "Please use Entity.CodingKeys.acl instead")
         public static let acl = "_acl"
         
         /// Key to map the `_kmd` column in your Persistable implementation class.
+        @available(*, deprecated: 3.17.0, message: "Please use Entity.CodingKeys.metadata instead")
         public static let metadata = "_kmd"
         
     }
@@ -72,7 +64,7 @@ open class Entity: Object, Persistable {
                 return nil
             }
         } else {
-            guard let entityId: String = map[Key.entityId].value(), !entityId.isEmpty else {
+            guard let entityId: String = map[CodingKeys.entityId].value(), !entityId.isEmpty else {
                 log.error("_id is required")
                 return nil
             }
@@ -124,9 +116,9 @@ open class Entity: Object, Persistable {
     
     /// Override this method to tell how to map your own objects.
     open func propertyMapping(_ map: Map) {
-        entityId <- ("entityId", map[Key.entityId])
-        metadata <- ("metadata", map[Key.metadata])
-        acl <- ("acl", map[Key.acl])
+        entityId <- ("entityId", map[CodingKeys.entityId])
+        metadata <- ("metadata", map[CodingKeys.metadata])
+        acl <- ("acl", map[CodingKeys.acl])
     }
     
     /**
@@ -180,6 +172,28 @@ open class Entity: Object, Persistable {
         } else {
             self.propertyMapping(map)
         }
+    }
+    
+}
+
+extension Entity {
+    
+    /// Property names for the `Entity` class
+    public enum CodingKeys: String, CodingKey {
+        
+        /// Key to map the `_id` column in your Persistable implementation class.
+        case entityId = "_id"
+        
+        /// Key to map the `_acl` column in your Persistable implementation class.
+        case acl = "_acl"
+        
+        /// Key to map the `_kmd` column in your Persistable implementation class.
+        case metadata = "_kmd"
+        
+    }
+    
+    public subscript<Key: RawRepresentable>(key: Key) -> Any? where Key.RawValue == String {
+        return self[key.rawValue]
     }
     
 }

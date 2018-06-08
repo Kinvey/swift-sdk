@@ -14,9 +14,17 @@ class PerformanceTestLongData: PerformanceTestData {
     override func test() {
         startDate = Date()
         let store: DataStore<LongData> = self.store()
-        store.find(deltaSet: deltaSetSwitch.isOn) { results, error in
+        store.find(options: Options(deltaSet: deltaSetSwitch.isOn)) {
             self.endDate = Date()
-            self.durationLabel.text = "\(self.durationLabel.text ?? "")\n\(results?.count ?? 0)"
+            let count: Int
+            switch $0 {
+            case .success(let results):
+                count = results.count
+            case .failure(let error):
+                print(error)
+                count = 0
+            }
+            self.durationLabel.text = "\(self.durationLabel.text ?? "")\n\(count)"
         }
     }
     

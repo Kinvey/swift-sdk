@@ -369,7 +369,7 @@ class HttpRequestFactory: RequestFactory {
     ) -> HttpRequest<Result> {
         let collectionName = T.collectionName()
         var bodyObject = persistable.toJSON()
-        let objId = bodyObject[Entity.Key.entityId] as? String
+        let objId = bodyObject[Entity.CodingKeys.entityId] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
@@ -379,7 +379,7 @@ class HttpRequestFactory: RequestFactory {
         )
         
         if (isNewObj) {
-            bodyObject[Entity.Key.entityId] = nil
+            bodyObject[Entity.CodingKeys.entityId] = nil
         }
         
         request.setBody(json: bodyObject)

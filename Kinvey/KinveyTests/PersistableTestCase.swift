@@ -54,12 +54,12 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertEqual(results.count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -114,12 +114,12 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertEqual(results.count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -172,12 +172,12 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertEqual(results.count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()
@@ -231,12 +231,12 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        store.find(options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertEqual(results.count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationFind?.fulfill()

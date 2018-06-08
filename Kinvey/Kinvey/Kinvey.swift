@@ -257,7 +257,7 @@ func buildError(
     } else if let response = response,
         response.isOK,
         let json = client.responseParser.parse(data),
-        json[Entity.Key.entityId] == nil
+        json[Entity.CodingKeys.entityId] == nil
     {
         return Error.objectIdMissing
     } else if let response = response,

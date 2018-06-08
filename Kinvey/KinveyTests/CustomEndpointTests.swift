@@ -104,7 +104,7 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        let params: JsonDictionary? = nil
+        let params: CustomEndpoint.Params? = nil
         CustomEndpoint.execute("echo", params: params) { (response: JsonDictionary?, error) in
             XCTAssertNotNil(response)
             XCTAssertNil(error)
@@ -135,7 +135,7 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        let params: JsonDictionary? = nil
+        let params: CustomEndpoint.Params? = nil
         CustomEndpoint.execute("echo", params: params) { (response: [JsonDictionary]?, error) in
             XCTAssertNil(response)
             XCTAssertNotNil(error)
@@ -230,12 +230,12 @@ class CustomEndpointTests: KinveyTestCase {
     func testCustomEndpointJsonArray() {
         signUp()
         
-        let params: [String : Any] = [
+        let params = CustomEndpoint.Params([
             "stringParam" : "Test",
             "numberParam" : 1,
             "booleanParam" : true,
             "queryParam" : Query(format: "age >= %@", 21)
-        ]
+        ])
         
         if useMockData {
             mockResponse(json: [
@@ -564,9 +564,9 @@ class CustomEndpointTests: KinveyTestCase {
     func testQueryCount() {
         signUp()
         
-        let params = [
+        let params = CustomEndpoint.Params([
             "query" : Query(format: "colors.@count == %@", 2)
-        ]
+        ])
         
         if useMockData {
             mockResponse(json: [
@@ -872,7 +872,7 @@ class CustomEndpointTests: KinveyTestCase {
     func test404Error() {
         signUp()
         
-        let params = [String : Any]()
+        let params = CustomEndpoint.Params([:])
         
         if useMockData {
             mockResponse(statusCode: 404, json: [:])
@@ -900,7 +900,7 @@ class CustomEndpointTests: KinveyTestCase {
     func test404ErrorNoCompletionBlock() {
         signUp()
         
-        let params = [String : Any]()
+        let params = CustomEndpoint.Params([:])
         
         if useMockData {
             mockResponse(statusCode: 404, json: [:])
@@ -937,7 +937,7 @@ class CustomEndpointTests: KinveyTestCase {
         
         weak var expectationCustomEndpoint = expectation(description: "Custom Endpoint")
         
-        let params: JsonDictionary? = nil
+        let params: CustomEndpoint.Params? = nil
         let completionHandler: ((JsonDictionary?, Swift.Error?) -> Void)? = nil
         let request = CustomEndpoint.execute("echo", params: params, completionHandler: completionHandler)
         XCTAssertTrue(wait(toBeTrue: !request.executing))
@@ -1199,11 +1199,11 @@ class CustomEndpointTests: KinveyTestCase {
     func testNestedDictionary() {
         signUp()
         
-        let params = [
+        let params = CustomEndpoint.Params([
             "query" : [
                 "query" : Query(format: "colors.@count == %@", 2)
             ]
-        ]
+        ])
         
         if useMockData {
             mockResponse(json: [
@@ -1257,12 +1257,12 @@ class CustomEndpointTests: KinveyTestCase {
     func testNestedArray() {
         signUp()
         
-        let params = [
+        let params = CustomEndpoint.Params([
             "queries" : [
                 Query(format: "colors.@count == %@", 2),
                 Query(format: "colors.@count == %@", 5)
             ]
-        ]
+        ])
         
         if useMockData {
             mockResponse(json: [

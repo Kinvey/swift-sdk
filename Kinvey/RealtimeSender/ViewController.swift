@@ -90,7 +90,16 @@ class ViewController: NSViewController {
             appKey: appKey!,
             appSecret: appSecret!,
             apiHostName: hostURL ?? Client.defaultApiHostName
-        )
+        ) {
+            switch $0 {
+            case .success(let user):
+                if let user = user {
+                    print(user)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
         
         guard let _ = username else {
             fatalError("username missing")
@@ -153,9 +162,9 @@ class ViewController: NSViewController {
         User.login(
             username: username!,
             password: password!,
-            client: sharedClient
-        ) { (result: Result<User, Swift.Error>) in
-            switch result {
+            options: Options(client: sharedClient)
+        ) {
+            switch $0 {
             case .success(let user):
                 print("Login Succeed")
                 registerForRealtime(user: user)

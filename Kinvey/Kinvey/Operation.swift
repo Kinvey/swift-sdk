@@ -107,11 +107,6 @@ class CollectionBlockOperation: BlockOperation {
 
 internal class Operation<T: Persistable>: NSObject where T: NSObject {
     
-    typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
-    typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
-    typealias UIntCompletionHandler = (UInt?, Swift.Error?) -> Void
-    typealias UIntArrayCompletionHandler = (UInt?, [T]?, Swift.Error?) -> Void
-    
     let cache: AnyCache<T>?
     let options: Options?
     let client: Client
@@ -128,9 +123,9 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     func reduceToIdsLmts(_ jsonArray: [JsonDictionary]) -> [String : String] {
         var items = [String : String](minimumCapacity: jsonArray.count)
         for json in jsonArray {
-            if let id = json[Entity.Key.entityId] as? String,
-                let kmd = json[Entity.Key.metadata] as? JsonDictionary,
-                let lmt = kmd[Metadata.Key.lastModifiedTime] as? String
+            if let id = json[Entity.CodingKeys.entityId] as? String,
+                let kmd = json[Entity.CodingKeys.metadata] as? JsonDictionary,
+                let lmt = kmd[Metadata.CodingKeys.lastModifiedTime] as? String
             {
                 items[id] = lmt
             }

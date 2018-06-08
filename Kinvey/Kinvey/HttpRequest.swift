@@ -424,11 +424,12 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                     let kinveyAuthToken = socialIdentity.kinvey,
                     let refreshToken = kinveyAuthToken["refresh_token"] as? String
                 {
-                    MIC.login(refreshToken: refreshToken, authServiceId: self.client.clientId) { user, error in
-                        if let user = user {
+                    MIC.login(refreshToken: refreshToken, authServiceId: self.client.clientId, options: self.options) {
+                        switch $0 {
+                        case .success(let user):
                             self.credential = user
                             self.execute(urlSession: urlSession, completionHandler)
-                        } else {
+                        case .failure(let error):
                             if let error = error as? Kinvey.Error {
                                 switch error {
                                 case .invalidCredentials:
