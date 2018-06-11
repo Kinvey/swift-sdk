@@ -76,30 +76,33 @@ class ErrorTestCase: KinveyTestCase {
         
         weak var expectationUser = expectation(description: "User")
         
-        User.signup(username: "test", password: "test") { user, error in
-            XCTAssertNil(user)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .invalidResponse(let httpResponse, let data):
-                    XCTAssertNotNil(httpResponse)
-                    if let httpResponse = httpResponse {
-                        XCTAssertEqual(httpResponse.statusCode, 401)
+        User.signup(username: "test", password: "test", options: nil) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidResponse(let httpResponse, let data):
+                        XCTAssertNotNil(httpResponse)
+                        if let httpResponse = httpResponse {
+                            XCTAssertEqual(httpResponse.statusCode, 401)
+                        }
+                        
+                        XCTAssertNotNil(data)
+                        if let data = data, let responseStringBody = String(data: data, encoding: .utf8) {
+                            XCTAssertEqual(responseStringBody, "Unauthorized")
+                        }
+                    default:
+                        XCTFail()
                     }
                     
-                    XCTAssertNotNil(data)
-                    if let data = data, let responseStringBody = String(data: data, encoding: .utf8) {
-                        XCTAssertEqual(responseStringBody, "Unauthorized")
+                    XCTAssertNotNil(error.httpResponse)
+                    if let httpResponse = error.httpResponse {
+                        XCTAssertEqual(httpResponse.statusCode, 401)
                     }
-                default:
-                    XCTFail()
-                }
-                
-                XCTAssertNotNil(error.httpResponse)
-                if let httpResponse = error.httpResponse {
-                    XCTAssertEqual(httpResponse.statusCode, 401)
                 }
             }
             
