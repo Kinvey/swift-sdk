@@ -561,22 +561,22 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - WKNavigationDelegate
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        var navigationActionPolicy: WKNavigationActionPolicy = .allow
         if let url = navigationAction.request.url {
             switch MIC.parseCode(redirectURI: redirectURI, url: url) {
             case .success(let code):
                 success(code: code)
                 
-                decisionHandler(.cancel)
+                navigationActionPolicy = .cancel
             case .failure(let error):
                 if let error = error {
                     failure(error: error)
                     
-                    decisionHandler(.cancel)
+                    navigationActionPolicy = .cancel
                 }
             }
         }
-        
-        decisionHandler(.allow)
+        decisionHandler(navigationActionPolicy)
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {

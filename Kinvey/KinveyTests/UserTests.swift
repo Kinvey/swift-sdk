@@ -4844,6 +4844,7 @@ extension UserTests {
         XCTAssertTrue(user1.isEqual(user2))
         XCTAssertFalse(user1.isEqual(user3))
         XCTAssertFalse(user2.isEqual(user3))
+        XCTAssertFalse(user2.isEqual(nil))
         XCTAssertTrue(set.contains(user2))
         XCTAssertFalse(set.contains(user3))
     }
