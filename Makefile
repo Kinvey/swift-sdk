@@ -67,7 +67,7 @@ test: test-ios test-macos
 	
 test-ios:
 	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
-	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES $(XCODEBUILD_TEST_FLAGS)
+	xcodebuild test -workspace Kinvey.xcworkspace -scheme Kinvey -destination "id=$(IPHONE_SE_SIMULATOR_ID)" -enableCodeCoverage YES -only-testing:KinveyTests -only-testing:KinveyAppUITests -only-testing:PushMissingConfiguration
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS -enableCodeCoverage YES test
