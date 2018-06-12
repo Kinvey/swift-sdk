@@ -1822,6 +1822,7 @@
 				570423F31F82EC3E00EE5CBD /* Frameworks */,
 				570423F41F82EC3E00EE5CBD /* Resources */,
 				570424051F832C3B00EE5CBD /* CopyFiles */,
+				574EE13F20D053660002E0DF /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2679,6 +2680,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		574EE13F20D053660002E0DF /* Carthage Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
+			);
+			name = "Carthage Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage copy-frameworks";
+		};
 		5768BA9E1FA06FDF0040AA0B /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

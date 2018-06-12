@@ -8,6 +8,7 @@
 
 import XCTest
 import Swifter
+import Nimble
 
 extension XCUIElement {
     
@@ -105,7 +106,7 @@ class KinveyAppUITests: XCTestCase {
         
         let userIdValue = app.staticTexts["User ID Value"]
         XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
-        XCTAssertEqual(userIdValue.label, userId)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
     }
     
     func testMICLoginWKWebView() {
@@ -184,7 +185,7 @@ class KinveyAppUITests: XCTestCase {
         
         let userIdValue = app.staticTexts["User ID Value"]
         XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
-        XCTAssertEqual(userIdValue.label, userId)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
     }
     
 }
