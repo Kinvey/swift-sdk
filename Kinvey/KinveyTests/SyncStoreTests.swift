@@ -1262,7 +1262,6 @@ class SyncStoreTests: StoreTestCase {
                     
                     let cacheCount = Int((self.store.cache?.count(query: nil))!)
                     XCTAssertEqual(cacheCount, results.count)
-
                 }
                 
                 expectationPull?.fulfill()
@@ -7043,7 +7042,7 @@ class SyncStoreTests: StoreTestCase {
             
             if let startMemory = startMemory, let endMemory = reportMemory() {
                 let diffMemory = endMemory - startMemory
-                XCTAssertLessThan(diffMemory, 300_000_000)
+                XCTAssertLessThan(diffMemory, 400_000_000)
             }
             
             expectationPull?.fulfill()

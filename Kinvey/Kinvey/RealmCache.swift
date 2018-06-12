@@ -467,7 +467,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             if let query = query {
                 result = Int(self.results(query).count)
             } else {
-                result = self.realm.objects(self.entityType).count
+                result = self.newRealm.objects(self.entityType).count
             }
         }
         return result
