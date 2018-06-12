@@ -4602,7 +4602,7 @@ extension UserTests {
                 if let error = error as? Kinvey.Error {
                     switch error {
                     case .requestTimeout:
-                        break
+                        XCTAssertEqual(error.description, "Request Timeout")
                     default:
                         XCTFail()
                     }
