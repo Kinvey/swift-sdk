@@ -101,6 +101,59 @@ class ClientTestCase: KinveyTestCase {
         }
     }
     
+    func testPingInstanceIdDeprecateClientInitialization() {
+        weak var expectationInitialize = self.expectation(description: "Initialize")
+        
+        let appKey = UUID().uuidString
+        let client = Client()
+        client.initialize(appKey: appKey, appSecret: UUID().uuidString) { user, error in
+            expectationInitialize?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationInitialize = nil
+        }
+        
+        if useMockData {
+            mockResponse { request in
+                XCTAssertEqual(request.url?.host, "baas.kinvey.com")
+                XCTAssertEqual(request.url?.path, "/appdata/\(appKey)")
+                return HttpResponse(json: [
+                    "version" : "3.9.28",
+                    "kinvey" : "hello My App",
+                    "appName" : "My App",
+                    "environmentName" : "My Environment"
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationPing = self.expectation(description: "Ping")
+        
+        client.ping { (envInfo, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(envInfo)
+            XCTAssertNil(error)
+            
+            if let envInfo = envInfo {
+                XCTAssertEqual(envInfo.version, "3.9.28")
+                XCTAssertEqual(envInfo.kinvey, "hello My App")
+                XCTAssertEqual(envInfo.appName, "My App")
+                XCTAssertEqual(envInfo.environmentName, "My Environment")
+            }
+            
+            expectationPing?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationPing = nil
+        }
+    }
+    
     func testPingAppNotFound() {
         if useMockData {
             mockResponse(statusCode: 404, json: [
