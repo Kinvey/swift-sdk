@@ -71,7 +71,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     var newRealm: Realm {
-        return try! Realm(configuration: configuration)
+        let realm = try! Realm(configuration: configuration)
+        realm.refresh()
+        return realm
     }
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
