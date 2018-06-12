@@ -552,6 +552,34 @@ class UserTests: KinveyTestCase {
             let previousAuthtoken = user.metadata?.authtoken
             XCTAssertNotNil(previousAuthtoken)
             
+            user.changePassword(newPassword: "test") { user, error in
+                XCTAssertMainThread()
+                XCTAssertNil(user)
+                XCTAssertNotNil(error)
+                XCTAssertTimeoutError(error)
+                expectationChangePassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationChangePassword = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(error: timeoutError)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationChangePassword = expectation(description: "Change Password")
+            
+            let previousAuthtoken = user.metadata?.authtoken
+            XCTAssertNotNil(previousAuthtoken)
+            
             user.changePassword(newPassword: "test") {
                 XCTAssertMainThread()
                 switch $0 {
@@ -1417,24 +1445,46 @@ class UserTests: KinveyTestCase {
             
             if let username = user.username {
                 setURLProtocol(TimeoutErrorURLProtocol.self)
-                
-                weak var expectationUserExists = expectation(description: "User Exists")
-                
-                User.exists(username: username, options: nil) {
-                    XCTAssertTrue(Thread.isMainThread)
-                    switch $0 {
-                    case .success(let exists):
-                        XCTAssertFalse(exists)
-                        XCTFail()
-                    case .failure(let error):
-                        XCTAssertTimeoutError(error)
-                    }
-                    
-                    expectationUserExists?.fulfill()
+                defer {
+                    setURLProtocol(nil)
                 }
                 
-                waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationUserExists = nil
+                do {
+                    weak var expectationUserExists = expectation(description: "User Exists")
+                    
+                    User.exists(username: username) { exists, error in
+                        XCTAssertTrue(Thread.isMainThread)
+                        XCTAssertNil(exists)
+                        XCTAssertFalse(exists)
+                        XCTAssertTimeoutError(error)
+                        
+                        expectationUserExists?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationUserExists = nil
+                    }
+                }
+                
+                do {
+                    weak var expectationUserExists = expectation(description: "User Exists")
+                    
+                    User.exists(username: username, options: nil) {
+                        XCTAssertTrue(Thread.isMainThread)
+                        switch $0 {
+                        case .success(let exists):
+                            XCTAssertFalse(exists)
+                            XCTFail()
+                        case .failure(let error):
+                            XCTAssertTimeoutError(error)
+                        }
+                        
+                        expectationUserExists?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationUserExists = nil
+                    }
                 }
             }
         }
@@ -4852,7 +4902,7 @@ extension UserTests {
     func testMappingWithoutUserId() {
         var user: User? = nil
         
-        let map = Map(mappingType: .fromJSON, JSON: [:])
+        let map = Map(mappingType: .fromJSON, JSON: ["user" : [:]])
         user <- map["user"]
         XCTAssertNil(user)
     }
