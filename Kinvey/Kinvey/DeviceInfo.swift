@@ -68,16 +68,18 @@ struct DeviceInfo: Codable {
         return identifier
     }
     
-    #if os(iOS) || os(tvOS) || os(watchOS)
     static var isSimulator: Bool {
-        switch systemInfoMachine {
-        case "i386", "x86_64":
-            return true
-        default:
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            switch systemInfoMachine {
+            case "i386", "x86_64":
+                return true
+            default:
+                return false
+            }
+        #else
             return false
-        }
+        #endif
     }
-    #endif
     
     #if canImport(UIKit)
     static func platformVersion(identifier: String = DeviceInfo.systemInfoMachine) -> String {

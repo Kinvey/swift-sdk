@@ -11,10 +11,12 @@ import XCTest
 
 class DeviceInfoTests: XCTestCase {
     
-    #if os(iOS)
     func testDeviceInfoIsSimulator() {
-        XCTAssertTrue(DeviceInfo.isSimulator)
+        #if os(iOS)
+            XCTAssertTrue(DeviceInfo.isSimulator)
+        #else
+            XCTAssertFalse(DeviceInfo.isSimulator)
+        #endif
     }
-    #endif
     
 }
