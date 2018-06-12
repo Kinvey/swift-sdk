@@ -654,20 +654,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func commitWrite() throws {
-        var _error: Swift.Error? = nil
-        executor.executeAndWait {
-            do {
-                try self.realm.commitWrite()
-            } catch {
-                _error = error
-            }
-        }
-        if let error = _error {
-            throw error
-        }
-    }
-    
     public func commitWrite(withoutNotifying tokens: [NotificationToken]) throws {
         var _error: Swift.Error? = nil
         executor.executeAndWait {
