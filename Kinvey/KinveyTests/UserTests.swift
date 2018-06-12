@@ -1454,7 +1454,6 @@ class UserTests: KinveyTestCase {
                     
                     User.exists(username: username) { exists, error in
                         XCTAssertTrue(Thread.isMainThread)
-                        XCTAssertNil(exists)
                         XCTAssertFalse(exists)
                         XCTAssertTimeoutError(error)
                         

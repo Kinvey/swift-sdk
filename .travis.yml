@@ -69,7 +69,7 @@ script:
 - set -o pipefail;
   case $PLATFORM in
   iOS)
-    XCODEBUILD_TEST_FLAGS="-only-testing:KinveyTests -only-testing:KinveyAppUITests" travis_retry make test-ios | xcpretty;;
+    XCODEBUILD_TEST_FLAGS="-only-testing:KinveyTests -only-testing:KinveyAppUITests -only-testing:PushMissingConfiguration" travis_retry make test-ios | xcpretty;;
   Mac)
     travis_retry make test-macos | xcpretty;;
   esac
