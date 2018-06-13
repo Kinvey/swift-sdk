@@ -456,16 +456,4 @@ class QueryTest: XCTestCase {
         XCTAssertNil(GeoPointTransform().transformFromJSON([-74.56, 40.74, 5.22]))
     }
     
-    func testQueryFunction() {
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count < 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20lessThan%200%22%7D")
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count <= 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20lessThanOrEqualTo%200%22%7D")
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count > 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20greaterThan%200%22%7D")
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count >= 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20greaterThanOrEqualTo%200%22%7D")
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count == 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20equalTo%200%22%7D")
-        XCTAssertEqual(encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count != 0")), "query=%7B%22$where%22:%22valueForKeyPath:(@count)%20notEqualTo%200%22%7D")
-        expect {
-            self.encodeQuery(Query(format: "SUBQUERY(editionsYear, $editionYear, $editionYear.value > 2010).@count in 0"))
-        }.to(throwAssertion())
-    }
-    
 }
