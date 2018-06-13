@@ -28,6 +28,14 @@ extension XCUIElement {
     
 }
 
+extension RunLoop {
+    
+    func run(timeIntervalSinceNow: TimeInterval) {
+        run(until: Date(timeIntervalSinceNow: timeIntervalSinceNow))
+    }
+    
+}
+
 class KinveyAppUITests: XCTestCase {
         
     func testMICLoginSafariAuthenticationSession() {
@@ -96,12 +104,16 @@ class KinveyAppUITests: XCTestCase {
             server.stop()
         }
         
-        addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
+        let tokenMonitor = addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
             alert.buttons["Continue"].tap()
             return true
         }
+        defer {
+            removeUIInterruptionMonitor(tokenMonitor)
+        }
         
         app.buttons["Login"].tap()
+        RunLoop.current.run(timeIntervalSinceNow: 1)
         app.tap()
         
         let userIdValue = app.staticTexts["User ID Value"]
@@ -181,6 +193,7 @@ class KinveyAppUITests: XCTestCase {
         }
         
         app.buttons["Login"].tap()
+        RunLoop.current.run(timeIntervalSinceNow: 1)
         app.tap()
         
         let userIdValue = app.staticTexts["User ID Value"]
