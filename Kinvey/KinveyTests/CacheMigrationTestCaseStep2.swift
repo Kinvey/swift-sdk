@@ -12,6 +12,7 @@ import RealmSwift
 @testable import Kinvey
 import ObjectMapper
 import Zip
+import Nimble
 
 class Person: Entity {
     
@@ -33,6 +34,7 @@ class Person: Entity {
 class CacheMigrationTestCaseStep2: XCTestCase {
     
     let defaultTimeout = KinveyTestCase.defaultTimeout
+    var clearCache = true
     
     override func setUp() {
         let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
@@ -46,11 +48,15 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         }
         try! FileManager.default.moveItem(at: appKeyFrom, to: appKeyTo)
         
+        clearCache = true
+        
         super.setUp()
     }
     
     override func tearDown() {
-        Kinvey.sharedClient.cacheManager.clearAll()
+        if clearCache {
+            Kinvey.sharedClient.cacheManager.clearAll()
+        }
         
         let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL {
@@ -83,7 +89,11 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 
                 var newEntity = oldEntity
                 if oldSchemaVersion < 2 {
-                    newEntity["fullName"] = "\(oldEntity["firstName"]!) \(oldEntity["lastName"]!)"
+                    let fullName = "\(oldEntity["firstName"]!) \(oldEntity["lastName"]!)".trimmingCharacters(in: .whitespacesAndNewlines)
+                    if fullName.count == 0 {
+                        return nil
+                    }
+                    newEntity["fullName"] = fullName
                     newEntity.removeValue(forKey: "firstName")
                     newEntity.removeValue(forKey: "lastName")
                 }
@@ -125,6 +135,111 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
+    }
+    
+    func testMigrationWithoutCallExecute() {
+        var migrationCalled = false
+        
+        let schema: Kinvey.Schema = (version: 2, migrationHandler: { migration, oldSchemaVersion in
+            migrationCalled = true
+        })
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTAssertTrue(migrationCalled)
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find {
+            switch $0 {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 2)
+                
+                XCTAssertNotNil(persons.first)
+                if let person = persons.first {
+                    XCTAssertNil(person.fullName)
+                }
+                
+                XCTAssertNotNil(persons.last)
+                if let person = persons.last {
+                    XCTAssertNil(person.fullName)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testMigrationWithoutMigrationBlock() {
+        let schema: Kinvey.Schema = (version: 2, migrationHandler: nil)
+        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        let store = DataStore<Person>.collection(.sync)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        store.find {
+            switch $0 {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
+    func testMigrationRaiseException() {
+        clearCache = false
+        
+        var realmConfiguration = Realm.Configuration.defaultConfiguration
+        let lastPathComponent = realmConfiguration.fileURL!.lastPathComponent
+        realmConfiguration.fileURL!.deleteLastPathComponent()
+        realmConfiguration.fileURL!.appendPathComponent("appKey")
+        realmConfiguration.fileURL!.appendPathComponent(lastPathComponent)
+        let realm = try! Realm(configuration: realmConfiguration)
+        
+        let schema: Kinvey.Schema = (version: 2, migrationHandler: { migration, oldSchemaVersion in
+            migration.execute(Person.self) { (oldEntity) in
+                return nil
+            }
+        })
+        expect {
+            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+            }
+        }.to(raiseException(named: "RLMException", reason: "Cannot migrate Realms that are already open."))
     }
     
 }
