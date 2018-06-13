@@ -64,6 +64,8 @@
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AB1D47C7EB00E4712A /* FileCache.swift */; };
 		573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AD1D47C7F800E4712A /* RealmFileCache.swift */; };
+		573CC99920D19A4A00BDF726 /* Zip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 573CC99820D19A4A00BDF726 /* Zip.framework */; };
+		573CC99D20D19AB900BDF726 /* CacheMigrationTestCaseData.zip in Resources */ = {isa = PBXBuildFile; fileRef = 573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */; };
 		573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573DD9841D11CCD6006ECF1C /* RealmCache.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
@@ -860,6 +862,10 @@
 		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
 		573851AD1D47C7F800E4712A /* RealmFileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmFileCache.swift; sourceTree = "<group>"; };
+		573CC99820D19A4A00BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
+		573CC99A20D19A6700BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
+		573CC99B20D19A7D00BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
+		573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = CacheMigrationTestCaseData.zip; sourceTree = "<group>"; };
 		573DD9841D11CCD6006ECF1C /* RealmCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmCache.swift; sourceTree = "<group>"; };
 		573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpointTests.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -1293,6 +1299,7 @@
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
 				5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */,
+				573CC99920D19A4A00BDF726 /* Zip.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1655,6 +1662,7 @@
 				5795AB011DD136B8001FC808 /* NoCacheTestCase.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
+				573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
@@ -1706,6 +1714,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				573CC99820D19A4A00BDF726 /* Zip.framework */,
 				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
@@ -1725,6 +1734,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				573CC99A20D19A6700BDF726 /* Zip.framework */,
 				5768BAA01FA070A60040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BD001EC51F80000E5C52 /* PubNub.framework */,
 				577751391DF8B908006C98F1 /* XCGLogger.framework */,
@@ -1742,6 +1752,7 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				573CC99B20D19A7D00BDF726 /* Zip.framework */,
 				57E6BD011EC51F92000E5C52 /* PubNub.framework */,
 				5777513A1DF8B914006C98F1 /* XCGLogger.framework */,
 				57B7687E1D10C0380086AA38 /* ObjectMapper.framework */,
@@ -2669,6 +2680,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57D643321CA3268600F6D16E /* Media.xcassets in Resources */,
+				573CC99D20D19AB900BDF726 /* CacheMigrationTestCaseData.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2802,7 +2814,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -2817,7 +2828,7 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/Zip.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (

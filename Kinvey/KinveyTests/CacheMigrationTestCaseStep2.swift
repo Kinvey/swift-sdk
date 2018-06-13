@@ -11,6 +11,7 @@ import ObjectiveC
 import RealmSwift
 @testable import Kinvey
 import ObjectMapper
+import Zip
 
 class Person: Entity {
     
@@ -32,6 +33,21 @@ class Person: Entity {
 class CacheMigrationTestCaseStep2: XCTestCase {
     
     let defaultTimeout = KinveyTestCase.defaultTimeout
+    
+    override func setUp() {
+        let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
+        var unzipDirectory = try! Zip.quickUnzipFile(zipDataPath)
+        let appKeyFrom = unzipDirectory.appendingPathComponent("appKey")
+        let documents = unzipDirectory.deletingLastPathComponent()
+        let appKeyTo = documents.appendingPathComponent("appKey")
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: appKeyTo.path) {
+            try! FileManager.default.removeItem(at: appKeyTo)
+        }
+        try! FileManager.default.moveItem(at: appKeyFrom, to: appKeyTo)
+        
+        super.setUp()
+    }
     
     override func tearDown() {
         Kinvey.sharedClient.cacheManager.clearAll()
