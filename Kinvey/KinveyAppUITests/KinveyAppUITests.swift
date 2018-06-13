@@ -113,11 +113,16 @@ class KinveyAppUITests: XCTestCase {
         }
         
         app.buttons["Login"].tap()
-        RunLoop.current.run(timeIntervalSinceNow: 1)
         app.tap()
         
         let userIdValue = app.staticTexts["User ID Value"]
-        XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
+        expect(expression: {
+            if userIdValue.exists {
+                app.tap()
+            }
+            return userIdValue.exists
+        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
         expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
     }
     
@@ -193,11 +198,16 @@ class KinveyAppUITests: XCTestCase {
         }
         
         app.buttons["Login"].tap()
-        RunLoop.current.run(timeIntervalSinceNow: 1)
         app.tap()
         
         let userIdValue = app.staticTexts["User ID Value"]
-        XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
+        expect(expression: {
+            if userIdValue.exists {
+                app.tap()
+            }
+            return userIdValue.exists
+        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
         expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
     }
     
