@@ -231,13 +231,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             }
         })
         expect {
-            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
-                switch $0 {
-                case .success:
-                    break
-                case .failure(let error):
-                    XCTFail(error.localizedDescription)
-                }
+            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) { _ in
+                XCTFail()
             }
         }.to(raiseException(named: "RLMException", reason: "Cannot migrate Realms that are already open."))
     }
