@@ -49,7 +49,7 @@ public struct Options {
     }
     
     private func validate(maxSizePerResultSet value: Int?) {
-        guard let value = value, value > 0 else {
+        if let value = value, value <= 0 {
             fatalError("maxSizePerResultSet must be greater than 0 (zero)")
         }
     }
