@@ -43,7 +43,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     
     override func setUp() {
         let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
-        let destination = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!)
+        let destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
         removeItemIfExists(at: destination.appendingPathComponent("__MACOSX"))
         removeItemIfExists(at: destination.appendingPathComponent("appKey"))
         try! FileManager.default.unzipItem(at: zipDataPath, to: destination)
