@@ -55,8 +55,6 @@ internal protocol CacheType: class {
     
     func beginWrite()
     
-    func commitWrite() throws
-    
     func commitWrite(withoutNotifying tokens: [NotificationToken]) throws
     
     func cancelWrite()
@@ -150,7 +148,6 @@ class AnyCache<T: Persistable>: CacheType {
     private let _observe: (Query?, @escaping (CollectionChange<AnyRandomAccessCollection<T>>) -> Void) -> AnyNotificationToken
     private let _write: (@escaping () throws -> Void) throws -> Void
     private let _beginWrite: () -> Void
-    private let _commitWrite: () throws -> Void
     private let _commitWriteWithoutNotifying: ([NotificationToken]) throws -> Void
     private let _cancelWrite: () -> Void
     
@@ -180,7 +177,6 @@ class AnyCache<T: Persistable>: CacheType {
         _observe = cache.observe(_:completionHandler:)
         _write = cache.write
         _beginWrite = cache.beginWrite
-        _commitWrite = cache.commitWrite
         _commitWriteWithoutNotifying = cache.commitWrite(withoutNotifying:)
         _cancelWrite = cache.cancelWrite
     }
@@ -257,11 +253,7 @@ class AnyCache<T: Persistable>: CacheType {
         _beginWrite()
     }
     
-    func commitWrite() throws {
-        try _commitWrite()
-    }
-    
-    func commitWrite(withoutNotifying tokens: [NotificationToken]) throws {
+    func commitWrite(withoutNotifying tokens: [NotificationToken] = []) throws {
         try _commitWriteWithoutNotifying(tokens)
     }
     

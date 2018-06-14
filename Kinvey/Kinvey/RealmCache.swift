@@ -71,7 +71,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     var newRealm: Realm {
-        return try! Realm(configuration: configuration)
+        let realm = try! Realm(configuration: configuration)
+        realm.refresh()
+        return realm
     }
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
@@ -467,7 +469,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             if let query = query {
                 result = Int(self.results(query).count)
             } else {
-                result = self.realm.objects(self.entityType).count
+                result = self.newRealm.objects(self.entityType).count
             }
         }
         return result
@@ -649,20 +651,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     public func beginWrite() {
         executor.executeAndWait {
             self.realm.beginWrite()
-        }
-    }
-    
-    func commitWrite() throws {
-        var _error: Swift.Error? = nil
-        executor.executeAndWait {
-            do {
-                try self.realm.commitWrite()
-            } catch {
-                _error = error
-            }
-        }
-        if let error = _error {
-            throw error
         }
     }
     

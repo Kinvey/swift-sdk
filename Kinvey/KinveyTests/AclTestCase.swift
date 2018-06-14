@@ -439,4 +439,24 @@ class AclTestCase: StoreTestCase {
         }
     }
     
+    func testValidation() {
+        XCTAssertNil(Acl(JSON: [:]))
+        
+        let creator = UUID().uuidString
+        let acl = Acl(JSON: [
+            Acl.CodingKeys.creator.rawValue : creator,
+            Acl.CodingKeys.readers.rawValue : []
+        ])
+        XCTAssertNotNil(acl)
+        XCTAssertEqual(acl?.creator, creator)
+        XCTAssertNotNil(acl?.readers)
+        XCTAssertEqual(acl?.readers?.count, 0)
+        XCTAssertNotNil(acl?.toJSON()[Acl.CodingKeys.readers.rawValue])
+        
+        acl?["readersValue"] = ""
+        XCTAssertNil(acl?.readers)
+        acl?.readers = nil
+        XCTAssertNil(acl?.toJSON()[Acl.CodingKeys.readers.rawValue])
+    }
+    
 }

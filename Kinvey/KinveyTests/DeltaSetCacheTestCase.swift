@@ -9,6 +9,7 @@
 import XCTest
 @testable import Kinvey
 import Foundation
+import Nimble
 
 class DeltaSetCacheTestCase: KinveyTestCase {
     
@@ -4764,6 +4765,18 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
+    }
+    
+    func testMaxSizePerResultSetGreaterThanZero() {
+        expect { () -> Void? in
+            let _ = Options(maxSizePerResultSet: 0)
+            return nil
+        }.to(throwAssertion())
+        expect { () -> Void? in
+            var options = Options()
+            options.maxSizePerResultSet = 0
+            return nil
+        }.to(throwAssertion())
     }
     
 }

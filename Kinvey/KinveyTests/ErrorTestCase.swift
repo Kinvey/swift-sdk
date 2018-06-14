@@ -20,6 +20,8 @@ class ErrorTestCase: KinveyTestCase {
         XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedDescription, expectedDescription)
         XCTAssertEqual((Kinvey.Error.objectIdMissing as NSError).localizedFailureReason, expectedDescription)
         XCTAssertNil(Kinvey.Error.objectIdMissing.responseStringBody)
+        XCTAssertNil(Kinvey.Error.objectIdMissing.httpResponse)
+        XCTAssertNil(Kinvey.Error.objectIdMissing.responseBodyJsonDictionary)
     }
     
     func testInvalidResponse() {
@@ -47,59 +49,51 @@ class ErrorTestCase: KinveyTestCase {
     }
     
     func testInvalidResponseHttpResponseData() {
-        class MockURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override func startLoading() {
-                let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "1.1", headerFields: nil)!
-                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                client?.urlProtocol(self, didLoad: "Unauthorized".data(using: .utf8)!)
-                client?.urlProtocolDidFinishLoading(self)
-            }
-            
-            override func stopLoading() {
-            }
-            
-        }
-        
-        setURLProtocol(MockURLProtocol.self)
+        let response = "Unauthorized"
+        let requestId = UUID().uuidString
+        mockResponse(
+            statusCode: 401,
+            headerFields: [
+                KinveyHeaderField.requestId.rawValue : requestId
+            ],
+            string: response
+        )
         defer {
             setURLProtocol(nil)
         }
         
         weak var expectationUser = expectation(description: "User")
         
-        User.signup(username: "test", password: "test") { user, error in
-            XCTAssertNil(user)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .invalidResponse(let httpResponse, let data):
-                    XCTAssertNotNil(httpResponse)
-                    if let httpResponse = httpResponse {
-                        XCTAssertEqual(httpResponse.statusCode, 401)
+        User.signup(username: "test", password: "test", options: nil) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidResponse(let httpResponse, let data):
+                        XCTAssertNotNil(httpResponse)
+                        if let httpResponse = httpResponse {
+                            XCTAssertEqual(httpResponse.statusCode, 401)
+                        }
+                        
+                        XCTAssertNotNil(data)
+                        if let data = data, let responseStringBody = String(data: data, encoding: .utf8) {
+                            XCTAssertEqual(responseStringBody, response)
+                        }
+                        XCTAssertEqual(error.responseStringBody, response)
+                        XCTAssertEqual(error.requestId, requestId)
+                        XCTAssertEqual(httpResponse?.allHeaderFields[KinveyHeaderField.requestId] as? String, requestId)
+                    default:
+                        XCTFail()
                     }
                     
-                    XCTAssertNotNil(data)
-                    if let data = data, let responseStringBody = String(data: data, encoding: .utf8) {
-                        XCTAssertEqual(responseStringBody, "Unauthorized")
+                    XCTAssertNotNil(error.httpResponse)
+                    if let httpResponse = error.httpResponse {
+                        XCTAssertEqual(httpResponse.statusCode, 401)
                     }
-                default:
-                    XCTFail()
-                }
-                
-                XCTAssertNotNil(error.httpResponse)
-                if let httpResponse = error.httpResponse {
-                    XCTAssertEqual(httpResponse.statusCode, 401)
                 }
             }
             

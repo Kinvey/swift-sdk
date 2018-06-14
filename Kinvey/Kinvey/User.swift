@@ -487,27 +487,6 @@ open class User: NSObject, Credential, Mappable {
     /// Sends an email to the user with a link to reset the password
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
-    private class func resetPassword(
-        usernameOrEmail: String,
-        client: Client = sharedClient,
-        completionHandler: VoidHandler? = nil
-    ) -> AnyRequest<Result<Void, Swift.Error>> {
-        return resetPassword(
-            usernameOrEmail: usernameOrEmail,
-            client: client
-        ) { (result: Result<Void, Swift.Error>) in
-            switch result {
-            case .success:
-                completionHandler?(nil)
-            case .failure(let error):
-                completionHandler?(error)
-            }
-        }
-    }
-    
-    /// Sends an email to the user with a link to reset the password
-    @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
     open class func resetPassword(
         usernameOrEmail: String,
         client: Client = sharedClient,

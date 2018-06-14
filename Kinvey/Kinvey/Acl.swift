@@ -66,11 +66,7 @@ public final class Acl: Object, BuilderType {
             return nil
         }
         set {
-            if let value = newValue {
-                readersValue = AclTransformType().transformToJSON(value)
-            } else {
-                readersValue = nil
-            }
+            readersValue = AclTransformType().transformToJSON(newValue)
         }
     }
     
@@ -126,12 +122,13 @@ extension Acl: Mappable {
     
     /// Constructor that validates if the map contains at least the creator.
     public convenience init?(map: Map) {
-        guard let _: String = map[Acl.CodingKeys.creator].value() else {
-            self.init()
+        var creator: String?
+        creator <- map[Acl.CodingKeys.creator]
+        if let creator = creator {
+            self.init(creator: creator)
+        } else {
             return nil
         }
-        
-        self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.

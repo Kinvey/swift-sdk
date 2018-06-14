@@ -9,6 +9,7 @@
 import XCTest
 import MapKit
 @testable import Kinvey
+import Nimble
 
 class QueryTest: XCTestCase {
     
@@ -77,7 +78,7 @@ class QueryTest: XCTestCase {
             let query = Query(format: "obj._id == %@", 30)
             
             weak var expectationFind = expectation(description: "Find")
-            dataStore.find(query, options: Options(client: client)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            dataStore.find(query, options: Options({ $0.client = client })) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 0)

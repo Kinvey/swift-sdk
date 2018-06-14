@@ -30,6 +30,14 @@ enum KinveyHeaderField: String {
     
 }
 
+extension Dictionary where Key == AnyHashable {
+    
+    subscript<K: RawRepresentable>(key: K) -> Value? where K.RawValue: Hashable {
+        return self[key.rawValue]
+    }
+    
+}
+
 enum HttpMethod {
     
     case get, post, put, delete

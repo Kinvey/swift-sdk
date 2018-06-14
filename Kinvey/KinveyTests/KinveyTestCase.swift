@@ -229,6 +229,10 @@ extension XCTestCase {
         mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
     }
     
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String) {
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: string.data(using: .utf8))
+    }
+    
     func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)

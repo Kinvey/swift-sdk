@@ -69,12 +69,16 @@ struct DeviceInfo: Codable {
     }
     
     static var isSimulator: Bool {
-        switch systemInfoMachine {
-        case "i386", "x86_64":
-            return true
-        default:
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            switch systemInfoMachine {
+            case "i386", "x86_64":
+                return true
+            default:
+                return false
+            }
+        #else
             return false
-        }
+        #endif
     }
     
     #if canImport(UIKit)
@@ -124,6 +128,7 @@ struct DeviceInfo: Codable {
     }
     #endif
     
+    #if !canImport(UIKit)
     static var hwModel: String {
         var size = 0
         sysctlbyname("hw.model", nil, &size, nil, 0)
@@ -131,6 +136,7 @@ struct DeviceInfo: Codable {
         sysctlbyname("hw.model", &model, &size, nil, 0)
         return String(validatingUTF8: model) ?? ""
     }
+    #endif
     
     static var model: String {
         #if canImport(UIKit)

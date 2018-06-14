@@ -1305,6 +1305,37 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodObjectIdNotMissingAndAllValidationStrategy() {
+        mockResponse(json: [
+            [
+                Entity.CodingKeys.entityId.rawValue : UUID().uuidString,
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .all)
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 1)
+                XCTAssertEqual(persons.first?.name, "Victor")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testFindMethodObjectIdMissingAndZeroRandomSampleValidationStrategy() {
         mockResponse(json: [
             [

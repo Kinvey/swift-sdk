@@ -50,6 +50,16 @@
                </Test>
             </SkippedTests>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57CCBCC220D2CD3F00197CC2"
+               BuildableName = "KinveyTests Migration Database macOS.xctest"
+               BlueprintName = "KinveyTests Migration Database macOS"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

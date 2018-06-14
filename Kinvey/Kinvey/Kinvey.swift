@@ -26,15 +26,12 @@ fileprivate extension Keychain {
     
     var deviceId: String {
         get {
-            guard let deviceId = keychain[.deviceId] else {
-                let uuid = UUID().uuidString
-                self.deviceId = uuid
-                return uuid
+            var deviceId = keychain[.deviceId]
+            if deviceId == nil {
+                deviceId = UUID().uuidString
+                keychain[.deviceId] = deviceId
             }
-            return deviceId
-        }
-        set {
-            keychain[.deviceId] = newValue
+            return deviceId!
         }
     }
     

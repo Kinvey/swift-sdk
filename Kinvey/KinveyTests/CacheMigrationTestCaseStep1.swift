@@ -7,9 +7,7 @@
 //
 
 import XCTest
-import ObjectiveC
 import RealmSwift
-import KIF
 @testable import Kinvey
 import ObjectMapper
 
