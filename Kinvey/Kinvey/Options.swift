@@ -44,18 +44,14 @@ public struct Options {
     /// Maximum size per result set coming from the backend. Default to 10k records.
     public var maxSizePerResultSet: Int? {
         willSet {
-            if let newValue = newValue, newValue <= 0 {
-                fatalError("maxSizePerResultSet must be greater than 0 (zero)")
-            }
+            validate(maxSizePerResultSet: newValue)
         }
     }
     
-    /**
-     Constructor that takes the values that need to be specified and assign
-     default values for all the other properties
-     */
-    public init(_ block: (inout Options) -> Void) {
-        block(&self)
+    private func validate(maxSizePerResultSet value: Int?) {
+        guard let value = value, value > 0 else {
+            fatalError("maxSizePerResultSet must be greater than 0 (zero)")
+        }
     }
     
     /**
@@ -75,6 +71,8 @@ public struct Options {
         customRequestProperties: [String : Any]? = nil,
         maxSizePerResultSet: Int? = nil
     ) {
+        validate(maxSizePerResultSet: maxSizePerResultSet)
+        
         self.client = client
         self.urlSession = urlSession
         self.authServiceId = authServiceId
@@ -86,6 +84,18 @@ public struct Options {
         self.clientAppVersion = clientAppVersion
         self.customRequestProperties = customRequestProperties
         self.maxSizePerResultSet = maxSizePerResultSet
+    }
+    
+}
+
+extension Options {
+    
+    /**
+     Constructor that takes the values that need to be specified and assign
+     default values for all the other properties
+     */
+    public init(_ block: (inout Options) -> Void) {
+        block(&self)
     }
     
 }
