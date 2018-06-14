@@ -38,7 +38,7 @@ class ForgotToCallSuperEntity2: Entity {
     }
     
     override func propertyMapping(_ map: Map) {
-        myId <- ("myId", map[Key.entityId])
+        myId <- ("myId", map[CodingKeys.entityId])
         myProperty <- ("myProperty", map["myProperty"])
     }
     

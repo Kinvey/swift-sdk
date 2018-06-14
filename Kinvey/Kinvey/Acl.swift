@@ -66,11 +66,7 @@ public final class Acl: Object, BuilderType {
             return nil
         }
         set {
-            if let value = newValue {
-                readersValue = AclTransformType().transformToJSON(value)
-            } else {
-                readersValue = nil
-            }
+            readersValue = AclTransformType().transformToJSON(newValue)
         }
     }
     
@@ -126,21 +122,22 @@ extension Acl: Mappable {
     
     /// Constructor that validates if the map contains at least the creator.
     public convenience init?(map: Map) {
-        guard let _: String = map[Acl.Key.creator].value() else {
-            self.init()
+        var creator: String?
+        creator <- map[Acl.CodingKeys.creator]
+        if let creator = creator {
+            self.init(creator: creator)
+        } else {
             return nil
         }
-        
-        self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        creator <- ("creator", map[Acl.Key.creator])
-        globalRead.value <- ("globalRead", map[Acl.Key.globalRead])
-        globalWrite.value <- ("globalWrite", map[Acl.Key.globalWrite])
-        readers <- ("readers", map[Acl.Key.readers])
-        writers <- ("writers", map[Acl.Key.writers])
+        creator <- ("creator", map[Acl.CodingKeys.creator])
+        globalRead.value <- ("globalRead", map[Acl.CodingKeys.globalRead])
+        globalWrite.value <- ("globalWrite", map[Acl.CodingKeys.globalWrite])
+        readers <- ("readers", map[Acl.CodingKeys.readers])
+        writers <- ("writers", map[Acl.CodingKeys.writers])
     }
     
 }
@@ -148,6 +145,7 @@ extension Acl: Mappable {
 extension Acl {
     
     /// Property names for Acl
+    @available(*, deprecated: 3.17.0, message: "Please use Acl.CodingKeys instead")
     public struct Key {
         
         static let creator = "creator"
@@ -155,6 +153,21 @@ extension Acl {
         static let globalWrite = "gw"
         static let readers = "r"
         static let writers = "w"
+        
+    }
+    
+}
+
+extension Acl {
+    
+    /// Property names for Acl
+    public enum CodingKeys: String, CodingKey {
+        
+        case creator = "creator"
+        case globalRead = "gr"
+        case globalWrite = "gw"
+        case readers = "r"
+        case writers = "w"
         
     }
     

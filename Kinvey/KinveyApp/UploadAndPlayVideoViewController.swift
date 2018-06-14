@@ -16,7 +16,7 @@ class UploadAndPlayVideoViewController: UIViewController, UIImagePickerControlle
 
     @IBOutlet weak var progressView: UIProgressView!
     
-    lazy var fileStore = FileStore.getInstance()
+    lazy var fileStore = FileStore()
     var file: File?
     
     override func viewDidLoad() {

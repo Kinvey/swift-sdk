@@ -266,10 +266,11 @@ open class MIC {
     class func login<U: User>(
         refreshToken: String,
         authServiceId: String?,
-        client: Client = sharedClient,
-        completionHandler: User.UserHandler<U>? = nil
+        options: Options?,
+        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<U, Swift.Error>> {
         let requests = MultiRequest<Result<U, Swift.Error>>()
+        let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: Options(
@@ -278,9 +279,9 @@ open class MIC {
         )
         request.execute { (data, response, error) in
             if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
-                requests += User.login(authSource: .kinvey, authData, client: client, completionHandler: completionHandler)
+                requests += User.login(authSource: .kinvey, authData, options: options, completionHandler: completionHandler)
             } else {
-                completionHandler?(nil, buildError(data, response, error, client))
+                completionHandler?(.failure(buildError(data, response, error, client)))
             }
         }
         requests += request
@@ -560,22 +561,22 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     // MARK: - WKNavigationDelegate
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        var navigationActionPolicy: WKNavigationActionPolicy = .allow
         if let url = navigationAction.request.url {
             switch MIC.parseCode(redirectURI: redirectURI, url: url) {
             case .success(let code):
                 success(code: code)
                 
-                decisionHandler(.cancel)
+                navigationActionPolicy = .cancel
             case .failure(let error):
                 if let error = error {
                     failure(error: error)
                     
-                    decisionHandler(.cancel)
+                    navigationActionPolicy = .cancel
                 }
             }
         }
-        
-        decisionHandler(.allow)
+        decisionHandler(navigationActionPolicy)
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {

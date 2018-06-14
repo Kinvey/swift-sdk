@@ -160,12 +160,11 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFindDestroyedUser = expectation(description: "Find Destoyed User")
             
-            User.get(userId: userId, completionHandler: { (user, error) in
+            User.get(userId: userId) { (user, error) in
                 XCTAssertNil(user)
                 XCTAssertNotNil(error)
                 expectationFindDestroyedUser?.fulfill()
-            })
-            
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFindDestroyedUser = nil
@@ -183,7 +182,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, client: client) {
+            User.destroy(userId: user.userId, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -219,7 +218,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, client: client) {
+            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -255,7 +254,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: false, client: client) {
+            User.destroy(userId: user.userId, hard: false, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -291,7 +290,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, client: client) {
+            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -322,9 +321,8 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, client: client, completionHandler: {
+            User.destroy(userId: user.userId, options: Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
-                
                 
                 switch $0 {
                 case .success:
@@ -334,7 +332,7 @@ class UserTests: KinveyTestCase {
                 }
                 
                 expectationDestroyUser?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
@@ -405,10 +403,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -472,10 +474,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -514,10 +520,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let results):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -546,8 +556,36 @@ class UserTests: KinveyTestCase {
                 XCTAssertMainThread()
                 XCTAssertNil(user)
                 XCTAssertNotNil(error)
-                
-                if let error = error {
+                XCTAssertTimeoutError(error)
+                expectationChangePassword?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationChangePassword = nil
+            }
+        }
+        
+        do {
+            if useMockData {
+                mockResponse(error: timeoutError)
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationChangePassword = expectation(description: "Change Password")
+            
+            let previousAuthtoken = user.metadata?.authtoken
+            XCTAssertNotNil(previousAuthtoken)
+            
+            user.changePassword(newPassword: "test") {
+                XCTAssertMainThread()
+                switch $0 {
+                case .success(let user):
+                    XCTFail()
+                case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
                 
@@ -576,10 +614,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
+            store.find {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -607,10 +649,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserExists = expectation(description: "User Exists")
             
-            User.get(userId: user.userId) { user, error in
+            User.get(userId: user.userId, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+                switch $0 {
+                case .success(let user):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationUserExists?.fulfill()
             }
@@ -629,16 +675,42 @@ class UserTests: KinveyTestCase {
             
             weak var expectationUserExists = expectation(description: "User Exists")
             
-            User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
+            User.get(userId: user.userId) { (user, error) -> Void in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(error)
                 XCTAssertNil(user)
                 
                 expectationUserExists?.fulfill()
-            })
+            }
             
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUserExists = nil
+            }
+        }
+    }
+    
+    func testFindTimeoutError() {
+        signUp()
+        
+        if let user = client.activeUser {
+            setURLProtocol(TimeoutErrorURLProtocol.self)
+            
+            weak var expectationUserFind = expectation(description: "User Find")
+            
+            user.find(query: Query(), options: nil) {
+                XCTAssertTrue(Thread.isMainThread)
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertTimeoutError(error)
+                }
+                
+                expectationUserFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationUserFind = nil
             }
         }
     }
@@ -703,8 +775,8 @@ class UserTests: KinveyTestCase {
                 options: Options(
                     client: client
                 )
-            ) { (result: Result<[Person], Swift.Error>) in
-                switch result {
+            ) {
+                switch $0 {
                 case .success:
                     break
                 case .failure:
@@ -1373,19 +1445,45 @@ class UserTests: KinveyTestCase {
             
             if let username = user.username {
                 setURLProtocol(TimeoutErrorURLProtocol.self)
-                
-                weak var expectationUserExists = expectation(description: "User Exists")
-                
-                User.exists(username: username) { (exists, error) -> Void in
-                    XCTAssertTrue(Thread.isMainThread)
-                    XCTAssertNotNil(error)
-                    XCTAssertFalse(exists)
-                    
-                    expectationUserExists?.fulfill()
+                defer {
+                    setURLProtocol(nil)
                 }
                 
-                waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationUserExists = nil
+                do {
+                    weak var expectationUserExists = expectation(description: "User Exists")
+                    
+                    User.exists(username: username) { exists, error in
+                        XCTAssertTrue(Thread.isMainThread)
+                        XCTAssertFalse(exists)
+                        XCTAssertTimeoutError(error)
+                        
+                        expectationUserExists?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationUserExists = nil
+                    }
+                }
+                
+                do {
+                    weak var expectationUserExists = expectation(description: "User Exists")
+                    
+                    User.exists(username: username, options: nil) {
+                        XCTAssertTrue(Thread.isMainThread)
+                        switch $0 {
+                        case .success(let exists):
+                            XCTAssertFalse(exists)
+                            XCTFail()
+                        case .failure(let error):
+                            XCTAssertTimeoutError(error)
+                        }
+                        
+                        expectationUserExists?.fulfill()
+                    }
+                    
+                    waitForExpectations(timeout: defaultTimeout) { error in
+                        expectationUserExists = nil
+                    }
                 }
             }
         }
@@ -1457,6 +1555,64 @@ class UserTests: KinveyTestCase {
                 weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
                 
                 user.sendEmailConfirmation {
+                    XCTAssertTrue(Thread.isMainThread)
+                    
+                    switch $0 {
+                    case .success:
+                        break
+                    case .failure:
+                        XCTFail()
+                    }
+                    
+                    expectationSendEmailConfirmation?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSendEmailConfirmation = nil
+                }
+            }
+        }
+    }
+    
+    func testSendEmailConfirmationDeprecated() {
+        signUp(username: UUID().uuidString)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            do {
+                var json = user.toJSON()
+                json["email"] = "victor@kinvey.com"
+                mockResponse(json: json)
+                defer {
+                    setURLProtocol(nil)
+                }
+                
+                weak var expectationSave = expectation(description: "Save")
+                
+                user.email = "victor@kinvey.com"
+                user.save() { user, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertNotNil(user)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
+            }
+            
+            do {
+                mockResponse(statusCode: 204, data: Data())
+                defer {
+                    setURLProtocol(nil)
+                }
+                
+                weak var expectationSendEmailConfirmation = expectation(description: "Send Email Confirmation")
+                
+                User.sendEmailConfirmation(forUsername: user.username!, client: client) {
                     XCTAssertTrue(Thread.isMainThread)
                     
                     switch $0 {
@@ -1765,9 +1921,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(username: user.username!) { error in
+            User.resetPassword(usernameOrEmail: user.username!, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationResetPassword?.fulfill()
             }
@@ -1795,11 +1956,12 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(email: user.username!) { error in
+            User.resetPassword(usernameOrEmail: user.username!, client: sharedClient) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                
-                if let error = error {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
                 
@@ -1831,9 +1993,14 @@ class UserTests: KinveyTestCase {
             
             weak var expectationResetPassword = expectation(description: "Reset Password")
             
-            User.resetPassword(email: user.email!) { error in
+            User.resetPassword(usernameOrEmail: user.email!, options: nil) {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationResetPassword?.fulfill()
             }
@@ -2007,7 +2174,7 @@ class UserTests: KinveyTestCase {
         
         weak var expectationForgotUsername = expectation(description: "Forgot Username")
         
-        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com", client: client) {
+        User.forgotUsername(email: "\(UUID().uuidString)@kinvey.com", options: nil) {
             XCTAssertTrue(Thread.isMainThread)
             
             switch $0 {
@@ -2089,6 +2256,81 @@ class UserTests: KinveyTestCase {
                 }
             case .failure(let error):
                 XCTFail(error.localizedDescription)
+            }
+            
+            expectationFacebookLogin?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFacebookLogin = nil
+        }
+        
+        client.activeUser = nil
+    }
+    
+    func testFacebookLoginDeprecated() {
+        mockResponse { (request) -> HttpResponse in
+            let userId = "503bc9806065332d6f000005"
+            let jsonResponse: [String : Any] = [
+                "_id": userId,
+                "username": "73abe64e-139e-4034-9f88-08e3d9e1e5f8",
+                "password": "a94fa673-993e-4770-ac64-af82e6ab02b7",
+                "_socialIdentity": [
+                    "facebook": [
+                        "id": "100004289534145",
+                        "name": "Kois Steel",
+                        "gender": "female",
+                        "email": "kois.steel@testFB.net",
+                        "birthday": "2012/08/20",
+                        "location": "Cambridge, USA"
+                    ]
+                ],
+                "_kmd": [
+                    "lmt": "2012-08-27T19:24:47.975Z",
+                    "ect": "2012-08-27T19:24:47.975Z",
+                    "authtoken": "8d4c427d-51ee-4f0f-bd99-acd2192d43d2.Clii9/Pjq05g8C5rqQgQg9ty+qewsxlTjhgNjyt9Pn4="
+                ],
+                "_acl": [
+                    "creator": "503bc9806065332d6f000005"
+                ]
+            ]
+            return HttpResponse(statusCode: 201, headerFields: ["Location" : "https://baas.kinvey.com/user/:appKey/\(userId)"], json: jsonResponse)
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFacebookLogin = expectation(description: "Facebook Login")
+        
+        let fakeFacebookData = [
+            "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
+            "expires": "5105388"
+        ]
+        User.login(authSource: .facebook, fakeFacebookData) { user, error in
+            XCTAssertNotNil(user)
+            XCTAssertNil(error)
+            if let user = user {
+                XCTAssertNotNil(user.socialIdentity)
+                XCTAssertNotNil(user.socialIdentity?.facebook)
+                XCTAssertEqual(user.socialIdentity?.facebook?["id"] as? String, "100004289534145")
+                XCTAssertEqual(user.socialIdentity?.facebook?["name"] as? String, "Kois Steel")
+                XCTAssertEqual(user.socialIdentity?.facebook?["gender"] as? String, "female")
+                XCTAssertEqual(user.socialIdentity?.facebook?["email"] as? String, "kois.steel@testFB.net")
+                XCTAssertEqual(user.socialIdentity?.facebook?["birthday"] as? String, "2012/08/20")
+                XCTAssertEqual(user.socialIdentity?.facebook?["location"] as? String, "Cambridge, USA")
+                
+                let user = Keychain(appKey: Kinvey.sharedClient.appKey!, client: Kinvey.sharedClient).user
+                XCTAssertNotNil(user)
+                if let user = user {
+                    XCTAssertNotNil(user.socialIdentity)
+                    XCTAssertNotNil(user.socialIdentity?.facebook)
+                    XCTAssertEqual(user.socialIdentity?.facebook?["id"] as? String, "100004289534145")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["name"] as? String, "Kois Steel")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["gender"] as? String, "female")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["email"] as? String, "kois.steel@testFB.net")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["birthday"] as? String, "2012/08/20")
+                    XCTAssertEqual(user.socialIdentity?.facebook?["location"] as? String, "Cambridge, USA")
+                }
             }
             
             expectationFacebookLogin?.fulfill()
@@ -2299,9 +2541,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find() { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2520,9 +2766,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2745,9 +2995,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -2920,9 +3174,13 @@ class UserTests: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find { persons, error in
-                XCTAssertNil(persons)
-                XCTAssertNotNil(error)
+            store.find {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure:
+                    break
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -3797,10 +4055,14 @@ extension UserTests {
                     
                     weak var expectationFind = expectation(description: "Find")
                     
-                    store.find { persons, error in
+                    store.find {
                         XCTAssertTrue(Thread.isMainThread)
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(persons)
+                        switch $0 {
+                        case .success:
+                            break
+                        case .failure(let error):
+                            XCTFail(error.localizedDescription)
+                        }
                         
                         expectationFind?.fulfill()
                     }
@@ -4033,21 +4295,24 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
+        
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            XCTAssertNil(user)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .unknownJsonError(_, _, let json):
-                    XCTAssertEqual(json.count, responseBody.count)
-                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
-                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
-                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .unknownJsonError(_, _, let json):
+                        XCTAssertEqual(json.count, responseBody.count)
+                        XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                        XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                        XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4075,21 +4340,23 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            XCTAssertNil(user)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .unknownJsonError(_, _, let json):
-                    XCTAssertEqual(json.count, responseBody.count)
-                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
-                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
-                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .unknownJsonError(_, _, let json):
+                        XCTAssertEqual(json.count, responseBody.count)
+                        XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                        XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                        XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4145,7 +4412,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4157,7 +4424,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?no_code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertFalse(result)
     }
@@ -4217,7 +4484,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4295,7 +4562,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            client: client
+            options: Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4323,19 +4590,22 @@ extension UserTests {
         let redirectURI = URL(string: "throwAnError://")!
         User.presentMICViewController(
             redirectURI: redirectURI,
-            timeout: 3,
-            forceUIWebView: true
-        ) { (user, error) -> Void in
+            micUserInterface: .uiWebView,
+            options: Options(timeout: 3)
+        ) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTrue(error is Kinvey.Error)
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .requestTimeout:
-                    break
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .requestTimeout:
+                        XCTAssertEqual(error.description, "Request Timeout")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4362,17 +4632,24 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: true) { (user, error) -> Void in
+        User.presentMICViewController(
+            redirectURI: redirectURI,
+            micUserInterface: .uiWebView,
+            options: Options(timeout: 60)
+        ) {
             XCTAssertTrue(Thread.isMainThread)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTrue(error is Kinvey.Error)
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .requestCancelled:
-                    break
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .requestCancelled:
+                        break
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -4616,8 +4893,17 @@ extension UserTests {
         XCTAssertTrue(user1.isEqual(user2))
         XCTAssertFalse(user1.isEqual(user3))
         XCTAssertFalse(user2.isEqual(user3))
+        XCTAssertFalse(user2.isEqual(nil))
         XCTAssertTrue(set.contains(user2))
         XCTAssertFalse(set.contains(user3))
+    }
+    
+    func testMappingWithoutUserId() {
+        var user: User? = nil
+        
+        let map = Map(mappingType: .fromJSON, JSON: ["user" : [:]])
+        user <- map["user"]
+        XCTAssertNil(user)
     }
     
 }

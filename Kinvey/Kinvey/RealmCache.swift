@@ -71,7 +71,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     var newRealm: Realm {
-        return try! Realm(configuration: configuration)
+        let realm = try! Realm(configuration: configuration)
+        realm.refresh()
+        return realm
     }
     
     required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
@@ -467,7 +469,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             if let query = query {
                 result = Int(self.results(query).count)
             } else {
-                result = self.realm.objects(self.entityType).count
+                result = self.newRealm.objects(self.entityType).count
             }
         }
         return result
@@ -652,20 +654,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func commitWrite() throws {
-        var _error: Swift.Error? = nil
-        executor.executeAndWait {
-            do {
-                try self.realm.commitWrite()
-            } catch {
-                _error = error
-            }
-        }
-        if let error = _error {
-            throw error
-        }
-    }
-    
     public func commitWrite(withoutNotifying tokens: [NotificationToken]) throws {
         var _error: Swift.Error? = nil
         executor.executeAndWait {
@@ -765,7 +753,7 @@ extension RealmCache: DynamicCacheType {
             if let property = properties[translatedKey],
                 property.type == .object,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.Key.entityId],
+                let entityId = entity[Entity.CodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedObject = dynamicObject[translatedKey] as? Object,
                 !(nestedObject is Entity)
@@ -778,7 +766,7 @@ extension RealmCache: DynamicCacheType {
             } else if let property = properties[translatedKey],
                 property.isArray,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.Key.entityId],
+                let entityId = entity[Entity.CodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedArray = dynamicObject[translatedKey] as? List<DynamicObject>
             {

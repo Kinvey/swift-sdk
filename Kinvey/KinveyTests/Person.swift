@@ -62,7 +62,7 @@ class Person: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        personId <- ("personId", map[PersistableIdKey])
+        personId <- ("personId", map[Entity.CodingKeys.entityId])
         name <- ("name", map["name"])
         age <- ("age", map["age"])
         address <- ("address", map["address"], AddressTransform())
@@ -103,7 +103,7 @@ class PersonWithDifferentClassName: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        personId <- ("personId", map[PersistableIdKey])
+        personId <- ("personId", map[Entity.CodingKeys.entityId])
         name <- ("name", map["name"])
         age <- ("age", map["age"])
         address <- ("address", map["address"], AddressTransform())

@@ -27,13 +27,13 @@ class FindOperationTest: StoreTestCase {
         
         weak var expectationSave = expectation(description: "Save")
 
-        store.save(person, writePolicy: .forceLocal) { (person, error) -> Void in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
+        store.save(person, options: Options(writePolicy: .forceLocal)) {
+            switch $0 {
+            case .success(let person):
                 XCTAssertEqual(person, self.person)
                 XCTAssertNotNil(person.personId)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationSave?.fulfill()
@@ -54,9 +54,13 @@ class FindOperationTest: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .forceLocal) { (person, error) -> Void in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let person):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationGet?.fulfill()
             }
@@ -79,12 +83,12 @@ class FindOperationTest: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, readPolicy: .forceLocal) { (persons, error) -> Void in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                if let persons = persons {
+            store.find(query, options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let persons):
                     XCTAssertEqual(persons.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationGet?.fulfill()

@@ -1,5 +1,6 @@
 coverage:
   ignore:
+    - Carthage/**/*
     - Kinvey/KinveyApp/**/*
     - Kinvey/KinveyTests/**/*
     - Kinvey/KinveySSOApp/**/*

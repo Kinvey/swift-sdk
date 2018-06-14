@@ -8,6 +8,7 @@
 
 import XCTest
 import Swifter
+import Nimble
 
 extension XCUIElement {
     
@@ -27,35 +28,49 @@ extension XCUIElement {
     
 }
 
+extension RunLoop {
+    
+    func run(timeIntervalSinceNow: TimeInterval) {
+        run(until: Date(timeIntervalSinceNow: timeIntervalSinceNow))
+    }
+    
+}
+
 class KinveyAppUITests: XCTestCase {
         
     func testMICLoginSafariAuthenticationSession() {
         let app = XCUIApplication()
         let kid = "_kid_"
+        let port: in_port_t = 8080
         app.launchEnvironment = [
             "KINVEY_MIC_APP_KEY" : kid,
             "KINVEY_MIC_APP_SECRET" : "_secret_",
-            "KINVEY_MIC_API_URL" : "http://localhost:8080",
-            "KINVEY_MIC_AUTH_URL" : "http://localhost:8080",
+            "KINVEY_MIC_API_URL" : "http://localhost:\(port)",
+            "KINVEY_MIC_AUTH_URL" : "http://localhost:\(port)",
         ]
         app.launch()
         
         app.staticTexts["MIC Login"].tap()
         app.switches["SFAuthenticationSession"].tap()
         
-        addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
-            alert.buttons["Continue"].tap()
-            return true
-        }
-        
-        app.buttons["Login"].tap()
-        app.tap()
-        
         let code = UUID().uuidString
         let userId = UUID().uuidString
+        let json = [
+            "_id" : userId,
+            "username" : UUID().uuidString,
+            "_kmd" : [
+                "lmt" : "2017-09-05T16:48:35.667Z",
+                "ect" : "2017-09-05T16:48:35.667Z",
+                "authtoken" : UUID().uuidString
+            ],
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ]
+        ] as [String : Any]
         
         let server = HttpServer()
-        server["/v1/oauth/auth"] = { request in
+        server["/:v/oauth/auth"] = { request in
+            XCTAssertEqual(request.params[":v"], "v3")
             if let (_, redirectUri) = request.queryParams.filter({ key, value in key == "redirect_uri" }).first {
                 return HttpResponse.raw(302, "Found", ["Location" : "\(redirectUri)?code=\(code)"], { bodyWriter in
                     try! bodyWriter.write("Redirecting...".data(using: .utf8)!)
@@ -63,7 +78,8 @@ class KinveyAppUITests: XCTestCase {
             }
             return .internalServerError
         }
-        server["/v1/oauth/token"] = { request in
+        server["/:v/oauth/token"] = { request in
+            XCTAssertEqual(request.params[":v"], "v3")
             if let (_, _code) = request.parseUrlencodedForm().filter({ key, value in key == "code" }).first, code == _code {
                 return .ok(.json([
                     "access_token" : UUID().uuidString,
@@ -74,29 +90,125 @@ class KinveyAppUITests: XCTestCase {
             }
             return .internalServerError
         }
-        server["/user/\(kid)/login"] = { request in
-            return .ok(.json([
-                "_id" : userId,
-                "username" : UUID().uuidString,
-                "_kmd" : [
-                    "lmt" : "2017-09-05T16:48:35.667Z",
-                    "ect" : "2017-09-05T16:48:35.667Z",
-                    "authtoken" : UUID().uuidString
-                ],
-                "_acl" : [
-                    "creator" : UUID().uuidString
-                ]
-            ] as AnyObject))
+        server.post["/user/:kid/login"] = { request in
+            XCTAssertEqual(request.params[":kid"], kid)
+            return .ok(.json(json as AnyObject))
         }
-        try! server.start()
+        server.notFoundHandler = { request in
+            XCTFail()
+            return .notFound
+        }
+        try! server.start(port, forceIPv4: true)
         
         defer {
             server.stop()
         }
         
+        let tokenMonitor = addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
+            alert.buttons["Continue"].tap()
+            return true
+        }
+        defer {
+            removeUIInterruptionMonitor(tokenMonitor)
+        }
+        
+        app.buttons["Login"].tap()
+        app.tap()
+        
         let userIdValue = app.staticTexts["User ID Value"]
-        XCTAssertTrue(userIdValue.waitForExistence(timeout: 30))
-        XCTAssertEqual(userIdValue.label, userId)
+        expect(expression: {
+            if userIdValue.exists {
+                app.tap()
+            }
+            return userIdValue.exists
+        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
+    }
+    
+    func testMICLoginWKWebView() {
+        let app = XCUIApplication()
+        let kid = "_kid_"
+        let port: in_port_t = 8080
+        app.launchEnvironment = [
+            "KINVEY_MIC_APP_KEY" : kid,
+            "KINVEY_MIC_APP_SECRET" : "_secret_",
+            "KINVEY_MIC_API_URL" : "http://localhost:\(port)",
+            "KINVEY_MIC_AUTH_URL" : "http://localhost:\(port)",
+        ]
+        app.launch()
+        
+        app.staticTexts["MIC Login"].tap()
+        app.switches["WKWebView"].tap()
+        
+        let code = UUID().uuidString
+        let userId = UUID().uuidString
+        let json = [
+            "_id" : userId,
+            "username" : UUID().uuidString,
+            "_kmd" : [
+                "lmt" : "2017-09-05T16:48:35.667Z",
+                "ect" : "2017-09-05T16:48:35.667Z",
+                "authtoken" : UUID().uuidString
+            ],
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ]
+        ] as [String : Any]
+        
+        let server = HttpServer()
+        server["/:v/oauth/auth"] = { request in
+            XCTAssertEqual(request.params[":v"], "v3")
+            if let (_, redirectUri) = request.queryParams.filter({ key, value in key == "redirect_uri" }).first {
+                return HttpResponse.raw(302, "Found", ["Location" : "\(redirectUri)?code=\(code)"], { bodyWriter in
+                    try! bodyWriter.write("Redirecting...".data(using: .utf8)!)
+                })
+            }
+            return .internalServerError
+        }
+        server["/:v/oauth/token"] = { request in
+            XCTAssertEqual(request.params[":v"], "v3")
+            if let (_, _code) = request.parseUrlencodedForm().filter({ key, value in key == "code" }).first, code == _code {
+                return .ok(.json([
+                    "access_token" : UUID().uuidString,
+                    "token_type" : "Bearer",
+                    "expires_in" : 3599,
+                    "refresh_token" : UUID().uuidString
+                ] as AnyObject))
+            }
+            return .internalServerError
+        }
+        server.post["/user/:kid/login"] = { request in
+            XCTAssertEqual(request.params[":kid"], kid)
+            return .ok(.json(json as AnyObject))
+        }
+        server.notFoundHandler = { request in
+            XCTFail()
+            return .notFound
+        }
+        try! server.start(port, forceIPv4: true)
+        
+        defer {
+            server.stop()
+        }
+        
+        addUIInterruptionMonitor(withDescription: "WKWebView") { (alert) -> Bool in
+            alert.buttons["Continue"].tap()
+            return true
+        }
+        
+        app.buttons["Login"].tap()
+        app.tap()
+        
+        let userIdValue = app.staticTexts["User ID Value"]
+        expect(expression: {
+            if userIdValue.exists {
+                app.tap()
+            }
+            return userIdValue.exists
+        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
     }
     
 }

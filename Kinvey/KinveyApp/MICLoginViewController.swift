@@ -65,7 +65,16 @@ open class MICLoginViewController: UIViewController {
                 appSecret: appSecret,
                 apiHostName: apiUrl ?? Client.defaultApiHostName,
                 authHostName: authUrl ?? Client.defaultAuthHostName
-            )
+            ) {
+                switch $0 {
+                case .success(let user):
+                    if let user = user {
+                        print(user)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
 
@@ -101,13 +110,16 @@ open class MICLoginViewController: UIViewController {
             micUserInterface = MICUserInterface.default
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay)) {
-            User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) { (user, error) -> Void in
-                if let user = user {
+            User.presentMICViewController(redirectURI: redirectURI, micUserInterface: micUserInterface) {
+                switch $0 {
+                case .success(let user):
                     self.userIdLabel.text = user.userId
-                } else if let error = error{
+                    self.completionHandler?(user, nil)
+                case .failure(let error):
+                    self.userIdLabel.text = ""
                     print("\(error)")
+                    self.completionHandler?(nil, error)
                 }
-                self.completionHandler?(user, error)
             }
         }
     }

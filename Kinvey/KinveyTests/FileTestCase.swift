@@ -49,7 +49,7 @@ class FileTestCase: StoreTestCase {
     }
     
     lazy var fileStore: FileStore = {
-        return FileStore.getInstance()
+        return FileStore()
     }()
     
     override func setUp() {
@@ -639,7 +639,7 @@ class FileTestCase: StoreTestCase {
         self.file = file
         let path = caminandes3TrailerURL.path
         
-        let fileStore = FileStore.getInstance(fileType: MyFile.self)
+        let fileStore = FileStore<MyFile>()
         
         var uploadProgressCount = 0
         
@@ -1620,7 +1620,7 @@ class FileTestCase: StoreTestCase {
         self.file = file
         let path = caminandes3TrailerURL.path
         
-        let fileStore: FileStore<MyFile> = FileStore.getInstance()
+        let fileStore = FileStore<MyFile>()
         
         do {
             if useMockData {
@@ -2440,7 +2440,7 @@ class FileTestCase: StoreTestCase {
     func testGetInstance() {
         let appKey = "file-get_instance-\(UUID().uuidString)"
         let client = Client(appKey: appKey, appSecret: "unit-test")
-        let fileStore = FileStore.getInstance(client: client)
+        let fileStore = FileStore(client: client)
         
         let fileCache = fileStore.cache?.cache as? RealmFileCache<File>
         XCTAssertNotNil(fileCache)
@@ -2582,7 +2582,7 @@ class FileTestCase: StoreTestCase {
                             $0.writers = [userId]
                         }
                     }
-                    let fileStore = FileStore.getInstance()
+                    let fileStore = FileStore()
                     
                     weak var expectationUpload = expectation(description: "Upload")
                     
@@ -2677,7 +2677,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(Kinvey.sharedClient.activeUser)
                 
                 let file = File { $0.fileId = uploadedFileId }
-                let fileStore = FileStore.getInstance()
+                let fileStore = FileStore()
                 
                 do {
                     if useMockData {
@@ -2799,7 +2799,7 @@ class FileTestCase: StoreTestCase {
     func testFind() {
         signUp()
         
-        let fileStore = FileStore.getInstance()
+        let fileStore = FileStore()
         
         if useMockData {
             mockResponse(json: [
@@ -2849,7 +2849,7 @@ class FileTestCase: StoreTestCase {
     func testRefresh() {
         signUp()
         
-        let fileStore = FileStore.getInstance()
+        let fileStore = FileStore()
         var _file: File? = nil
         
         do {
@@ -2964,7 +2964,7 @@ class FileTestCase: StoreTestCase {
     func testRefreshTimeoutError() {
         signUp()
         
-        let fileStore = FileStore.getInstance()
+        let fileStore = FileStore()
         var _file: File? = nil
         
         do {

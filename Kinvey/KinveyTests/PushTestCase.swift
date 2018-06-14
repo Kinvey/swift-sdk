@@ -7,12 +7,19 @@
 //
 
 import XCTest
-import KIF
+#if canImport(KIF)
+    import KIF
+#endif
 @testable import Kinvey
 import Foundation
 
 class PushTestCase: KinveyTestCase {
     
+    func testHexStringConvertion() {
+        XCTAssertEqual("Hello World!".data(using: .utf8)?.hexString(), "48656c6c6f20576f726c6421")
+    }
+    
+#if os(iOS)
     func testRegisterForPush() {
         signUp()
         
@@ -109,5 +116,6 @@ class PushTestCase: KinveyTestCase {
         XCTAssertEqual(Kinvey.sharedClient.push.badgeNumber, 0)
         XCTAssertEqual(UIApplication.shared.applicationIconBadgeNumber, 0)
     }
+#endif
     
 }

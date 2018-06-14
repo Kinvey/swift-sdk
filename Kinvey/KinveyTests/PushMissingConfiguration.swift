@@ -21,7 +21,7 @@ class PushMissingConfigurationTestCase: KinveyTestCase {
                     "error" : "MissingConfiguration",
                     "description" : "This feature is not properly configured for this app backend. Please configure it through the console first, or contact support for more information.",
                     "debug" : "Push notifications for iOS are not properly configured for this app backend. Please enable push notifications through the console first."
-                    ])
+                ])
             }
             defer {
                 if useMockData {
@@ -52,7 +52,7 @@ class PushMissingConfigurationTestCase: KinveyTestCase {
                 expectaionRegister?.fulfill()
             }
             
-            #if (arch(i386) || arch(x86_64)) && os(iOS)
+            #if targetEnvironment(simulator)
                 tester().acknowledgeSystemAlert()
                 
                 DispatchQueue.main.async {

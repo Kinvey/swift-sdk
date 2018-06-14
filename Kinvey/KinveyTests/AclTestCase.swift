@@ -37,31 +37,34 @@ class AclTestCase: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        try! store.remove(person) { (count, error) -> Void in
+        try! store.remove(person) {
             self.assertThread()
-            XCTAssertNil(count)
-            XCTAssertNotNil(error)
-            XCTAssertNotNil(error as? Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                let result = error.responseBodyJsonDictionary
-                XCTAssertNotNil(result)
-                if let result = result {
-                    let expected = [
-                        "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
-                        "debug" : "",
-                        "error" : "InsufficientCredentials"
-                    ]
-                    XCTAssertEqual(result.count, expected.count)
-                    XCTAssertEqual(result["description"] as? String, expected["description"])
-                    XCTAssertEqual(result["debug"] as? String, expected["debug"])
-                    XCTAssertEqual(result["error"] as? String, expected["error"])
-                }
-                switch error {
-                case .unauthorized(_, _, let error, _, _):
-                    XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
-                default:
-                    XCTFail()
+            switch $0 {
+            case .success(let count):
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    let result = error.responseBodyJsonDictionary
+                    XCTAssertNotNil(result)
+                    if let result = result {
+                        let expected = [
+                            "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                            "debug" : "",
+                            "error" : "InsufficientCredentials"
+                        ]
+                        XCTAssertEqual(result.count, expected.count)
+                        XCTAssertEqual(result["description"] as? String, expected["description"])
+                        XCTAssertEqual(result["debug"] as? String, expected["debug"])
+                        XCTAssertEqual(result["error"] as? String, expected["error"])
+                    }
+                    switch error {
+                    case .unauthorized(_, _, let error, _, _):
+                        XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -107,10 +110,14 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(person.personId!, readPolicy: .forceNetwork) { person, error in
+            store.find(person.personId!, options: Options(readPolicy: .forceNetwork)) {
                 self.assertThread()
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let person):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -125,10 +132,14 @@ class AclTestCase: StoreTestCase {
         do {
             weak var expectationRemove = expectation(description: "Remove")
             
-            try! store.remove(person) { (count, error) -> Void in
+            try! store.remove(person) {
                 self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let count):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -220,11 +231,9 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(personId) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.find(personId) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.globalRead)
@@ -232,6 +241,8 @@ class AclTestCase: StoreTestCase {
                             XCTAssertTrue(globalRead)
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -277,11 +288,9 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(personId) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.find(personId) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.globalWrite)
@@ -289,6 +298,8 @@ class AclTestCase: StoreTestCase {
                             XCTAssertTrue(globalWrite)
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -342,11 +353,9 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(personId) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.find(personId) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.readers)
@@ -355,6 +364,8 @@ class AclTestCase: StoreTestCase {
                             XCTAssertEqual(readers.first, user.userId)
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -405,11 +416,9 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(personId) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.find(personId) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.writers)
@@ -417,6 +426,8 @@ class AclTestCase: StoreTestCase {
                             XCTAssertEqual(writers.count, 1)
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -426,6 +437,26 @@ class AclTestCase: StoreTestCase {
                 expectationFind = nil
             }
         }
+    }
+    
+    func testValidation() {
+        XCTAssertNil(Acl(JSON: [:]))
+        
+        let creator = UUID().uuidString
+        let acl = Acl(JSON: [
+            Acl.CodingKeys.creator.rawValue : creator,
+            Acl.CodingKeys.readers.rawValue : []
+        ])
+        XCTAssertNotNil(acl)
+        XCTAssertEqual(acl?.creator, creator)
+        XCTAssertNotNil(acl?.readers)
+        XCTAssertEqual(acl?.readers?.count, 0)
+        XCTAssertNotNil(acl?.toJSON()[Acl.CodingKeys.readers.rawValue])
+        
+        acl?["readersValue"] = ""
+        XCTAssertNil(acl?.readers)
+        acl?.readers = nil
+        XCTAssertNil(acl?.toJSON()[Acl.CodingKeys.readers.rawValue])
     }
     
 }

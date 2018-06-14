@@ -54,16 +54,16 @@ class StoreTestCase: KinveyTestCase {
         
         var savedPersistable: T? = nil
         
-        store.save(persistable) { (persistable, error) -> Void in
+        store.save(persistable) {
             self.assertThread()
-            XCTAssertNotNil(persistable)
-            XCTAssertNil(error)
-            
-            if let persistable = persistable {
+            switch $0 {
+            case .success(let persistable):
                 XCTAssertNotNil(persistable.entityId)
+                
+                savedPersistable = persistable
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
-            
-            savedPersistable = persistable
             
             expectationCreate?.fulfill()
         }
@@ -101,17 +101,17 @@ class StoreTestCase: KinveyTestCase {
         
         weak var expectationCreate = expectation(description: "Create")
         
-        store.save(person) { (person, error) -> Void in
+        store.save(person) {
             self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
+            switch $0 {
+            case .success(let person):
                 XCTAssertNotNil(person.personId)
                 XCTAssertNotEqual(person.personId, "")
                 
                 XCTAssertNotNil(person.age)
                 XCTAssertEqual(person.age, age)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationCreate?.fulfill()
@@ -130,10 +130,15 @@ class StoreTestCase: KinveyTestCase {
         
         weak var expectationCreate = expectation(description: "Create")
         
-        store.save(person) { (person, error) -> Void in
+        store.save(person) {
             self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+            switch $0 {
+            case .success(let person):
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
             expectationCreate?.fulfill()
         }
         

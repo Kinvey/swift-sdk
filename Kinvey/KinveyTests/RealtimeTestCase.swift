@@ -927,7 +927,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, client: client) {
+            user.find(query: query, options: Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users
@@ -1225,7 +1225,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, client: client) {
+            user.find(query: query, options: Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users
@@ -1417,7 +1417,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, client: client) {
+            user.find(query: query, options: Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users

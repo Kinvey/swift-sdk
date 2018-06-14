@@ -50,15 +50,15 @@ class NetworkStoreTests: StoreTestCase {
         do {
             weak var expectationCreate = expectation(description: "Create")
             
-            let request = store.save(event) { event, error in
-                XCTAssertNotNil(event)
-                XCTAssertNil(error)
-                
-                if let event = event {
+            let request = store.save(event) {
+                switch $0 {
+                case .success(let event):
                     XCTAssertNotNil(event.entityId)
                     XCTAssertNotNil(event.name)
                     XCTAssertNotNil(event.publishDate)
                     XCTAssertNotNil(event.location)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreate?.fulfill()
@@ -86,15 +86,15 @@ class NetworkStoreTests: StoreTestCase {
         if let eventId = event.entityId {
             weak var expectationFind = expectation(description: "Find")
             
-            let request = store.find(eventId) { event, error in
-                XCTAssertNotNil(event)
-                XCTAssertNil(error)
-                
-                if let event = event {
+            let request = store.find(eventId) {
+                switch $0 {
+                case .success(let event):
                     XCTAssertNotNil(event.entityId)
                     XCTAssertNotNil(event.name)
                     XCTAssertNotNil(event.publishDate)
                     XCTAssertNotNil(event.location)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -158,10 +158,14 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            let request = store.find() { (events, error) in
+            let request = store.find() {
                 XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(events)
-                XCTAssertNil(error)
+                switch $0 {
+                case .success(let events):
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -219,16 +223,16 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationSave = expectation(description: "Save")
         
-        store.save(person, writePolicy: .forceNetwork) { person, error in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
+        store.save(person, options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let person):
                 XCTAssertNotNil(person.address)
                 
                 if let address = person.address {
                     XCTAssertNotNil(address.city)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationSave?.fulfill()
@@ -350,13 +354,14 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationCount = expectation(description: "Count")
             
-            store.count { (count, error) in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(count, 85)
-                
-                eventsCount = count
+            store.count {
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 85)
+                    eventsCount = count
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationCount?.fulfill()
             }
@@ -369,11 +374,13 @@ class NetworkStoreTests: StoreTestCase {
         do {
             weak var expectationCount = expectation(description: "Count")
             
-            store.count(readPolicy: .forceLocal) { (count, error) in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(count, 0)
+            store.count(options: Options(readPolicy: .forceLocal)) {
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationCount?.fulfill()
             }
@@ -410,9 +417,13 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationCreate = expectation(description: "Create")
             
-            store.save(event) { event, error in
-                XCTAssertNotNil(event)
-                XCTAssertNil(error)
+            store.save(event) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationCreate?.fulfill()
             }
@@ -434,12 +445,15 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationCount = expectation(description: "Count")
             
-            store.count { (count, error) in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let eventsCount = eventsCount, let count = count {
-                    XCTAssertEqual(eventsCount + 1, count)
+            store.count {
+                switch $0 {
+                case .success(let count):
+                    XCTAssertNotNil(eventsCount)
+                    if let eventsCount = eventsCount {
+                        XCTAssertEqual(eventsCount + 1, count)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCount?.fulfill()
@@ -669,11 +683,13 @@ class NetworkStoreTests: StoreTestCase {
         
         let query = Query(format: "publishDate >= %@", Date())
         
-        store.count(query) { (count, error) in
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            
-            XCTAssertEqual(count, 85)
+        store.count(query) {
+            switch $0 {
+            case .success(let count):
+                XCTAssertEqual(count, 85)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationCount?.fulfill()
         }
@@ -693,11 +709,13 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationCount = expectation(description: "Count")
         
-        store.count { (count, error) in
-            XCTAssertNil(count)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        store.count {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationCount?.fulfill()
         }
@@ -746,9 +764,13 @@ class NetworkStoreTests: StoreTestCase {
                 
                 weak var expectationSave = self.expectation(description: "Save")
                 
-                self.store.save(person, writePolicy: .forceNetwork) { person, error in
-                    XCTAssertNotNil(person)
-                    XCTAssertNil(error)
+                self.store.save(person, options: Options(writePolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
                     
                     expectationSave?.fulfill()
                 }
@@ -804,11 +826,9 @@ class NetworkStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .forceNetwork) { results, error in
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
+            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let results):
                     XCTAssertEqual(results.count, limit)
                     
                     XCTAssertNotNil(results.first)
@@ -822,6 +842,8 @@ class NetworkStoreTests: StoreTestCase {
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person \(skip + 1)")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 skip += limit
@@ -906,18 +928,20 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find("sample-id", readPolicy: .forceNetwork) { person, error in
-            XCTAssertNil(person)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .dataLinkEntityNotFound(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "Error: Not Found")
-                    XCTAssertEqual(description, "The data link could not find this entity")
-                default:
-                    XCTFail()
+        store.find("sample-id", options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .dataLinkEntityNotFound(_, _, let debug, let description):
+                        XCTAssertEqual(debug, "Error: Not Found")
+                        XCTAssertEqual(description, "The data link could not find this entity")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -940,25 +964,27 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationSave = expectation(description: "Save")
         
-        store.save(person, writePolicy: .forceNetwork) { person, error in
-            XCTAssertNil(person)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                XCTAssertEqual(error.description, MethodNotAllowedError.descriptionValue)
-                XCTAssertEqual(error.debugDescription, MethodNotAllowedError.debugValue)
-                
-                XCTAssertEqual("\(error)", MethodNotAllowedError.descriptionValue)
-                XCTAssertEqual("\(String(describing: error))", MethodNotAllowedError.descriptionValue)
-                XCTAssertEqual("\(String(reflecting: error))", MethodNotAllowedError.debugValue)
-                
-                switch error {
-                case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(description, MethodNotAllowedError.descriptionValue)
-                    XCTAssertEqual(debug, MethodNotAllowedError.debugValue)
-                default:
-                    XCTFail()
+        store.save(person, options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    XCTAssertEqual(error.description, MethodNotAllowedError.descriptionValue)
+                    XCTAssertEqual(error.debugDescription, MethodNotAllowedError.debugValue)
+                    
+                    XCTAssertEqual("\(error)", MethodNotAllowedError.descriptionValue)
+                    XCTAssertEqual("\(String(describing: error))", MethodNotAllowedError.descriptionValue)
+                    XCTAssertEqual("\(String(reflecting: error))", MethodNotAllowedError.debugValue)
+                    
+                    switch error {
+                    case .methodNotAllowed(_, _, let debug, let description):
+                        XCTAssertEqual(description, MethodNotAllowedError.descriptionValue)
+                        XCTAssertEqual(debug, MethodNotAllowedError.debugValue)
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -978,18 +1004,20 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .forceNetwork) { person, error in
-            XCTAssertNil(person)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                    XCTAssertEqual(description, "The method is not allowed for this resource.")
-                default:
-                    XCTFail()
+        store.find(options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .methodNotAllowed(_, _, let debug, let description):
+                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                        XCTAssertEqual(description, "The method is not allowed for this resource.")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -1277,6 +1305,37 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testFindMethodObjectIdNotMissingAndAllValidationStrategy() {
+        mockResponse(json: [
+            [
+                Entity.CodingKeys.entityId.rawValue : UUID().uuidString,
+                "name" : "Victor"
+            ]
+        ])
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        let store = DataStore<Person>.collection(.network, validationStrategy: .all)
+        
+        store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            switch result {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 1)
+                XCTAssertEqual(persons.first?.name, "Victor")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
     func testFindMethodObjectIdMissingAndZeroRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
@@ -1353,18 +1412,20 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find("sample-id", readPolicy: .forceNetwork) { person, error in
-            XCTAssertNil(person)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                    XCTAssertEqual(description, "The method is not allowed for this resource.")
-                default:
-                    XCTFail()
+        store.find("sample-id", options: Options(readPolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .methodNotAllowed(_, _, let debug, let description):
+                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                        XCTAssertEqual(description, "The method is not allowed for this resource.")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -1384,18 +1445,20 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.removeById("sample-id", writePolicy: .forceNetwork) { person, error in
-            XCTAssertNil(person)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                    XCTAssertEqual(description, "The method is not allowed for this resource.")
-                default:
-                    XCTFail()
+        store.remove(byId: "sample-id", options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .methodNotAllowed(_, _, let debug, let description):
+                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                        XCTAssertEqual(description, "The method is not allowed for this resource.")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -1469,18 +1532,20 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.remove(writePolicy: .forceNetwork) { count, error in
-            XCTAssertNil(count)
-            XCTAssertNotNil(error)
-            XCTAssertTrue(error is Kinvey.Error)
-            
-            if let error = error as? Kinvey.Error {
-                switch error {
-                case .methodNotAllowed(_, _, let debug, let description):
-                    XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
-                    XCTAssertEqual(description, "The method is not allowed for this resource.")
-                default:
-                    XCTFail()
+        store.remove(options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .methodNotAllowed(_, _, let debug, let description):
+                        XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
+                        XCTAssertEqual(description, "The method is not allowed for this resource.")
+                    default:
+                        XCTFail()
+                    }
                 }
             }
             
@@ -1520,7 +1585,7 @@ class NetworkStoreTests: StoreTestCase {
             ]
         ]
         
-        var _persons: [Person]? = nil
+        var _persons: AnyRandomAccessCollection<Person>? = nil
         
         do {
             mockResponse(json: mockObjs)
@@ -1530,13 +1595,14 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .forceNetwork) { (persons, error) in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(persons?.count, 2)
-                
-                _persons = persons
+            store.find(options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    _persons = persons
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -1556,11 +1622,13 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(persons, writePolicy: .forceNetwork) { count, error in
-                XCTAssertNil(count)
-                XCTAssertNotNil(error)
-                
-                XCTAssertTimeoutError(error)
+            store.remove(persons, options: Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertTimeoutError(error)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -1599,7 +1667,7 @@ class NetworkStoreTests: StoreTestCase {
             ]
         ]
         
-        var _persons: [Person]? = nil
+        var _persons: AnyRandomAccessCollection<Person>? = nil
         
         do {
             mockResponse(json: mockObjs)
@@ -1609,13 +1677,14 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .forceNetwork) { (persons, error) in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(persons?.count, 2)
-                
-                _persons = persons
+            store.find(options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    _persons = persons
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -1635,11 +1704,13 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.removeById(persons.map { $0.entityId! }, writePolicy: .forceNetwork) { count, error in
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(count, persons.count)
+            store.remove(byIds: persons.map { $0.entityId! }, options: Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, persons.count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -1678,7 +1749,7 @@ class NetworkStoreTests: StoreTestCase {
             ]
         ]
         
-        var _persons: [Person]? = nil
+        var _persons: AnyRandomAccessCollection<Person>? = nil
         
         do {
             mockResponse(json: mockObjs)
@@ -1688,13 +1759,14 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(readPolicy: .forceNetwork) { (persons, error) in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                XCTAssertEqual(persons?.count, 2)
-                
-                _persons = persons
+            store.find(options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    _persons = persons
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
                 
                 expectationFind?.fulfill()
             }
@@ -1714,11 +1786,13 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(byIds: persons.map { $0.entityId! }, writePolicy: .forceNetwork) { count, error in
-                XCTAssertNil(count)
-                XCTAssertNotNil(error)
-                
-                XCTAssertTimeoutError(error)
+            store.remove(byIds: persons.map { $0.entityId! }, options: Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success:
+                    XCTFail()
+                case .failure(let error):
+                    XCTAssertTimeoutError(error)
+                }
                 
                 expectationRemove?.fulfill()
             }
@@ -1737,11 +1811,13 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.remove(byIds: [], writePolicy: .forceNetwork) { count, error in
-            XCTAssertNil(count)
-            XCTAssertNotNil(error)
-            
-            XCTAssertEqual(error?.localizedDescription, "ids cannot be an empty array")
+        store.remove(byIds: [], options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertEqual(error.localizedDescription, "ids cannot be an empty array")
+            }
             
             expectationRemove?.fulfill()
         }
@@ -1799,11 +1875,13 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        store.removeAll(.forceNetwork) { count, error in
-            XCTAssertNil(count)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        store.removeAll(options: Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationRemove?.fulfill()
         }
@@ -1821,9 +1899,13 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationSave = expectation(description: "Save")
         
-        store.save(person) { person, error in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+        store.save(person) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
             
             expectationSave?.fulfill()
         }
@@ -1856,8 +1938,8 @@ class NetworkStoreTests: StoreTestCase {
                 readPolicy: .forceNetwork,
                 clientAppVersion: "1.0.0"
             )
-        ) { (result: Result<[Person], Swift.Error>) in
-            switch result {
+        ) {
+            switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
             case .failure(let error):
@@ -1890,8 +1972,8 @@ class NetworkStoreTests: StoreTestCase {
                     "someKey" : "someValue"
                 ]
             )
-        ) { (result: Result<[Person], Swift.Error>) in
-            switch result {
+        ) {
+            switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
             case .failure(let error):
@@ -1925,8 +2007,8 @@ class NetworkStoreTests: StoreTestCase {
         )
         store.find(
             options: options
-        ) { (result: Result<[Person], Swift.Error>) in
-            switch result {
+        ) {
+            switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
             case .failure(let error):
@@ -2029,7 +2111,7 @@ class NetworkStoreTests: StoreTestCase {
                 let personId = UUID().uuidString
                 mockResponse { (request) -> HttpResponse in
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[PersistableIdKey] = personId
+                    json[Entity.CodingKeys.entityId] = personId
                     mockJson = json
                     return HttpResponse(json: json)
                 }
@@ -2042,15 +2124,15 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationSave = expectation(description: "Save")
             
-            store.save(person, writePolicy: .forceNetwork) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.save(person, options: Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.name)
                     if let name = person.name {
                         XCTAssertEqual(name, "C++")
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2080,11 +2162,9 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, readPolicy: .forceNetwork) { persons, error in
-                XCTAssertNotNil(persons)
-                XCTAssertNil(error)
-                
-                if let persons = persons {
+            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let persons):
                     XCTAssertGreaterThan(persons.count, 0)
                     XCTAssertNotNil(persons.first)
                     if let person = persons.first {
@@ -2093,6 +2173,8 @@ class NetworkStoreTests: StoreTestCase {
                             XCTAssertEqual(name, "C++")
                         }
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -2126,7 +2208,7 @@ class NetworkStoreTests: StoreTestCase {
                 let personId = UUID().uuidString
                 mockResponse(completionHandler: { (request) -> HttpResponse in
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[PersistableIdKey] = personId
+                    json[Entity.CodingKeys.entityId] = personId
                     mockJson = json
                     return HttpResponse(json: json)
                 })
@@ -2139,16 +2221,16 @@ class NetworkStoreTests: StoreTestCase {
             
             weak var expectationSave = expectation(description: "Save")
             
-            store.save(person, writePolicy: .forceNetwork) { person, error in
-                XCTAssertNotNil(person)
-                XCTAssertNil(error)
-                
-                if let person = person {
+            store.save(person, options: Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let person):
                     XCTAssertNotNil(person.geolocation)
                     if let geolocation = person.geolocation {
                         XCTAssertEqual(geolocation.latitude, latitude)
                         XCTAssertEqual(geolocation.longitude, longitude)
                     }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -2173,16 +2255,16 @@ class NetworkStoreTests: StoreTestCase {
                 
                 weak var expectationFind = expectation(description: "Find")
                 
-                store.find(byId: personId, readPolicy: .forceNetwork) { person, error in
-                    XCTAssertNotNil(person)
-                    XCTAssertNil(error)
-                    
-                    if let person = person {
+                store.find(personId, options: Options(readPolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success(let person):
                         XCTAssertNotNil(person.geolocation)
                         if let geolocation = person.geolocation {
                             XCTAssertEqual(geolocation.latitude, latitude)
                             XCTAssertEqual(geolocation.longitude, longitude)
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationFind?.fulfill()
@@ -2231,11 +2313,9 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceNetwork) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNotNil(persons.first)
                         if let person = persons.first {
                             XCTAssertNotNil(person.geolocation)
@@ -2244,6 +2324,8 @@ class NetworkStoreTests: StoreTestCase {
                                 XCTAssertEqual(geolocation.longitude, longitude)
                             }
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2257,11 +2339,9 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceLocal) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNotNil(persons.first)
                         if let person = persons.first {
                             XCTAssertNotNil(person.geolocation)
@@ -2270,6 +2350,8 @@ class NetworkStoreTests: StoreTestCase {
                                 XCTAssertEqual(geolocation.longitude, longitude)
                             }
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2287,12 +2369,12 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceNetwork) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNil(persons.first)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2306,12 +2388,12 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceLocal) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNil(persons.first)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2380,11 +2462,9 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceNetwork) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNotNil(persons.first)
                         if let person = persons.first {
                             XCTAssertNotNil(person.geolocation)
@@ -2393,6 +2473,8 @@ class NetworkStoreTests: StoreTestCase {
                                 XCTAssertEqual(geolocation.longitude, longitude)
                             }
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2406,11 +2488,9 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceLocal) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNotNil(persons.first)
                         if let person = persons.first {
                             XCTAssertNotNil(person.geolocation)
@@ -2419,6 +2499,8 @@ class NetworkStoreTests: StoreTestCase {
                                 XCTAssertEqual(geolocation.longitude, longitude)
                             }
                         }
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2444,12 +2526,12 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceNetwork) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceNetwork)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNil(persons.first)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2463,12 +2545,12 @@ class NetworkStoreTests: StoreTestCase {
             do {
                 weak var expectationQuery = expectation(description: "Query")
                 
-                store.find(query, readPolicy: .forceLocal) { persons, error in
-                    XCTAssertNotNil(persons)
-                    XCTAssertNil(error)
-                    
-                    if let persons = persons {
+                store.find(query, options: Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
                         XCTAssertNil(persons.first)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationQuery?.fulfill()
@@ -2503,13 +2585,16 @@ class NetworkStoreTests: StoreTestCase {
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let (person, result) = results?.first {
-                XCTAssertNil(person.name)
-                XCTAssertNotNil(result["sum"] as? Int)
+        ) {
+            switch $0 {
+            case .success(let results):
+                XCTAssertGreaterThan(results.count, 0)
+                if let (person, result) = results.first {
+                    XCTAssertNil(person.name)
+                    XCTAssertNotNil(result["sum"] as? Int)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2616,13 +2701,16 @@ class NetworkStoreTests: StoreTestCase {
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let (person, result) = results?.first {
-                XCTAssertNotNil(person.name)
-                XCTAssertNotNil(result["sum"] as? Int)
+        ) {
+            switch $0 {
+            case .success(let results):
+                XCTAssertGreaterThan(results.count, 0)
+                if let (person, result) = results.first {
+                    XCTAssertNotNil(person.name)
+                    XCTAssertNotNil(result["sum"] as? Int)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2649,11 +2737,13 @@ class NetworkStoreTests: StoreTestCase {
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNil(results)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -2688,17 +2778,17 @@ class NetworkStoreTests: StoreTestCase {
             count: ["name"],
             countType: Int.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        ) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertGreaterThanOrEqual(results.count, 0)
                 
                 if let first = results.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.count, 32)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2725,11 +2815,13 @@ class NetworkStoreTests: StoreTestCase {
             count: ["name"],
             countType: Int.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNil(results)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -2765,17 +2857,17 @@ class NetworkStoreTests: StoreTestCase {
             sum: "age",
             sumType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
+        ) {
+            switch $0 {
+            case .success(let results):
                 XCTAssertGreaterThanOrEqual(results.count, 0)
                 
                 if let first = results.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.sum, 926.2)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2803,11 +2895,13 @@ class NetworkStoreTests: StoreTestCase {
             sum: "age",
             sumType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (results, error) in
-            XCTAssertNil(results)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -2845,17 +2939,17 @@ class NetworkStoreTests: StoreTestCase {
             avg: "age",
             avgType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNotNil(result)
-            XCTAssertNil(error)
-            
-            if let result = result {
+        ) {
+            switch $0 {
+            case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
                 
                 if let first = result.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.avg, 28.9375)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2883,11 +2977,13 @@ class NetworkStoreTests: StoreTestCase {
             avg: "age",
             avgType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNil(result)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -2923,17 +3019,17 @@ class NetworkStoreTests: StoreTestCase {
             min: "age",
             minType: Double.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNotNil(result)
-            XCTAssertNil(error)
-            
-            if let result = result {
+        ) {
+            switch $0 {
+            case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
                 
                 if let (person, min) = result.first {
                     XCTAssertNotNil(person.name)
                     XCTAssertEqual(min, 27.6)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -2961,11 +3057,13 @@ class NetworkStoreTests: StoreTestCase {
             min: "age",
             minType: Float.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNil(result)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -3001,17 +3099,17 @@ class NetworkStoreTests: StoreTestCase {
             max: "age",
             maxType: Float.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNotNil(result)
-            XCTAssertNil(error)
-            
-            if let result = result {
+        ) {
+            switch $0 {
+            case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
                 
                 if let (person, max) = result.first {
                     XCTAssertNotNil(person.name)
                     XCTAssertEqual(max, 30.5)
                 }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationGroup?.fulfill()
@@ -3039,11 +3137,13 @@ class NetworkStoreTests: StoreTestCase {
             max: "age",
             maxType: Float.self,
             condition: NSPredicate(format: "age > %@", NSNumber(value: 18))
-        ) { (result, error) in
-            XCTAssertNil(result)
-            XCTAssertNotNil(error)
-            
-            XCTAssertTimeoutError(error)
+        ) {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTimeoutError(error)
+            }
             
             expectationGroup?.fulfill()
         }
@@ -3062,7 +3162,7 @@ class NetworkStoreTests: StoreTestCase {
     func testRemoveByEmptyId() {
         let store = DataStore<Person>.collection(.network)
         expect { () -> Void in
-            store.remove(byId: "") { count, error in
+            store.remove(byId: "") { _ in
                 XCTFail()
             }
         }.to(throwAssertion())
@@ -3373,8 +3473,8 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testDataStoreCacheInstances() {
-        let ds1 = DataStore<Person>.collection(.network, deltaSet: true)
-        let ds2 = DataStore<Person>.collection(.network, deltaSet: false)
+        let ds1 = DataStore<Person>.collection(.network, options: Options(deltaSet: true))
+        let ds2 = DataStore<Person>.collection(.network, options: Options(deltaSet: false))
         XCTAssertTrue(ds1.deltaSet)
         XCTAssertFalse(ds2.deltaSet)
         
