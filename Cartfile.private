@@ -1,4 +1,4 @@
 github "kif-framework/KIF" ~> 3.6
 github "Quick/Nimble" ~> 7.0
 github "glock45/swifter" ~> 1.0
-github "marmelroy/Zip" ~> 1.1
+github "weichsel/ZIPFoundation"

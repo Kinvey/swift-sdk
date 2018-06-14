@@ -55,6 +55,7 @@
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
+		572B947B20D1E8B000E23F59 /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 572B947A20D1E8A900E23F59 /* ZIPFoundation.framework */; };
 		572C457B1C86690700A41935 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* Date.swift */; };
 		572F12E41EDF909B006E5D2B /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
@@ -64,7 +65,6 @@
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AB1D47C7EB00E4712A /* FileCache.swift */; };
 		573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AD1D47C7F800E4712A /* RealmFileCache.swift */; };
-		573CC99920D19A4A00BDF726 /* Zip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 573CC99820D19A4A00BDF726 /* Zip.framework */; };
 		573CC99D20D19AB900BDF726 /* CacheMigrationTestCaseData.zip in Resources */ = {isa = PBXBuildFile; fileRef = 573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */; };
 		573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573DD9841D11CCD6006ECF1C /* RealmCache.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
@@ -852,6 +852,10 @@
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionTaskRequest.swift; sourceTree = "<group>"; };
+		572B947A20D1E8A900E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
+		572B947C20D1E8D100E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
+		572B947D20D1E8FA00E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
+		572B947E20D1E91B00E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		573150971CBD8D910022A05C /* QueryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTest.swift; sourceTree = "<group>"; };
 		57373AB11ECCD8C6002842CE /* EntityTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTestCase.swift; sourceTree = "<group>"; };
@@ -862,9 +866,6 @@
 		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
 		573851AD1D47C7F800E4712A /* RealmFileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmFileCache.swift; sourceTree = "<group>"; };
-		573CC99820D19A4A00BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
-		573CC99A20D19A6700BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
-		573CC99B20D19A7D00BDF726 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Zip.framework; sourceTree = "<group>"; };
 		573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = CacheMigrationTestCaseData.zip; sourceTree = "<group>"; };
 		573DD9841D11CCD6006ECF1C /* RealmCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmCache.swift; sourceTree = "<group>"; };
 		573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpointTests.swift; sourceTree = "<group>"; };
@@ -1299,7 +1300,7 @@
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
 				5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */,
-				573CC99920D19A4A00BDF726 /* Zip.framework in Frameworks */,
+				572B947B20D1E8B000E23F59 /* ZIPFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1714,7 +1715,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				573CC99820D19A4A00BDF726 /* Zip.framework */,
+				572B947A20D1E8A900E23F59 /* ZIPFoundation.framework */,
 				577751381DF8B8EA006C98F1 /* XCGLogger.framework */,
 				5768BAA21FA070DC0040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BCFE1EC51F64000E5C52 /* PubNub.framework */,
@@ -1734,7 +1735,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
-				573CC99A20D19A6700BDF726 /* Zip.framework */,
+				572B947C20D1E8D100E23F59 /* ZIPFoundation.framework */,
 				5768BAA01FA070A60040AA0B /* ObjcExceptionBridging.framework */,
 				57E6BD001EC51F80000E5C52 /* PubNub.framework */,
 				577751391DF8B908006C98F1 /* XCGLogger.framework */,
@@ -1752,7 +1753,7 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
-				573CC99B20D19A7D00BDF726 /* Zip.framework */,
+				572B947D20D1E8FA00E23F59 /* ZIPFoundation.framework */,
 				57E6BD011EC51F92000E5C52 /* PubNub.framework */,
 				5777513A1DF8B914006C98F1 /* XCGLogger.framework */,
 				57B7687E1D10C0380086AA38 /* ObjectMapper.framework */,
@@ -1768,6 +1769,7 @@
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				572B947E20D1E91B00E23F59 /* ZIPFoundation.framework */,
 				57E6BD021EC51F9C000E5C52 /* PubNub.framework */,
 				5777513B1DF8B921006C98F1 /* XCGLogger.framework */,
 				57B7687F1D10C0490086AA38 /* ObjectMapper.framework */,
@@ -2828,7 +2830,7 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/Zip.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/ZIPFoundation.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
 			);
 			name = "Carthage Copy Frameworks";
