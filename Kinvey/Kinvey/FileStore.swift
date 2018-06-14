@@ -102,6 +102,7 @@ open class FileStore<FileType: File> {
 #if os(macOS)
     
     /// Uploads a `UIImage` in a PNG or JPEG format.
+    @available(*, deprecated: 3.17.0, message: "Please use FileStore.upload(_:image:imageRepresentation:options:completionHandler:) instead")
     @discardableResult
     open func upload(
         _ file: FileType,
