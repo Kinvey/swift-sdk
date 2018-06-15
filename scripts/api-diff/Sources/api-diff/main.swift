@@ -213,33 +213,33 @@ func convert(docs: [SwiftDocs]) -> (names: Set<String>, deprecations: Set<String
 let (oldSymbols, oldDeprecations) = convert(docs: oldDocs)
 let (newSymbols, newDeprecations) = convert(docs: newDocs)
 
-let deletions = oldSymbols.subtracting(newSymbols)
-let additions = newSymbols.subtracting(oldSymbols)
-let deprecations = newDeprecations.subtracting(oldDeprecations)
-let breakingChanges = oldDeprecations.subtracting(newDeprecations)
+let deletions = oldSymbols.subtracting(newSymbols).sorted()
+let additions = newSymbols.subtracting(oldSymbols).sorted()
+let deprecations = newDeprecations.subtracting(oldDeprecations).sorted()
+let breakingChanges = oldDeprecations.subtracting(newDeprecations).sorted()
 
 print("")
-print("\(deletions.count) Deletions:")
+print("  ### \(deletions.count) Deletions:")
 for deletion in deletions {
-    print("  \(deletion)")
+    print("  * `\(deletion)`")
 }
 
 print("")
-print("\(additions.count) Additions:")
+print("  ### \(additions.count) Additions:")
 for addition in additions {
-    print("  \(addition)")
+    print("  * `\(addition)`")
 }
 
 print("")
-print("\(deprecations.count) Deprecations:")
+print("  ### \(deprecations.count) Deprecations:")
 for deprecation in deprecations {
-    print("  \(deprecation)")
+    print("  * `\(deprecation)`")
 }
 
 print("")
-print("\(breakingChanges.count) Breaking Changes:")
+print("  ### \(breakingChanges.count) Breaking Changes:")
 for breakingChange in breakingChanges {
-    print("  \(breakingChange)")
+    print("  * `\(breakingChange)`")
 }
 
 print("")
