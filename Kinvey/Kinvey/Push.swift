@@ -284,6 +284,7 @@ open class Push {
 #endif
     
     /// Unregister the current device to receive push notifications.
+    @available(*, deprecated: 3.17.1, message: "Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
     open func unRegisterDeviceToken(
         _ completionHandler: BoolCompletionHandler? = nil
     ) {
@@ -302,6 +303,7 @@ open class Push {
     }
     
     /// Unregister the current device to receive push notifications.
+    @available(*, deprecated: 3.17.1, message: "Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
     open func unRegisterDeviceToken(
         _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {

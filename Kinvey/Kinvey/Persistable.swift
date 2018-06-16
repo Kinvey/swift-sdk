@@ -13,9 +13,9 @@ import CoreLocation
 import RealmSwift
 
 public typealias Map = ObjectMapper.Map
-
 public typealias Mappable = ObjectMapper.Mappable
 public typealias StaticMappable = ObjectMapper.StaticMappable
+public typealias TransformType = ObjectMapper.TransformType
 
 public typealias KinveyOptional = RealmSwift.RealmOptional
 
