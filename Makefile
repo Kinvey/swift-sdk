@@ -1,6 +1,6 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
-IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone X (11.3)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
+IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone X (11.4)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] == "*") print array[2]}')
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
