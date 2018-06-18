@@ -428,6 +428,7 @@ open class Client: Credential {
      call to the server.
      */
     @discardableResult
+    @available(*, deprecated: 3.17.1, message: "Please use Client.ping(completionHandler:) instead")
     public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
             switch result {

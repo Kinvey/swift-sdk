@@ -22,6 +22,7 @@ import ObjectiveC
 /// Class used to register and unregister a device to receive push notifications.
 open class Push {
     
+    @available(*, deprecated: 3.17.1, message: "Please use Result<Bool, Swift.Error> instead")
     public typealias BoolCompletionHandler = (Bool, Swift.Error?) -> Void
     
     fileprivate let client: Client
