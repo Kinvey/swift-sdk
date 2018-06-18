@@ -15,7 +15,7 @@ before_script:
 - date
 - brew update
 - brew install tree
-- brew upgrade carthage
+# - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
 - if [ ! -d $( md5 Cartfile.resolved | awk '{ print "Carthage/" $4 ".zip" }' ) ]; then
