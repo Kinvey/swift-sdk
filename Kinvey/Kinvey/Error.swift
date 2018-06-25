@@ -28,6 +28,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         /// Constant for 400 response where the paremeter value is out of range
         case parameterValueOutOfRange = "ParameterValueOutOfRange"
         
+        /// Constant for 400 response where the parameter value is a BL runtime error
+        case blRuntimeError = "BLRuntimeError"
+        
     }
     
     /// Error where Object ID is required.
@@ -98,6 +101,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error handling OAuth errors in redirect uri responses
     case micAuth(error: String, description: String)
     
+    /// Error when a BL (Business Logic) Runtime Error occurs
+    case blRuntime(debug: String, description: String, stack: String)
+    
     /// Error localized description.
     public var description: String {
         let bundle = Bundle(for: Client.self)
@@ -115,7 +121,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .entityNotFound(_, let description),
              .parameterValueOutOfRange(_, let description),
              .invalidCredentials(_, _, _, let description),
-             .micAuth(_, let description):
+             .micAuth(_, let description),
+             .blRuntime(_, let description, _):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -156,7 +163,8 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .resultSetSizeExceeded(let debug, _),
              .entityNotFound(let debug, _),
              .parameterValueOutOfRange(let debug, _),
-             .invalidCredentials(_, _, let debug, _):
+             .invalidCredentials(_, _, let debug, _),
+             .blRuntime(let debug, _, _):
             return debug
         default:
             return description

@@ -274,6 +274,19 @@ func buildError(
     {
         return Error.parameterValueOutOfRange(debug: debug, description: description)
     } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.Keys.blRuntimeError.rawValue,
+        let debug = json["debug"],
+        let description = json["description"],
+        let stack = json["stack"]
+    {
+        return Error.blRuntime(
+            debug: debug,
+            description: description,
+            stack: stack.replacingOccurrences(of: "\\n", with: "\n")
+        )
+    } else if let response = response,
         response.isNotFound,
         let json = json,
         json["error"] == Error.Keys.entityNotFound.rawValue,
