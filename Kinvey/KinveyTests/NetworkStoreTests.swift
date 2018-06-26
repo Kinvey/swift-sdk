@@ -3520,6 +3520,59 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testBLRuntimeError() {
+        signUp()
+        
+        let description = "The Business Logic script has a runtime error. See debug message for details."
+        let debug = "ReferenceError: asdadsa is not defined"
+        let stack = "ReferenceError: asdadsa is not defined\n  at onPreFetch (Person/onPreFetch:2:5)"
+        
+        mockResponse(
+            statusCode: 400,
+            json: [
+                "error": "BLRuntimeError",
+                "description": description,
+                "debug": debug,
+                "stack": stack.replacingOccurrences(of: "\n", with: "\\n")
+            ]
+        )
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let dataStore = DataStore<Person>.collection(.network)
+        
+        weak var expectationFind = expectation(description: "Find")
+        
+        dataStore.find() {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is Kinvey.Error)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                if let error = error as? Kinvey.Error {
+                    XCTAssertEqual(error.debugDescription, debug)
+                    XCTAssertEqual(error.description, description)
+                    switch error {
+                    case .blRuntime(let _debug, let _description, let _stack):
+                        XCTAssertEqual(_debug, debug)
+                        XCTAssertEqual(_description, description)
+                        XCTAssertEqual(_stack, stack)
+                    default:
+                        XCTFail(error.localizedDescription)
+                    }
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationFind = nil
+        }
+    }
+    
 }
 
 class Products: Entity {

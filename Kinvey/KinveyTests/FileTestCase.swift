@@ -61,56 +61,39 @@ class FileTestCase: StoreTestCase {
             count += 1
             let downloadGroup = DispatchGroup()
             
-            let url = URL(string: "https://www.youtube.com/get_video_info?video_id=6U1bsPCLLEg")!
-            let request = URLRequest(url: url)
-            downloadGroup.enter()
-            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-                if let data = data,
-                    let responseBody = String(data: data, encoding: .utf8),
-                    let queryItems = URLComponents(string: "parse://?\(responseBody)")?.queryItems
-                {
-                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerURL.path) {
-                        if let urlEncodedFmtStreamMap = queryItems.filter({ return $0.name == "url_encoded_fmt_stream_map" }).first?.value,
-                            let urlString = URLComponents(string: "parse://?\(urlEncodedFmtStreamMap)")?.queryItems?.filter({ return $0.name == "url" }).first?.value,
-                            let url = URL(string: urlString)
-                        {
-                            downloadGroup.enter()
-                            let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                                if let url = url,
-                                    let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                                    let fileSize = attrs[.size] as? UInt64,
-                                    fileSize > 0
-                                {
-                                    try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
-                                }
-                                
-                                downloadGroup.leave()
-                            }
-                            downloadTask.resume()
-                        }
+            if !FileManager.default.fileExists(atPath: self.caminandes3TrailerURL.path) {
+                let url = URL(string: "https://download.kinvey.com/iOS/travisci-cache/Caminandes+3+-+TRAILER.mp4")!
+                downloadGroup.enter()
+                let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                    if let url = url,
+                        let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                        let fileSize = attrs[.size] as? UInt64,
+                        fileSize > 0
+                    {
+                        try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
                     }
                     
-                    if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path) {
-                        let url = URL(string: "https://i.ytimg.com/vi/6U1bsPCLLEg/maxresdefault.jpg")!
-                        downloadGroup.enter()
-                        let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
-                            if let url = url,
-                                let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-                                let fileSize = attrs[.size] as? UInt64,
-                                fileSize > 0
-                            {
-                                try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
-                            }
-                            
-                            downloadGroup.leave()
-                        }
-                        downloadTask.resume()
-                    }
+                    downloadGroup.leave()
                 }
-                
-                downloadGroup.leave()
+                downloadTask.resume()
             }
-            dataTask.resume()
+            
+            if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path) {
+                let url = URL(string: "https://download.kinvey.com/iOS/travisci-cache/Caminandes+3+-+TRAILER.jpg")!
+                downloadGroup.enter()
+                let downloadTask = URLSession.shared.downloadTask(with: url) { url, response, error in
+                    if let url = url,
+                        let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                        let fileSize = attrs[.size] as? UInt64,
+                        fileSize > 0
+                    {
+                        try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
+                    }
+                    
+                    downloadGroup.leave()
+                }
+                downloadTask.resume()
+            }
             
             downloadGroup.wait()
         }

@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode9.3
+osx_image: xcode9.4
 before_script:
 - security create-keychain -p travis ios-build.keychain
 - security default-keychain -s ios-build.keychain
@@ -15,7 +15,7 @@ before_script:
 - date
 - brew update
 - brew install tree
-- brew upgrade carthage
+# - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
 - if [ ! -d $( md5 Cartfile.resolved | awk '{ print "Carthage/" $4 ".zip" }' ) ]; then

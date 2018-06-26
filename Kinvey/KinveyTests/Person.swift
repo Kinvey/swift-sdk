@@ -59,7 +59,7 @@ class Person: Entity {
         return "Person"
     }
     
-    override func propertyMapping(_ map: Map) {
+    override func propertyMapping(_ map: Kinvey.Map) {
         super.propertyMapping(map)
         
         personId <- ("personId", map[Entity.CodingKeys.entityId])
@@ -100,7 +100,7 @@ class PersonWithDifferentClassName: Entity {
         return "Person"
     }
     
-    override func propertyMapping(_ map: Map) {
+    override func propertyMapping(_ map: Kinvey.Map) {
         super.propertyMapping(map)
         
         personId <- ("personId", map[Entity.CodingKeys.entityId])
