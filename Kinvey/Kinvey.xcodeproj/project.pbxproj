@@ -1049,8 +1049,6 @@
 		57B0C20E1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		57B0C2101CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
-		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
-		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
 		57B257B820929621005B329C /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
 		57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
@@ -1829,12 +1827,10 @@
 		57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */ = {
 			isa = PBXGroup;
 			children = (
-				57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */,
-				57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */,
 				57A526541E43DEDD00B33A51 /* MongoDBPredicateAdaptor.swift */,
 			);
 			name = "NSPredicate-MongoDB-Adaptor";
-			path = "../../Carthage/Checkouts/NSPredicate-MongoDB-Adaptor";
+			path = "../../Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/Sources/MongoDBPredicateAdaptor";
 			sourceTree = "<group>";
 		};
 		57DB87E91C62B1CB002BA684 /* Extensions */ = {
