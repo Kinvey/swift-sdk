@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 
 let operationsQueue = OperationQueue(name: "Kinvey")
 
@@ -123,8 +122,8 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     func reduceToIdsLmts(_ jsonArray: [JsonDictionary]) -> [String : String] {
         var items = [String : String](minimumCapacity: jsonArray.count)
         for json in jsonArray {
-            if let id = json[Entity.CodingKeys.entityId] as? String,
-                let kmd = json[Entity.CodingKeys.metadata] as? JsonDictionary,
+            if let id = json[Entity.EntityCodingKeys.entityId] as? String,
+                let kmd = json[Entity.EntityCodingKeys.metadata] as? JsonDictionary,
                 let lmt = kmd[Metadata.CodingKeys.lastModifiedTime] as? String
             {
                 items[id] = lmt
@@ -155,19 +154,6 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
         }
         
         return persistable
-    }
-    
-    func merge(_ persistableArray: inout [T], jsonArray: [JsonDictionary]) {
-        if persistableArray.count == jsonArray.count && persistableArray.count > 0 {
-            for (index, _) in persistableArray.enumerated() {
-                merge(&persistableArray[index], json: jsonArray[index])
-            }
-        }
-    }
-    
-    func merge(_ persistable: inout T, json: JsonDictionary) {
-        let map = Map(mappingType: .fromJSON, JSON: json)
-        persistable.mapping(map: map)
     }
     
 }

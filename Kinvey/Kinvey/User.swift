@@ -8,24 +8,17 @@
 
 import Foundation
 import PromiseKit
-import ObjectMapper
 
 #if os(iOS) || os(OSX)
     import SafariServices
 #endif
 
 /// Class that represents an `User`.
-open class User: NSObject, Credential, Mappable {
+open class User: NSObject, Credential {
     
     /// Username Key.
     @available(*, deprecated: 3.17.0, message: "Please use User.CodingKeys.username instead")
     open static let PersistableUsernameKey = "username"
-    
-    public enum CodingKeys: String, CodingKey {
-        
-        case username
-        
-    }
     
     @available(*, deprecated: 3.17.0, message: "Please use Result<U, Swift.Error> instead")
     public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
@@ -55,6 +48,44 @@ open class User: NSObject, Credential, Mappable {
     
     /// `_socialIdentity` property of the user.
     open fileprivate(set) var socialIdentity: UserSocialIdentity?
+    
+    var socialIdentityDictionary: [String : Any]? {
+        get {
+            guard let socialIdentity = socialIdentity else {
+                return nil
+            }
+            var socialIdentityDictionary = [String : Any]()
+            if let facebook = socialIdentity.facebook {
+                socialIdentityDictionary[UserSocialIdentity.CodingKeys.facebook] = facebook
+            }
+            if let twitter = socialIdentity.twitter {
+                socialIdentityDictionary[UserSocialIdentity.CodingKeys.twitter] = twitter
+            }
+            if let googlePlus = socialIdentity.googlePlus {
+                socialIdentityDictionary[UserSocialIdentity.CodingKeys.googlePlus] = googlePlus
+            }
+            if let linkedIn = socialIdentity.linkedIn {
+                socialIdentityDictionary[UserSocialIdentity.CodingKeys.linkedIn] = linkedIn
+            }
+            if let kinvey = socialIdentity.kinvey {
+                socialIdentityDictionary[UserSocialIdentity.CodingKeys.kinvey] = kinvey
+            }
+            return socialIdentityDictionary
+        }
+        set {
+            guard let newValue = newValue else {
+                self.socialIdentity = nil
+                return
+            }
+            var socialIdentity = UserSocialIdentity()
+            socialIdentity.facebook = newValue[UserSocialIdentity.CodingKeys.facebook] as? [String : Any]
+            socialIdentity.twitter = newValue[UserSocialIdentity.CodingKeys.twitter] as? [String : Any]
+            socialIdentity.googlePlus = newValue[UserSocialIdentity.CodingKeys.googlePlus] as? [String : Any]
+            socialIdentity.linkedIn = newValue[UserSocialIdentity.CodingKeys.linkedIn] as? [String : Any]
+            socialIdentity.kinvey = newValue[UserSocialIdentity.CodingKeys.kinvey] as? [String : Any]
+            self.socialIdentity = socialIdentity
+        }
+    }
     
     /// `username` property of the user.
     open var username: String?
@@ -122,7 +153,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
+                    let data = data,
+                    let user = try? client.jsonParser.parseUser(U.self, from: data)
                 {
                     client.activeUser = user
                     resolver.fulfill(user)
@@ -320,7 +352,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
+                    let data = data,
+                    let user = try? client.jsonParser.parseUser(U.self, from: data)
                 {
                     resolver.fulfill(user)
                 } else if let response = response,
@@ -335,7 +368,8 @@ open class User: NSObject, Credential, Mappable {
                     request.execute { (data, response, error) in
                         if let response = response,
                             response.isOK,
-                            let user = client.responseParser.parseUser(data) as? U
+                            let data = data,
+                            let user = try? client.jsonParser.parseUser(U.self, from: data)
                         {
                             resolver.fulfill(user)
                         } else {
@@ -714,7 +748,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data),
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data),
                     let usernameExists = json["usernameExists"] as? Bool
                 {
                     resolver.fulfill(usernameExists)
@@ -785,7 +820,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
+                    let data = data,
+                    let user = try? client.jsonParser.parseUser(U.self, from: data)
                 {
                     resolver.fulfill(user)
                 } else {
@@ -817,7 +853,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let user = client.responseParser.parseUsers(data) as? [U]
+                    let data = data,
+                    let user = try? client.jsonParser.parseUsers(U.self, from: data)
                 {
                     resolver.fulfill(user)
                 } else {
@@ -847,10 +884,10 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = self.client.responseParser.parse(data)
+                    let data = data,
+                    let user = try? self.client.jsonParser.parseUser(type(of: self), from: data)
                 {
-                    let map = Map(mappingType: .fromJSON, JSON: json)
-                    self.mapping(map: map)
+                    self.refresh(anotherUser: user)
                     if self == self.client.activeUser {
                         self.client.activeUser = self
                     }
@@ -881,29 +918,61 @@ open class User: NSObject, Credential, Mappable {
     }
     
     /// Constructor that validates if the map contains at least the `userId`.
-    public required convenience init?(map: Map) {
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    public required init?(map: Map) {
         var userId: String?
         var acl: Acl?
         var metadata: UserMetadata?
         
-        userId <- map[Entity.CodingKeys.entityId]
-        guard let userIdValue = userId else {
+        client = map.context as? Client ?? sharedClient
+        userId <- ("userId", map[Entity.EntityCodingKeys.entityId])
+        guard let _ = userId else {
             return nil
         }
         
-        acl <- map[Entity.CodingKeys.acl]
-        metadata <- map[Entity.CodingKeys.metadata]
-        self.init(userId: userIdValue, acl: acl, metadata: metadata)
+        acl <- ("acl", map[Entity.EntityCodingKeys.acl])
+        metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
+        super.init()
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        client = decoder.userInfo[CodingUserInfoKey(rawValue: "client")!] as? Client ?? sharedClient
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        _userId = try container.decode(String.self, forKey: .userId)
+        acl = try container.decodeIfPresent(Acl.self, forKey: .acl)
+        metadata = try container.decodeIfPresent(UserMetadata.self, forKey: .metadata)
+        username = try container.decodeIfPresent(String.self, forKey: .username)
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        super.init()
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(_userId, forKey: .userId)
+        try container.encodeIfPresent(acl, forKey: .acl)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
+        try container.encodeIfPresent(username, forKey: .username)
+        try container.encodeIfPresent(email, forKey: .email)
+    }
+    
+    open func refresh<UserType: User>(anotherUser: UserType) {
+        _userId = anotherUser.userId
+        acl = anotherUser.acl
+        metadata = anotherUser.metadata
+        socialIdentity = anotherUser.socialIdentity
+        username = anotherUser.username
+        email = anotherUser.email
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     open func mapping(map: Map) {
-        _userId <- map[Entity.CodingKeys.entityId]
-        acl <- map[Entity.CodingKeys.acl]
-        metadata <- map[Entity.CodingKeys.metadata]
-        socialIdentity <- map["_socialIdentity"]
-        username <- map["username"]
-        email <- map["email"]
+        _userId <- ("_userId", map[Entity.EntityCodingKeys.entityId])
+        acl <- ("acl", map[Entity.EntityCodingKeys.acl])
+        metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
+        socialIdentity <- ("socialIdentity", map["_socialIdentity"])
+        username <- ("username", map["username"])
+        email <- ("email", map["email"])
     }
     
     /// Sign out the current active user.
@@ -975,7 +1044,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let user = client.responseParser.parseUser(data) as? U
+                    let data = data,
+                    let user = try? client.jsonParser.parseUser(U.self, from: data)
                 {
                     if user.userId == client.activeUser?.userId {
                         self.client.activeUser = user
@@ -1032,7 +1102,8 @@ open class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let users: [U] = client.responseParser.parseUsers(data)
+                    let data = data,
+                    let users = try? client.jsonParser.parseUsers(U.self, from: data)
                 {
                     resolver.fulfill(users)
                 } else {
@@ -1064,7 +1135,7 @@ open class User: NSObject, Credential, Mappable {
                 if let response = response,
                     response.isOK,
                     let data = data,
-                    let json = self.client.responseParser.parse(data),
+                    let json = try? self.client.jsonParser.parseDictionary(from: data),
                     let subscribeKey = json["subscribeKey"] as? String,
                     let publishKey = json["publishKey"] as? String,
                     let userChannelGroup = json["userChannelGroup"] as? String
@@ -1502,6 +1573,54 @@ open class User: NSObject, Credential, Mappable {
 
 }
 
+extension User {
+    
+    public enum CodingKeys: String, CodingKey {
+        
+        case userId = "_id"
+        case acl = "_acl"
+        case metadata = "_kmd"
+        case socialIdentity = "_socialIdentity"
+        case username
+        case email
+        
+    }
+    
+}
+
+extension User: JSONDecodable {
+    
+    public class func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    public class func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    public class func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    public func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
+    }
+    
+}
+
+extension User : JSONEncodable {
+    
+    public func encode() throws -> [String : Any] {
+        return try encodeJSONEncodable()
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension User: Mappable {
+}
+
 extension User /* Hashable */ {
 
     open override var hashValue: Int {
@@ -1532,7 +1651,7 @@ extension User /* Equatable */ {
 }
 
 /// Holds the Social Identities attached to a specific User
-public struct UserSocialIdentity : StaticMappable {
+public struct UserSocialIdentity {
     
     /// Facebook social identity
     public var facebook: [String : Any]?
@@ -1549,16 +1668,31 @@ public struct UserSocialIdentity : StaticMappable {
     /// Kinvey MIC social identity
     public var kinvey: [String : Any]?
     
+    enum CodingKeys: String, CodingKey {
+        
+        case facebook
+        case twitter
+        case googlePlus = "google"
+        case linkedIn
+        case kinvey = "kinveyAuth"
+        
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension UserSocialIdentity : StaticMappable {
+    
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return UserSocialIdentity()
     }
     
     public mutating func mapping(map: Map) {
-        facebook <- map[AuthSource.facebook.rawValue]
-        twitter <- map[AuthSource.twitter.rawValue]
-        googlePlus <- map[AuthSource.googlePlus.rawValue]
-        linkedIn <- map[AuthSource.linkedIn.rawValue]
-        kinvey <- map[AuthSource.kinvey.rawValue]
+        facebook <- ("facebook", map[AuthSource.facebook.rawValue])
+        twitter <- ("twitter", map[AuthSource.twitter.rawValue])
+        googlePlus <- ("googlePlus", map[AuthSource.googlePlus.rawValue])
+        linkedIn <- ("linkedIn", map[AuthSource.linkedIn.rawValue])
+        kinvey <- ("kinvey", map[AuthSource.kinvey.rawValue])
     }
     
 }

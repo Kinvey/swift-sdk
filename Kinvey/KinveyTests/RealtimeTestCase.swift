@@ -1017,7 +1017,7 @@ class RealtimeTestCase: KinveyTestCase {
                     case .success(let acl):
                         XCTAssertEqual(acl.subscribers.first, user.userId)
                     case .failure(let error):
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationGetAccess?.fulfill()

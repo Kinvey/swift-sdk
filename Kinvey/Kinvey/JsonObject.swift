@@ -19,7 +19,7 @@ func +=(lhs: inout JsonDictionary, rhs: JsonDictionary) {
 extension Dictionary where Key: ExpressibleByStringLiteral, Value: Any {
     
     fileprivate func translateValue(_ value: Any) -> Any {
-        if let query = value as? Query, let predicate = query.predicate, let value = predicate.json {
+        if let query = value as? Query, let predicate = query.predicate, let value = predicate.mongoDBQuery {
             return value
         } else if let dictionary = value as? JsonDictionary {
             var translated = JsonDictionary()

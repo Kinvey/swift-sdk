@@ -9,35 +9,6 @@
 import Foundation
 import Realm
 import RealmSwift
-import ObjectMapper
-
-class AclTransformType: TransformType {
-    
-    typealias Object = [String]
-    typealias JSON = String
-    
-    func transformFromJSON(_ value: Any?) -> [String]? {
-        if let value = value as? String,
-            let data = value.data(using: String.Encoding.utf8),
-            let json = try? JSONSerialization.jsonObject(with: data),
-            let array = json as? [String]
-        {
-            return array
-        }
-        return nil
-    }
-    
-    func transformToJSON(_ value: [String]?) -> String? {
-        if let value = value,
-            let data = try? JSONSerialization.data(withJSONObject: value),
-            let json = String(data: data, encoding: String.Encoding.utf8)
-        {
-            return json
-        }
-        return nil
-    }
-    
-}
 
 /// This class represents the ACL (Access Control List) for a record.
 public final class Acl: Object, BuilderType {
@@ -118,12 +89,61 @@ public final class Acl: Object, BuilderType {
 
 }
 
+extension Acl: JSONDecodable {
+    
+    public class func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    public class func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    public class func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    public func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
+    }
+    
+}
+
+extension Acl: Decodable {
+    
+    public convenience init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let creator = try container.decode(String.self, forKey: .creator)
+        self.init(creator: creator)
+        globalRead.value = try container.decodeIfPresent(Bool.self, forKey: .globalRead)
+        globalWrite.value = try container.decodeIfPresent(Bool.self, forKey: .globalWrite)
+        readers = try container.decodeIfPresent([String].self, forKey: .readers)
+        writers = try container.decodeIfPresent([String].self, forKey: .writers)
+    }
+    
+}
+
+extension Acl: Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(creator, forKey: .creator)
+        try container.encodeIfPresent(globalRead.value, forKey: .globalRead)
+        try container.encodeIfPresent(globalWrite.value, forKey: .globalWrite)
+        try container.encodeIfPresent(readers, forKey: .readers)
+        try container.encodeIfPresent(writers, forKey: .writers)
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension Acl: Mappable {
     
     /// Constructor that validates if the map contains at least the creator.
     public convenience init?(map: Map) {
         var creator: String?
-        creator <- map[Acl.CodingKeys.creator]
+        creator <- (Acl.CodingKeys.creator.rawValue, map[Acl.CodingKeys.creator])
         if let creator = creator {
             self.init(creator: creator)
         } else {

@@ -42,7 +42,7 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")
@@ -96,7 +96,7 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")

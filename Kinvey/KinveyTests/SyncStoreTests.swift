@@ -35,7 +35,7 @@ class SyncStoreTests: StoreTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -795,11 +795,11 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = UUID().uuidString
-                    json[Entity.CodingKeys.acl] = [
+                    json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                    json[Entity.EntityCodingKeys.acl] = [
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[Entity.CodingKeys.metadata] = [
+                    json[Entity.EntityCodingKeys.metadata] = [
                         Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                         Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
@@ -854,11 +854,11 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = UUID().uuidString
-                    json[Entity.CodingKeys.acl] = [
+                    json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                    json[Entity.EntityCodingKeys.acl] = [
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[Entity.CodingKeys.metadata] = [
+                    json[Entity.EntityCodingKeys.metadata] = [
                         Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                         Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
@@ -995,11 +995,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -1064,11 +1064,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -1118,11 +1118,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -2622,6 +2622,27 @@ class SyncStoreTests: StoreTestCase {
             func mapping(map: Map) {
             }
             
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return [NotEntityPersistable]() as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            func refresh(from dictionary: [String : Any]) throws {
+                var _self = self
+                try _self.refreshJSONDecodable(from: dictionary)
+            }
+            
+            func encode() throws -> [String : Any] {
+                return [:]
+            }
+            
         }
         
         expect { () -> Void in
@@ -2643,6 +2664,25 @@ class SyncStoreTests: StoreTestCase {
             }
             
             func mapping(map: Map) {
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                 return [NotEntityPersistable]() as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            func refresh(from dictionary: [String : Any]) throws {
+            }
+            
+            func encode() throws -> [String : Any] {
+                return [:]
             }
             
         }

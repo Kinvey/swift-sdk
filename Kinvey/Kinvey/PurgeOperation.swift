@@ -38,6 +38,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                 case .update:
                     if let objectId = pendingOperation.objectId {
                         promises.append(Promise<Void> { resolver in
+                            let client = options?.client ?? self.client
                             let request = client.networkRequestFactory.buildAppDataGetById(
                                 collectionName: T.collectionName(),
                                 id: objectId,
@@ -46,12 +47,12 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                             )
                             requests.addRequest(request)
                             request.execute() { data, response, error in
-                                if let response = response, response.isOK,
-                                    let json = self.client.responseParser.parse(data)
+                                if let response = response,
+                                    response.isOK,
+                                    let data = data,
+                                    let persistable = try? client.jsonParser.parseObject(T.self, from: data)
                                 {
-                                    if let cache = self.cache, let persistable = T(JSON: json) {
-                                        cache.save(entity: persistable)
-                                    }
+                                    self.cache?.save(entity: persistable)
                                     self.sync?.removePendingOperation(pendingOperation)
                                     resolver.fulfill(())
                                 } else {

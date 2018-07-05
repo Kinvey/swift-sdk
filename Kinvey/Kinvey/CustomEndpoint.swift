@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 import PromiseKit
 
 /// Class to interact with a custom endpoint in the backend.
@@ -17,6 +16,7 @@ open class CustomEndpoint {
         
         case json(JsonDictionary)
         case object(BaseMappable)
+        case jsonEncodable(JSONEncodable)
         
     }
     
@@ -37,6 +37,7 @@ open class CustomEndpoint {
          Sets the `value` enumeration to any Mappable object.
          - parameter object: Mappable object to be used as a parameter value
          */
+        @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
         public init(_ object: Mappable) {
             value = ParamsEnum.object(object)
         }
@@ -45,8 +46,13 @@ open class CustomEndpoint {
          Sets the `value` enumeration to any StaticMappable struct.
          - parameter object: StaticMappable struct to be used as a parameter value
          */
+        @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
         public init(_ object: StaticMappable) {
             value = ParamsEnum.object(object)
+        }
+        
+        public init(_ object: JSONEncodable) {
+            value = ParamsEnum.jsonEncodable(object)
         }
         
     }
@@ -74,6 +80,8 @@ open class CustomEndpoint {
                 request.setBody(json: json.toJson())
             case .object(let object):
                 request.setBody(json: object.toJSON().toJson())
+            case .jsonEncodable(let jsonEncodable):
+                request.setBody(json: try! jsonEncodable.encode())
             }
         }
         request.request.setValue(nil, forHTTPHeaderField: KinveyHeaderField.requestId)
@@ -142,7 +150,8 @@ open class CustomEndpoint {
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data)
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data)
                 {
                     resolver.fulfill(json)
                 } else {
@@ -218,7 +227,8 @@ open class CustomEndpoint {
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parseArray(data)
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionaries(from: data)
                 {
                     resolver.fulfill(json)
                 } else {
@@ -243,7 +253,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<T>? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> {
+    ) -> AnyRequest<Result<T, Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -266,7 +276,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> {
+    ) -> AnyRequest<Result<T, Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -279,12 +289,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(
+    open static func execute<T>(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> {
+    ) -> AnyRequest<Result<T, Swift.Error>> where T : JSONDecodable {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<T, Swift.Error>>!
         Promise<T> { resolver in
@@ -296,7 +306,8 @@ open class CustomEndpoint {
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
-                    let obj: T = client.responseParser.parse(data)
+                    let data = data,
+                    let obj = try? client.jsonParser.parseObject(T.self, from: data)
                 {
                     resolver.fulfill(obj)
                 } else {
@@ -319,7 +330,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[T]>? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> {
+    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -342,7 +353,7 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> {
+    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -355,12 +366,12 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T: BaseMappable>(
+    open static func execute<T>(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
         completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> {
+    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
         let client = options?.client ?? sharedClient
         var request: AnyRequest<Result<[T], Swift.Error>>!
         Promise<[T]> { resolver in
@@ -372,7 +383,8 @@ open class CustomEndpoint {
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
-                    let objArray: [T] = client.responseParser.parse(data)
+                    let data = data,
+                    let objArray = try? client.jsonParser.parseObjects(T.self, from: data)
                 {
                     resolver.fulfill(objArray)
                 } else {

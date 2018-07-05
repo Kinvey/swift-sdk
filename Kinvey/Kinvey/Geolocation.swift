@@ -8,12 +8,11 @@
 
 import Foundation
 import RealmSwift
-import ObjectMapper
 import CoreLocation
 import MapKit
 
 /// Class that represents a 2D geolocation with latitude and longitude
-public final class GeoPoint: Object {
+public final class GeoPoint: Object, Codable {
     
     /// Specifies the north–south position of a point
     @objc
@@ -58,8 +57,10 @@ public final class GeoPoint: Object {
  Make the GeoPoint implement Mappable, so we can serialize and deserialize
  GeoPoint
  */
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension GeoPoint: Mappable {
     
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public convenience init?(map: Map) {
         guard let _: Double = map["latitude"].value(), let _: Double = map["longitude"].value() else {
             return nil
@@ -67,53 +68,12 @@ extension GeoPoint: Mappable {
         self.init()
     }
     
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public func mapping(map: Map) {
-        latitude <- map["latitude"]
-        longitude <- map["longitude"]
+        latitude <- ("latitude", map["latitude"])
+        longitude <- ("longitude", map["longitude"])
     }
     
-}
-
-class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
-    
-    init() {
-        super.init(fromJSON: { (array) -> GeoPoint? in
-            if let array = array, array.count == 2 {
-                return GeoPoint(array)
-            }
-            return nil
-        }, toJSON: { (geopoint) -> [CLLocationDegrees]? in
-            if let geopoint = geopoint {
-                return [geopoint.longitude, geopoint.latitude]
-            }
-            return nil
-        })
-    }
-    
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-public func <- (left: inout GeoPoint, right: (String, Map)) {
-    let (right, map) = right
-    let transform = GeoPointTransform()
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-public func <- (left: inout GeoPoint?, right: (String, Map)) {
-    let (right, map) = right
-    let transform = GeoPointTransform()
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-public func <- (left: inout GeoPoint!, right: (String, Map)) {
-    let (right, map) = right
-    let transform = GeoPointTransform()
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
 }
 
 func ==(lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {

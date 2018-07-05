@@ -9,7 +9,7 @@
 import Foundation
 import ObjectMapper
 
-struct SongRecommendation: StaticMappable {
+struct SongRecommendation: Codable, StaticMappable {
     
     var name: String?
     var artist: String?

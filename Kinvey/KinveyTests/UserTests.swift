@@ -357,7 +357,8 @@ class UserTests: KinveyTestCase {
                 "creator" : UUID().uuidString
             ]
         ]
-        let user = User(JSON: json)
+        
+        let user = try? client.jsonParser.parseUser(User.self, from: json)
         
         XCTAssertNotNil(user)
         
@@ -422,7 +423,7 @@ class UserTests: KinveyTestCase {
         
         do {
             if useMockData {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 if var kmd = json["_kmd"] as? JsonDictionary {
                     kmd["authtoken"] = UUID().uuidString
                     json["_kmd"] = kmd
@@ -639,7 +640,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             if useMockData {
-                mockResponse(json: user.toJSON())
+                mockResponse(json: try! client.jsonParser.toJSON(user))
             }
             defer {
                 if useMockData {
@@ -728,7 +729,7 @@ class UserTests: KinveyTestCase {
             XCTAssertNil(user.email)
             
             if useMockData {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 mockResponse(json: json)
             }
             defer {
@@ -1523,7 +1524,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1581,7 +1582,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1680,7 +1681,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1809,7 +1810,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             do {
                 if useMockData {
-                    var json = user.toJSON()
+                    var json = try! client.jsonParser.toJSON(user)
                     if var kmd = json["_kmd"] as? JsonDictionary {
                         kmd["authtoken"] = UUID().uuidString
                         json["_kmd"] = kmd
@@ -2021,7 +2022,7 @@ class UserTests: KinveyTestCase {
                 user.username = nil
                 
                 if useMockData {
-                    mockResponse(json: user.toJSON())
+                    mockResponse(json: try! client.jsonParser.toJSON(user))
                 }
                 defer {
                     if useMockData {
@@ -2118,7 +2119,7 @@ class UserTests: KinveyTestCase {
             
             do {
                 if useMockData {
-                    mockResponse(json: user.toJSON())
+                    mockResponse(json: try! client.jsonParser.toJSON(user))
                 }
                 defer {
                     if useMockData { setURLProtocol(nil) }
@@ -3676,7 +3677,7 @@ class UserTests: KinveyTestCase {
     }
     
     func testUserWithoutUserID() {
-        XCTAssertNil(User(JSON: ["username" : "Test"]))
+        XCTAssertNil(try? client.jsonParser.parseUser(User.self, from: ["username" : "Test"]))
     }
 
 }
@@ -3723,18 +3724,21 @@ extension UserTests {
         tester().wait(forTimeInterval: 1)
         
         let userId = UUID().uuidString
-        let user = User(JSON: [
-            "_id" : userId,
-            "username" : UUID().uuidString,
-            "_kmd" : [
-                "lmt" : Date().toString(),
-                "ect" : Date().toString(),
-                "authtoken" : UUID().uuidString
-            ],
-            "_acl" : [
-                "creator" : UUID().uuidString
+        let user = try? client.jsonParser.parseUser(
+            User.self,
+            from: [
+                "_id" : userId,
+                "username" : UUID().uuidString,
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString(),
+                    "authtoken" : UUID().uuidString
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ]
             ]
-        ])
+        )
         XCTAssertNotNil(user)
         
         NotificationCenter.default.post(
@@ -3942,18 +3946,21 @@ extension UserTests {
         tester().wait(forTimeInterval: 1)
         
         let userId = UUID().uuidString
-        let user = User(JSON: [
-            "_id" : userId,
-            "username" : UUID().uuidString,
-            "_kmd" : [
-                "lmt" : Date().toString(),
-                "ect" : Date().toString(),
-                "authtoken" : UUID().uuidString
-            ],
-            "_acl" : [
-                "creator" : UUID().uuidString
+        let user = try? client.jsonParser.parseUser(
+            User.self,
+            from: [
+                "_id" : userId,
+                "username" : UUID().uuidString,
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString(),
+                    "authtoken" : UUID().uuidString
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ]
             ]
-        ])
+        )
         XCTAssertNotNil(user)
         
         NotificationCenter.default.post(
@@ -4476,7 +4483,7 @@ extension UserTests {
             XCTAssertTrue(notification.object is User)
             if let user = notification.object as? User {
                 XCTAssertEqual(user.username, "test")
-                MockKinveyBackend.user[user.userId] = user.toJSON()
+                MockKinveyBackend.user[user.userId] = try! self.client.jsonParser.toJSON(user)
             }
             return true
         }
@@ -4554,7 +4561,7 @@ extension UserTests {
             XCTAssertTrue(notification.object is User)
             if let user = notification.object as? User {
                 XCTAssertEqual(user.username, "test")
-                MockKinveyBackend.user[user.userId] = user.toJSON()
+                MockKinveyBackend.user[user.userId] = try! client.jsonParser.toJSON(user)
             }
             return true
         }

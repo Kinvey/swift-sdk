@@ -9,10 +9,9 @@
 import Foundation
 import RealmSwift
 import Realm
-import ObjectMapper
 
 /// Class that represents a file in the backend holding all metadata of the file, but don't hold the data itself.
-open class File: Object, Mappable {
+open class File: Object {
     
     /// `_id` property of the file.
     @objc
@@ -122,6 +121,7 @@ open class File: Object, Mappable {
     
     var resumeDownloadData: Data?
     
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public convenience required init?(map: Map) {
         self.init()
     }
@@ -132,18 +132,19 @@ open class File: Object, Mappable {
         block(self)
     }
     
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     open func mapping(map: Map) {
-        fileId <- map[Entity.CodingKeys.entityId]
-        acl <- map[Entity.CodingKeys.acl]
-        metadata <- map[Entity.CodingKeys.metadata]
-        publicAccessible <- map["_public"]
-        fileName <- map["_filename"]
-        mimeType <- map["mimeType"]
-        size.value <- map["size"]
-        upload <- map["_uploadURL"]
-        download <- map["_downloadURL"]
-        expiresAt <- (map["_expiresAt"], KinveyDateTransform())
-        uploadHeaders <- map["_requiredHeaders"]
+        fileId <- ("fileId", map[Entity.EntityCodingKeys.entityId])
+        acl <- ("acl", map[Entity.EntityCodingKeys.acl])
+        metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
+        publicAccessible <- ("publicAccessible", map["_public"])
+        fileName <- ("fileName", map["_filename"])
+        mimeType <- ("mimeType", map["mimeType"])
+        size.value <- ("size", map["size"])
+        upload <- ("upload", map["_uploadURL"])
+        download <- ("download", map["_downloadURL"])
+        expiresAt <- ("expiresAt", map["_expiresAt"], KinveyDateTransform())
+        uploadHeaders <- ("uploadHeaders", map["_requiredHeaders"])
     }
     
     open override class func primaryKey() -> String? {
@@ -162,4 +163,8 @@ open class File: Object, Mappable {
         return props
     }
     
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension File : Mappable {
 }

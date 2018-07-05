@@ -38,7 +38,7 @@ class ForgotToCallSuperEntity2: Entity {
     }
     
     override func propertyMapping(_ map: Map) {
-        myId <- ("myId", map[CodingKeys.entityId])
+        myId <- ("myId", map[EntityCodingKeys.entityId])
         myProperty <- ("myProperty", map["myProperty"])
     }
     
@@ -61,6 +61,25 @@ class ForgotToCallSuperPersistable: Persistable {
     
     func mapping(map: Map) {
         myProperty <- ("myProperty", map["myProperty"])
+    }
+    
+    static func decode<T>(from data: Data) throws -> T {
+        return ForgotToCallSuperPersistable() as! T
+    }
+    
+    static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return [ForgotToCallSuperPersistable]() as! [T]
+    }
+    
+    static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return ForgotToCallSuperPersistable() as! T
+    }
+    
+    func refresh(from dictionary: [String : Any]) throws {
+    }
+    
+    func encode() throws -> [String : Any] {
+        return [:]
     }
     
 }
