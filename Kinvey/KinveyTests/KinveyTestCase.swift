@@ -353,7 +353,7 @@ class KinveyTestCase: XCTestCase {
         super.setUp()
         
         originalLogLevel = Kinvey.logLevel
-        Kinvey.logLevel = .verbose
+        Kinvey.logLevel = .error
         
         if KinveyTestCase.appInitialize == KinveyTestCase.appInitializeDevelopment {
             initializeDevelopment()

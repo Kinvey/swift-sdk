@@ -308,3 +308,29 @@ func buildError(
         data: data
     )
 }
+
+extension Sequence {
+    
+    func forEachAutoreleasepool(_ block: (Element) throws -> Swift.Void) rethrows {
+        try forEach { x in
+            try autoreleasepool {
+                try block(x)
+            }
+        }
+    }
+    
+}
+
+fileprivate func autoreleasepool(_ condition: @autoclosure () -> Bool) -> Bool {
+    return autoreleasepool {
+        return condition()
+    }
+}
+
+func whileAutoreleasepool(_ condition: @autoclosure () -> Bool, _ block: () throws -> Void) rethrows {
+    while autoreleasepool(condition) {
+        try autoreleasepool {
+            try block()
+        }
+    }
+}

@@ -1828,6 +1828,72 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testRemoveAllMemoryLeak() {
+        let reportMemory1 = reportMemory()!
+        
+        let count = 50_000
+        let range = 1 ... count
+        let json = range.map { i in
+            Person {
+                $0.personId = UUID().uuidString
+                $0.age = i
+            }.toJSON()
+        }
+        mockResponse(json: json)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let reportMemory2 = reportMemory()!
+        XCTAssertTrue(reportMemory2 - reportMemory1 < 1024 * 1024 * 50) // 50 Mb
+        
+        autoreleasepool {
+            weak var expectationPull = expectation(description: "Pull")
+            
+            store.pull() {
+                self.assertThread()
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        let reportMemory3 = reportMemory()!
+        XCTAssertTrue(reportMemory3 - reportMemory2 < 1024 * 1024 * 50) // 50 Mb
+        
+        autoreleasepool {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            store.removeAll() {
+                self.assertThread()
+                switch $0 {
+                case .success(let count):
+                    XCTAssertEqual(count, count)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        
+        let reportMemory4 = reportMemory()!
+        XCTAssertTrue(reportMemory3 - reportMemory2 < 1024 * 1024 * 50) // 50 Mb
+    }
+    
     func testExpiredTTL() {
         store.ttl = 1.seconds
         
