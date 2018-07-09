@@ -1829,9 +1829,10 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testRemoveAllMemoryLeak() {
+        let timer = startLogPolling()
         let reportMemory1 = reportMemory()!
         
-        let count = 50_000
+        let count = 40_000
         let range = 1 ... count
         let json = range.map { i in
             Person {
@@ -1841,6 +1842,7 @@ class SyncStoreTests: StoreTestCase {
         }
         mockResponse(json: json)
         defer {
+            timer.cancel()
             setURLProtocol(nil)
         }
         

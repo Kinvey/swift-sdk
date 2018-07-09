@@ -576,4 +576,17 @@ class KinveyTestCase: XCTestCase {
         return json
     }
     
+    func startLogPolling(timeInterval: TimeInterval = 30, function: String = #function) -> DispatchSourceTimer {
+        let startTime = Date()
+        let timer = DispatchSource.makeTimerSource()
+        timer.schedule(deadline: .now() + timeInterval, repeating: timeInterval)
+        timer.setEventHandler {
+            autoreleasepool {
+                print("Running \(function) for \(Int(round(-startTime.timeIntervalSinceNow)))s")
+            }
+        }
+        timer.resume()
+        return timer
+    }
+    
 }
