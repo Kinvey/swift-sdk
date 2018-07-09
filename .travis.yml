@@ -69,9 +69,9 @@ script:
 - set -o pipefail;
   case $PLATFORM in
   iOS)
-    travis_wait 30 make test-ios;;
+    travis_retry make test-ios;;
   Mac)
-    travis_wait 30 make test-macos;;
+    travis_retry make test-macos;;
   esac
 after_script:
 - date
