@@ -132,19 +132,32 @@ open class File: Object {
         block(self)
     }
     
+    public enum FileCodingKeys: String, CodingKey {
+        
+        case publicAccessible = "_public"
+        case fileName = "_filename"
+        case mimeType
+        case size
+        case upload = "_uploadURL"
+        case download = "_downloadURL"
+        case expiresAt = "_expiresAt"
+        case uploadHeaders = "_requiredHeaders"
+        
+    }
+    
     @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     open func mapping(map: Map) {
         fileId <- ("fileId", map[Entity.EntityCodingKeys.entityId])
         acl <- ("acl", map[Entity.EntityCodingKeys.acl])
         metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
-        publicAccessible <- ("publicAccessible", map["_public"])
-        fileName <- ("fileName", map["_filename"])
-        mimeType <- ("mimeType", map["mimeType"])
-        size.value <- ("size", map["size"])
-        upload <- ("upload", map["_uploadURL"])
-        download <- ("download", map["_downloadURL"])
-        expiresAt <- ("expiresAt", map["_expiresAt"], KinveyDateTransform())
-        uploadHeaders <- ("uploadHeaders", map["_requiredHeaders"])
+        publicAccessible <- ("publicAccessible", map[FileCodingKeys.publicAccessible])
+        fileName <- ("fileName", map[FileCodingKeys.fileName])
+        mimeType <- ("mimeType", map[FileCodingKeys.mimeType])
+        size.value <- ("size", map[FileCodingKeys.size])
+        upload <- ("upload", map[FileCodingKeys.upload])
+        download <- ("download", map[FileCodingKeys.download])
+        expiresAt <- ("expiresAt", map[FileCodingKeys.expiresAt], KinveyDateTransform())
+        uploadHeaders <- ("uploadHeaders", map[FileCodingKeys.uploadHeaders])
     }
     
     open override class func primaryKey() -> String? {

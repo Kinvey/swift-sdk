@@ -1688,11 +1688,11 @@ extension UserSocialIdentity : StaticMappable {
     }
     
     public mutating func mapping(map: Map) {
-        facebook <- ("facebook", map[AuthSource.facebook.rawValue])
-        twitter <- ("twitter", map[AuthSource.twitter.rawValue])
-        googlePlus <- ("googlePlus", map[AuthSource.googlePlus.rawValue])
-        linkedIn <- ("linkedIn", map[AuthSource.linkedIn.rawValue])
-        kinvey <- ("kinvey", map[AuthSource.kinvey.rawValue])
+        facebook <- ("facebook", map[AuthSource.facebook])
+        twitter <- ("twitter", map[AuthSource.twitter])
+        googlePlus <- ("googlePlus", map[AuthSource.googlePlus])
+        linkedIn <- ("linkedIn", map[AuthSource.linkedIn])
+        kinvey <- ("kinvey", map[AuthSource.kinvey])
     }
     
 }

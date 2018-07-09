@@ -1,5 +1,5 @@
 //
-//  ResponseParser.swift
+//  JSONParser.swift
 //  Kinvey
 //
 //  Created by Victor Barros on 2015-12-09.
