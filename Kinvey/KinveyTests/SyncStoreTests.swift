@@ -1832,7 +1832,7 @@ class SyncStoreTests: StoreTestCase {
         let timer = startLogPolling()
         let reportMemory1 = reportMemory()!
         
-        let count = 40_000
+        let count = 10_000
         let range = 1 ... count
         let json = range.map { i in
             Person {
