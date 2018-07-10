@@ -329,7 +329,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         
         json = entity.dictionaryWithValues(forKeys: props)
         
-        for property in json.keys {
+        json.keys.forEachAutoreleasepool { property in
             let value = json[property]
                 
             if let value = value as? Object {
@@ -506,7 +506,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             try! self.write { realm in
                 let entityType = self.entityType
                 let entityTypeClassName = entityType.className()
-                for entity in entities {
+                entities.forEachAutoreleasepool { entity in
                     let entity = realm.object(ofType: entityType, forPrimaryKey: entity.entityId!)
                     if let entity = entity {
                         self.cascadeDelete(
@@ -706,7 +706,7 @@ extension RealmCache: DynamicCacheType {
     
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object) {
         if let schema = realm.schema[entityType] {
-            for property in schema.properties {
+            schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
                 case .object:
                     if property.isArray,
@@ -749,7 +749,7 @@ extension RealmCache: DynamicCacheType {
     }
     
     private func cascadeDelete(realm: Realm, entityType: String, entity: JsonDictionary, propertyMapping: PropertyMap) {
-        for (translatedKey, _) in propertyMapping {
+        propertyMapping.forEachAutoreleasepool { translatedKey, _ in
             if let property = properties[translatedKey],
                 property.type == .object,
                 let objectClassName = property.objectClassName,
@@ -784,9 +784,10 @@ extension RealmCache: DynamicCacheType {
         log.verbose("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
-            for entity in entities {
+            entities.forEachAutoreleasepool { entity in
                 var translatedEntity = JsonDictionary()
-                for (translatedKey, (key, transform)) in propertyMapping {
+                propertyMapping.forEachAutoreleasepool { (translatedKey, tuple) in
+                    let (key, transform) = tuple
                     if let transform = transform,
                         let value = transform.transformFromJSON(entity[key]) as? NSObject,
                         let property = self.properties[translatedKey],

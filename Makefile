@@ -1,6 +1,5 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
-IPHONE_SE_SIMULATOR_ID=$(shell instruments -s | grep 'iPhone X (11.4)' | awk '{ print substr($$4, 2, 36) }' | head -n 1)
 CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] == "*") print array[2]}')
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
@@ -67,20 +66,10 @@ test: test-ios test-macos
 	
 test-ios:
 	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
-	xcodebuild test \
-		-workspace Kinvey.xcworkspace \
-		-scheme Kinvey \
-		-destination "id=$(IPHONE_SE_SIMULATOR_ID)" \
-		-enableCodeCoverage YES \
-		-only-testing:KinveyTests \
-		-only-testing:KinveyAppUITests \
-		-only-testing:PushMissingConfiguration \
-		-only-testing:KinveyTests\ Encrypted \
-		-only-testing:KinveyTests\ Forgot\ To\ Call\ Super \
-		-only-testing:KinveyTests\ Migration\ Database\ Step\ 2
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=11.4,name=iPhone X" test -enableCodeCoverage YES
 
 test-macos:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS -enableCodeCoverage YES test
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
