@@ -1893,7 +1893,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let reportMemory4 = reportMemory()!
-        XCTAssertTrue(reportMemory3 - reportMemory2 < 1024 * 1024 * 50) // 50 Mb
+        XCTAssertTrue(reportMemory4 - reportMemory3 < 1024 * 1024 * 50) // 50 Mb
     }
     
     func testExpiredTTL() {
