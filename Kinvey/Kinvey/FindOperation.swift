@@ -183,23 +183,19 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
+    func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) throws -> AnyRandomAccessCollection<T> {
         let startTime = CFAbsoluteTimeGetCurrent()
         let client = options?.client ?? self.client
-        let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
+        let entities = AnyRandomAccessCollection(try jsonArray.lazy.map { (json) throws -> T in
             if let validationStrategy = self.validationStrategy {
-                do {
-                    try validationStrategy.validate(jsonArray: [json])
-                } catch {
-                    fatalError(error.localizedDescription)
-                }
+                try validationStrategy.validate(jsonArray: [json])
             } else {
                 guard let entityId = json[Entity.EntityCodingKeys.entityId.rawValue] as? String, !entityId.isEmpty else {
-                    fatalError("_id is required: \(T.self)\n\(json)")
+                    throw Error.invalidOperation(description: "_id is required: \(T.self)\n\(json)")
                 }
             }
             guard let entity = try? client.jsonParser.parseObject(T.self, from: json) else {
-                fatalError("Invalid entity creation: \(T.self)\n\(json)")
+                throw Error.invalidOperation(description: "Invalid entity creation: \(T.self)\n\(json)")
             }
             return entity
         })
@@ -210,7 +206,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     private func fetchDelta(multiRequest: MultiRequest<ResultType>, sinceDate: Date) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { resolver in
             let request = client.networkRequestFactory.buildAppDataFindByQueryDeltaSet(
-                collectionName: T.collectionName(),
+                collectionName: try! T.collectionName(),
                 query: query,
                 sinceDate: sinceDate,
                 options: options
@@ -226,22 +222,26 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     let deleted = results["deleted"],
                     let requestStart = response.requestStartHeader
                 {
-                    let deletedEntities = self.convertToEntities(fromJsonArray: deleted)
-                    let changedEntities = self.convertToEntities(fromJsonArray: changed)
-                    cache.remove(entities: deletedEntities)
-                    cache.save(entities: changedEntities, syncQuery: (query: self.query, lastSync: requestStart))
-                    if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
-                        DispatchQueue.main.async {
-                            deltaSetCompletionHandler(changedEntities, deletedEntities)
+                    do {
+                        let deletedEntities = try self.convertToEntities(fromJsonArray: deleted)
+                        let changedEntities = try self.convertToEntities(fromJsonArray: changed)
+                        cache.remove(entities: deletedEntities)
+                        cache.save(entities: changedEntities, syncQuery: (query: self.query, lastSync: requestStart))
+                        if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
+                            DispatchQueue.main.async {
+                                deltaSetCompletionHandler(changedEntities, deletedEntities)
+                            }
                         }
-                    }
-                    self.executeLocal {
-                        switch $0 {
-                        case .success(let results):
-                            resolver.fulfill(results)
-                        case .failure(let error):
-                            resolver.reject(error)
+                        self.executeLocal {
+                            switch $0 {
+                            case .success(let results):
+                                resolver.fulfill(results)
+                            case .failure(let error):
+                                resolver.reject(error)
+                            }
                         }
+                    } catch {
+                        resolver.reject(error)
                     }
                 } else {
                     let error = buildError(data, response, error, self.client)
@@ -293,7 +293,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     private func fetchAll(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { resolver in
             let request = client.networkRequestFactory.buildAppDataFindByQuery(
-                collectionName: T.collectionName(),
+                collectionName: try! T.collectionName(),
                 query: query,
                 options: options
             )
@@ -312,31 +312,35 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         }
                     }
                     self.resultsHandler?(jsonArray)
-                    let entities = self.convertToEntities(fromJsonArray: jsonArray)
-                    if let cache = self.cache {
-                        if self.mustRemoveCachedRecords {
-                            let refObjs = self.reduceToIdsLmts(jsonArray)
-                            let deltaSet = self.computeDeltaSet(
-                                self.query,
-                                refObjs: refObjs
-                            )
-                            self.removeCachedRecords(
-                                cache,
-                                keys: refObjs.keys,
-                                deleted: deltaSet.deleted
-                            )
+                    do {
+                        let entities = try self.convertToEntities(fromJsonArray: jsonArray)
+                        if let cache = self.cache {
+                            if self.mustRemoveCachedRecords {
+                                let refObjs = self.reduceToIdsLmts(jsonArray)
+                                let deltaSet = self.computeDeltaSet(
+                                    self.query,
+                                    refObjs: refObjs
+                                )
+                                self.removeCachedRecords(
+                                    cache,
+                                    keys: refObjs.keys,
+                                    deleted: deltaSet.deleted
+                                )
+                            }
+                            var syncQuery: CacheType.SyncQuery? = nil
+                            if self.mustSaveQueryLastSync ?? true, let requestStart = response.requestStartHeader {
+                                syncQuery = (query: self.query, lastSync: requestStart)
+                            }
+                            if let cache = cache.dynamic {
+                                cache.save(entities: AnyRandomAccessCollection(jsonArray), syncQuery: syncQuery)
+                            } else {
+                                cache.save(entities: entities, syncQuery: syncQuery)
+                            }
                         }
-                        var syncQuery: CacheType.SyncQuery? = nil
-                        if self.mustSaveQueryLastSync ?? true, let requestStart = response.requestStartHeader {
-                            syncQuery = (query: self.query, lastSync: requestStart)
-                        }
-                        if let cache = cache.dynamic {
-                            cache.save(entities: AnyRandomAccessCollection(jsonArray), syncQuery: syncQuery)
-                        } else {
-                            cache.save(entities: entities, syncQuery: syncQuery)
-                        }
+                        resolver.fulfill(entities)
+                    } catch {
+                        resolver.reject(error)
                     }
-                    resolver.fulfill(entities)
                 } else {
                     resolver.reject(buildError(data, response, error, self.client))
                 }
@@ -418,7 +422,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         let refKeys = Set<String>(keys)
         let deleted = deleted.subtracting(refKeys)
         if deleted.count > 0 {
-            let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted as AnyObject)
+            let query = Query(format: "\(try! T.entityIdProperty()) IN %@", deleted as AnyObject)
             cache.remove(byQuery: query)
         }
     }

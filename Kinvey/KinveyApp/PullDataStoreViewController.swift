@@ -69,7 +69,7 @@ class PullDataStoreViewController: UIViewController {
         timer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
         let query = Query()
         query.limit = 50000
-        let options = Options(timeout: TimeInterval(round(timeoutSlider.value)))
+        let options = try! Options(timeout: TimeInterval(round(timeoutSlider.value)))
         request = dataStore.pull(query, options: options) {
             self.timer = nil
             self.request = nil

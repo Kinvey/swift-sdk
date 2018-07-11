@@ -12,7 +12,7 @@ import XCTest
 class PersistableTestCase: StoreTestCase {
     
     func testAclNull() {
-        store = DataStore<Person>.collection()
+        store = try! DataStore<Person>.collection()
         
         class NullAclURLProtocol : URLProtocol {
             
@@ -54,7 +54,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 1)
@@ -71,7 +71,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testAclEmpty() {
-        store = DataStore<Person>.collection()
+        store = try! DataStore<Person>.collection()
         
         class NullAclURLProtocol : URLProtocol {
             
@@ -114,7 +114,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 1)
@@ -131,7 +131,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdNull() {
-        store = DataStore<Person>.collection()
+        store = try! DataStore<Person>.collection()
         
         class NullAclURLProtocol : URLProtocol {
             
@@ -172,7 +172,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 1)
@@ -189,7 +189,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdEmpty() {
-        store = DataStore<Person>.collection()
+        store = try! DataStore<Person>.collection()
         
         class NullAclURLProtocol : URLProtocol {
             
@@ -231,7 +231,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 1)

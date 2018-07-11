@@ -345,6 +345,7 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.appDataGroup(client: client, collectionName: collectionName),
@@ -368,7 +369,7 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
-        let collectionName = T.collectionName()
+        let collectionName = try! T.collectionName()
         let client = options?.client ?? self.client
         var bodyObject = try! client.jsonParser.toJSON(persistable)
         let objId = bodyObject[Entity.EntityCodingKeys.entityId] as? String

@@ -511,7 +511,7 @@ class KinveyTestCase: XCTestCase {
     }
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
-        let store = DataStore<T>.collection()
+        let store = try! DataStore<T>.collection()
         if let cache = store.cache {
             cache.clear(query: nil)
         }

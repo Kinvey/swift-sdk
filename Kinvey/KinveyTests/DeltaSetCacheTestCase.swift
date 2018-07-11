@@ -17,8 +17,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     
     override func tearDown() {
         if let activeUser = client.activeUser {
-            let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let store = try! DataStore<Person>.collection(.network)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -74,7 +74,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         let operation = Operation(
             cache: AnyCache(cache),
-            options: Options(
+            options: try! Options(
                 client: client
             )
         )
@@ -121,7 +121,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection()
+        let store = try! DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -203,7 +203,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let createOperation = SaveOperation<Person>(
                 persistable: person,
                 writePolicy: .forceNetwork,
-                options: Options(
+                options: try! Options(
                     client: client
                 )
             )
@@ -223,13 +223,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
             weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
@@ -286,7 +286,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 2)
@@ -317,7 +317,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection()
+        let store = try! DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -403,7 +403,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let updateOperation = SaveOperation(
                 persistable: person,
                 writePolicy: .forceNetwork,
-                options: Options(
+                options: try! Options(
                     client: client
                 )
             )
@@ -423,13 +423,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
             weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
@@ -473,7 +473,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
@@ -501,7 +501,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection()
+        let store = try! DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -574,7 +574,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let createRemove = RemoveByQueryOperation<Person>(
                 query: query,
                 writePolicy: .forceNetwork,
-                options: Options(
+                options: try! Options(
                     client: client
                 )
             )
@@ -594,13 +594,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
             weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
@@ -631,7 +631,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 0)
@@ -685,7 +685,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let createOperation = SaveOperation(
                 persistable: person,
                 writePolicy: .forceNetwork,
-                options: Options(
+                options: try! Options(
                     client: self.client
                 )
             )
@@ -708,7 +708,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let saveAndCache: (Int) -> Void = { i in
             let person = Person()
             person.name = String(format: "Person Cached %02d", i)
-            let store = DataStore<Person>.collection()
+            let store = try! DataStore<Person>.collection()
             
             if self.useMockData {
                 self.mockResponse(statusCode: 201, json: [
@@ -732,7 +732,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationSave = self.expectation(description: "Save")
             
-            store.save(person, options: Options(writePolicy: .forceNetwork)) {
+            store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success:
                     break
@@ -756,15 +756,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             saveAndCache(i)
         }
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
             weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 5)
@@ -1015,7 +1015,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 let createOperation = SaveOperation(
                     persistable: person,
                     writePolicy: .forceNetwork,
-                    options: Options(
+                    options: try! Options(
                         client: self.client
                     )
                 )
@@ -1037,7 +1037,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let saveAndCache: (Int) -> Void = { n in
-            let store = DataStore<Person>.collection()
+            let store = try! DataStore<Person>.collection()
             
             for i in 1...n {
                 let person = Person()
@@ -1065,15 +1065,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         saveAndCache(countLocal)
         save(countBackend)
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
             weak var expectationRead = self.expectation(description: "Read")
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, countLocal)
@@ -1098,7 +1098,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, countBackend + countLocal)
@@ -1148,7 +1148,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         signUp()
         
         let store = DataStore<Person>.collection()
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         if useMockData {
             mockResponse(json: [])
@@ -1161,7 +1161,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, options: Options(readPolicy: .forceNetwork)) {
+        store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 0)
@@ -1180,7 +1180,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testPullAllRecords() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         let person = Person()
         person.name = "Victor"
@@ -1263,7 +1263,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 }
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
             
             weak var expectationPull = expectation(description: "Pull")
             
@@ -1287,8 +1287,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecord() {
         signUp()
         
-        let store = DataStore<Person>.collection()
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let store = try! DataStore<Person>.collection()
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         class OnePersonURLProtocol: URLProtocol {
             
@@ -1339,7 +1339,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, options: Options(readPolicy: .forceNetwork)) {
+        store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
                 XCTAssertEqual(results.count, 1)
@@ -1362,7 +1362,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecordDeltaSetNoChange() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let person = Person()
         person.name = "Victor"
@@ -1425,7 +1425,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             var mockCount = 0
@@ -1460,7 +1460,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1504,7 +1504,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1528,7 +1528,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecordDeltaSetChanged() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let person = Person()
         person.name = "Victor"
@@ -1591,7 +1591,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             var mockCount = 0
@@ -1627,7 +1627,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1684,7 +1684,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
 
-            store.find(query, options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1740,7 +1740,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(queryFields, options: Options(readPolicy: .forceNetwork)) {
+            store.find(queryFields, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1796,7 +1796,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
 
-            store.find(queryFields, options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            store.find(queryFields, options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1821,7 +1821,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecordDeltaSetNoKmd() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let person = Person()
         person.name = "Victor"
@@ -1883,7 +1883,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             if useMockData {
@@ -1909,7 +1909,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1966,7 +1966,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let results):
                     XCTAssertEqual(results.count, 1)
@@ -1988,7 +1988,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     }
     
     func testFindOneRecordDeltaSetTimeoutError2ndRequest() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             let person = Person()
@@ -2020,7 +2020,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
                 XCTFail()
@@ -2039,7 +2039,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFind201RecordsDeltaSet() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let person = Person()
         person.name = "Victor"
@@ -2094,7 +2094,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         var jsonArray = [JsonDictionary]()
         for _ in 1...201 {
@@ -2120,7 +2120,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(options: Options(readPolicy: .forceNetwork)) {
+            store.find(options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 201)
@@ -2154,7 +2154,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(options: Options(readPolicy: .forceNetwork)) {
+            store.find(options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 201)
@@ -2174,7 +2174,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFind201RecordsDeltaSetTimeoutOn2ndRequest() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let person = Person()
         person.name = "Victor"
@@ -2229,7 +2229,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         var jsonArray = [JsonDictionary]()
         for _ in 1...201 {
@@ -2253,7 +2253,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        store.find(options: Options(readPolicy: .forceNetwork)) {
+        store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
                 XCTFail()
@@ -2298,7 +2298,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         weak var expectationPull = expectation(description: "Pull")
         
@@ -2351,7 +2351,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let store = DataStore<Person>.collection(.sync, autoPagination: true, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, autoPagination: true, options: try! Options(deltaSet: true))
         
         weak var expectationPull = expectation(description: "Pull")
         
@@ -2401,7 +2401,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             weak var expectationPull = expectation(description: "Pull")
@@ -2452,7 +2452,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSet3rdPull() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var date1: String?
         var date2: String?
@@ -2590,7 +2590,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSet3rdPullDifferentClassName() {
         signUp()
         
-        let store = DataStore<PersonWithDifferentClassName>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<PersonWithDifferentClassName>.collection(.sync, options: try! Options(deltaSet: true))
         
         var date1: String?
         var date2: String?
@@ -2728,7 +2728,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetChangeFromSyncToCache() {
         signUp()
         
-        var store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var date1: String?
         var date2: String?
@@ -2876,7 +2876,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         do {
             if useMockData{
@@ -2957,7 +2957,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetChangeFromCacheToSync() {
         signUp()
         
-        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var date1: String?
         var date2: String?
@@ -3105,7 +3105,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             if useMockData{
@@ -3186,7 +3186,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetChangeFromNetworkToCache() {
         signUp()
         
-        var store = DataStore<Person>.collection(.network, options: nil)
+        var store = try! DataStore<Person>.collection(.network, options: nil)
         
         var date1: String?
         var date2: String?
@@ -3241,7 +3241,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3265,7 +3265,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         do {
             if useMockData{
                 mockResponse { request in
@@ -3424,7 +3424,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetChangeFromNetworkToSync() {
         signUp()
         
-        var store = DataStore<Person>.collection(.network, options: nil)
+        var store = try! DataStore<Person>.collection(.network, options: nil)
         
         var date1: String?
         var date2: String?
@@ -3479,7 +3479,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3503,7 +3503,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         do {
             if useMockData{
                 mockResponse { request in
@@ -3662,7 +3662,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetLowercaseHeader() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var date1: String?
         var date2: String?
@@ -3753,7 +3753,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetAndAutoPagination() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync, autoPagination: true, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, autoPagination: true, options: try! Options(deltaSet: true))
         
         let count = useMockData ? 3 : try! store.count(options: Options(readPolicy: .forceNetwork)).waitForResult(timeout: defaultTimeout).value()
         
@@ -3885,7 +3885,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testServerSideDeltaSetMissingConfiguration() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var count: Int? = nil
         
@@ -3980,7 +3980,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testServerSideDeltaSetMissingConfigurationAutoPaginationOn() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync, autoPagination: true, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, autoPagination: true, options: try! Options(deltaSet: true))
         
         var count: Int? = nil
         
@@ -4075,7 +4075,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
-            let options = Options(maxSizePerResultSet: 3)
+            let options = try! Options(maxSizePerResultSet: 3)
             let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(results.count, count2)
         } catch {
@@ -4086,7 +4086,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testServerSideDeltaSetParameterValueOutOfRange() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var count: Int? = nil
         
@@ -4206,7 +4206,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testDeltaSetHandler() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { request in
@@ -4355,7 +4355,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testServerSideDeltaSetQueryWithFields() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         let json = [
             [
@@ -4497,10 +4497,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func serverSideDeltaSetResultSetSizeExceeded(autoPagination: Bool) {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(
+        let dataStore = try! DataStore<Person>.collection(
             .sync,
             autoPagination: autoPagination,
-            options: Options(deltaSet: true)
+            options: try! Options(deltaSet: true)
         )
         
         var count: Int? = nil
@@ -4644,10 +4644,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testServerSideDeltaSetAutoPagination2ndRequestFailing() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(
+        let dataStore = try! DataStore<Person>.collection(
             .sync,
             autoPagination: true,
-            options: Options(deltaSet: true)
+            options: try! Options(deltaSet: true)
         )
         
         var count: Int? = nil
@@ -4744,7 +4744,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let options = Options(maxSizePerResultSet: 1)
+        let options = try! Options(maxSizePerResultSet: 1)
         
         do {
             let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
@@ -4768,15 +4768,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     }
     
     func testMaxSizePerResultSetGreaterThanZero() {
-        expect { () -> Void? in
-            let _ = Options(maxSizePerResultSet: 0)
-            return nil
-        }.to(throwAssertion())
-        expect { () -> Void? in
-            var options = Options()
-            options.maxSizePerResultSet = 0
-            return nil
-        }.to(throwAssertion())
+        expect {
+            try Options(maxSizePerResultSet: 0)
+        }.to(throwError())
+        expect {
+            try Options(Options(maxSizePerResultSet: 1), maxSizePerResultSet: 0)
+        }.to(throwError())
     }
     
 }

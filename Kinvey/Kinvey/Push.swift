@@ -201,9 +201,7 @@ open class Push {
         completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         replaceAppDelegateMethods(
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
         
@@ -226,9 +224,7 @@ open class Push {
         registerForNotifications(
             authorizationOptions: authorizationOptions,
             categories: categories,
-            options: Options(
-                client: client
-            )
+            options: try! Options(client: client)
         ) { (result: Result<Bool, Swift.Error>) in
             switch result {
             case .success(let granted):
@@ -248,9 +244,7 @@ open class Push {
         return registerForNotifications(
             authorizationOptions: authorizationOptions,
             categories: categories,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -291,9 +285,7 @@ open class Push {
         _ completionHandler: BoolCompletionHandler? = nil
     ) {
         unRegisterDeviceToken(
-            options: Options(
-                client: client
-            )
+            options: try! Options(client: client)
         ) { (result: Result<Void, Swift.Error>) in
             switch result {
             case .success:
@@ -310,9 +302,7 @@ open class Push {
         _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {
         return unRegisterDeviceToken(
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }

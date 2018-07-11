@@ -24,7 +24,7 @@ class DataTypeTestCase: StoreTestCase {
     func testSave() {
         signUp()
         
-        let store = DataStore<DataType>.collection(.network)
+        let store = try! DataStore<DataType>.collection(.network)
         let dataType = DataType()
         dataType.boolValue = true
         dataType.colorValue = Color.orange
@@ -128,7 +128,7 @@ class DataTypeTestCase: StoreTestCase {
     func testDate() {
         signUp()
         
-        let store = DataStore<EntityWithDate>.collection(.network)
+        let store = try! DataStore<EntityWithDate>.collection(.network)
         
         let dateEntity = EntityWithDate()
         dateEntity.date = Date()
@@ -189,7 +189,7 @@ class DataTypeTestCase: StoreTestCase {
     func testDatePull() {
         signUp()
         
-        let store = DataStore<EntityWithDate>.collection(.sync)
+        let store = try! DataStore<EntityWithDate>.collection(.sync)
         
         if useMockData {
             mockResponse(json: [

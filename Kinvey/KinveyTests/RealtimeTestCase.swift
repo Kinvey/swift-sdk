@@ -277,8 +277,8 @@ class RealtimeTestCase: KinveyTestCase {
         }
         
         if registered {
-            let dataStoreSync = DataStore<Person>.collection(.sync)
-            let dataStoreNetwork = DataStore<Person>.collection(.network)
+            let dataStoreSync = try! DataStore<Person>.collection(.sync)
+            let dataStoreNetwork = try! DataStore<Person>.collection(.network)
             
             do {
                 weak var expectationSave = self.expectation(description: "Save")
@@ -363,7 +363,7 @@ class RealtimeTestCase: KinveyTestCase {
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                    dataStoreNetwork.save(person, options: Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
+                    dataStoreNetwork.save(person, options: try! Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
                         switch result {
                         case .success:
                             break
@@ -383,7 +383,7 @@ class RealtimeTestCase: KinveyTestCase {
                         acl.readers = [user.userId]
                         $0.acl = acl
                     }
-                    dataStoreNetwork.save(person2, options: Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
+                    dataStoreNetwork.save(person2, options: try! Options(writePolicy: nil)) { (result: Result<Person, Swift.Error>) in
                         switch result {
                         case .success:
                             break
@@ -468,7 +468,7 @@ class RealtimeTestCase: KinveyTestCase {
     }
     
     func testSubscribeNoActiveUser() {
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
@@ -490,7 +490,7 @@ class RealtimeTestCase: KinveyTestCase {
     func testSubscribeNotRegisterForRealtime() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
@@ -564,7 +564,7 @@ class RealtimeTestCase: KinveyTestCase {
         }
         
         if registered {
-            let dataStore = DataStore<Person>.collection(.sync)
+            let dataStore = try! DataStore<Person>.collection(.sync)
             
             do {
                 weak var expectationSubscribe = self.expectation(description: "Subscribe")
@@ -674,7 +674,7 @@ class RealtimeTestCase: KinveyTestCase {
         }
         
         if registered {
-            let dataStore = DataStore<Person>.collection(.sync)
+            let dataStore = try! DataStore<Person>.collection(.sync)
             
             do {
                 if useMockData {
@@ -756,7 +756,7 @@ class RealtimeTestCase: KinveyTestCase {
     }
     
     func testUnSubscribeNoActiveUser() {
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
@@ -778,7 +778,7 @@ class RealtimeTestCase: KinveyTestCase {
     func testUnSubscribeNotRegisterForRealtime() {
         signUp()
         
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         weak var expectationSubscribe = self.expectation(description: "Subscribe")
         
@@ -927,7 +927,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, options: Options(client: client)) {
+            user.find(query: query, options: try! Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users
@@ -1225,7 +1225,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, options: Options(client: client)) {
+            user.find(query: query, options: try! Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users
@@ -1417,7 +1417,7 @@ class RealtimeTestCase: KinveyTestCase {
             
             let query = Query(format: "_id != %@", user.userId)
             query.limit = 2
-            user.find(query: query, options: Options(client: client)) {
+            user.find(query: query, options: try! Options(client: client)) {
                 switch $0 {
                 case .success(let users):
                     usersArray = users

@@ -63,7 +63,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     lazy var entityType = T.self as! Entity.Type
     lazy var entityTypeClassName = entityType.className()
-    lazy var entityTypeCollectionName = entityType.collectionName()
+    lazy var entityTypeCollectionName = try! entityType.collectionName()
     
     var dynamic: DynamicCacheType? {
         return self
@@ -75,9 +75,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return realm
     }
     
-    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
+    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) throws {
         if !(T.self is Entity.Type) {
-            fatalError("\(T.self) needs to be a Entity")
+            throw Error.invalidOperation(description: "\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -303,7 +303,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
         }
         
-        if let ttl = ttl, let kmdKey = T.metadataProperty() {
+        if let ttl = ttl, let _kmdKey = try? T.metadataProperty(), let kmdKey = _kmdKey {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         

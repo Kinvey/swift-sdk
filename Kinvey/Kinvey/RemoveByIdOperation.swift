@@ -20,10 +20,10 @@ internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> where T: 
         options: Options?
     ) {
         self.objectId = objectId
-        let query = Query(format: "\(T.entityIdProperty()) == %@", objectId as Any)
+        let query = Query(format: "\(try! T.entityIdProperty()) == %@", objectId as Any)
         let client = options?.client ?? sharedClient
         let httpRequest = client.networkRequestFactory.buildAppDataRemoveById(
-            collectionName: T.collectionName(),
+            collectionName: try! T.collectionName(),
             objectId: objectId,
             options: options,
             resultType: Result<Int, Swift.Error>.self

@@ -47,7 +47,7 @@ class MICAuthorizationGrantViewController: UIViewController {
         ) { user, error in
             if let user = user {
                 self.labelUserID.text = user.userId
-                let store = DataStore<MedData>.collection(.network)
+                let store = try! DataStore<MedData>.collection(.network)
                 
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
                     store.find {

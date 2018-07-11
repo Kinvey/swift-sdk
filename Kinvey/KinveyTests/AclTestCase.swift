@@ -14,13 +14,13 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDelete() {
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         if useMockData {
             mockResponse(statusCode: 401, json: [
@@ -79,13 +79,13 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDeletePush() {
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.collection(.sync)
+        store = try! DataStore<Person>.collection(.sync)
         
         do {
             if useMockData {
@@ -110,7 +110,7 @@ class AclTestCase: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(person.personId!, options: Options(readPolicy: .forceNetwork)) {
+            store.find(person.personId!, options: try! Options(readPolicy: .forceNetwork)) {
                 self.assertThread()
                 switch $0 {
                 case .success(let person):
@@ -196,7 +196,7 @@ class AclTestCase: StoreTestCase {
     func testGlobalRead() {
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         guard let userId = Kinvey.sharedClient.activeUser?.userId else {
             return
@@ -257,7 +257,7 @@ class AclTestCase: StoreTestCase {
     func testGlobalWrite() {
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalWrite: true)
@@ -321,7 +321,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, readers: [user.userId])
@@ -387,7 +387,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, writers: [user.userId])

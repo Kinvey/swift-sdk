@@ -88,14 +88,14 @@ open class DataStore<T: Persistable> where T: NSObject {
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil,
         options: Options? = nil
-    ) -> DataStore {
+    ) throws -> DataStore {
         let client = options?.client ?? sharedClient
         let deltaSet = options?.deltaSet ?? false
         if !client.isInitialized() {
-            fatalError("Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
+            throw Error.invalidOperation(description: "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
         let fileURL = client.fileURL(tag)
-        let dataStore = DataStore<T>(
+        let dataStore = try DataStore<T>(
             type: type,
             deltaSet: deltaSet,
             autoPagination: autoPagination,
@@ -115,8 +115,8 @@ open class DataStore<T: Persistable> where T: NSObject {
      */
     open func collection<NewType: Persistable>(
         newType: NewType.Type
-    ) -> DataStore<NewType> where NewType: NSObject {
-        return DataStore<NewType>(
+    ) throws -> DataStore<NewType> where NewType: NSObject {
+        return try DataStore<NewType>(
             type: type,
             deltaSet: deltaSet,
             autoPagination: autoPagination,
@@ -135,16 +135,16 @@ open class DataStore<T: Persistable> where T: NSObject {
         fileURL: URL?,
         encryptionKey: Data?,
         validationStrategy: ValidationStrategy?
-    ) {
+    ) throws {
         self.type = type
         self.deltaSet = deltaSet
         self.autoPagination = autoPagination
         self.client = client
         self.fileURL = fileURL
-        collectionName = T.collectionName()
+        collectionName = try! T.collectionName()
         if type != .network, let _ = T.self as? Entity.Type {
-            cache = client.cacheManager.cache(fileURL: fileURL, type: T.self)
-            sync = client.syncManager.sync(fileURL: fileURL, type: T.self)
+            cache = try client.cacheManager.cache(fileURL: fileURL, type: T.self)
+            sync = try client.syncManager.sync(fileURL: fileURL, type: T.self)
         } else {
             cache = nil
             sync = nil
@@ -154,9 +154,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         self.validationStrategy = validationStrategy
     }
     
-    private func validate(id: String) {
+    private func validate(id: String) throws {
         if id.isEmpty {
-            fatalError("id cannot be an empty string")
+            throw Error.invalidOperation(description: "id cannot be an empty string")
         }
     }
     
@@ -173,7 +173,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         options: Options? = nil,
         completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<T, Swift.Error>> {
-        validate(id: id)
+        do {
+            try validate(id: id)
+        } catch {
+            let result: Result<T, Swift.Error> = .failure(error)
+            completionHandler?(result)
+            return AnyRequest(result)
+        }
         
         let readPolicy = options?.readPolicy ?? self.readPolicy
         let operation = GetOperation<T>(
@@ -336,12 +342,12 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let convert = { (results: [JsonDictionary]) -> [AggregationCountResult<T, Count>] in
-            let array = results.map { (json) -> AggregationCountResult<T, Count> in
+            let array = try results.map { (json) -> AggregationCountResult<T, Count> in
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationCountResult<T, Count>(
                     value: try! client.jsonParser.parseObject(T.self, from: json),
-                    count: json[aggregation.resultKey] as! Count
+                    count: json[try aggregation.resultKey()] as! Count
                 )
             }
             return array
@@ -350,7 +356,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             switch result {
             case .success(let results):
                 DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
+                    let result: Result<[AggregationCountResult<T, Count>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    completionHandler(result)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -362,7 +374,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             if let result = $0 {
                 switch result {
                 case .success(let results):
-                    return .success(convert(results))
+                    let result: Result<[AggregationCountResult<T, Count>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    return result
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -392,12 +410,12 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let convert = { (results: [JsonDictionary]) -> [AggregationSumResult<T, Sum>] in
-            let array = results.map { (json) -> AggregationSumResult<T, Sum> in
+            let array = try results.map { (json) -> AggregationSumResult<T, Sum> in
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationSumResult<T, Sum>(
                     value: try! client.jsonParser.parseObject(T.self, from: json),
-                    sum: json[aggregation.resultKey] as! Sum
+                    sum: json[try aggregation.resultKey()] as! Sum
                 )
             }
             return array
@@ -406,7 +424,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             switch result {
             case .success(let results):
                 DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
+                    let result: Result<[AggregationSumResult<T, Sum>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    completionHandler(result)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -418,7 +442,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             if let result = $0 {
                 switch result {
                 case .success(let results):
-                    return .success(convert(results))
+                    let result: Result<[AggregationSumResult<T, Sum>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    return result
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -448,12 +478,12 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let convert = { (results: [JsonDictionary]) -> [AggregationAvgResult<T, Avg>] in
-            let array = results.map { (json) -> AggregationAvgResult<T, Avg> in
+            let array = try results.map { (json) -> AggregationAvgResult<T, Avg> in
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationAvgResult<T, Avg>(
                     value: try! client.jsonParser.parseObject(T.self, from: json),
-                    avg: json[aggregation.resultKey] as! Avg
+                    avg: json[try aggregation.resultKey()] as! Avg
                 )
             }
             return array
@@ -462,7 +492,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             switch result {
             case .success(let results):
                 DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
+                    let result: Result<[AggregationAvgResult<T, Avg>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    completionHandler(result)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -474,7 +510,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             if let result = $0 {
                 switch result {
                 case .success(let results):
-                    return .success(convert(results))
+                    let result: Result<[AggregationAvgResult<T, Avg>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    return result
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -503,12 +545,12 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let convert = { (results: [JsonDictionary]) -> [AggregationMinResult<T, Min>] in
-            let array = results.map { (json) -> AggregationMinResult<T, Min> in
+            let array = try results.map { (json) -> AggregationMinResult<T, Min> in
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMinResult<T, Min>(
                     value: try! self.client.jsonParser.parseObject(T.self, from: json),
-                    min: json[aggregation.resultKey] as! Min
+                    min: json[try aggregation.resultKey()] as! Min
                 )
             }
             return array
@@ -517,7 +559,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             switch result {
             case .success(let results):
                 DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
+                    let result: Result<[AggregationMinResult<T, Min>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    completionHandler(result)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -529,7 +577,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             if let result = $0 {
                 switch result {
                 case .success(let results):
-                    return .success(convert(results))
+                    let result: Result<[AggregationMinResult<T, Min>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    return result
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -558,12 +612,12 @@ open class DataStore<T: Persistable> where T: NSObject {
             options: options
         )
         let convert = { (results: [JsonDictionary]) -> [AggregationMaxResult<T, Max>] in
-            let array = results.map { (json) -> AggregationMaxResult<T, Max> in
+            let array = try results.map { (json) -> AggregationMaxResult<T, Max> in
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMaxResult<T, Max>(
                     value: try! self.client.jsonParser.parseObject(T.self, from: json),
-                    max: json[aggregation.resultKey] as! Max
+                    max: json[try aggregation.resultKey()] as! Max
                 )
             }
             return array
@@ -572,7 +626,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             switch result {
             case .success(let results):
                 DispatchQueue.main.async {
-                    completionHandler(.success(convert(results)))
+                    let result: Result<[AggregationMaxResult<T, Max>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    completionHandler(result)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
@@ -584,7 +644,13 @@ open class DataStore<T: Persistable> where T: NSObject {
             if let result = $0 {
                 switch result {
                 case .success(let results):
-                    return .success(convert(results))
+                    let result: Result<[AggregationMaxResult<T, Max>], Swift.Error>
+                    do {
+                        result = .success(try convert(results))
+                    } catch {
+                        result = .failure(error)
+                    }
+                    return result
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -656,7 +722,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         options: Options? = nil,
         completionHandler: ((Result<Int, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Int, Swift.Error>> {
-        validate(id: id)
+        do {
+            try validate(id: id)
+        } catch {
+            let result: Result<Int, Swift.Error> = .failure(error)
+            completionHandler?(result)
+            return AnyRequest(result)
+        }
 
         let writePolicy = options?.writePolicy ?? self.writePolicy
         let operation = RemoveByIdOperation<T>(
@@ -684,13 +756,14 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         guard !ids.isEmpty else {
+            let result: Result<Int, Swift.Error> = .failure(Error.invalidOperation(description: "ids cannot be an empty array"))
             DispatchQueue.main.async {
-                completionHandler?(.failure(Error.invalidOperation(description: "ids cannot be an empty array")))
+                completionHandler?(result)
             }
-            return AnyRequest(LocalRequest<Result<Int, Swift.Error>>())
+            return AnyRequest(result)
         }
         
-        let query = Query(format: "\(T.entityIdProperty()) IN %@", ids as AnyObject)
+        let query = Query(format: "\(try! T.entityIdProperty()) IN %@", ids as AnyObject)
         return remove(
             query,
             options: options,
@@ -760,9 +833,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
     ) -> AnyRequest<Result<UInt, [Swift.Error]>> {
         return push(
-            options: Options(
-                timeout: timeout
-            ),
+            options: try! Options(timeout: timeout),
             completionHandler: completionHandler
         )
     }
@@ -776,8 +847,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         var request: AnyRequest<Result<UInt, [Swift.Error]>>!
         Promise<UInt> { resolver in
             if type == .network {
-                request = AnyRequest(LocalRequest<Result<UInt, [Swift.Error]>>())
-                resolver.reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
+                let error = MultipleErrors(errors: [Error.invalidDataStoreType])
+                request = AnyRequest(.failure([error]))
+                resolver.reject(error)
             } else {
                 let operation = PushOperation<T>(
                     sync: sync,
@@ -814,9 +886,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         return pull(
             query,
             deltaSetCompletionHandler: deltaSetCompletionHandler,
-            options: Options(
-                deltaSet: deltaSet
-            )
+            options: try! Options(deltaSet: deltaSet)
         ) { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
             switch result {
             case .success(let entities):
@@ -838,11 +908,13 @@ open class DataStore<T: Persistable> where T: NSObject {
         var request: AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>!
         Promise<AnyRandomAccessCollection<T>> { resolver in
             if type == .network {
-                request = AnyRequest(LocalRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>())
-                resolver.reject(Error.invalidDataStoreType)
+                let error = Error.invalidDataStoreType
+                request = AnyRequest(.failure(error))
+                resolver.reject(error)
             } else if self.syncCount() > 0 {
-                request = AnyRequest(LocalRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>())
-                resolver.reject(Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
+                let error = Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them.")
+                request = AnyRequest(.failure(error))
+                resolver.reject(error)
             } else {
                 let deltaSet = options?.deltaSet ?? self.deltaSet
                 let operation = PullOperation<T>(
@@ -916,9 +988,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         let request = sync(
             query,
             deltaSetCompletionHandler: deltaSetCompletionHandler,
-            options: Options(
-                deltaSet: deltaSet
-            )
+            options: try! Options(deltaSet: deltaSet)
         ) { (result: Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>) in
             guard let completionHandler = completionHandler else {
                 return
@@ -955,8 +1025,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let requests = MultiRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>>()
         Promise<(UInt, AnyRandomAccessCollection<T>)> { resolver in
             if type == .network {
-                requests += LocalRequest<Result<(UInt, AnyRandomAccessCollection<T>), [Swift.Error]>>()
-                resolver.reject(MultipleErrors(errors: [Error.invalidDataStoreType]))
+                let error = Error.invalidDataStoreType
+                requests += LocalRequest(error)
+                resolver.reject(error)
             } else {
                 let request = push(
                     options: options
@@ -1023,10 +1094,8 @@ open class DataStore<T: Persistable> where T: NSObject {
         var request: AnyRequest<Result<Int, Swift.Error>>!
         Promise<Int> { resolver in
             if type == .network {
-                let localRequest = LocalRequest<Result<Int, Swift.Error>>()
-                request = AnyRequest(localRequest)
                 let error = Error.invalidDataStoreType
-                localRequest.result = .failure(error)
+                request = AnyRequest(.failure(error))
                 resolver.reject(error)
             } else {
                 let executor = Executor()

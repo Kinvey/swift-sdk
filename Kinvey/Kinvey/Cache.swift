@@ -107,7 +107,7 @@ internal class Cache<T: Persistable> where T: NSObject {
     
     init(persistenceId: String, ttl: TimeInterval? = nil) {
         self.persistenceId = persistenceId
-        self.collectionName = T.collectionName()
+        self.collectionName = try! T.collectionName()
         self.ttl = ttl
     }
     

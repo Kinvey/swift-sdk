@@ -182,9 +182,9 @@ open class Client: Credential {
         }
     }
     
-    private func validateInitialize(appKey: String, appSecret: String) {
+    private func validateInitialize(appKey: String, appSecret: String) throws {
         if appKey.isEmpty || appSecret.isEmpty {
-            fatalError("Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
+            throw Error.invalidOperation(description: "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         }
     }
     
@@ -219,9 +219,14 @@ open class Client: Credential {
         encrypted: Bool,
         schema: Schema? = nil,
         options: Options? = nil,
-        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void)
-    {
-        validateInitialize(appKey: appKey, appSecret: appSecret)
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+    ) {
+        do {
+            try validateInitialize(appKey: appKey, appSecret: appSecret)
+        } catch {
+            completionHandler(.failure(error))
+            return
+        }
 
         var encryptionKey: Data? = nil
         if encrypted {
@@ -302,12 +307,14 @@ open class Client: Credential {
     ) {
         let apiHostNameString = "https://\(instanceId)-baas.kinvey.com"
         guard let apiHostName = URL(string: apiHostNameString) else {
-            fatalError("Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")
+            completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")))
+            return
         }
         
         let authHostNameString = "https://\(instanceId)-auth.kinvey.com"
         guard let authHostName = URL(string: authHostNameString) else {
-            fatalError("Invalid InstanceID: \(instanceId). \(authHostNameString) is not a valid URL.")
+            completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(authHostNameString) is not a valid URL.")))
+            return
         }
         
         return initialize(
@@ -335,7 +342,13 @@ open class Client: Credential {
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
-        validateInitialize(appKey: appKey, appSecret: appSecret)
+        do {
+            try validateInitialize(appKey: appKey, appSecret: appSecret)
+        } catch {
+            completionHandler(.failure(error))
+            return
+        }
+        
         self.encryptionKey = encryptionKey
         self.schemaVersion = schema?.version ?? 0
         self.options = options
@@ -373,7 +386,7 @@ open class Client: Credential {
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth, options: Options(client: self)) { (result: Result<U, Swift.Error>) in
+            User.login(authSource: .kinvey, kinveyAuth, options: try! Options(client: self)) { (result: Result<U, Swift.Error>) in
                 switch result {
                 case .success(let user):
                     completionHandler(.success(user))
@@ -404,11 +417,10 @@ open class Client: Credential {
         return self.appKey != nil && self.appSecret != nil
     }
     
-    internal func validate() -> Swift.Error? {
+    internal func validate() throws {
         guard isInitialized() else {
-            return Error.clientNotInitialized
+            throw Error.clientNotInitialized
         }
-        return nil
     }
     
     internal class func fileURL(appKey: String, tag: String = defaultTag) -> URL {
@@ -447,10 +459,11 @@ open class Client: Credential {
     @discardableResult
     public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         guard let _ = appKey, let _ = appSecret else {
+            let result: Result<EnvironmentInfo, Swift.Error> = .failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()"))
             DispatchQueue.main.async {
-                completionHandler(.failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()")))
+                completionHandler(result)
             }
-            return AnyRequest(LocalRequest<Result<EnvironmentInfo, Swift.Error>>())
+            return AnyRequest(result)
         }
         let request = networkRequestFactory.buildAppDataPing(
             options: options,

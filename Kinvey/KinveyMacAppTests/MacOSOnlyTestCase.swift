@@ -12,7 +12,7 @@ import XCTest
 class MacOSOnlyTestCase: KinveyTestCase {
     
     func testCachePath() {
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         let person = Person()
         person.name = "Victor"
         

@@ -14,7 +14,7 @@ class FindOperationTest: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
     }
     
     override func tearDown() {
@@ -27,7 +27,7 @@ class FindOperationTest: StoreTestCase {
         
         weak var expectationSave = expectation(description: "Save")
 
-        store.save(person, options: Options(writePolicy: .forceLocal)) {
+        store.save(person, options: try! Options(writePolicy: .forceLocal)) {
             switch $0 {
             case .success(let person):
                 XCTAssertEqual(person, self.person)
@@ -54,7 +54,7 @@ class FindOperationTest: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let person):
                     break
@@ -83,7 +83,7 @@ class FindOperationTest: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 0)

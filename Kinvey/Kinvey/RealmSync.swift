@@ -17,13 +17,13 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     let executor: Executor
     
     let persistenceId: String
-    lazy var collectionName: String = T.collectionName()
+    lazy var collectionName: String = try! T.collectionName()
     
     lazy var entityType = T.self as! Entity.Type
     
-    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
+    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) throws {
         if !(T.self is Entity.Type) {
-            fatalError("\(T.self) needs to be a Entity")
+            throw Error.invalidOperation(description: "\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {

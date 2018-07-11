@@ -47,7 +47,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataGetById(
-            collectionName: T.collectionName(),
+            collectionName: try! T.collectionName(),
             id: id,
             options: options,
             resultType: ResultType.self

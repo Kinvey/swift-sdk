@@ -136,9 +136,7 @@ open class User: NSObject, Credential {
             username: username,
             password: password,
             user: user,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -183,11 +181,14 @@ open class User: NSObject, Credential {
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        if let error = client.validate() {
+        do {
+            try client.validate()
+        } catch {
+            let result: Result<U, Swift.Error> = .failure(error)
             DispatchQueue.main.async {
-                completionHandler?(.failure(error))
+                completionHandler?(result)
             }
-            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
+            return AnyRequest(result)
         }
 
         let request = client.networkRequestFactory.buildUserSignUp(
@@ -311,7 +312,7 @@ open class User: NSObject, Credential {
             authSource: authSource,
             authData,
             createIfNotExists: createIfNotExists,
-            options: Options(
+            options: try! Options(
                 client: client,
                 authServiceId: authServiceId
             ),
@@ -335,11 +336,14 @@ open class User: NSObject, Credential {
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        if let error = client.validate() {
+        do {
+            try client.validate()
+        } catch {
+            let result: Result<U, Swift.Error> = .failure(error)
             DispatchQueue.main.async {
-                completionHandler?(.failure(error))
+                completionHandler?(result)
             }
-            return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
+            return AnyRequest(result)
         }
         
         let requests = MultiRequest<Result<U, Swift.Error>>()
@@ -404,9 +408,7 @@ open class User: NSObject, Credential {
         return login(
             username: username,
             password: password,
-            options: Options(
-                client: client
-            )
+            options: try! Options(client: client)
         ) { (result: Result<U, Swift.Error>) in
             switch result {
             case .success(let user):
@@ -435,9 +437,7 @@ open class User: NSObject, Credential {
     ) -> AnyRequest<Result<Void, Swift.Error>> {
         return sendEmailConfirmation(
             forUsername: username,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -505,10 +505,11 @@ open class User: NSObject, Credential {
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Void, Swift.Error>> {
         guard let _ = email else {
+            let result: Result<Void, Swift.Error> = .failure(Error.invalidOperation(description: "Email is required to send the email confirmation"))
             DispatchQueue.main.async {
-                completionHandler?(.failure(Error.invalidOperation(description: "Email is required to send the email confirmation")))
+                completionHandler?(result)
             }
-            return AnyRequest(LocalRequest<Result<Void, Swift.Error>>())
+            return AnyRequest(result)
         }
         
         return User.sendEmailConfirmation(
@@ -528,9 +529,7 @@ open class User: NSObject, Credential {
     ) -> AnyRequest<Result<Void, Swift.Error>> {
         return resetPassword(
             usernameOrEmail: usernameOrEmail,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -574,12 +573,14 @@ open class User: NSObject, Credential {
                 options: options,
                 completionHandler: completionHandler
             )
-        } else if let completionHandler = completionHandler {
+        }
+        let result: Result<Void, Swift.Error> = .failure(Error.userWithoutEmailOrUsername)
+        if let completionHandler = completionHandler {
             DispatchQueue.main.async(execute: { () -> Void in
-                completionHandler(.failure(Error.userWithoutEmailOrUsername))
+                completionHandler(result)
             })
         }
-        return AnyRequest(LocalRequest<Result<Void, Swift.Error>>())
+        return AnyRequest(result)
     }
     
     /**
@@ -660,9 +661,7 @@ open class User: NSObject, Credential {
     ) -> AnyRequest<Result<Void, Swift.Error>> {
         return forgotUsername(
             email: email,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -724,9 +723,7 @@ open class User: NSObject, Credential {
     ) -> AnyRequest<Result<Bool, Swift.Error>> {
         return exists(
             username: username,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -796,7 +793,7 @@ open class User: NSObject, Credential {
     ) -> AnyRequest<Result<U, Swift.Error>> {
         return get(
             userId: userId,
-            options: Options(
+            options: try! Options(
                 client: client
             ),
             completionHandler: completionHandler
@@ -1238,7 +1235,7 @@ open class User: NSObject, Credential {
             redirectURI: redirectURI,
             username: username,
             password: password,
-            options: Options(
+            options: try! Options(
                 client: client,
                 authServiceId: authServiceId
             ),
@@ -1280,11 +1277,14 @@ open class User: NSObject, Credential {
         switch provider {
         case .kinvey:
             let client = options?.client ?? sharedClient
-            if let error = client.validate() {
+            do {
+                try client.validate()
+            } catch {
+                let result: Result<U, Swift.Error> = .failure(error)
                 DispatchQueue.main.async {
-                    completionHandler?(.failure(error))
+                    completionHandler?(result)
                 }
-                return AnyRequest(LocalRequest<Result<U, Swift.Error>>())
+                return AnyRequest(result)
             }
             
             let request = client.networkRequestFactory.buildUserLogin(
@@ -1412,7 +1412,7 @@ open class User: NSObject, Credential {
             redirectURI: redirectURI,
             micUserInterface: micUserInterface,
             currentViewController: currentViewController,
-            options: Options(
+            options: try! Options(
                 client: client,
                 authServiceId: authServiceId,
                 timeout: timeout
@@ -1430,7 +1430,9 @@ open class User: NSObject, Credential {
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) {
         let client = options?.client ?? sharedClient
-        if let error = client.validate() {
+        do {
+            try client.validate()
+        } catch {
             DispatchQueue.main.async {
                 completionHandler?(.failure(error))
             }

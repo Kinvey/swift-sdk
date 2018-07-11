@@ -41,7 +41,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
                 count = Int(realmObjects.count)
-                let idKey = T.entityIdProperty()
+                let idKey = try! T.entityIdProperty()
                 let objectIds = cache.detach(entities: realmObjects, query: self.query).compactMap {
                     $0[idKey] as? String
                 }

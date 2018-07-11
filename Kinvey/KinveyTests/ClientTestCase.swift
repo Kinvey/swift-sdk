@@ -226,16 +226,37 @@ class ClientTestCase: KinveyTestCase {
     }
     
     func testClientAppKeyAndAppSecretEmpty() {
-        expect { () -> Void in
-            let _ = Client(appKey: "", appSecret: "")
-        }.to(throwAssertion())
+        weak var expectationClient = self.expectation(description: "Client")
+        
+        let client = Client(appKey: "", appSecret: "") {
+            switch $0 {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                let error = error as? Kinvey.Error
+                XCTAssertNotNil(error)
+                if let error = error {
+                    switch error {
+                    case .invalidOperation(let description):
+                        XCTAssertEqual(description, "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
+                    default:
+                        XCTFail(error.localizedDescription)
+                    }
+                }
+            }
+            expectationClient?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { (error) in
+            expectationClient = nil
+        }
     }
     
     func testDataStoreWithoutInitilizeClient() {
         expect { () -> Void in
             let client = Client()
-            let _ = DataStore<Person>.collection(options: Options(client: client))
-        }.to(throwAssertion())
+            try DataStore<Person>.collection(options: try! Options(client: client))
+        }.to(throwError())
     }
     
     func testDefaultMICVersion() {

@@ -35,5 +35,10 @@ internal class LocalRequest<Result>: NSObject, Request {
     func cancel() {
         //do nothing
     }
+    
+    convenience init(_ result: ResultType) {
+        self.init()
+        self.result = result
+    }
 
 }

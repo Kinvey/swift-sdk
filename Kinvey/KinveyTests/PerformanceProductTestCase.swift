@@ -164,7 +164,7 @@ class PerformanceProductTestCase: KinveyTestCase {
     lazy var count: Int? = {
         var count: Int?
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         weak var expectationCount = self.expectation(description: "Count")
         
@@ -262,7 +262,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         XCTAssertNotNil(count)
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         self.measure {
             let query = Query()
@@ -299,7 +299,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         let count = self.productsJsonArray!.count
         var checkpoint = Date()
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         for productJson in self.productsJsonArray![skip ..< count] {
             if let product = Product(JSON: productJson) {
@@ -343,7 +343,7 @@ class PerformanceProductTestCase: KinveyTestCase {
     func testPerformanceConsideringNetworkLatency() {
         XCTAssertNotNil(count)
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         self.measure {
             let query = Query()
@@ -378,7 +378,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
@@ -409,7 +409,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
-        let store = DataStore<Product>.collection(.cache)
+        let store = try! DataStore<Product>.collection(.cache)
         
         self.measure {
             weak var expectationFindLocal = self.expectation(description: "Find Local")
@@ -449,13 +449,13 @@ class PerformanceProductTestCase: KinveyTestCase {
         // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
-        let store = DataStore<Product>.collection(.sync)
+        let store = try! DataStore<Product>.collection(.sync)
         
         for _ in 1 ... 10 {
             weak var expectationFindLocal = self.expectation(description: "Find Local")
             weak var expectationFindNetwork = self.expectation(description: "Find Network")
             
-            store.find(query, options: Options(readPolicy: .both)) {
+            store.find(query, options: try! Options(readPolicy: .both)) {
                 switch $0 {
                 case .success(let products):
                     if expectationFindLocal == nil {
@@ -514,12 +514,12 @@ class PerformanceProductTestCase: KinveyTestCase {
         // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query, options: Options(deltaSet: true)) {
+            store.find(query, options: try! Options(deltaSet: true)) {
                 switch $0 {
                 case .success(let products):
                     break
@@ -565,7 +565,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         query.skip = 0
         query.limit = 10000
         
-        let store = DataStore<Product>.collection(.network)
+        let store = try! DataStore<Product>.collection(.network)
         
         self.measure {
             weak var expectationFind = self.expectation(description: "Find")
@@ -594,7 +594,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         loadMockData()
         
-        let store = DataStore<Product>.collection(.sync)
+        let store = try! DataStore<Product>.collection(.sync)
         
         var skip = 0
         let limit = 100
@@ -647,7 +647,7 @@ class PerformanceProductTestCase: KinveyTestCase {
         
         loadMockData()
         
-        let store = DataStore<Product>.collection(.sync)
+        let store = try! DataStore<Product>.collection(.sync)
         
         var skip = 0
         let limit = 1000
