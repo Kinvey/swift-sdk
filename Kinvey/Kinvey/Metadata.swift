@@ -9,10 +9,9 @@
 import Foundation
 import Realm
 import RealmSwift
-import ObjectMapper
 
 /// This class represents the metadata information for a record
-public class Metadata: Object, Mappable {
+public class Metadata: Object, Codable {
     
     /// Property names for `Metadata`
     @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys instead")
@@ -81,26 +80,27 @@ public class Metadata: Object, Mappable {
         super.init()
     }
     
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        lmt = try container.decodeIfPresent(String.self, forKey: .lastModifiedTime)
+        ect = try container.decodeIfPresent(String.self, forKey: .entityCreationTime)
+        authtoken = try container.decodeIfPresent(String.self, forKey: .authtoken)
+        super.init()
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(lmt, forKey: .lastModifiedTime)
+        try container.encodeIfPresent(ect, forKey: .entityCreationTime)
+        try container.encodeIfPresent(authtoken, forKey: .authtoken)
+    }
+    
     /**
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
     open override class func ignoredProperties() -> [String] {
         return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
-    }
-    
-    // MARK: Mappable
-    
-    /// Constructor that validates if the map can be build a new instance of Metadata.
-    public required init?(map: Map) {
-        super.init()
-    }
-    
-    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    public func mapping(map: Map) {
-        lmt <- map[CodingKeys.lastModifiedTime]
-        ect <- map[CodingKeys.entityCreationTime]
-        authtoken <- map[CodingKeys.authtoken]
     }
     
     // MARK: Realm
@@ -120,7 +120,45 @@ public class Metadata: Object, Mappable {
     public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
+    
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    public required convenience init?(map: Map) {
+        self.init()
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    public func mapping(map: Map) {
+        lmt <- (CodingKeys.lastModifiedTime.rawValue, map[CodingKeys.lastModifiedTime])
+        ect <- (CodingKeys.entityCreationTime.rawValue, map[CodingKeys.entityCreationTime])
+        authtoken <- (CodingKeys.authtoken.rawValue, map[CodingKeys.authtoken])
+    }
 
+}
+
+extension Metadata: JSONDecodable {
+    public class func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    public class func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    public class func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    public func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension Metadata: Mappable {
 }
 
 extension Metadata {
@@ -156,18 +194,55 @@ public final class UserMetadata: Metadata {
     /// Status of the activation process
     open internal(set) var userStatus: UserStatus?
     
+    public required init() {
+        super.init()
+    }
+    
+    enum UserMetadataCodingKeys: String, CodingKey {
+        
+        case emailVerification
+        case passwordReset
+        case userStatus = "status"
+        
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: UserMetadataCodingKeys.self)
+        emailVerification = try container.decodeIfPresent(EmailVerification.self, forKey: .emailVerification)
+        passwordReset = try container.decodeIfPresent(PasswordReset.self, forKey: .passwordReset)
+        userStatus = try container.decodeIfPresent(UserStatus.self, forKey: .userStatus)
+        try super.init(from: decoder)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: UserMetadataCodingKeys.self)
+        try container.encodeIfPresent(emailVerification, forKey: .emailVerification)
+        try container.encodeIfPresent(passwordReset, forKey: .passwordReset)
+        try container.encodeIfPresent(userStatus, forKey: .userStatus)
+        try super.encode(to: encoder)
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public override func mapping(map: Map) {
         super.mapping(map: map)
         
-        emailVerification <- map["emailVerification"]
-        passwordReset <- map["passwordReset"]
-        userStatus <- map["status"]
+        emailVerification <- ("emailVerification", map["emailVerification"])
+        passwordReset <- ("passwordReset", map["passwordReset"])
+        userStatus <- ("status", map["status"])
     }
 
 }
 
 /// Status of the email verification process for each `User`
-public final class EmailVerification: Object {
+public final class EmailVerification: Object, Codable {
     
     /// Current Status
     open internal(set) var status: String?
@@ -184,6 +259,7 @@ public final class EmailVerification: Object {
 }
 
 /// Allows serialization and deserialization of EmailVerification
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension EmailVerification: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -193,16 +269,16 @@ extension EmailVerification: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        status <- map["status"]
-        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
-        lastConfirmedAt <- (map["lastConfirmedAt"], KinveyDateTransform())
-        emailAddress <- map["emailAddress"]
+        status <- ("status", map["status"])
+        lastStateChangeAt <- ("lastStateChangeAt", map["lastStateChangeAt"], KinveyDateTransform())
+        lastConfirmedAt <- ("lastConfirmedAt", map["lastConfirmedAt"], KinveyDateTransform())
+        emailAddress <- ("emailAddress", map["emailAddress"])
     }
     
 }
 
 /// Status of the password reset process for each `User`
-public final class PasswordReset: Object {
+public final class PasswordReset: Object, Codable {
     
     /// Current Status
     open internal(set) var status: String?
@@ -213,6 +289,7 @@ public final class PasswordReset: Object {
 }
 
 /// Allows serialization and deserialization of PasswordReset
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension PasswordReset: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -222,8 +299,8 @@ extension PasswordReset: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        status <- map["status"]
-        lastStateChangeAt <- (map["lastStateChangeAt"], KinveyDateTransform())
+        status <- ("status", map["status"])
+        lastStateChangeAt <- ("lastStateChangeAt", map["lastStateChangeAt"], KinveyDateTransform())
     }
     
 }
@@ -237,9 +314,38 @@ public final class UserStatus: Object {
     /// Date of the last Status change
     open internal(set) var lastChange: Date?
     
+    enum CodingKeys: String, CodingKey {
+        
+        case value = "val"
+        case lastChange
+        
+    }
+    
+}
+
+extension UserStatus: Decodable {
+    
+    public convenience init(from decoder: Decoder) throws {
+        self.init()
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        value = try container.decodeIfPresent(String.self, forKey: .value)
+        lastChange = try container.decodeIfPresent(Date.self, forKey: .lastChange)
+    }
+    
+}
+
+extension UserStatus: Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(value, forKey: .value)
+        try container.encodeIfPresent(lastChange, forKey: .lastChange)
+    }
+    
 }
 
 /// Allows serialization and deserialization of UserStatus
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension UserStatus: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -249,8 +355,8 @@ extension UserStatus: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        value <- map["val"]
-        lastChange <- (map["lastChange"], KinveyDateTransform())
+        value <- ("value", map["val"])
+        lastChange <- ("lastChange", map["lastChange"], KinveyDateTransform())
     }
     
 }

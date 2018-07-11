@@ -10,7 +10,6 @@ import Foundation
 import Realm
 import RealmSwift
 import MapKit
-import ObjectMapper
 
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
@@ -753,7 +752,7 @@ extension RealmCache: DynamicCacheType {
             if let property = properties[translatedKey],
                 property.type == .object,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.CodingKeys.entityId],
+                let entityId = entity[Entity.EntityCodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedObject = dynamicObject[translatedKey] as? Object,
                 !(nestedObject is Entity)
@@ -766,7 +765,7 @@ extension RealmCache: DynamicCacheType {
             } else if let property = properties[translatedKey],
                 property.isArray,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.CodingKeys.entityId],
+                let entityId = entity[Entity.EntityCodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedArray = dynamicObject[translatedKey] as? List<DynamicObject>
             {
@@ -811,12 +810,11 @@ extension RealmCache: DynamicCacheType {
                         !property.isArray,
                         property.type == .object,
                         let clazz = ObjCRuntime.typeForPropertyName(self.entityType, propertyName: translatedKey),
-                        let anyObjectClass = clazz as? NSObject.Type,
-                        var obj = anyObjectClass.init() as? BaseMappable,
+                        let anyObjectClass = clazz as? (NSObject & JSONDecodable).Type,
                         let json = entity[key] as? [String : Any]
                     {
-                        let map = Map(mappingType: .fromJSON, JSON: json)
-                        obj.mapping(map: map)
+                        var obj = anyObjectClass.init()
+                        try obj.refresh(from: json)
                         translatedEntity[translatedKey] = obj
                     } else {
                         translatedEntity[translatedKey] = entity[key]

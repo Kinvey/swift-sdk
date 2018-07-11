@@ -565,11 +565,11 @@ class KinveyTestCase: XCTestCase {
     func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-        json[Entity.CodingKeys.entityId] = UUID().uuidString
-        json[Entity.CodingKeys.acl] = [
+        json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+        json[Entity.EntityCodingKeys.acl] = [
             Acl.Key.creator : self.client.activeUser!.userId
         ]
-        json[Entity.CodingKeys.metadata] = [
+        json[Entity.EntityCodingKeys.metadata] = [
             Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
             Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
         ]

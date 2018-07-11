@@ -243,6 +243,78 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveAddressCodable() {
+        let person = PersonCodable()
+        person.name = "Victor Barros"
+        
+        let address = AddressCodable()
+        address.city = "Vancouver"
+        
+        person.address = address
+        
+        if useMockData {
+            mockResponse { response in
+                let jsonObject = try? JSONSerialization.jsonObject(with: response)
+                XCTAssertNotNil(jsonObject)
+                if let jsonObject = jsonObject {
+                    let json = jsonObject as? [String : Any]
+                    XCTAssertNotNil(json)
+                    if let json = json {
+                        XCTAssertEqual(json["name"] as? String, person.name)
+                        let address = json["address"] as? [String : Any]
+                        XCTAssertNotNil(address)
+                        if let address = address {
+                            XCTAssertEqual(address["city"] as? String, person.address?.city)
+                        }
+                    }
+                }
+                return HttpResponse(json: [
+                    "name": "Victor Barros",
+                    "age": 0,
+                    "address": [
+                        "city": "Vancouver"
+                    ],
+                    "_acl": [
+                        "creator": "58450d87c077970e38a388ba"
+                    ],
+                    "_kmd": [
+                        "lmt": "2016-12-05T06:47:35.711Z",
+                        "ect": "2016-12-05T06:47:35.711Z"
+                    ],
+                    "_id": "58450d87f29e22207c83a236"
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let store = DataStore<PersonCodable>.collection(.network)
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(person) {
+            switch $0 {
+            case .success(let person):
+                XCTAssertNotNil(person.address)
+                
+                if let address = person.address {
+                    XCTAssertNotNil(address.city)
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
     func testSaveAddressSync() {
         if useMockData {
             mockResponse(json: [
@@ -1308,7 +1380,7 @@ class NetworkStoreTests: StoreTestCase {
     func testFindMethodObjectIdNotMissingAndAllValidationStrategy() {
         mockResponse(json: [
             [
-                Entity.CodingKeys.entityId.rawValue : UUID().uuidString,
+                Entity.EntityCodingKeys.entityId.rawValue : UUID().uuidString,
                 "name" : "Victor"
             ]
         ])
@@ -1381,8 +1453,7 @@ class NetworkStoreTests: StoreTestCase {
         
         weak var expectationFind = expectation(description: "Find")
         
-        let store = DataStore<Person>.collection(.network, validationStrategy: .custom(validationBlock: { (entity: Array<Dictionary<String, Any>>) -> Swift.Error? in
-            return nil
+        let store = DataStore<Person>.collection(.network, validationStrategy: .custom(validationBlock: { (entity: Array<Dictionary<String, Any>>) in
         }))
         
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -1636,6 +1707,174 @@ class NetworkStoreTests: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
+        }
+    }
+    
+    func testFindArrayByIdCodable() {
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let store = DataStore<PersonCodable>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                        XCTAssertEqual(person.acl?.creator, creator1)
+                        XCTAssertEqual(person.metadata?.lmt, lmt1)
+                        XCTAssertEqual(person.metadata?.ect, ect1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                        XCTAssertEqual(person.acl?.creator, creator2)
+                        XCTAssertEqual(person.metadata?.lmt, lmt2)
+                        XCTAssertEqual(person.metadata?.ect, ect2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+    }
+    
+    func testFindArrayByIdCustomParser() {
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let store = DataStore<PersonCustomParser>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
         }
     }
     
@@ -2102,7 +2341,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testPlusSign() {
-        let person = Person()
+        var person = Person()
         person.name = "C++"
         
         var mockJson: JsonDictionary?
@@ -2111,7 +2350,7 @@ class NetworkStoreTests: StoreTestCase {
                 let personId = UUID().uuidString
                 mockResponse { (request) -> HttpResponse in
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = personId
+                    json[Entity.EntityCodingKeys.entityId] = personId
                     mockJson = json
                     return HttpResponse(json: json)
                 }
@@ -2126,7 +2365,8 @@ class NetworkStoreTests: StoreTestCase {
             
             store.save(person, options: Options(writePolicy: .forceNetwork)) {
                 switch $0 {
-                case .success(let person):
+                case .success(let _person):
+                    person = _person
                     XCTAssertNotNil(person.name)
                     if let name = person.name {
                         XCTAssertEqual(name, "C++")
@@ -2187,7 +2427,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testGeolocationQuery() {
-        let person = Person()
+        var person = Person()
         person.name = "Victor Barros"
         let latitude = 42.3133521
         let longitude = -71.1271963
@@ -2208,7 +2448,7 @@ class NetworkStoreTests: StoreTestCase {
                 let personId = UUID().uuidString
                 mockResponse(completionHandler: { (request) -> HttpResponse in
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = personId
+                    json[Entity.EntityCodingKeys.entityId] = personId
                     mockJson = json
                     return HttpResponse(json: json)
                 })
@@ -2223,7 +2463,8 @@ class NetworkStoreTests: StoreTestCase {
             
             store.save(person, options: Options(writePolicy: .forceNetwork)) {
                 switch $0 {
-                case .success(let person):
+                case .success(let _person):
+                    person = _person
                     XCTAssertNotNil(person.geolocation)
                     if let geolocation = person.geolocation {
                         XCTAssertEqual(geolocation.latitude, latitude)

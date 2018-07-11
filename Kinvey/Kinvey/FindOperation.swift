@@ -8,7 +8,6 @@
 
 import Foundation
 import PromiseKit
-import ObjectMapper
 
 private let MaxIdsPerQuery = 200
 private let MaxSizePerResultSet = 10_000
@@ -186,8 +185,20 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) -> AnyRandomAccessCollection<T> {
         let startTime = CFAbsoluteTimeGetCurrent()
+        let client = options?.client ?? self.client
         let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
-            guard let entity = T(JSON: json, context: self.validationStrategy) else {
+            if let validationStrategy = self.validationStrategy {
+                do {
+                    try validationStrategy.validate(jsonArray: [json])
+                } catch {
+                    fatalError(error.localizedDescription)
+                }
+            } else {
+                guard let entityId = json[Entity.EntityCodingKeys.entityId.rawValue] as? String, !entityId.isEmpty else {
+                    fatalError("_id is required: \(T.self)\n\(json)")
+                }
+            }
+            guard let entity = try? client.jsonParser.parseObject(T.self, from: json) else {
                 fatalError("Invalid entity creation: \(T.self)\n\(json)")
             }
             return entity
@@ -287,14 +298,18 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 options: options
             )
             request.execute() { data, response, error in
-                if let response = response, response.isOK,
-                    let jsonArray = self.client.responseParser.parseArray(data)
+                if let response = response,
+                    response.isOK,
+                    let data = data,
+                    let jsonArray = try? self.client.jsonParser.parseDictionaries(from: data)
                 {
-                    if let validationStrategy = self.validationStrategy,
-                        let error = validationStrategy.validate(jsonArray: jsonArray)
-                    {
-                        resolver.reject(error)
-                        return
+                    if let validationStrategy = self.validationStrategy {
+                        do {
+                            try validationStrategy.validate(jsonArray: jsonArray)
+                        } catch {
+                            resolver.reject(error)
+                            return
+                        }
                     }
                     self.resultsHandler?(jsonArray)
                     let entities = self.convertToEntities(fromJsonArray: jsonArray)

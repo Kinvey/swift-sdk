@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 import PromiseKit
 
 private let lockEncryptionKey = NSLock()
@@ -100,7 +99,7 @@ open class Client: Credential {
     open static let defaultAuthHostName = URL(string: "https://auth.kinvey.com/")!
     
     var networkRequestFactory: RequestFactory!
-    var responseParser: ResponseParser!
+    var jsonParser: JSONParser!
     
     var encryptionKey: Data?
     
@@ -132,7 +131,7 @@ open class Client: Credential {
         
         push = Push(client: self)
         networkRequestFactory = HttpRequestFactory(client: self)
-        responseParser = JsonResponseParser(client: self)
+        self.jsonParser = DefaultJSONParser(client: self)
     }
     
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
@@ -362,7 +361,7 @@ open class Client: Credential {
         
         let userDefaults = UserDefaults.standard
         if let json = userDefaults.dictionary(forKey: appKey) {
-            keychain.user = userType.init(JSON: json)
+            keychain.user = try? jsonParser.parseUser(userType, from: json)
             userDefaults.removeObject(forKey: appKey)
             userDefaults.synchronize()
         }
@@ -481,7 +480,7 @@ open class Client: Credential {
 }
 
 /// Environment Information for a specific `appKey` and `appSecret`
-public struct EnvironmentInfo: StaticMappable {
+public struct EnvironmentInfo {
     
     /// Version of the backend
     public let version: String
@@ -494,6 +493,11 @@ public struct EnvironmentInfo: StaticMappable {
     
     /// Environment Name
     public let environmentName: String
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension EnvironmentInfo : StaticMappable {
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
         guard let version: String = map["version"].value(),

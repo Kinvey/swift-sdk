@@ -65,8 +65,10 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         request.execute() { data, response, error in
             let result: ResultType
-            if let response = response, response.isOK,
-                let results = self.client.responseParser.parse(data),
+            if let response = response,
+                response.isOK,
+                let data = data,
+                let results = try? self.client.jsonParser.parseDictionary(from: data),
                 let count = results["count"] as? Int
             {
                 self.cache?.remove(byQuery: self.query)

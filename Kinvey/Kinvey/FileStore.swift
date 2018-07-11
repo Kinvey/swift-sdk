@@ -8,7 +8,6 @@
 
 import Foundation
 import PromiseKit
-import ObjectMapper
 
 
 #if os(macOS)
@@ -363,7 +362,8 @@ open class FileStore<FileType: File> {
         let promise = Promise<FileType> { resolver in
             request.execute() { (data, response, error) -> Void in
                 if let response = response, response.isOK,
-                    let json = self.client.responseParser.parse(data),
+                    let data = data,
+                    let json = try? self.client.jsonParser.parseDictionary(from: data),
                     let newFile = FileType(JSON: json) {
                     newFile.path = file.path
                     if let cache = self.cache {
@@ -552,7 +552,8 @@ open class FileStore<FileType: File> {
                 requests += request
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK,
-                        let json = self.client.responseParser.parse(data),
+                        let data = data,
+                        let json = try? self.client.jsonParser.parseDictionary(from: data),
                         let newFile = FileType(JSON: json)
                     {
                         resolver.fulfill((file: newFile, skip: nil))
@@ -1221,7 +1222,8 @@ open class FileStore<FileType: File> {
         Promise<UInt> { resolver in
             request.execute({ (data, response, error) -> Void in
                 if let response = response, response.isOK,
-                    let json = self.client.responseParser.parse(data),
+                    let data = data,
+                    let json = try? self.client.jsonParser.parseDictionary(from: data),
                     let count = json["count"] as? UInt
                 {
                     if let cache = self.cache {
@@ -1295,7 +1297,8 @@ open class FileStore<FileType: File> {
             request.execute { (data, response, error) -> Void in
                 if let response = response,
                     response.isOK,
-                    let jsonArray = self.client.responseParser.parseArray(data)
+                    let data = data,
+                    let jsonArray = try? self.client.jsonParser.parseDictionaries(from: data)
                 {
                     let files = [FileType](JSONArray: jsonArray)
                     resolver.fulfill(files)

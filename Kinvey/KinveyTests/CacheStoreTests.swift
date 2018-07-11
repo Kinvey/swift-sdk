@@ -25,7 +25,7 @@ class CacheStoreTests: StoreTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])

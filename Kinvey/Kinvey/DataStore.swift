@@ -263,6 +263,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<[AggregationCustomResult<T>], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<[AggregationCustomResult<T>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let keys = keys ?? []
         let aggregation: Aggregation = .custom(
             keys: keys,
@@ -280,9 +281,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationCustomResult<T>] in
             let array = results.map { (json) -> AggregationCustomResult<T> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationCustomResult<T>(
-                    value: T(JSON: json)!,
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     custom: json
                 )
             }
@@ -324,6 +325,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: @escaping (Result<[AggregationCountResult<T, Count>], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[AggregationCountResult<T, Count>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let aggregation: Aggregation = .count(keys: keys)
         let operation = AggregateOperation<T>(
             aggregation: aggregation,
@@ -336,9 +338,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationCountResult<T, Count>] in
             let array = results.map { (json) -> AggregationCountResult<T, Count> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationCountResult<T, Count>(
-                    value: T(JSON: json)!,
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     count: json[aggregation.resultKey] as! Count
                 )
             }
@@ -379,6 +381,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: @escaping (Result<[AggregationSumResult<T, Sum>], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[AggregationSumResult<T, Sum>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let aggregation: Aggregation = .sum(keys: keys, sum: sum)
         let operation = AggregateOperation<T>(
             aggregation: aggregation,
@@ -391,9 +394,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationSumResult<T, Sum>] in
             let array = results.map { (json) -> AggregationSumResult<T, Sum> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationSumResult<T, Sum>(
-                    value: T(JSON: json)!,
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     sum: json[aggregation.resultKey] as! Sum
                 )
             }
@@ -434,6 +437,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: @escaping (Result<[AggregationAvgResult<T, Avg>], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[AggregationAvgResult<T, Avg>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let aggregation: Aggregation = .avg(keys: keys, avg: avg)
         let operation = AggregateOperation<T>(
             aggregation: aggregation,
@@ -446,9 +450,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationAvgResult<T, Avg>] in
             let array = results.map { (json) -> AggregationAvgResult<T, Avg> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationAvgResult<T, Avg>(
-                    value: T(JSON: json)!,
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     avg: json[aggregation.resultKey] as! Avg
                 )
             }
@@ -501,9 +505,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationMinResult<T, Min>] in
             let array = results.map { (json) -> AggregationMinResult<T, Min> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMinResult<T, Min>(
-                    value: T(JSON: json)!,
+                    value: try! self.client.jsonParser.parseObject(T.self, from: json),
                     min: json[aggregation.resultKey] as! Min
                 )
             }
@@ -556,9 +560,9 @@ open class DataStore<T: Persistable> where T: NSObject {
         let convert = { (results: [JsonDictionary]) -> [AggregationMaxResult<T, Max>] in
             let array = results.map { (json) -> AggregationMaxResult<T, Max> in
                 var json = json
-                json[Entity.CodingKeys.entityId] = groupId
+                json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMaxResult<T, Max>(
-                    value: T(JSON: json)!,
+                    value: try! self.client.jsonParser.parseObject(T.self, from: json),
                     max: json[aggregation.resultKey] as! Max
                 )
             }
@@ -1123,6 +1127,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         onStatus: @escaping (RealtimeStatus) -> Void,
         onError: @escaping (Swift.Error) -> Void
     ) -> AnyRequest<Result<Void, Swift.Error>> {
+        let client = options?.client ?? self.client
         let request = client.networkRequestFactory.buildAppDataSubscribe(
             collectionName: collectionName,
             deviceId: deviceId,
@@ -1133,7 +1138,9 @@ open class DataStore<T: Persistable> where T: NSObject {
             request: request
         ).done { (realtimeRouter) -> Void in
             let onNext: (Any?) -> Void = {
-                if let dict = $0 as? [String : Any], let obj = T(JSON: dict) {
+                if let dict = $0 as? [String : Any],
+                    let obj = try? client.jsonParser.parseObject(T.self, from: dict)
+                {
                     self.cache?.save(entity: obj)
                     onNext(obj)
                 }

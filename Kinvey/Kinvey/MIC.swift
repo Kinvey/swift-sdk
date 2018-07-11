@@ -106,7 +106,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let authData = client.responseParser.parse(data)
+                    let data = data,
+                    let authData = try? client.jsonParser.parseDictionary(from: data)
                 {
                     requests += User.login(
                         authSource: .kinvey,
@@ -151,7 +152,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data),
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data),
                     let tempLoginUri = json["temp_login_uri"] as? String,
                     let tempLoginUrl = URL(string: tempLoginUri)
                 {
@@ -233,7 +235,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data)
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data)
                 {
                     resolver.fulfill(json)
                 } else {
@@ -278,7 +281,11 @@ open class MIC {
             )
         )
         request.execute { (data, response, error) in
-            if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
+            if let response = response,
+                response.isOK,
+                let data = data,
+                let authData = try? client.jsonParser.parseDictionary(from: data)
+            {
                 requests += User.login(authSource: .kinvey, authData, options: options, completionHandler: completionHandler)
             } else {
                 completionHandler?(.failure(buildError(data, response, error, client)))

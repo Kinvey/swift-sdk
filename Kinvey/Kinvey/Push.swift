@@ -165,7 +165,7 @@ open class Push {
      }
      ```
      */
-    @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
+    @available(iOS, deprecated: 3.18.0, message: "Please use registerForNotifications() instead")
     open func registerForPush(
         forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
         categories: Set<UIUserNotificationCategory>? = nil,
@@ -194,7 +194,7 @@ open class Push {
      }
      ```
      */
-    @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
+    @available(iOS, deprecated: 3.18.0, message: "Please use registerForNotifications() instead")
     open func registerForPush(
         forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
         categories: Set<UIUserNotificationCategory>? = nil,
@@ -217,6 +217,7 @@ open class Push {
     }
     
     @available(iOS 10.0, *)
+    @available(*, deprecated: 3.18.0, message: "Please use registerForNotifications(authorizationOptions:categories:options:completionHandler:) instead")
     open func registerForNotifications(
         authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
         categories: Set<UNNotificationCategory>? = nil,

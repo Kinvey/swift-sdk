@@ -18,7 +18,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -81,20 +81,20 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let query = Query()
         let refObjs: [JsonDictionary] = [
             [
-                Entity.CodingKeys.entityId.rawValue : "create",
-                Entity.CodingKeys.metadata.rawValue : [
+                Entity.EntityCodingKeys.entityId.rawValue : "create",
+                Entity.EntityCodingKeys.metadata.rawValue : [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString(),
                 ]
             ],
             [
-                Entity.CodingKeys.entityId.rawValue : "update",
-                Entity.CodingKeys.metadata.rawValue : [
+                Entity.EntityCodingKeys.entityId.rawValue : "update",
+                Entity.EntityCodingKeys.metadata.rawValue : [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date(timeInterval: 1, since: date).toString()
                 ]
             ],
             [
-                Entity.CodingKeys.entityId.rawValue : "noChange",
-                Entity.CodingKeys.metadata.rawValue : [
+                Entity.EntityCodingKeys.entityId.rawValue : "noChange",
+                Entity.EntityCodingKeys.metadata.rawValue : [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString()
                 ]
             ]
@@ -223,7 +223,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -423,7 +423,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -594,7 +594,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -758,7 +758,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.collection(.sync)
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -1067,7 +1067,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.collection(.sync)
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -1148,7 +1148,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         signUp()
         
         let store = DataStore<Person>.collection()
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         if useMockData {
             mockResponse(json: [])
@@ -1263,7 +1263,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 }
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
             
             weak var expectationPull = expectation(description: "Pull")
             
@@ -1288,7 +1288,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         signUp()
         
         let store = DataStore<Person>.collection()
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         class OnePersonURLProtocol: URLProtocol {
             
@@ -1425,7 +1425,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             var mockCount = 0
@@ -1591,7 +1591,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             var mockCount = 0
@@ -1883,7 +1883,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         do {
             if useMockData {
@@ -2094,7 +2094,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         var jsonArray = [JsonDictionary]()
         for _ in 1...201 {
@@ -2229,7 +2229,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         var jsonArray = [JsonDictionary]()
         for _ in 1...201 {

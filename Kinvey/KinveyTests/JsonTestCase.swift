@@ -16,7 +16,7 @@ class JsonTestCase: StoreTestCase {
         
         let storeProject = DataStore<RefProject>.collection(.network, options: Options(client: client))
         
-        let project = RefProject()
+        var project = RefProject()
         project.name = "Mall"
         
         do {
@@ -44,7 +44,8 @@ class JsonTestCase: StoreTestCase {
             storeProject.save(project) {
                 self.assertThread()
                 switch $0 {
-                case .success(let project):
+                case .success(let _project):
+                    project = _project
                     XCTAssertNotNil(project.uniqueId)
                     XCTAssertNotEqual(project.uniqueId, "")
                 case .failure(let error):
