@@ -291,7 +291,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
         
-        let store = DataStore<PersonCodable>.collection(.network)
+        let store = try! DataStore<PersonCodable>.collection(.network)
         
         weak var expectationSave = expectation(description: "Save")
         
@@ -1288,7 +1288,7 @@ class NetworkStoreTests: StoreTestCase {
                 if let error = error {
                     switch error {
                     case .invalidOperation(let description):
-                        XCTAssertEqual(description, "Invalid entity creation: \(Person.self)\n[\"name\": Victor]")
+                        XCTAssertEqual(description, "_id is required: \(Person.self)\n[\"name\": Victor]")
                     default:
                         XCTFail(error.localizedDescription)
                     }
@@ -1761,7 +1761,7 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
             
-            let store = DataStore<PersonCodable>.collection(.network)
+            let store = try! DataStore<PersonCodable>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -1848,7 +1848,7 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
             
-            let store = DataStore<PersonCustomParser>.collection(.network)
+            let store = try! DataStore<PersonCustomParser>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             

@@ -1147,7 +1147,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindEmpty() {
         signUp()
         
-        let store = DataStore<Person>.collection()
+        let store = try! DataStore<Person>.collection()
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
         if useMockData {

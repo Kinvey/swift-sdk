@@ -783,9 +783,9 @@ extension RealmCache: DynamicCacheType {
         log.verbose("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
-            entities.forEachAutoreleasepool { entity in
+            try entities.forEachAutoreleasepool { entity in
                 var translatedEntity = JsonDictionary()
-                propertyMapping.forEachAutoreleasepool { (translatedKey, tuple) in
+                try propertyMapping.forEachAutoreleasepool { (translatedKey, tuple) in
                     let (key, transform) = tuple
                     if let transform = transform,
                         let value = transform.transformFromJSON(entity[key]) as? NSObject,
