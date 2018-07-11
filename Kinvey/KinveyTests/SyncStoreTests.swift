@@ -1847,7 +1847,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let reportMemory2 = reportMemory()!
-        XCTAssertTrue(reportMemory2 - reportMemory1 < 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(reportMemory2 - reportMemory1, 1024 * 1024 * 50) // 50 Mb
         
         autoreleasepool {
             weak var expectationPull = expectation(description: "Pull")
@@ -1870,7 +1870,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let reportMemory3 = reportMemory()!
-        XCTAssertTrue(reportMemory3 - reportMemory2 < 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(reportMemory3 - reportMemory2, 1024 * 1024 * 50) // 50 Mb
         
         autoreleasepool {
             weak var expectationRemove = expectation(description: "Remove")
@@ -1893,7 +1893,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let reportMemory4 = reportMemory()!
-        XCTAssertTrue(reportMemory4 - reportMemory3 < 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(reportMemory4 - reportMemory3, 1024 * 1024 * 50) // 50 Mb
     }
     
     func testExpiredTTL() {
