@@ -62,8 +62,8 @@ open class Entity: Object, Persistable {
     }
     
     /// Override this method and return the name of the collection for Kinvey.
-    open class func collectionName() -> String {
-        fatalError("Method \(#function) must be overridden")
+    open class func collectionName() throws -> String {
+        throw Error.invalidOperation(description: "Method \(#function) must be overridden")
     }
     
     /// The `_id` property mapped in the Kinvey backend.
@@ -123,7 +123,7 @@ open class Entity: Object, Persistable {
      :nodoc:
      */
     open override class func primaryKey() -> String? {
-        return entityIdProperty()
+        return try? entityIdProperty()
     }
     
     /**

@@ -137,11 +137,27 @@ class FileTestCase: StoreTestCase {
     func testDownloadMissingFileId() {
         signUp()
         
-        expect { () -> Void in
-            self.fileStore.download(File()) { (file, data: Data?, error) in
-                XCTFail()
+        weak var expectationDownload = expectation(description: "Download")
+        
+        self.fileStore.download(File()) { (file, data: Data?, error) in
+            XCTAssertNil(file)
+            XCTAssertNil(data)
+            XCTAssertNotNil(error)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .invalidOperation(let description):
+                    XCTAssertEqual(description, "fileId is required")
+                default:
+                    XCTFail(error.localizedDescription)
+                }
             }
-        }.to(throwAssertion())
+            
+            expectationDownload?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationDownload = nil
+        }
     }
     
     func testDownloadTimeoutError() {
@@ -3036,7 +3052,9 @@ class FileTestCase: StoreTestCase {
         let file = File() {
             $0.fileId = UUID().uuidString
         }
-        XCTAssertNil(fileStore.cachedFile(file))
+        expect {
+            try self.fileStore.cachedFile(file)
+        }.to(beNil())
     }
     
     func testCreateBucketData() {

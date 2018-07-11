@@ -182,7 +182,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, options: Options(client: client)) {
+            User.destroy(userId: user.userId, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -218,7 +218,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: true, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -254,7 +254,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: false, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: false, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -290,7 +290,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: true, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -321,7 +321,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, options: Options(client: client)) {
+            User.destroy(userId: user.userId, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -385,7 +385,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection(.network)
+        let store = try! DataStore<Person>.collection(.network)
         
         do {
             if useMockData {
@@ -502,7 +502,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection(.network)
+        let store = try! DataStore<Person>.collection(.network)
         
         do {
             if useMockData {
@@ -768,12 +768,12 @@ class UserTests: KinveyTestCase {
                 }
             }
             
-            let dataStore = DataStore<Person>.collection(.network)
+            let dataStore = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
             dataStore.find(
-                options: Options(
+                options: try! Options(
                     client: client
                 )
             ) {
@@ -2538,7 +2538,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -2763,7 +2763,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -2992,7 +2992,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3171,7 +3171,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3278,7 +3278,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3353,7 +3353,7 @@ class UserTests: KinveyTestCase {
         MIC.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3413,7 +3413,7 @@ class UserTests: KinveyTestCase {
         MIC.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3448,7 +3448,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3525,7 +3525,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3585,7 +3585,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3645,7 +3645,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -4058,7 +4058,7 @@ extension UserTests {
                 XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
                 
                 do {
-                    let store = DataStore<Person>.collection(.network)
+                    let store = try! DataStore<Person>.collection(.network)
                     
                     weak var expectationFind = expectation(description: "Find")
                     
@@ -4303,7 +4303,7 @@ extension UserTests {
         
         let redirectURI = URL(string: "throwAnError://")!
         
-        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: Options(timeout: 60)) {
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: try! Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
@@ -4347,7 +4347,7 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: Options(timeout: 60)) {
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: try! Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
@@ -4419,7 +4419,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4431,7 +4431,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?no_code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertFalse(result)
     }
@@ -4491,7 +4491,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4569,7 +4569,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4579,8 +4579,8 @@ extension UserTests {
     
     func testUserMicViewControllerCoding() {
         expect { () -> Void in
-            let _ = Kinvey.MICLoginViewController(coder: NSKeyedArchiver())
-        }.to(throwAssertion())
+            Kinvey.MICLoginViewController(coder: NSKeyedArchiver())
+        }.to(raiseException())
     }
     
     func testMICTimeoutAction() {
@@ -4598,7 +4598,7 @@ extension UserTests {
         User.presentMICViewController(
             redirectURI: redirectURI,
             micUserInterface: .uiWebView,
-            options: Options(timeout: 3)
+            options: try! Options(timeout: 3)
         ) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
@@ -4642,7 +4642,7 @@ extension UserTests {
         User.presentMICViewController(
             redirectURI: redirectURI,
             micUserInterface: .uiWebView,
-            options: Options(timeout: 60)
+            options: try! Options(timeout: 60)
         ) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
@@ -4773,7 +4773,7 @@ extension UserTests {
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         do {
             mockResponse(json: [

@@ -87,21 +87,21 @@ class ForgotToCallSuperPersistable: Persistable {
 class ForgotToCallSuper: XCTestCase {
     
     func testForgotToCallSuper() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperEntity.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperEntity.propertyMappingReverse()
+        }.to(throwError())
     }
     
     func testForgotToCallSuper2() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperEntity2.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperEntity2.propertyMappingReverse()
+        }.to(throwError())
     }
     
     func testForgotToCallSuperPersistable() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperPersistable.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperPersistable.propertyMappingReverse()
+        }.to(throwError())
     }
     
 }

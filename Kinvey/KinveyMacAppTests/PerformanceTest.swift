@@ -82,7 +82,7 @@ class PerformanceTest: XCTestCase {
         let sapCustomerNumbersTotal = sapCustomerNumbers.reduce(0, { $0 + $1.value })
         XCTAssertEqual(884463, sapCustomerNumbersTotal)
         
-        let dataStore = DataStore<HierarchyCache>.collection()
+        let dataStore = try! DataStore<HierarchyCache>.collection()
         dataStore.clearCache()
         
         Kinvey.logLevel = .warning
@@ -126,7 +126,7 @@ class PerformanceTest: XCTestCase {
             print("Time elapsed to count \(sapCustomerNumber): \(CFAbsoluteTimeGetCurrent() - startTime) s.")
         }
         
-        Kinvey.sharedClient.options = Options(timeout: 600)
+        Kinvey.sharedClient.options = try! Options(timeout: 600)
         let limit = 10000
         
         measure {
@@ -235,7 +235,7 @@ class PerformanceTest: XCTestCase {
         let sapCustomerNumbersTotal = sapCustomerNumbers.reduce(0, { $0 + $1.value })
         XCTAssertEqual(884463, sapCustomerNumbersTotal)
         
-        let dataStore = DataStore<HierarchyCache>.collection(autoPagination: true)
+        let dataStore = try! DataStore<HierarchyCache>.collection(autoPagination: true)
         dataStore.clearCache()
         
         Kinvey.logLevel = .warning
@@ -279,7 +279,7 @@ class PerformanceTest: XCTestCase {
             print("Time elapsed to count \(sapCustomerNumber): \(CFAbsoluteTimeGetCurrent() - startTime) s.")
         }
         
-        Kinvey.sharedClient.options = Options(timeout: 600)
+        Kinvey.sharedClient.options = try! Options(timeout: 600)
         
         measure {
             let startTime = CFAbsoluteTimeGetCurrent()

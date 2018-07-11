@@ -22,7 +22,7 @@ internal class CacheManager: NSObject {
         self.schemaVersion = schemaVersion
     }
     
-    func cache<T: Persistable>(fileURL: URL? = nil, type: T.Type) -> AnyCache<T>? where T: NSObject {
+    func cache<T: Persistable>(fileURL: URL? = nil, type: T.Type) throws -> AnyCache<T>? where T: NSObject {
         let fileManager = FileManager.default
         if let fileURL = fileURL {
             do {
@@ -33,7 +33,7 @@ internal class CacheManager: NSObject {
             }
         }
         
-        return AnyCache(RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion))
+        return AnyCache(try RealmCache<T>(persistenceId: persistenceId, fileURL: fileURL, encryptionKey: encryptionKey, schemaVersion: schemaVersion))
     }
     
     func fileCache<FileType: File>(fileURL: URL? = nil) -> AnyFileCache<FileType>? {

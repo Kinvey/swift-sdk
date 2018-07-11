@@ -85,7 +85,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         var count = UInt(0)
         var errors: [Swift.Error] = []
         
-        let collectionName = T.collectionName()
+        let collectionName = try! T.collectionName()
         var pushOperation: PushRequest!
         pushOperation = PushRequest(collectionName: collectionName) {
             let result: ResultType

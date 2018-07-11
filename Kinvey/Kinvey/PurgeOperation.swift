@@ -40,7 +40,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                         promises.append(Promise<Void> { resolver in
                             let client = options?.client ?? self.client
                             let request = client.networkRequestFactory.buildAppDataGetById(
-                                collectionName: T.collectionName(),
+                                collectionName: try! T.collectionName(),
                                 id: objectId,
                                 options: options,
                                 resultType: ResultType.self
@@ -71,7 +71,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                 case .create:
                     promises.append(Promise<Void> { resolver in
                         if let objectId = pendingOperation.objectId {
-                            let query = Query(format: "\(T.entityIdProperty()) == %@", objectId)
+                            let query = Query(format: "\(try! T.entityIdProperty()) == %@", objectId)
                             cache?.remove(byQuery: query)
                         }
                         sync.removePendingOperation(pendingOperation)

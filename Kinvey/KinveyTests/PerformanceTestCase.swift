@@ -17,7 +17,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.collection(.sync)
+            store = try! DataStore<Person>.collection(.sync)
             
             let n = 1000
             
@@ -42,12 +42,12 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                self.store.find(query, options: Options(deltaSet: false)) {
+                self.store.find(query, options: try! Options(deltaSet: false)) {
                     switch $0 {
                     case .success(let results):
                         XCTAssertEqual(results.count, n)
@@ -71,7 +71,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.collection(.sync)
+            store = try! DataStore<Person>.collection(.sync)
             
             let n = 10000
             
@@ -96,12 +96,12 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "\(Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator ==  %@", user.userId)
             
             self.measure {
                 weak var expectationFind = self.expectation(description: "Find")
                 
-                self.store.find(query, options: Options(deltaSet: false)) {
+                self.store.find(query, options: try! Options(deltaSet: false)) {
                     switch $0 {
                     case .success(let results):
                         XCTAssertEqual(results.count, n)

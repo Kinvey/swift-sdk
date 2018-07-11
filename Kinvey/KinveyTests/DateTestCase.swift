@@ -61,7 +61,7 @@ class DateTestCase: KinveyTestCase {
     func testQueryDate() {
         signUp()
         
-        let store = DataStore<Event>.collection(.network)
+        let store = try! DataStore<Event>.collection(.network)
         
         let publishDate = Date()
         

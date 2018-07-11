@@ -162,7 +162,7 @@ class ViewController: NSViewController {
         User.login(
             username: username!,
             password: password!,
-            options: Options(client: sharedClient)
+            options: try! Options(client: sharedClient)
         ) {
             switch $0 {
             case .success(let user):

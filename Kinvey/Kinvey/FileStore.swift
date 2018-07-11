@@ -127,6 +127,7 @@ open class FileStore<FileType: File> {
     
     /// Uploads a `UIImage` in a PNG or JPEG format.
     @discardableResult
+    @available(*, deprecated: 3.18.0, message: "Please use FileStore.upload(_:image:imageRepresentation:options:completionHandler:) instead")
     open func upload(
         _ file: FileType,
         image: NSImage,
@@ -138,9 +139,7 @@ open class FileStore<FileType: File> {
             file,
             image: image,
             imageRepresentation: imageRepresentation,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -205,9 +204,7 @@ open class FileStore<FileType: File> {
             file,
             image: image,
             imageRepresentation: imageRepresentation,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -268,9 +265,7 @@ open class FileStore<FileType: File> {
         return upload(
             file,
             path: path,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -326,9 +321,7 @@ open class FileStore<FileType: File> {
         return upload(
             file,
             stream: stream,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -418,9 +411,7 @@ open class FileStore<FileType: File> {
         return upload(
             file,
             data: data,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -806,9 +797,7 @@ open class FileStore<FileType: File> {
     ) -> AnyRequest<Result<FileType, Swift.Error>> {
         return refresh(
             file,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -919,15 +908,15 @@ open class FileStore<FileType: File> {
     }
     
     /// Returns the cached file, if exists.
-    open func cachedFile(_ file: FileType) -> FileType? {
-        let entityId = crashIfInvalid(file: file)
+    open func cachedFile(_ file: FileType) throws -> FileType? {
+        let entityId = try crashIfInvalid(file: file)
         return cachedFile(entityId)
     }
     
     @discardableResult
-    fileprivate func crashIfInvalid(file: FileType) -> String {
+    fileprivate func crashIfInvalid(file: FileType) throws -> String {
         guard let fileId = file.fileId else {
-            fatalError("fileId is required")
+            throw Error.invalidOperation(description: "fileId is required")
         }
         return fileId
     }
@@ -967,9 +956,7 @@ open class FileStore<FileType: File> {
         return download(
             file,
             storeType: storeType,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -982,7 +969,13 @@ open class FileStore<FileType: File> {
         options: Options? = nil,
         completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
-        crashIfInvalid(file: file)
+        do {
+            try crashIfInvalid(file: file)
+        } catch {
+            let result: Result<(FileType, URL), Swift.Error> = .failure(error)
+            completionHandler?(result)
+            return AnyRequest(result)
+        }
         
         if storeType == .sync || storeType == .cache,
             let entityId = file.fileId,
@@ -1085,9 +1078,7 @@ open class FileStore<FileType: File> {
     ) -> AnyRequest<Result<(FileType, Data), Swift.Error>> {
         return download(
             file,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }
@@ -1099,7 +1090,13 @@ open class FileStore<FileType: File> {
         options: Options? = nil,
         completionHandler: ((Result<(FileType, Data), Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<(FileType, Data), Swift.Error>> {
-        crashIfInvalid(file: file)
+        do {
+            try crashIfInvalid(file: file)
+        } catch {
+            let result: Result<(FileType, Data), Swift.Error> = .failure(error)
+            completionHandler?(result)
+            return AnyRequest(result)
+        }
         
         let multiRequest = MultiRequest<Result<(FileType, Data), Swift.Error>>()
         multiRequest.progress = Progress(totalUnitCount: 100)
@@ -1274,9 +1271,7 @@ open class FileStore<FileType: File> {
     ) -> AnyRequest<Result<[FileType], Swift.Error>> {
         return find(
             query,
-            options: Options(
-                ttl: ttl
-            ),
+            options: try! Options(ttl: ttl),
             completionHandler: completionHandler
         )
     }

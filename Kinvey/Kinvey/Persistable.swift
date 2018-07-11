@@ -19,7 +19,7 @@ infix operator <- : DefaultPrecedence
 public protocol Persistable: JSONCodable {
     
     /// Provides the collection name to be matched with the backend.
-    static func collectionName() -> String
+    static func collectionName() throws -> String
     
     /// Default Constructor.
     init()
@@ -125,7 +125,7 @@ struct PropertyMap: Sequence, IteratorProtocol, ExpressibleByDictionaryLiteral {
 
 extension Persistable {
     
-    static func propertyMappingReverse() -> [String : [String]] {
+    static func propertyMappingReverse() throws -> [String : [String]] {
         var results = [String : [String]]()
         for (key, (value, _)) in propertyMapping() {
             var properties = results[value]
@@ -141,10 +141,10 @@ extension Persistable {
             let isEntity = self is Entity.Type
             let hintMessage = isEntity ? "Please call super.propertyMapping() inside your propertyMapping() method." : "Please add properties in your Persistable model class to map the missing properties."
             guard entityIdMapped else {
-                fatalError("Property \(Entity.EntityCodingKeys.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
+                throw Error.invalidOperation(description: "Property \(Entity.EntityCodingKeys.entityId) (Entity.Key.entityId) is missing in the propertyMapping() method. \(hintMessage)")
             }
             guard metadataMapped else {
-                fatalError("Property \(Entity.EntityCodingKeys.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
+                throw Error.invalidOperation(description: "Property \(Entity.EntityCodingKeys.metadata) (Entity.Key.metadata) is missing in the propertyMapping() method. \(hintMessage)")
             }
         }
         return results
@@ -166,16 +166,16 @@ extension Persistable {
         return propertyMapping()[propertyName]
     }
     
-    internal static func entityIdProperty() -> String {
-        return propertyMappingReverse()[Entity.EntityCodingKeys.entityId]!.last!
+    internal static func entityIdProperty() throws -> String {
+        return try propertyMappingReverse()[Entity.EntityCodingKeys.entityId]!.last!
     }
     
-    internal static func aclProperty() -> String? {
-        return propertyMappingReverse()[Entity.EntityCodingKeys.acl]?.last
+    internal static func aclProperty() throws -> String? {
+        return try propertyMappingReverse()[Entity.EntityCodingKeys.acl]?.last
     }
     
-    internal static func metadataProperty() -> String? {
-        return propertyMappingReverse()[Entity.EntityCodingKeys.metadata]?.last
+    internal static func metadataProperty() throws -> String? {
+        return try propertyMappingReverse()[Entity.EntityCodingKeys.metadata]?.last
     }
     
 }
@@ -193,22 +193,28 @@ extension Persistable where Self: NSObject {
     
     internal var entityId: String? {
         get {
-            return self[type(of: self).entityIdProperty()] as? String
+            guard let entityIdProperty = try? type(of: self).entityIdProperty() else {
+                return nil
+            }
+            return self[entityIdProperty] as? String
         }
         set {
-            self[type(of: self).entityIdProperty()] = newValue
+            guard let entityIdProperty = try? type(of: self).entityIdProperty() else {
+                return
+            }
+            self[entityIdProperty] = newValue
         }
     }
     
     internal var acl: Acl? {
         get {
-            if let aclKey = type(of: self).aclProperty() {
+            if let _aclKey = try? type(of: self).aclProperty(), let aclKey = _aclKey {
                 return self[aclKey] as? Acl
             }
             return nil
         }
         set {
-            if let aclKey = type(of: self).aclProperty() {
+            if let _aclKey = try? type(of: self).aclProperty(), let aclKey = _aclKey {
                 self[aclKey] = newValue
             }
         }
@@ -216,13 +222,13 @@ extension Persistable where Self: NSObject {
     
     internal var metadata: Metadata? {
         get {
-            if let kmdKey = type(of: self).metadataProperty() {
+            if let _kmdKey = try? type(of: self).metadataProperty(), let kmdKey = _kmdKey {
                 return self[kmdKey] as? Metadata
             }
             return nil
         }
         set {
-            if let kmdKey = type(of: self).metadataProperty() {
+            if let _kmdKey = try? type(of: self).metadataProperty(), let kmdKey = _kmdKey {
                 self[kmdKey] = newValue
             }
         }

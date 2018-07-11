@@ -67,7 +67,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
             }
         }
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         let person = Person()
         person.firstName = "Victor"

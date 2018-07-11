@@ -124,9 +124,7 @@ open class CustomEndpoint {
         return execute(
             name,
             params: params,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -201,9 +199,7 @@ open class CustomEndpoint {
         return execute(
             name,
             params: params,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -280,9 +276,7 @@ open class CustomEndpoint {
         return execute(
             name,
             params: params,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -357,9 +351,7 @@ open class CustomEndpoint {
         return execute(
             name,
             params: params,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }

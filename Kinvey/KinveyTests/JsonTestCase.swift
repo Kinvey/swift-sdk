@@ -14,7 +14,7 @@ class JsonTestCase: StoreTestCase {
     func testFromToJson() {
         signUp()
         
-        let storeProject = DataStore<RefProject>.collection(.network, options: Options(client: client))
+        let storeProject = try! DataStore<RefProject>.collection(.network, options: try! Options(client: client))
         
         var project = RefProject()
         project.name = "Mall"
@@ -63,7 +63,7 @@ class JsonTestCase: StoreTestCase {
         XCTAssertNotNil(project.uniqueId)
         XCTAssertNotEqual(project.uniqueId, "")
         
-        let storeDirectory = DataStore<DirectoryEntry>.collection(.network, options: Options(client: client))
+        let storeDirectory = try! DataStore<DirectoryEntry>.collection(.network, options: try! Options(client: client))
         
         let directory = DirectoryEntry()
         directory.nameFirst = "Victor"

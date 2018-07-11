@@ -42,15 +42,11 @@ public struct Options {
     public var customRequestProperties: [String : Any]?
     
     /// Maximum size per result set coming from the backend. Default to 10k records.
-    public var maxSizePerResultSet: Int? {
-        willSet {
-            validate(maxSizePerResultSet: newValue)
-        }
-    }
+    public private(set) var maxSizePerResultSet: Int?
     
-    private func validate(maxSizePerResultSet value: Int?) {
+    private func validate(maxSizePerResultSet value: Int?) throws {
         if let value = value, value <= 0 {
-            fatalError("maxSizePerResultSet must be greater than 0 (zero)")
+            throw Error.invalidOperation(description: "maxSizePerResultSet must be greater than 0 (zero)")
         }
     }
     
@@ -59,6 +55,7 @@ public struct Options {
      default values for all the other properties
      */
     public init(
+        _ options: Options? = nil,
         client: Client? = nil,
         urlSession: URLSession? = nil,
         authServiceId: String? = nil,
@@ -70,9 +67,7 @@ public struct Options {
         clientAppVersion: String? = nil,
         customRequestProperties: [String : Any]? = nil,
         maxSizePerResultSet: Int? = nil
-    ) {
-        validate(maxSizePerResultSet: maxSizePerResultSet)
-        
+    ) throws {
         self.client = client
         self.urlSession = urlSession
         self.authServiceId = authServiceId
@@ -83,7 +78,8 @@ public struct Options {
         self.timeout = timeout
         self.clientAppVersion = clientAppVersion
         self.customRequestProperties = customRequestProperties
-        self.maxSizePerResultSet = maxSizePerResultSet
+        self.maxSizePerResultSet = maxSizePerResultSet ?? options?.maxSizePerResultSet
+        try validate(maxSizePerResultSet: self.maxSizePerResultSet)
     }
     
 }

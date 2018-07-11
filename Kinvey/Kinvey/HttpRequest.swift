@@ -432,7 +432,8 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                     let kinveyAuthToken = socialIdentity.kinvey,
                     let refreshToken = kinveyAuthToken["refresh_token"] as? String
                 {
-                    MIC.login(refreshToken: refreshToken, authServiceId: self.client.clientId, options: self.options) {
+                    let options = try! Options(self.options, authServiceId: self.client.clientId)
+                    MIC.login(refreshToken: refreshToken, options: options) {
                         switch $0 {
                         case .success(let user):
                             self.credential = user
