@@ -170,6 +170,16 @@
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5783BA0720F722DC0090D0BD"
+               BuildableName = "KinveyTests RemoveAll Memory Leak.xctest"
+               BlueprintName = "KinveyTests RemoveAll Memory Leak"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
