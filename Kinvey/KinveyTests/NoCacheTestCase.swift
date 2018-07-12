@@ -44,7 +44,7 @@ class NoCacheTestCase: XCTestCase {
             }
         }
         
-        let dataStore = DataStore<Person>.collection(.network)
+        let dataStore = try! DataStore<Person>.collection(.network)
         
         mockResponse(json: [
             [

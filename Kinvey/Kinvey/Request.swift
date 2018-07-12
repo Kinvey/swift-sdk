@@ -118,4 +118,10 @@ public class AnyRequest<Result>: NSObject, Request {
         _getProgress = { request.progress }
     }
     
+    convenience init(_ result: ResultType) {
+        let request = LocalRequest<ResultType>()
+        request.result = result
+        self.init(request)
+    }
+    
 }

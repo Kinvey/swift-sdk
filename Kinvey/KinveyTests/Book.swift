@@ -46,7 +46,7 @@ class Book: Entity {
     
 }
 
-class BookEdition: Object, Mappable {
+class BookEdition: Object, JSONDecodable, Mappable {
     
     convenience required init?(map: Map) {
         self.init()
@@ -69,6 +69,23 @@ class BookEdition: Object, Mappable {
         retailPrice <- ("retailPrice", map["retail_price"])
         rating <- ("rating", map["rating"])
         available <- ("available", map["available"])
+    }
+    
+    static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
     }
     
 }

@@ -85,7 +85,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         var count = UInt(0)
         var errors: [Swift.Error] = []
         
-        let collectionName = T.collectionName()
+        let collectionName = try! T.collectionName()
         var pushOperation: PushRequest!
         pushOperation = PushRequest(collectionName: collectionName) {
             let result: ResultType
@@ -113,14 +113,13 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             response.isOK,
                             let data = data
                         {
-                            let json = self.client.responseParser.parse(data)
+                            let json = try? self.client.jsonParser.parseDictionary(from: data)
                             if let cache = self.cache, let json = json, let objectId = objectId, request.request.httpMethod != "DELETE" {
                                 if let entity = cache.find(byId: objectId) {
                                     cache.remove(entity: entity)
                                 }
                                 
-                                let persistable = T(JSON: json)
-                                if let persistable = persistable {
+                                if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
                                     cache.save(entity: persistable)
                                 }
                             }
@@ -135,7 +134,8 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             }
                         } else if let response = response, response.isUnauthorized,
                             let data = data,
-                            let json = self.client.responseParser.parse(data) as? [String : String],
+                            let dictionary = try? self.client.jsonParser.parseDictionary(from: data),
+                            let json = dictionary as? [String : String],
                             let error = json["error"],
                             let debug = json["debug"],
                             let description = json["description"]

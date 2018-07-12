@@ -106,7 +106,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let authData = client.responseParser.parse(data)
+                    let data = data,
+                    let authData = try? client.jsonParser.parseDictionary(from: data)
                 {
                     requests += User.login(
                         authSource: .kinvey,
@@ -151,7 +152,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data),
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data),
                     let tempLoginUri = json["temp_login_uri"] as? String,
                     let tempLoginUrl = URL(string: tempLoginUri)
                 {
@@ -233,7 +235,8 @@ open class MIC {
             request.execute { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let json = client.responseParser.parse(data)
+                    let data = data,
+                    let json = try? client.jsonParser.parseDictionary(from: data)
                 {
                     resolver.fulfill(json)
                 } else {
@@ -265,7 +268,6 @@ open class MIC {
     @discardableResult
     class func login<U: User>(
         refreshToken: String,
-        authServiceId: String?,
         options: Options?,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<U, Swift.Error>> {
@@ -273,12 +275,14 @@ open class MIC {
         let client = options?.client ?? sharedClient
         let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
-            options: Options(
-                authServiceId: authServiceId
-            )
+            options: options
         )
         request.execute { (data, response, error) in
-            if let response = response, response.isOK, let authData = client.responseParser.parse(data) {
+            if let response = response,
+                response.isOK,
+                let data = data,
+                let authData = try? client.jsonParser.parseDictionary(from: data)
+            {
                 requests += User.login(authSource: .kinvey, authData, options: options, completionHandler: completionHandler)
             } else {
                 completionHandler?(.failure(buildError(data, response, error, client)))
@@ -335,10 +339,10 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     
     var activityIndicatorView: UIActivityIndicatorView!
     
-    let redirectURI: URL
-    let forceUIWebView: Bool
-    let options: Options?
-    let completionHandler: UserHandler<User>
+    var redirectURI: URL!
+    var forceUIWebView: Bool!
+    var options: Options?
+    var completionHandler: UserHandler<User>!
     
     @objc
     var webView: UIView!
@@ -350,13 +354,14 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
-    init<UserType: User>(
+    convenience init<UserType: User>(
         redirectURI: URL,
         userType: UserType.Type,
         forceUIWebView: Bool = false,
         options: Options?,
         completionHandler: @escaping UserHandler<UserType>
     ) {
+        self.init(nibName: nil, bundle: nil)
         self.redirectURI = redirectURI
         self.forceUIWebView = forceUIWebView
         self.options = options
@@ -368,11 +373,6 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 completionHandler(.failure(error))
             }
         }
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {

@@ -10,7 +10,6 @@ import Foundation
 import Realm
 import RealmSwift
 import MapKit
-import ObjectMapper
 
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
@@ -64,7 +63,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     lazy var entityType = T.self as! Entity.Type
     lazy var entityTypeClassName = entityType.className()
-    lazy var entityTypeCollectionName = entityType.collectionName()
+    lazy var entityTypeCollectionName = try! entityType.collectionName()
     
     var dynamic: DynamicCacheType? {
         return self
@@ -76,9 +75,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         return realm
     }
     
-    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
+    required init(persistenceId: String, fileURL: URL? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) throws {
         if !(T.self is Entity.Type) {
-            fatalError("\(T.self) needs to be a Entity")
+            throw Error.invalidOperation(description: "\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let fileURL = fileURL {
@@ -304,7 +303,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
         }
         
-        if let ttl = ttl, let kmdKey = T.metadataProperty() {
+        if let ttl = ttl, let _kmdKey = try? T.metadataProperty(), let kmdKey = _kmdKey {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
@@ -329,7 +328,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         
         json = entity.dictionaryWithValues(forKeys: props)
         
-        for property in json.keys {
+        json.keys.forEachAutoreleasepool { property in
             let value = json[property]
                 
             if let value = value as? Object {
@@ -506,7 +505,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             try! self.write { realm in
                 let entityType = self.entityType
                 let entityTypeClassName = entityType.className()
-                for entity in entities {
+                entities.forEachAutoreleasepool { entity in
                     let entity = realm.object(ofType: entityType, forPrimaryKey: entity.entityId!)
                     if let entity = entity {
                         self.cascadeDelete(
@@ -706,7 +705,7 @@ extension RealmCache: DynamicCacheType {
     
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object) {
         if let schema = realm.schema[entityType] {
-            for property in schema.properties {
+            schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
                 case .object:
                     if property.isArray,
@@ -749,11 +748,11 @@ extension RealmCache: DynamicCacheType {
     }
     
     private func cascadeDelete(realm: Realm, entityType: String, entity: JsonDictionary, propertyMapping: PropertyMap) {
-        for (translatedKey, _) in propertyMapping {
+        propertyMapping.forEachAutoreleasepool { translatedKey, _ in
             if let property = properties[translatedKey],
                 property.type == .object,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.CodingKeys.entityId],
+                let entityId = entity[Entity.EntityCodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedObject = dynamicObject[translatedKey] as? Object,
                 !(nestedObject is Entity)
@@ -766,7 +765,7 @@ extension RealmCache: DynamicCacheType {
             } else if let property = properties[translatedKey],
                 property.isArray,
                 let objectClassName = property.objectClassName,
-                let entityId = entity[Entity.CodingKeys.entityId],
+                let entityId = entity[Entity.EntityCodingKeys.entityId],
                 let dynamicObject = realm.dynamicObject(ofType: entityType, forPrimaryKey: entityId),
                 let nestedArray = dynamicObject[translatedKey] as? List<DynamicObject>
             {
@@ -784,9 +783,10 @@ extension RealmCache: DynamicCacheType {
         log.verbose("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
-            for entity in entities {
+            try entities.forEachAutoreleasepool { entity in
                 var translatedEntity = JsonDictionary()
-                for (translatedKey, (key, transform)) in propertyMapping {
+                try propertyMapping.forEachAutoreleasepool { (translatedKey, tuple) in
+                    let (key, transform) = tuple
                     if let transform = transform,
                         let value = transform.transformFromJSON(entity[key]) as? NSObject,
                         let property = self.properties[translatedKey],
@@ -810,12 +810,11 @@ extension RealmCache: DynamicCacheType {
                         !property.isArray,
                         property.type == .object,
                         let clazz = ObjCRuntime.typeForPropertyName(self.entityType, propertyName: translatedKey),
-                        let anyObjectClass = clazz as? NSObject.Type,
-                        var obj = anyObjectClass.init() as? BaseMappable,
+                        let anyObjectClass = clazz as? (NSObject & JSONDecodable).Type,
                         let json = entity[key] as? [String : Any]
                     {
-                        let map = Map(mappingType: .fromJSON, JSON: json)
-                        obj.mapping(map: map)
+                        var obj = anyObjectClass.init()
+                        try obj.refresh(from: json)
                         translatedEntity[translatedKey] = obj
                     } else {
                         translatedEntity[translatedKey] = entity[key]

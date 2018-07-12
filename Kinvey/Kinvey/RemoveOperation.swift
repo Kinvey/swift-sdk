@@ -41,16 +41,12 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
                 count = Int(realmObjects.count)
-                let idKey = T.entityIdProperty()
-                let objectIds = cache.detach(entities: realmObjects, query: self.query).map {
+                let idKey = try! T.entityIdProperty()
+                let objectIds = cache.detach(entities: realmObjects, query: self.query).compactMap {
                     $0[idKey] as? String
-                }.filter {
-                    $0 != nil
-                }.map {
-                    $0!
                 }
                 if cache.remove(entities: realmObjects), let sync = self.sync {
-                    for objectId in objectIds {
+                    objectIds.forEachAutoreleasepool { objectId in
                         if objectId.hasPrefix(ObjectIdTmpPrefix) {
                             sync.removeAllPendingOperations(objectId)
                         } else {
@@ -69,8 +65,10 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         request.execute() { data, response, error in
             let result: ResultType
-            if let response = response, response.isOK,
-                let results = self.client.responseParser.parse(data),
+            if let response = response,
+                response.isOK,
+                let data = data,
+                let results = try? self.client.jsonParser.parseDictionary(from: data),
                 let count = results["count"] as? Int
             {
                 self.cache?.remove(byQuery: self.query)

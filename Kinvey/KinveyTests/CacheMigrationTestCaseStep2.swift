@@ -113,7 +113,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         XCTAssertTrue(migrationCalled)
         XCTAssertTrue(migrationPersonCalled)
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -154,7 +154,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         XCTAssertTrue(migrationCalled)
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -195,7 +195,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             }
         }
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         weak var expectationFind = expectation(description: "Find")
         

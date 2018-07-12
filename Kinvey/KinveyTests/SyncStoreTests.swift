@@ -27,15 +27,15 @@ class SyncStoreTests: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.sync)
+        store = try! DataStore<Person>.collection(.sync)
     }
     
     var mockCount = 0
     
     override func tearDown() {
         if let activeUser = client.activeUser {
-            let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let store = try! DataStore<Person>.collection(.network)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -383,7 +383,7 @@ class SyncStoreTests: StoreTestCase {
         removeFiles()
         XCTAssertFalse(fileManager.fileExists(atPath: customPath))
         
-        store = DataStore<Person>.collection(.sync, tag: tag)
+        store = try! DataStore<Person>.collection(.sync, tag: tag)
         defer {
             removeFiles()
             XCTAssertFalse(fileManager.fileExists(atPath: customPath))
@@ -684,7 +684,7 @@ class SyncStoreTests: StoreTestCase {
     func testPurgeInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         weak var expectationPurge = expectation(description: "Purge")
         
@@ -795,11 +795,11 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = UUID().uuidString
-                    json[Entity.CodingKeys.acl] = [
+                    json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                    json[Entity.EntityCodingKeys.acl] = [
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[Entity.CodingKeys.metadata] = [
+                    json[Entity.EntityCodingKeys.metadata] = [
                         Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                         Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
@@ -854,11 +854,11 @@ class SyncStoreTests: StoreTestCase {
                 case 0:
                     XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json[Entity.CodingKeys.entityId] = UUID().uuidString
-                    json[Entity.CodingKeys.acl] = [
+                    json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                    json[Entity.EntityCodingKeys.acl] = [
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
-                    json[Entity.CodingKeys.metadata] = [
+                    json[Entity.EntityCodingKeys.metadata] = [
                         Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                         Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
@@ -900,7 +900,7 @@ class SyncStoreTests: StoreTestCase {
     func testSyncInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         weak var expectationSync = expectation(description: "Sync")
         
@@ -965,7 +965,7 @@ class SyncStoreTests: StoreTestCase {
     func testPush() {
         save()
         
-        let bookDataStore = DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync)
         
         do {
             let book = Book()
@@ -995,11 +995,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -1034,7 +1034,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushSync() {
         save()
         
-        let bookDataStore = DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync)
         
         do {
             let book = Book()
@@ -1064,11 +1064,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -1101,7 +1101,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushTryCatchSync() {
         save()
         
-        let bookDataStore = DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync)
         
         do {
             let book = Book()
@@ -1118,11 +1118,11 @@ class SyncStoreTests: StoreTestCase {
             mockResponse { request -> HttpResponse in
                 XCTAssertEqual(request.httpMethod, "POST")
                 var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                json[Entity.CodingKeys.entityId] = UUID().uuidString
-                json[Entity.CodingKeys.acl] = [
+                json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                json[Entity.EntityCodingKeys.acl] = [
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
-                json[Entity.CodingKeys.metadata] = [
+                json[Entity.EntityCodingKeys.metadata] = [
                     Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                     Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                 ]
@@ -1189,7 +1189,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
 		defer {
             store.clearCache()
         }
@@ -1459,7 +1459,7 @@ class SyncStoreTests: StoreTestCase {
     func testPullInvalidDataStoreType() {
         //save()
         
-        store = DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network)
         
         weak var expectationPull = expectation(description: "Pull")
         
@@ -1841,7 +1841,7 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 0)
@@ -1863,7 +1863,7 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationGet = expectation(description: "Get")
             
             let query = Query(format: "personId == %@", personId)
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let persons):
                     XCTAssertEqual(persons.count, 1)
@@ -1896,7 +1896,7 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSave = self.expectation(description: "Save")
             
-            self.store.save(person, options: Options(writePolicy: .forceLocal)) {
+            self.store.save(person, options: try! Options(writePolicy: .forceLocal)) {
                 switch $0 {
                 case .success:
                     break
@@ -1926,7 +1926,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, limit)
@@ -1964,7 +1964,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 5)
@@ -2000,7 +2000,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 5)
@@ -2037,7 +2037,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 4)
@@ -2074,7 +2074,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 0)
@@ -2098,7 +2098,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, options: Options(readPolicy: .forceLocal)) {
+            store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, 0)
@@ -2554,7 +2554,7 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, options: Options(readPolicy: .forceNetwork)) {
+            store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 XCTAssertTrue(Thread.isMainThread)
                 switch $0 {
                 case .success(let persons):
@@ -2622,11 +2622,32 @@ class SyncStoreTests: StoreTestCase {
             func mapping(map: Map) {
             }
             
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return [NotEntityPersistable]() as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            func refresh(from dictionary: [String : Any]) throws {
+                var _self = self
+                try _self.refreshJSONDecodable(from: dictionary)
+            }
+            
+            func encode() throws -> [String : Any] {
+                return [:]
+            }
+            
         }
         
-        expect { () -> Void in
-            let _ = RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
-        }.to(throwAssertion())
+        expect {
+            try RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
+        }.to(throwError())
     }
     
     func testRealmSyncNotEntity() {
@@ -2645,11 +2666,30 @@ class SyncStoreTests: StoreTestCase {
             func mapping(map: Map) {
             }
             
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                 return [NotEntityPersistable]() as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return NotEntityPersistable() as! T
+            }
+            
+            func refresh(from dictionary: [String : Any]) throws {
+            }
+            
+            func encode() throws -> [String : Any] {
+                return [:]
+            }
+            
         }
         
-        expect { () -> Void in
-            let _ = RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
-        }.to(throwAssertion())
+        expect {
+            try RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
+        }.to(throwError())
     }
     
     func testCancelLocalRequest() {
@@ -2676,14 +2716,14 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testNewTypeDataStore() {
-        var store = DataStore<Person>.collection()
-        store = store.collection(newType: Book.self).collection(newType: Person.self)
+        var store = try! DataStore<Person>.collection()
+        store = try! store.collection(newType: Book.self).collection(newType: Person.self)
     }
     
     func testGroupCustomAggregationError() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         if useMockData {
             mockResponse(json: [
@@ -2730,7 +2770,7 @@ class SyncStoreTests: StoreTestCase {
     func testGroupCustomAggregationErrorSync() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         if useMockData {
             mockResponse(json: [
@@ -2772,7 +2812,7 @@ class SyncStoreTests: StoreTestCase {
     func testGroupCustomAggregationErrorTryCatchSync() {
         signUp()
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         if useMockData {
             mockResponse(json: [
@@ -2808,7 +2848,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testObjectMappingMemoryLeak() {
-        var store = DataStore<Person>.collection(.network)
+        var store = try! DataStore<Person>.collection(.network)
         
         mockResponse(json: [
             [
@@ -2856,7 +2896,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAdd1Record() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = 0
         do {
@@ -2999,7 +3039,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncUpdate1Record() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3115,7 +3155,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncDelete1Record() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3218,7 +3258,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAddUpdateDelete2Records() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3393,7 +3433,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCacheNoQuery() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3592,7 +3632,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCache() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3792,7 +3832,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncResultSetExceed() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3894,7 +3934,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncMissingConfiguration() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         mockResponse { (request) -> HttpResponse in
             guard let url = request.url else {
@@ -3979,7 +4019,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncParameterValueOutOfRange() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -4098,7 +4138,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDisabledDeltasetWithPull() {
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         var initialCount = Int64(0)
         do {
@@ -4262,7 +4302,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testSyncStoreDeltaset1ExtraItemAddedWithPull() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4416,7 +4456,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithPull() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4545,7 +4585,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 2 persons, pull with regular GET, update 1, deltaset returning 1 changed, delete 1, deltaset returning 1 deleted
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithPull() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -4780,7 +4820,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, delete 1 item that satisfies the query, deltaset returns 1 deleted item
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithPull() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -4946,7 +4986,7 @@ class SyncStoreTests: StoreTestCase {
     
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, update 1 item that satisfies the query, deltaset returns 1 changed item
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithPull() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -5131,7 +5171,7 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithPull() {
-        var store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5284,7 +5324,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationPull = nil
             }
         }
-        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -5362,7 +5402,7 @@ class SyncStoreTests: StoreTestCase {
     
 
     func testSyncStoreDisabledDeltasetWithSync() {
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         var initialCount = 0
         do {
@@ -5515,7 +5555,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ExtraItemAddedWithSync() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5662,7 +5702,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithSync() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -5785,7 +5825,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithSync() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -6009,7 +6049,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithSync() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -6167,7 +6207,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithSync() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -6347,7 +6387,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithSync() {
-        var store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -6493,7 +6533,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        store = DataStore<Person>.collection(.sync, options: Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -6567,7 +6607,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithFindNetworkReadPolicy() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -6640,7 +6680,7 @@ class SyncStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -6720,7 +6760,7 @@ class SyncStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -6785,7 +6825,7 @@ class SyncStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -6816,7 +6856,7 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithFindWithNetworkPolicy() {
-        let store = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -6894,7 +6934,7 @@ class SyncStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -6960,7 +7000,7 @@ class SyncStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -7025,7 +7065,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = DataStore<Person>.collection(.sync, autoPagination: true)
+        let store = try! DataStore<Person>.collection(.sync, autoPagination: true)
         
         let startMemory = reportMemory()
         XCTAssertNotNil(startMemory)
@@ -7054,7 +7094,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testObjectObserve() {
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         let personId = UUID().uuidString
         
@@ -7107,7 +7147,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testCollectionObserve() {
-        let dataStore = DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync)
         
         let personId = UUID().uuidString
         let personName = "Victor"
@@ -7214,7 +7254,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let dataStore = DataStore<Person>.collection(.sync, options: Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         
         do {
             var results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()

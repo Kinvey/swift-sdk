@@ -47,7 +47,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
     
     func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = client.networkRequestFactory.buildAppDataGetById(
-            collectionName: T.collectionName(),
+            collectionName: try! T.collectionName(),
             id: id,
             options: options,
             resultType: ResultType.self
@@ -56,9 +56,10 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
             let result: ResultType
             if let response = response,
                 response.isOK,
-                let json = self.client.responseParser.parse(data),
-                json[Entity.CodingKeys.entityId] != nil,
-                let obj = T(JSON: json)
+                let data = data,
+                let json = try? self.client.jsonParser.parseDictionary(from: data),
+                json[Entity.EntityCodingKeys.entityId] != nil,
+                let obj = try? self.client.jsonParser.parseObject(T.self, from: json)
             {
                 self.cache?.save(entity: obj)
                 result = .success(obj)

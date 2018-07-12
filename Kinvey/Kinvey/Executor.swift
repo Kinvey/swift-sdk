@@ -19,11 +19,21 @@ class Executor {
         thread = Thread.current
     }
     
-    func execute(_ block: @escaping () -> Void) {
+    func execute(_ _block: @escaping () -> Void) {
+        let block = {
+            autoreleasepool {
+                _block()
+            }
+        }
         operationQueue.addOperation(block)
     }
     
-    func executeAndWait(_ block: @escaping () -> Void) {
+    func executeAndWait(_ _block: @escaping () -> Void) {
+        let block = {
+            autoreleasepool {
+                _block()
+            }
+        }
         if thread == Thread.current {
             block()
         } else {

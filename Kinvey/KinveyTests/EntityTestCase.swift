@@ -13,9 +13,9 @@ import Nimble
 class EntityTestCase: XCTestCase {
     
     func testCollectionName() {
-        expect { () -> Void in
-            let _ = Entity.collectionName()
-        }.to(throwAssertion())
+        expect {
+            try Entity.collectionName()
+        }.to(throwError())
     }
     
     func testBoolValue() {

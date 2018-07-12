@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        if User.login(redirectURI: micRedirectURI, micURL: url, options: Options(authServiceId: authServiceId)) {
+        if User.login(redirectURI: micRedirectURI, micURL: url, options: try! Options(authServiceId: authServiceId)) {
             return true
         }
         

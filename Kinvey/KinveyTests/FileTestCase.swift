@@ -16,28 +16,6 @@ import Nimble
     typealias Image = UIImage
 #endif
 
-internal func reportMemory() -> Int64? {
-    var info = task_basic_info()
-    var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size)/4
-    
-    let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-        $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-            task_info(
-                mach_task_self_,
-                task_flavor_t(TASK_BASIC_INFO),
-                $0,
-                &count
-            )
-        }
-    }
-    
-    if kerr == KERN_SUCCESS {
-        return Int64(info.resident_size)
-    }
-    
-    return nil
-}
-
 class FileTestCase: StoreTestCase {
     
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
@@ -137,11 +115,27 @@ class FileTestCase: StoreTestCase {
     func testDownloadMissingFileId() {
         signUp()
         
-        expect { () -> Void in
-            self.fileStore.download(File()) { (file, data: Data?, error) in
-                XCTFail()
+        weak var expectationDownload = expectation(description: "Download")
+        
+        self.fileStore.download(File()) { (file, data: Data?, error) in
+            XCTAssertNil(file)
+            XCTAssertNil(data)
+            XCTAssertNotNil(error)
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .invalidOperation(let description):
+                    XCTAssertEqual(description, "fileId is required")
+                default:
+                    XCTFail(error.localizedDescription)
+                }
             }
-        }.to(throwAssertion())
+            
+            expectationDownload?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationDownload = nil
+        }
     }
     
     func testDownloadTimeoutError() {
@@ -3036,7 +3030,9 @@ class FileTestCase: StoreTestCase {
         let file = File() {
             $0.fileId = UUID().uuidString
         }
-        XCTAssertNil(fileStore.cachedFile(file))
+        expect {
+            try self.fileStore.cachedFile(file)
+        }.to(beNil())
     }
     
     func testCreateBucketData() {

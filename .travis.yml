@@ -18,6 +18,7 @@ before_script:
 # - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
+- xcpretty --version
 - if [ ! -d $( md5 Cartfile.resolved | awk '{ print "Carthage/" $4 ".zip" }' ) ]; then
     make travisci-cache;
   fi

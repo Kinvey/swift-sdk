@@ -7,10 +7,9 @@
 //
 
 import Foundation
-import ObjectMapper
 
 /// Defines a strategy to validate results upfront
-public enum ValidationStrategy: MapContext {
+public enum ValidationStrategy {
     
     /// Validates all items in a backend response. Validating all entities upfront results in a performance penalty.
     case all
@@ -19,41 +18,34 @@ public enum ValidationStrategy: MapContext {
     case randomSample(percentage: Double)
     
     /// Allow a custom validation strategy. It must return a `Swift.Error` if the validation fails or `nil` if the validation succeed.
-    case custom(validationBlock: (Array<Dictionary<String, Any>>) -> Swift.Error?)
+    case custom(validationBlock: (Array<Dictionary<String, Any>>) throws -> Void)
     
-    func validate(jsonArray: Array<Dictionary<String, Any>>) -> Swift.Error? {
+    func validate(jsonArray: Array<Dictionary<String, Any>>) throws {
         switch self {
         case .all:
             for item in jsonArray {
-                if let error = validate(item: item) {
-                    return error
-                }
+                try validate(item: item)
             }
-            return nil
         case .randomSample(let percentage):
             let max = UInt32(jsonArray.count)
             let numberOfItems = min(Int(ceil(Double(jsonArray.count) * percentage)), jsonArray.count)
             for _ in 0 ..< numberOfItems {
                 let item = jsonArray[Int(arc4random_uniform(max))]
-                if let error = validate(item: item) {
-                    return error
-                }
+                try validate(item: item)
             }
-            return nil
         case .custom(let validationBlock):
-            return validationBlock(jsonArray)
+            try validationBlock(jsonArray)
         }
     }
     
     @inline(__always)
-    private func validate(item: Dictionary<String, Any>) -> Swift.Error? {
+    private func validate(item: Dictionary<String, Any>) throws {
         guard
-            let id = item[Entity.CodingKeys.entityId] as? String,
+            let id = item[Entity.EntityCodingKeys.entityId] as? String,
             !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else {
-            return Error.objectIdMissing
+            throw Error.objectIdMissing
         }
-        return nil
     }
     
 }

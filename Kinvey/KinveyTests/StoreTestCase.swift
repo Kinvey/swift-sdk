@@ -78,6 +78,7 @@ class StoreTestCase: KinveyTestCase {
     @discardableResult
     func save(_ person: Person) -> Person {
         let age = person.age
+        var person = person
         
         if useMockData {
             mockResponse(json: [
@@ -104,7 +105,8 @@ class StoreTestCase: KinveyTestCase {
         store.save(person) {
             self.assertThread()
             switch $0 {
-            case .success(let person):
+            case .success(let _person):
+                person = _person
                 XCTAssertNotNil(person.personId)
                 XCTAssertNotEqual(person.personId, "")
                 

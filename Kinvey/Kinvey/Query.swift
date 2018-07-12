@@ -7,33 +7,12 @@
 //
 
 import Foundation
-import ObjectMapper
 #if !os(watchOS)
     import MapKit
 #endif
 
-extension NSPredicate: StaticMappable {
-    
-    var json: JsonDictionary? {
-        return mongoDBQuery
-    }
-    
-    public static func objectForMapping(map: Map) -> BaseMappable? {
-        return nil
-    }
-    
-    public func mapping(map: Map) {
-        if let json = json {
-            for (key, var value) in json {
-                value <- map[key]
-            }
-        }
-    }
-    
-}
-
 /// Class that represents a query including filters and sorts.
-public final class Query: NSObject, BuilderType, Mappable {
+public final class Query: NSObject, BuilderType {
     
     /// Fields to be included in the results of the query.
     open var fields: Set<String>?
@@ -294,6 +273,7 @@ public final class Query: NSObject, BuilderType, Mappable {
         block(self)
     }
     
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public init?(map: Map) {
         return nil
     }
@@ -323,10 +303,17 @@ public final class Query: NSObject, BuilderType, Mappable {
         }
     }
     
+    
+
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension Query: Mappable {
+    
     public func mapping(map: Map) {
         if map.mappingType == .toJSON, let predicate = predicate {
             predicate.mapping(map: map)
         }
     }
-
+    
 }

@@ -182,7 +182,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, options: Options(client: client)) {
+            User.destroy(userId: user.userId, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -218,7 +218,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: true, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -254,7 +254,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: false, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: false, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -290,7 +290,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, hard: true, options: Options(client: client)) {
+            User.destroy(userId: user.userId, hard: true, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -321,7 +321,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectation(description: "Destroy User")
             
-            User.destroy(userId: user.userId, options: Options(client: client)) {
+            User.destroy(userId: user.userId, options: try! Options(client: client)) {
                 XCTAssertTrue(Thread.isMainThread)
                 
                 switch $0 {
@@ -357,7 +357,8 @@ class UserTests: KinveyTestCase {
                 "creator" : UUID().uuidString
             ]
         ]
-        let user = User(JSON: json)
+        
+        let user = try? client.jsonParser.parseUser(User.self, from: json)
         
         XCTAssertNotNil(user)
         
@@ -384,7 +385,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection(.network)
+        let store = try! DataStore<Person>.collection(.network)
         
         do {
             if useMockData {
@@ -422,7 +423,7 @@ class UserTests: KinveyTestCase {
         
         do {
             if useMockData {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 if var kmd = json["_kmd"] as? JsonDictionary {
                     kmd["authtoken"] = UUID().uuidString
                     json["_kmd"] = kmd
@@ -501,7 +502,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.collection(.network)
+        let store = try! DataStore<Person>.collection(.network)
         
         do {
             if useMockData {
@@ -639,7 +640,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             if useMockData {
-                mockResponse(json: user.toJSON())
+                mockResponse(json: try! client.jsonParser.toJSON(user))
             }
             defer {
                 if useMockData {
@@ -728,7 +729,7 @@ class UserTests: KinveyTestCase {
             XCTAssertNil(user.email)
             
             if useMockData {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 mockResponse(json: json)
             }
             defer {
@@ -767,12 +768,12 @@ class UserTests: KinveyTestCase {
                 }
             }
             
-            let dataStore = DataStore<Person>.collection(.network)
+            let dataStore = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
             dataStore.find(
-                options: Options(
+                options: try! Options(
                     client: client
                 )
             ) {
@@ -1523,7 +1524,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1581,7 +1582,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1680,7 +1681,7 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             do {
-                var json = user.toJSON()
+                var json = try! client.jsonParser.toJSON(user)
                 json["email"] = "victor@kinvey.com"
                 mockResponse(json: json)
                 defer {
@@ -1809,7 +1810,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             do {
                 if useMockData {
-                    var json = user.toJSON()
+                    var json = try! client.jsonParser.toJSON(user)
                     if var kmd = json["_kmd"] as? JsonDictionary {
                         kmd["authtoken"] = UUID().uuidString
                         json["_kmd"] = kmd
@@ -2021,7 +2022,7 @@ class UserTests: KinveyTestCase {
                 user.username = nil
                 
                 if useMockData {
-                    mockResponse(json: user.toJSON())
+                    mockResponse(json: try! client.jsonParser.toJSON(user))
                 }
                 defer {
                     if useMockData {
@@ -2118,7 +2119,7 @@ class UserTests: KinveyTestCase {
             
             do {
                 if useMockData {
-                    mockResponse(json: user.toJSON())
+                    mockResponse(json: try! client.jsonParser.toJSON(user))
                 }
                 defer {
                     if useMockData { setURLProtocol(nil) }
@@ -2537,7 +2538,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -2762,7 +2763,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -2991,7 +2992,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3170,7 +3171,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3277,7 +3278,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         do {
-            let store = DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network)
             
             weak var expectationFind = expectation(description: "Find")
             
@@ -3352,7 +3353,7 @@ class UserTests: KinveyTestCase {
         MIC.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3412,7 +3413,7 @@ class UserTests: KinveyTestCase {
         MIC.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             code: "1234",
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3447,7 +3448,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3524,7 +3525,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3584,7 +3585,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3644,7 +3645,7 @@ class UserTests: KinveyTestCase {
             redirectURI: URL(string: "myCustomURIScheme://")!,
             username: UUID().uuidString,
             password: UUID().uuidString,
-            options: Options(
+            options: try! Options(
                 authServiceId: nil
             )
         ) { result in
@@ -3676,7 +3677,7 @@ class UserTests: KinveyTestCase {
     }
     
     func testUserWithoutUserID() {
-        XCTAssertNil(User(JSON: ["username" : "Test"]))
+        XCTAssertNil(try? client.jsonParser.parseUser(User.self, from: ["username" : "Test"]))
     }
 
 }
@@ -3723,18 +3724,21 @@ extension UserTests {
         tester().wait(forTimeInterval: 1)
         
         let userId = UUID().uuidString
-        let user = User(JSON: [
-            "_id" : userId,
-            "username" : UUID().uuidString,
-            "_kmd" : [
-                "lmt" : Date().toString(),
-                "ect" : Date().toString(),
-                "authtoken" : UUID().uuidString
-            ],
-            "_acl" : [
-                "creator" : UUID().uuidString
+        let user = try? client.jsonParser.parseUser(
+            User.self,
+            from: [
+                "_id" : userId,
+                "username" : UUID().uuidString,
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString(),
+                    "authtoken" : UUID().uuidString
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ]
             ]
-        ])
+        )
         XCTAssertNotNil(user)
         
         NotificationCenter.default.post(
@@ -3942,18 +3946,21 @@ extension UserTests {
         tester().wait(forTimeInterval: 1)
         
         let userId = UUID().uuidString
-        let user = User(JSON: [
-            "_id" : userId,
-            "username" : UUID().uuidString,
-            "_kmd" : [
-                "lmt" : Date().toString(),
-                "ect" : Date().toString(),
-                "authtoken" : UUID().uuidString
-            ],
-            "_acl" : [
-                "creator" : UUID().uuidString
+        let user = try? client.jsonParser.parseUser(
+            User.self,
+            from: [
+                "_id" : userId,
+                "username" : UUID().uuidString,
+                "_kmd" : [
+                    "lmt" : Date().toString(),
+                    "ect" : Date().toString(),
+                    "authtoken" : UUID().uuidString
+                ],
+                "_acl" : [
+                    "creator" : UUID().uuidString
+                ]
             ]
-        ])
+        )
         XCTAssertNotNil(user)
         
         NotificationCenter.default.post(
@@ -4051,7 +4058,7 @@ extension UserTests {
                 XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
                 
                 do {
-                    let store = DataStore<Person>.collection(.network)
+                    let store = try! DataStore<Person>.collection(.network)
                     
                     weak var expectationFind = expectation(description: "Find")
                     
@@ -4296,7 +4303,7 @@ extension UserTests {
         
         let redirectURI = URL(string: "throwAnError://")!
         
-        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: Options(timeout: 60)) {
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .uiWebView, options: try! Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
@@ -4340,7 +4347,7 @@ extension UserTests {
         weak var expectationLogin = expectation(description: "Login")
         
         let redirectURI = URL(string: "throwAnError://")!
-        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: Options(timeout: 60)) {
+        User.presentMICViewController(redirectURI: redirectURI, micUserInterface: .wkWebView, options: try! Options(timeout: 60)) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
@@ -4412,7 +4419,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4424,7 +4431,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?no_code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertFalse(result)
     }
@@ -4476,7 +4483,7 @@ extension UserTests {
             XCTAssertTrue(notification.object is User)
             if let user = notification.object as? User {
                 XCTAssertEqual(user.username, "test")
-                MockKinveyBackend.user[user.userId] = user.toJSON()
+                MockKinveyBackend.user[user.userId] = try! self.client.jsonParser.toJSON(user)
             }
             return true
         }
@@ -4484,7 +4491,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4554,7 +4561,7 @@ extension UserTests {
             XCTAssertTrue(notification.object is User)
             if let user = notification.object as? User {
                 XCTAssertEqual(user.username, "test")
-                MockKinveyBackend.user[user.userId] = user.toJSON()
+                MockKinveyBackend.user[user.userId] = try! client.jsonParser.toJSON(user)
             }
             return true
         }
@@ -4562,7 +4569,7 @@ extension UserTests {
         let result = User.login(
             redirectURI: URL(string: "myCustomURIScheme://")!,
             micURL: URL(string: "myCustomURIScheme://?code=1234")!,
-            options: Options(client: client)
+            options: try! Options(client: client)
         )
         XCTAssertTrue(result)
         
@@ -4572,8 +4579,8 @@ extension UserTests {
     
     func testUserMicViewControllerCoding() {
         expect { () -> Void in
-            let _ = Kinvey.MICLoginViewController(coder: NSKeyedArchiver())
-        }.to(throwAssertion())
+            Kinvey.MICLoginViewController(coder: NSKeyedArchiver())
+        }.to(raiseException())
     }
     
     func testMICTimeoutAction() {
@@ -4591,7 +4598,7 @@ extension UserTests {
         User.presentMICViewController(
             redirectURI: redirectURI,
             micUserInterface: .uiWebView,
-            options: Options(timeout: 3)
+            options: try! Options(timeout: 3)
         ) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
@@ -4635,7 +4642,7 @@ extension UserTests {
         User.presentMICViewController(
             redirectURI: redirectURI,
             micUserInterface: .uiWebView,
-            options: Options(timeout: 60)
+            options: try! Options(timeout: 60)
         ) {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
@@ -4766,7 +4773,7 @@ extension UserTests {
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
-        let store = DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync)
         
         do {
             mockResponse(json: [

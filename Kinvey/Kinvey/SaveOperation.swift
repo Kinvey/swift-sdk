@@ -80,27 +80,24 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
                 let result: ResultType
-                if let response = response, response.isOK {
-                    let json = self.client.responseParser.parse(data)
-                    if let json = json {
-                        let persistable = T(JSON: json)
-                        if let objectId = self.persistable.entityId,
-                            let sync = self.sync
-                        {
-                            sync.removeAllPendingOperations(
-                                objectId,
-                                methods: ["POST", "PUT"]
-                            )
-                        }
-                        if let persistable = persistable,
-                            let cache = self.cache
-                        {
-                            cache.remove(entity: self.persistable)
-                            cache.save(entity: persistable)
-                        }
-                        self.merge(&self.persistable, json: json)
+                if let response = response,
+                    response.isOK,
+                    let data = data,
+                    let persistable = try? self.client.jsonParser.parseObject(T.self, from: data)
+                {
+                    if let objectId = self.persistable.entityId,
+                        let sync = self.sync
+                    {
+                        sync.removeAllPendingOperations(
+                            objectId,
+                            methods: ["POST", "PUT"]
+                        )
                     }
-                    result = .success(self.persistable)
+                    if let cache = self.cache {
+                        cache.remove(entity: self.persistable)
+                        cache.save(entity: persistable)
+                    }
+                    result = .success(persistable)
                 } else {
                     result = .failure(buildError(data, response, error, self.client))
                 }

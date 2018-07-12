@@ -40,7 +40,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: Mappable {
+        struct EchoType: Mappable, JSONDecodable {
             
             var query: [String : Any]?
             var string: String?
@@ -55,6 +55,22 @@ class CustomEndpointTests: KinveyTestCase {
                 string <- map["stringParam"]
                 number <- map["numberParam"]
                 boolean <- map["booleanParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshJSONDecodable(from: dictionary)
             }
             
         }
@@ -176,7 +192,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: StaticMappable {
+        struct EchoType: StaticMappable, JSONDecodable {
             
             var query: [String : Any]?
             var string: String?
@@ -192,6 +208,22 @@ class CustomEndpointTests: KinveyTestCase {
                 string <- map["stringParam"]
                 number <- map["numberParam"]
                 boolean <- map["booleanParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -378,7 +410,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: Mappable {
+        struct EchoType: Mappable, JSONDecodable {
             
             var query: [String : Any]?
             var string: String?
@@ -393,6 +425,22 @@ class CustomEndpointTests: KinveyTestCase {
                 string <- map["stringParam"]
                 number <- map["numberParam"]
                 boolean <- map["booleanParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -489,7 +537,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: StaticMappable {
+        struct EchoType: StaticMappable, JSONDecodable {
             
             var query: [String : Any]?
             var string: String?
@@ -505,6 +553,22 @@ class CustomEndpointTests: KinveyTestCase {
                 string <- map["stringParam"]
                 number <- map["numberParam"]
                 boolean <- map["booleanParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -962,7 +1026,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: Mappable {
+        struct EchoType: Mappable, JSONDecodable {
             
             var age: Int?
             
@@ -971,6 +1035,22 @@ class CustomEndpointTests: KinveyTestCase {
             
             public mutating func mapping(map: Map) {
                 age <- map["ageParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -1085,7 +1165,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: StaticMappable {
+        struct EchoType: JSONDecodable, StaticMappable {
             
             var age: Int?
             
@@ -1095,6 +1175,22 @@ class CustomEndpointTests: KinveyTestCase {
             
             public mutating func mapping(map: Map) {
                 age <- map["ageParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -1127,7 +1223,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: Mappable {
+        struct EchoType: JSONDecodable, Mappable {
             
             var age: Int?
             
@@ -1136,6 +1232,22 @@ class CustomEndpointTests: KinveyTestCase {
             
             public mutating func mapping(map: Map) {
                 age <- map["ageParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }
@@ -1168,7 +1280,7 @@ class CustomEndpointTests: KinveyTestCase {
             }
         }
         
-        struct EchoType: StaticMappable {
+        struct EchoType: JSONDecodable, StaticMappable {
             
             var age: Int?
             
@@ -1178,6 +1290,22 @@ class CustomEndpointTests: KinveyTestCase {
             
             public mutating func mapping(map: Map) {
                 age <- map["ageParam"]
+            }
+            
+            static func decode<T>(from data: Data) throws -> T {
+                return try EchoType.decodeMappable(from: data) as! T
+            }
+            
+            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+                return try EchoType.decodeMappableArray(from: data) as! [T]
+            }
+            
+            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+                return try EchoType.decodeMappable(from: dictionary) as! T
+            }
+            
+            mutating func refresh(from dictionary: [String : Any]) throws {
+                try refreshMappable(from: dictionary)
             }
             
         }

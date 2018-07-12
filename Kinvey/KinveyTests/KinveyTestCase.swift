@@ -283,6 +283,28 @@ func XCTAssertTimeoutError(_ error: Swift.Error?) {
     }
 }
 
+internal func reportMemory() -> Int64? {
+    var info = task_basic_info()
+    var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size)/4
+    
+    let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
+        $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+            task_info(
+                mach_task_self_,
+                task_flavor_t(TASK_BASIC_INFO),
+                $0,
+                &count
+            )
+        }
+    }
+    
+    if kerr == KERN_SUCCESS {
+        return Int64(info.resident_size)
+    }
+    
+    return nil
+}
+
 class KinveyTestCase: XCTestCase {
     
     let client = Kinvey.sharedClient
@@ -353,7 +375,7 @@ class KinveyTestCase: XCTestCase {
         super.setUp()
         
         originalLogLevel = Kinvey.logLevel
-        Kinvey.logLevel = .verbose
+        Kinvey.logLevel = .error
         
         if KinveyTestCase.appInitialize == KinveyTestCase.appInitializeDevelopment {
             initializeDevelopment()
@@ -511,7 +533,7 @@ class KinveyTestCase: XCTestCase {
     }
 
     private func removeAll<T: Persistable>(_ type: T.Type) where T: NSObject {
-        let store = DataStore<T>.collection()
+        let store = try! DataStore<T>.collection()
         if let cache = store.cache {
             cache.clear(query: nil)
         }
@@ -565,15 +587,28 @@ class KinveyTestCase: XCTestCase {
     func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-        json[Entity.CodingKeys.entityId] = UUID().uuidString
-        json[Entity.CodingKeys.acl] = [
+        json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
+        json[Entity.EntityCodingKeys.acl] = [
             Acl.Key.creator : self.client.activeUser!.userId
         ]
-        json[Entity.CodingKeys.metadata] = [
+        json[Entity.EntityCodingKeys.metadata] = [
             Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
             Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
         ]
         return json
+    }
+    
+    func startLogPolling(timeInterval: TimeInterval = 30, function: String = #function) -> DispatchSourceTimer {
+        let startTime = Date()
+        let timer = DispatchSource.makeTimerSource()
+        timer.schedule(deadline: .now() + timeInterval, repeating: timeInterval)
+        timer.setEventHandler {
+            autoreleasepool {
+                print("Running \(function) for \(Int(round(-startTime.timeIntervalSinceNow)))s")
+            }
+        }
+        timer.resume()
+        return timer
     }
     
 }

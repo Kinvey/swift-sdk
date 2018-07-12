@@ -174,7 +174,12 @@ func buildError(
         return error
     }
     
-    let json = client.responseParser.parse(data) as? [String : String]
+    let json: [String : String]?
+    if let data = data, let dictionary = try? client.jsonParser.parseDictionary(from: data) as? [String : String] {
+        json = dictionary
+    } else {
+        json = nil
+    }
     if let response = response,
         response.isUnauthorized,
         let json = json,
@@ -253,8 +258,9 @@ func buildError(
         return Error.appNotFound(description: description)
     } else if let response = response,
         response.isOK,
-        let json = client.responseParser.parse(data),
-        json[Entity.CodingKeys.entityId] == nil
+        let data = data,
+        let json = try? client.jsonParser.parseDictionary(from: data),
+        json[Entity.EntityCodingKeys.entityId] == nil
     {
         return Error.objectIdMissing
     } else if let response = response,
@@ -295,7 +301,8 @@ func buildError(
     {
         return Error.entityNotFound(debug: debug, description: description)
     } else if let response = response,
-        let json = client.responseParser.parse(data)
+        let data = data,
+        let json = try? client.jsonParser.parseDictionary(from: data)
     {
         return Error.unknownJsonError(
             httpResponse: response.httpResponse,
@@ -307,4 +314,30 @@ func buildError(
         httpResponse: response?.httpResponse,
         data: data
     )
+}
+
+extension Sequence {
+    
+    func forEachAutoreleasepool(_ block: (Element) throws -> Swift.Void) rethrows {
+        try forEach { x in
+            try autoreleasepool {
+                try block(x)
+            }
+        }
+    }
+    
+}
+
+fileprivate func autoreleasepool(_ condition: @autoclosure () -> Bool) -> Bool {
+    return autoreleasepool {
+        return condition()
+    }
+}
+
+func whileAutoreleasepool(_ condition: @autoclosure () -> Bool, _ block: () throws -> Void) rethrows {
+    while autoreleasepool(condition) {
+        try autoreleasepool {
+            try block()
+        }
+    }
 }

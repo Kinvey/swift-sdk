@@ -9,7 +9,6 @@
 import Foundation
 import Realm
 import RealmSwift
-import ObjectMapper
 
 public typealias List<T: RealmSwift.Object> = RealmSwift.List<T>
 public typealias Object = RealmSwift.Object
@@ -57,25 +56,14 @@ open class Entity: Object, Persistable {
     }
     
     /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public required init?(map: Map) {
-        if let validationStrategy = map.context as? ValidationStrategy {
-            if let error = validationStrategy.validate(jsonArray: [map.JSON]) {
-                log.error(error.localizedDescription)
-                return nil
-            }
-        } else {
-            guard let entityId: String = map[CodingKeys.entityId].value(), !entityId.isEmpty else {
-                log.error("_id is required")
-                return nil
-            }
-        }
-        
         super.init()
     }
     
     /// Override this method and return the name of the collection for Kinvey.
-    open class func collectionName() -> String {
-        fatalError("Method \(#function) must be overridden")
+    open class func collectionName() throws -> String {
+        throw Error.invalidOperation(description: "Method \(#function) must be overridden")
     }
     
     /// The `_id` property mapped in the Kinvey backend.
@@ -97,7 +85,7 @@ open class Entity: Object, Persistable {
     public required init() {
         super.init()
     }
-    
+
     /**
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
@@ -105,7 +93,7 @@ open class Entity: Object, Persistable {
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }
-    
+
     /**
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
@@ -114,11 +102,20 @@ open class Entity: Object, Persistable {
         super.init(value: value, schema: schema)
     }
     
-    /// Override this method to tell how to map your own objects.
-    open func propertyMapping(_ map: Map) {
-        entityId <- ("entityId", map[CodingKeys.entityId])
-        metadata <- ("metadata", map[CodingKeys.metadata])
-        acl <- ("acl", map[CodingKeys.acl])
+    public required init(from decoder: Decoder) throws {
+        super.init()
+        
+        let container = try decoder.container(keyedBy: EntityCodingKeys.self)
+        entityId = try container.decodeIfPresent(String.self, forKey: .entityId)
+        metadata = try container.decodeIfPresent(Metadata.self, forKey: .metadata)
+        acl = try container.decodeIfPresent(Acl.self, forKey: .acl)
+    }
+    
+    open func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: EntityCodingKeys.self)
+        try container.encodeIfPresent(entityId, forKey: .entityId)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
+        try container.encodeIfPresent(acl, forKey: .acl)
     }
     
     /**
@@ -126,7 +123,7 @@ open class Entity: Object, Persistable {
      :nodoc:
      */
     open override class func primaryKey() -> String? {
-        return entityIdProperty()
+        return try? entityIdProperty()
     }
     
     /**
@@ -156,7 +153,42 @@ open class Entity: Object, Persistable {
         return properties
     }
     
+    /// Override this method to tell how to map your own objects.
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    open func propertyMapping(_ map: Map) {
+        entityId <- ("entityId", map[EntityCodingKeys.entityId])
+        metadata <- ("metadata", map[EntityCodingKeys.metadata])
+        acl <- ("acl", map[EntityCodingKeys.acl])
+    }
+    
+    open class func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    open class func decode<T>(from data: Data) throws -> T where T: JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    open class func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    open func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
+    }
+    
+    open func encode() throws -> [String : Any] {
+        return try encodeJSONEncodable()
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension Entity: Mappable {
+    
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public func mapping(map: Map) {
         let className = StringFromClass(cls: type(of: self))
         if kinveyProperyMapping[className] == nil {
@@ -179,7 +211,7 @@ open class Entity: Object, Persistable {
 extension Entity {
     
     /// Property names for the `Entity` class
-    public enum CodingKeys: String, CodingKey {
+    public enum EntityCodingKeys: String, CodingKey {
         
         /// Key to map the `_id` column in your Persistable implementation class.
         case entityId = "_id"

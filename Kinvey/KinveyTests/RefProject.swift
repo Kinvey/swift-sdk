@@ -25,7 +25,7 @@ class RefProject: Entity {
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
-        uniqueId <- map[Entity.CodingKeys.entityId]
+        uniqueId <- map[Entity.EntityCodingKeys.entityId]
         name <- map["name"]
     }
     

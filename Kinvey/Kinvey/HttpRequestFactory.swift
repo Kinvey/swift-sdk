@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 
 class HttpRequestFactory: RequestFactory {
     
@@ -26,6 +25,7 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.user(client: client, query: nil),
@@ -40,7 +40,7 @@ class HttpRequestFactory: RequestFactory {
             bodyObject["password"] = password
         }
         if let user = user {
-            bodyObject += user.toJSON()
+            bodyObject += try! client.jsonParser.toJSON(user)
         }
         request.setBody(json: bodyObject)
         return request
@@ -193,13 +193,14 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .put,
             endpoint: Endpoint.userById(client: client, userId: user.userId),
             credential: client.activeUser,
             options: options
         )
-        var bodyObject = user.toJSON()
+        var bodyObject = try! client.jsonParser.toJSON(user)
         
         if let newPassword = newPassword {
             bodyObject["password"] = newPassword
@@ -344,6 +345,7 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: Endpoint.appDataGroup(client: client, collectionName: collectionName),
@@ -367,9 +369,10 @@ class HttpRequestFactory: RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
-        let collectionName = T.collectionName()
-        var bodyObject = persistable.toJSON()
-        let objId = bodyObject[Entity.CodingKeys.entityId] as? String
+        let collectionName = try! T.collectionName()
+        let client = options?.client ?? self.client
+        var bodyObject = try! client.jsonParser.toJSON(persistable)
+        let objId = bodyObject[Entity.EntityCodingKeys.entityId] as? String
         let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
         let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
@@ -379,7 +382,7 @@ class HttpRequestFactory: RequestFactory {
         )
         
         if (isNewObj) {
-            bodyObject[Entity.CodingKeys.entityId] = nil
+            bodyObject[Entity.EntityCodingKeys.entityId] = nil
         }
         
         request.setBody(json: bodyObject)

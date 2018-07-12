@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 import PromiseKit
 
 /// Tells the current status for the realtime connection
@@ -51,7 +50,7 @@ protocol RealtimeRouter {
  Class that creates a live stream connection to be used in a peer-to-peer
  communication
  */
-public class LiveStream<Type: BaseMappable> {
+public class LiveStream<Type: Codable & BaseMappable> {
     
     private let name: String
     private let client: Client
@@ -143,7 +142,8 @@ public class LiveStream<Type: BaseMappable> {
             request.execute() { (data, response, error) in
                 if let response = response,
                     response.isOK,
-                    let liveStreamAcl: LiveStreamAcl = client.responseParser.parse(data)
+                    let data = data,
+                    let liveStreamAcl = try? client.jsonParser.parseObject(LiveStreamAcl.self, from: data)
                 {
                     resolver.fulfill(liveStreamAcl)
                 } else {
@@ -382,7 +382,7 @@ public class LiveStream<Type: BaseMappable> {
 }
 
 /// Access Control Level (Acl) for `LiveStream` objects
-public struct LiveStreamAcl: StaticMappable {
+public struct LiveStreamAcl {
     
     /// List of `userId`s that are allowed to subscribe
     public var subscribers = [String]()
@@ -405,20 +405,69 @@ public struct LiveStreamAcl: StaticMappable {
         }
     }
     
+}
+
+extension LiveStreamAcl: JSONDecodable {
+    
+    public static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    public static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    public static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    public mutating func refresh(from dictionary: [String : Any]) throws {
+        try refreshJSONDecodable(from: dictionary)
+    }
+    
+}
+
+extension LiveStreamAcl: Decodable {
+    
+    enum CodingKeys: String, CodingKey {
+        
+        case subscribers = "subscribe"
+        case publishers = "publish"
+        case groups
+        
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let subscribers = try container.decodeIfPresent([String].self, forKey: .subscribers)
+        let publishers = try container.decodeIfPresent([String].self, forKey: .publishers)
+        let groups = try container.decodeIfPresent(LiveStreamAclGroups.self, forKey: .groups)
+        self.init(
+            subscribers: subscribers,
+            publishers: publishers,
+            groups: groups
+        )
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension LiveStreamAcl: StaticMappable {
+    
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return LiveStreamAcl()
     }
     
     public mutating func mapping(map: Map) {
-        subscribers <- map["subscribe"]
-        publishers <- map["publish"]
-        groups <- map["groups"]
+        subscribers <- ("subscribers", map["subscribe"])
+        publishers <- ("publishers", map["publish"])
+        groups <- ("groups", map["groups"])
     }
     
 }
 
 /// Group Access Control Level (Group Acl) for `LiveStream` objects
-public struct LiveStreamAclGroups: StaticMappable {
+public struct LiveStreamAclGroups: Codable {
     
     /// List of groups that are allowed to publish
     public var publishers = [String]()
@@ -426,13 +475,25 @@ public struct LiveStreamAclGroups: StaticMappable {
     /// List of groups that are allowed to subscribe
     public var subscribers = [String]()
     
+    enum CodingKeys: String, CodingKey {
+        
+        case publishers = "publish"
+        case subscribers = "subscribe"
+        
+    }
+    
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension LiveStreamAclGroups: StaticMappable {
+    
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return LiveStreamAclGroups()
     }
     
     public mutating func mapping(map: Map) {
-        subscribers <- map["subscribe"]
-        publishers <- map["publish"]
+        subscribers <- ("subscribers", map["subscribe"])
+        publishers <- ("publishers", map["publish"])
     }
     
 }

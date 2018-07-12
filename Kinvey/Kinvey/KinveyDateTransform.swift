@@ -7,10 +7,9 @@
 //
 
 import Foundation
-import ObjectMapper
 
 /// Default TransformType for `Date` types
-open class KinveyDateTransform : TransformType {
+open class KinveyDateTransform {
     
     public typealias Object = Date
     public typealias JSON = String
@@ -93,4 +92,8 @@ open class KinveyDateTransform : TransformType {
         }
     }
     
+}
+
+@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+extension KinveyDateTransform : TransformType {
 }

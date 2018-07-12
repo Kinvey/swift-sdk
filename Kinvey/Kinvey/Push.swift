@@ -165,7 +165,7 @@ open class Push {
      }
      ```
      */
-    @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
+    @available(iOS, deprecated: 3.18.0, message: "Please use registerForNotifications() instead")
     open func registerForPush(
         forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
         categories: Set<UIUserNotificationCategory>? = nil,
@@ -194,16 +194,14 @@ open class Push {
      }
      ```
      */
-    @available(iOS, deprecated: 10.0, message: "Please use registerForNotifications() instead")
+    @available(iOS, deprecated: 3.18.0, message: "Please use registerForNotifications() instead")
     open func registerForPush(
         forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
         categories: Set<UIUserNotificationCategory>? = nil,
         completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         replaceAppDelegateMethods(
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
         
@@ -217,6 +215,7 @@ open class Push {
     }
     
     @available(iOS 10.0, *)
+    @available(*, deprecated: 3.18.0, message: "Please use registerForNotifications(authorizationOptions:categories:options:completionHandler:) instead")
     open func registerForNotifications(
         authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
         categories: Set<UNNotificationCategory>? = nil,
@@ -225,9 +224,7 @@ open class Push {
         registerForNotifications(
             authorizationOptions: authorizationOptions,
             categories: categories,
-            options: Options(
-                client: client
-            )
+            options: try! Options(client: client)
         ) { (result: Result<Bool, Swift.Error>) in
             switch result {
             case .success(let granted):
@@ -247,9 +244,7 @@ open class Push {
         return registerForNotifications(
             authorizationOptions: authorizationOptions,
             categories: categories,
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }
@@ -290,9 +285,7 @@ open class Push {
         _ completionHandler: BoolCompletionHandler? = nil
     ) {
         unRegisterDeviceToken(
-            options: Options(
-                client: client
-            )
+            options: try! Options(client: client)
         ) { (result: Result<Void, Swift.Error>) in
             switch result {
             case .success:
@@ -309,9 +302,7 @@ open class Push {
         _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {
         return unRegisterDeviceToken(
-            options: Options(
-                client: client
-            ),
+            options: try! Options(client: client),
             completionHandler: completionHandler
         )
     }

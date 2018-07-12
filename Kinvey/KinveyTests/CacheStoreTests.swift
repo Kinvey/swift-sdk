@@ -17,15 +17,15 @@ class CacheStoreTests: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.cache)
+        store = try! DataStore<Person>.collection(.cache)
     }
     
     var mockCount = 0
     
     override func tearDown() {
         if let activeUser = client.activeUser {
-            let store = DataStore<Person>.collection(.network)
-            let query = Query(format: "\(Person.aclProperty() ?? Person.CodingKeys.acl.rawValue).creator == %@", activeUser.userId)
+            let store = try! DataStore<Person>.collection(.network)
+            let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
                 mockResponse(json: ["count" : mockCount])
@@ -145,7 +145,7 @@ class CacheStoreTests: StoreTestCase {
         if let temporaryObjectId = temporaryObjectId {
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(temporaryObjectId, options: Options(readPolicy: .forceLocal)) {
+            store.find(temporaryObjectId, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let person):
                     XCTFail()
@@ -165,7 +165,7 @@ class CacheStoreTests: StoreTestCase {
         if let finalObjectId = finalObjectId {
             weak var expectationRemove = expectation(description: "Remove")
             
-            store.remove(byId: finalObjectId, options: Options(writePolicy: .forceLocal)) {
+            store.remove(byId: finalObjectId, options: try! Options(writePolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let count):
                     XCTAssertEqual(count, 1)
@@ -214,7 +214,7 @@ class CacheStoreTests: StoreTestCase {
                 weak var expectationSaveNetwork = expectation(description: "Save Network")
                 weak var expectationSaveLocal = expectation(description: "Save Local")
                 
-                let store = DataStore<Book>.collection(.cache)
+                let store = try! DataStore<Book>.collection(.cache)
                 store.save(book) {
                     switch $0 {
                     case .success(let book):
@@ -243,7 +243,7 @@ class CacheStoreTests: StoreTestCase {
             do {
                 weak var expectationFind = expectation(description: "Find")
                 
-                let store = DataStore<Book>.collection(.sync)
+                let store = try! DataStore<Book>.collection(.sync)
                 store.find {
                     switch $0 {
                     case .success(let books):
@@ -269,7 +269,7 @@ class CacheStoreTests: StoreTestCase {
             do {
                 weak var expectationFind = expectation(description: "Find")
                 
-                let store = DataStore<Book>.collection(.sync)
+                let store = try! DataStore<Book>.collection(.sync)
                 let query = Query(format: "authorNames contains %@", "Victor Barros")
                 store.find(query) {
                     switch $0 {
@@ -296,7 +296,7 @@ class CacheStoreTests: StoreTestCase {
             do {
                 weak var expectationFind = expectation(description: "Find")
                 
-                let store = DataStore<Book>.collection(.sync)
+                let store = try! DataStore<Book>.collection(.sync)
                 let query = Query(format: "subquery(authorNames, $authorNames, $authorNames like[c] %@).@count > 0", "Vic*")
                 store.find(query) {
                     switch $0 {
@@ -374,7 +374,7 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationSaveNetwork = expectation(description: "Save Network")
             weak var expectationSaveLocal = expectation(description: "Save Local")
             
-            let store = DataStore<Book>.collection(.cache)
+            let store = try! DataStore<Book>.collection(.cache)
             store.save(book) {
                 switch $0 {
                 case .success(let book):
@@ -404,7 +404,7 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationFindLocal = expectation(description: "Save Local")
             weak var expectationFindNetwork = expectation(description: "Save Network")
             
-            let store = DataStore<Book>.collection(.cache)
+            let store = try! DataStore<Book>.collection(.cache)
             store.find {
                 switch $0 {
                 case .success(let books):
@@ -447,7 +447,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Create 1 person, Make regular GET, Create 1 more person, Make regular GET
     func testCacheStoreDisabledDeltasetWithPull() {
-        let store = DataStore<Person>.collection(.cache)
+        let store = try! DataStore<Person>.collection(.cache)
         
         var initialCount = Int64(0)
         do {
@@ -611,7 +611,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithPull() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var sinceTime = Date().toString()
         var initialCount = Int64(0)
         do {
@@ -769,7 +769,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET,Make deltaset request
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithPull() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -898,7 +898,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Create 2 persons, pull with regular GET, update 1, deltaset returning 1 changed, delete 1, deltaset returning 1 deleted
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithPull() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -1133,7 +1133,7 @@ class CacheStoreTests: StoreTestCase {
     }
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, delete 1 item that satisfies the query, deltaset returns 1 deleted item
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithPull() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -1299,7 +1299,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, update 1 item that satisfies the query, deltaset returns 1 changed item
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithPull() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -1485,7 +1485,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithPull() {
-        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -1638,7 +1638,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationPull = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -1715,7 +1715,7 @@ class CacheStoreTests: StoreTestCase {
     }
     
     func testCacheStoreDisabledDeltasetWithSync() {
-        let store = DataStore<Person>.collection(.cache)
+        let store = try! DataStore<Person>.collection(.cache)
         
         var initialCount = 0
         do {
@@ -1868,7 +1868,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ExtraItemAddedWithSync() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -2015,7 +2015,7 @@ class CacheStoreTests: StoreTestCase {
     }
  
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithSync() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -2138,7 +2138,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithSync() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -2363,7 +2363,7 @@ class CacheStoreTests: StoreTestCase {
     
 
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithSync() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -2521,7 +2521,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithSync() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -2701,7 +2701,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithSync() {
-        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -2847,7 +2847,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -2920,7 +2920,7 @@ class CacheStoreTests: StoreTestCase {
         }
     }
     func testCacheStoreDisabledDeltasetWithFind() {
-        let store = DataStore<Person>.collection(.cache)
+        let store = try! DataStore<Person>.collection(.cache)
         
         var initialCount = Int64(0)
         do {
@@ -2975,7 +2975,7 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             let query = Query()
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
@@ -3055,7 +3055,7 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             let query = Query()
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
@@ -3084,7 +3084,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ExtraItemAddedWithFind() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = 0
         do {
@@ -3138,7 +3138,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3213,7 +3213,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             let query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3249,7 +3249,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetSinceIsRespectedWithoutChangesWithFind() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -3303,7 +3303,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3357,7 +3357,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3388,7 +3388,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1ItemAdded1Updated1DeletedWithFind() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
@@ -3461,7 +3461,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3541,7 +3541,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3606,7 +3606,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3637,7 +3637,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithFind() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
@@ -3715,7 +3715,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3781,7 +3781,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3812,7 +3812,7 @@ class CacheStoreTests: StoreTestCase {
     }
     
     func testCacheStoreDeltasetWithQuery1ItemUpdatedWithFind() {
-        let store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
@@ -3890,7 +3890,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -3973,7 +3973,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -4009,7 +4009,7 @@ class CacheStoreTests: StoreTestCase {
     }
 
     func testCacheStoreDeltasetTurnedOffSendsRegularGETWithFind() {
-        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
@@ -4063,7 +4063,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -4139,7 +4139,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -4171,7 +4171,7 @@ class CacheStoreTests: StoreTestCase {
                 expectationFind = nil
             }
         }
-        store = DataStore<Person>.collection(.cache, options: Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -4218,7 +4218,7 @@ class CacheStoreTests: StoreTestCase {
             }
             
             weak var expectationFind = expectation(description: "Find")
-            var options = Options()
+            var options = try! Options()
             options.readPolicy = .forceNetwork
             var query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
@@ -4254,7 +4254,7 @@ class CacheStoreTests: StoreTestCase {
     
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testCacheStoreFindByIdNotUsingDeltaset() {
-        var store = DataStore<Person>.collection(.cache, options: Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToFind = ""
         var initialCount = 0
         var readPolicy = ReadPolicy.forceNetwork
@@ -4310,7 +4310,7 @@ class CacheStoreTests: StoreTestCase {
             
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(idToFind, options: Options(readPolicy: readPolicy)) {
+            store.find(idToFind, options: try! Options(readPolicy: readPolicy)) {
                 self.assertThread()
                 
                 switch $0 {
@@ -4370,7 +4370,7 @@ class CacheStoreTests: StoreTestCase {
             }
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(idToFind, options: Options(readPolicy: readPolicy)) {
+            store.find(idToFind, options: try! Options(readPolicy: readPolicy)) {
                 self.assertThread()
                 
                 switch $0 {

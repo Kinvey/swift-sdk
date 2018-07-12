@@ -49,11 +49,23 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
+        let initialObject: JsonDictionary
+        let reduceJSFunction: String
+        do {
+            initialObject = try aggregation.initialObject()
+            reduceJSFunction = try aggregation.reduceJSFunction()
+        } catch {
+            let result: ResultType = .failure(error)
+            let request = LocalRequest<ResultType>()
+            request.result = result
+            completionHandler?(result)
+            return AnyRequest(request)
+        }
         let request = client.networkRequestFactory.buildAppDataGroup(
-            collectionName: T.collectionName(),
+            collectionName: try! T.collectionName(),
             keys: aggregation.keys,
-            initialObject: aggregation.initialObject,
-            reduceJSFunction: aggregation.reduceJSFunction,
+            initialObject: initialObject,
+            reduceJSFunction: reduceJSFunction,
             condition: predicate,
             options: options,
             resultType: ResultType.self
@@ -98,7 +110,7 @@ enum Aggregation {
         }
     }
     
-    var resultKey: String {
+    func resultKey() throws -> String {
         switch self {
         case .count:
             return "count"
@@ -111,41 +123,41 @@ enum Aggregation {
         case .max:
             return "max"
         case .custom(_, _, _):
-            fatalError("Custom does not have a resultKey")
+            throw Error.invalidOperation(description: "Custom does not have a resultKey")
         }
     }
     
-    var initialObject: JsonDictionary {
+    func initialObject() throws -> JsonDictionary {
         switch self {
         case .custom(_, let initialObject, _):
             return initialObject
         case .count:
-            return [resultKey : 0]
+            return [try resultKey() : 0]
         case .sum:
-            return [resultKey : 0.0]
+            return [try resultKey() : 0.0]
         case .avg:
             return ["sum" : 0.0, "count" : 0]
         case .min:
-            return [resultKey : "Infinity"]
+            return [try resultKey() : "Infinity"]
         case .max:
-            return [resultKey : "-Infinity"]
+            return [try resultKey() : "-Infinity"]
         }
     }
     
-    var reduceJSFunction: String {
+    func reduceJSFunction() throws -> String {
         switch self {
         case .custom(_, _, let reduceJSFunction):
             return reduceJSFunction
         case .count(_):
-            return "function(doc, out) { out.\(resultKey)++; }"
+            return "function(doc, out) { out.\(try resultKey())++; }"
         case .sum(_, let sum):
-            return "function(doc, out) { out.\(resultKey) += doc.\(sum); }"
+            return "function(doc, out) { out.\(try resultKey()) += doc.\(sum); }"
         case .avg(_, let avg):
-            return "function(doc, out) { out.count++; out.sum += doc.\(avg); out.\(resultKey) = out.sum / out.count; }"
+            return "function(doc, out) { out.count++; out.sum += doc.\(avg); out.\(try resultKey()) = out.sum / out.count; }"
         case .min(_, let min):
-            return "function(doc, out) { out.\(resultKey) = Math.min(out.\(resultKey), doc.\(min)); }"
+            return "function(doc, out) { out.\(try resultKey()) = Math.min(out.\(try resultKey()), doc.\(min)); }"
         case .max(_, let max):
-            return "function(doc, out) { out.\(resultKey) = Math.max(out.\(resultKey), doc.\(max)); }"
+            return "function(doc, out) { out.\(try resultKey()) = Math.max(out.\(try resultKey()), doc.\(max)); }"
         }
     }
     

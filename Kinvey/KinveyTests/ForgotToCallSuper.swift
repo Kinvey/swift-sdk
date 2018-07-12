@@ -38,7 +38,7 @@ class ForgotToCallSuperEntity2: Entity {
     }
     
     override func propertyMapping(_ map: Map) {
-        myId <- ("myId", map[CodingKeys.entityId])
+        myId <- ("myId", map[EntityCodingKeys.entityId])
         myProperty <- ("myProperty", map["myProperty"])
     }
     
@@ -63,26 +63,45 @@ class ForgotToCallSuperPersistable: Persistable {
         myProperty <- ("myProperty", map["myProperty"])
     }
     
+    static func decode<T>(from data: Data) throws -> T {
+        return ForgotToCallSuperPersistable() as! T
+    }
+    
+    static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return [ForgotToCallSuperPersistable]() as! [T]
+    }
+    
+    static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return ForgotToCallSuperPersistable() as! T
+    }
+    
+    func refresh(from dictionary: [String : Any]) throws {
+    }
+    
+    func encode() throws -> [String : Any] {
+        return [:]
+    }
+    
 }
 
 class ForgotToCallSuper: XCTestCase {
     
     func testForgotToCallSuper() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperEntity.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperEntity.propertyMappingReverse()
+        }.to(throwError())
     }
     
     func testForgotToCallSuper2() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperEntity2.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperEntity2.propertyMappingReverse()
+        }.to(throwError())
     }
     
     func testForgotToCallSuperPersistable() {
-        expect { () -> Void in
-            let _  = ForgotToCallSuperPersistable.propertyMappingReverse()
-        }.to(throwAssertion())
+        expect {
+            try ForgotToCallSuperPersistable.propertyMappingReverse()
+        }.to(throwError())
     }
     
 }
