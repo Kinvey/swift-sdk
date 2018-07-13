@@ -50,7 +50,7 @@ protocol RealtimeRouter {
  Class that creates a live stream connection to be used in a peer-to-peer
  communication
  */
-public class LiveStream<Type: Codable & BaseMappable> {
+internal class LiveStream<Type: Codable & BaseMappable> {
     
     private let name: String
     private let client: Client
@@ -63,7 +63,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
      Constructor that takes the name of the stream and an (optional) `Client`
      instance
      */
-    public init(name: String, client: Client = sharedClient) {
+    internal init(name: String, client: Client = sharedClient) {
         self.name = name
         self.client = client
     }
@@ -92,7 +92,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     
     /// Grant access to a user for the `LiveStream`
     @discardableResult
-    public func grantStreamAccess(
+    internal func grantStreamAccess(
         userId: String,
         acl: LiveStreamAcl,
         options: Options? = nil,
@@ -126,7 +126,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     
     /// Grant access to a user for the `LiveStream`
     @discardableResult
-    public func streamAccess(
+    internal func streamAccess(
         userId: String,
         options: Options? = nil,
         completionHandler: ((Result<LiveStreamAcl, Swift.Error>) -> Void)? = nil
@@ -181,7 +181,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Sends a message to an specific user
-    public func send(
+    internal func send(
         userId: String,
         message: Type,
         retry: Bool = true,
@@ -242,7 +242,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Start listening messages sent to the current active user
-    public func listen(
+    internal func listen(
         options: Options? = nil,
         listening: @escaping () -> Void,
         onNext: @escaping (Type) -> Void,
@@ -264,7 +264,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Stop listening messages sent to the current active user
-    public func stopListening(
+    internal func stopListening(
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {
@@ -280,7 +280,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Sends a message to the current active user
-    public func post(
+    internal func post(
         message: Type,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
@@ -298,7 +298,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Start listening messages sent to an specific user
-    public func follow(
+    internal func follow(
         userId: String,
         options: Options? = nil,
         following: @escaping () -> Void,
@@ -346,7 +346,7 @@ public class LiveStream<Type: Codable & BaseMappable> {
     }
     
     /// Stop listening messages sent to an specific user
-    public func unfollow(
+    internal func unfollow(
         userId: String,
         options: Options? = nil,
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
@@ -382,18 +382,18 @@ public class LiveStream<Type: Codable & BaseMappable> {
 }
 
 /// Access Control Level (Acl) for `LiveStream` objects
-public struct LiveStreamAcl {
+internal struct LiveStreamAcl {
     
     /// List of `userId`s that are allowed to subscribe
-    public var subscribers = [String]()
+    internal var subscribers = [String]()
     
     /// List of `userId`s that are allowed to publish
-    public var publishers = [String]()
+    internal var publishers = [String]()
     
     /// Group Acl
-    public var groups = LiveStreamAclGroups()
+    internal var groups = LiveStreamAclGroups()
     
-    public init(subscribers: [String]? = nil, publishers: [String]? = nil, groups: LiveStreamAclGroups? = nil) {
+    internal init(subscribers: [String]? = nil, publishers: [String]? = nil, groups: LiveStreamAclGroups? = nil) {
         if let subscribers = subscribers {
             self.subscribers = subscribers
         }
@@ -409,19 +409,19 @@ public struct LiveStreamAcl {
 
 extension LiveStreamAcl: JSONDecodable {
     
-    public static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+    internal static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
         return try decodeJSONDecodable(from: data)
     }
     
-    public static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+    internal static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
         return try decodeArrayJSONDecodable(from: data)
     }
     
-    public static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+    internal static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
         return try decodeJSONDecodable(from: dictionary)
     }
     
-    public mutating func refresh(from dictionary: [String : Any]) throws {
+    internal mutating func refresh(from dictionary: [String : Any]) throws {
         try refreshJSONDecodable(from: dictionary)
     }
     
@@ -437,7 +437,7 @@ extension LiveStreamAcl: Decodable {
         
     }
     
-    public init(from decoder: Decoder) throws {
+    internal init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let subscribers = try container.decodeIfPresent([String].self, forKey: .subscribers)
         let publishers = try container.decodeIfPresent([String].self, forKey: .publishers)
@@ -454,11 +454,11 @@ extension LiveStreamAcl: Decodable {
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension LiveStreamAcl: StaticMappable {
     
-    public static func objectForMapping(map: Map) -> BaseMappable? {
+    internal static func objectForMapping(map: Map) -> BaseMappable? {
         return LiveStreamAcl()
     }
     
-    public mutating func mapping(map: Map) {
+    internal mutating func mapping(map: Map) {
         subscribers <- ("subscribers", map["subscribe"])
         publishers <- ("publishers", map["publish"])
         groups <- ("groups", map["groups"])
@@ -467,13 +467,13 @@ extension LiveStreamAcl: StaticMappable {
 }
 
 /// Group Access Control Level (Group Acl) for `LiveStream` objects
-public struct LiveStreamAclGroups: Codable {
+internal struct LiveStreamAclGroups: Codable {
     
     /// List of groups that are allowed to publish
-    public var publishers = [String]()
+    internal var publishers = [String]()
     
     /// List of groups that are allowed to subscribe
-    public var subscribers = [String]()
+    internal var subscribers = [String]()
     
     enum CodingKeys: String, CodingKey {
         
@@ -487,11 +487,11 @@ public struct LiveStreamAclGroups: Codable {
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 extension LiveStreamAclGroups: StaticMappable {
     
-    public static func objectForMapping(map: Map) -> BaseMappable? {
+    internal static func objectForMapping(map: Map) -> BaseMappable? {
         return LiveStreamAclGroups()
     }
     
-    public mutating func mapping(map: Map) {
+    internal mutating func mapping(map: Map) {
         subscribers <- ("subscribers", map["subscribe"])
         publishers <- ("publishers", map["publish"])
     }
@@ -504,11 +504,11 @@ extension LiveStreamAclGroups: StaticMappable {
  */
 extension LiveStream: Hashable {
     
-    public var hashValue: Int {
+    internal var hashValue: Int {
         return uuid.hashValue
     }
     
-    public static func ==(lhs: LiveStream<Type>, rhs: LiveStream<Type>) -> Bool {
+    internal static func ==(lhs: LiveStream<Type>, rhs: LiveStream<Type>) -> Bool {
         return lhs.uuid == rhs.uuid
     }
     

@@ -11,9 +11,9 @@ import Kinvey
 
 class RealtimeAclTestCase: KinveyTestCase {
     
-    func testLiveStreamAclConsturctorNoParams() {
-        let acl = LiveStreamAcl()
-        XCTAssertNotNil(acl)
-    }
+//    func testLiveStreamAclConsturctorNoParams() {
+//        let acl = LiveStreamAcl()
+//        XCTAssertNotNil(acl)
+//    }
     
 }
