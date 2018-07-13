@@ -782,17 +782,18 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSync() {
-        var person = save()
+        save()
         
         XCTAssertEqual(store.syncCount(), 1)
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
         
-        var personMockJson = [JsonDictionary]()
         if useMockData {
+            var count = 0
+            var personMockJson: JsonDictionary? = nil
             mockResponse { (request) -> HttpResponse in
-                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
-                switch (request.httpMethod!, urlComponents.path) {
-                case ("POST", "/appdata/_kid_/Person"):
+                defer { count += 1 }
+                switch count {
+                case 0:
+                    XCTAssertEqual(request.httpMethod, "POST")
                     var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
                     json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
                     json[Entity.EntityCodingKeys.acl] = [
@@ -802,21 +803,14 @@ class SyncStoreTests: StoreTestCase {
                         Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
                         Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
                     ]
-                    personMockJson.append(json)
+                    personMockJson = json
                     return HttpResponse(statusCode: 201, json: json)
-                case ("GET", "/appdata/_kid_/Person"), ("GET", "/appdata/_kid_/Person/"):
+                case 1:
+                    XCTAssertEqual(request.httpMethod, "GET")
                     XCTAssertNotNil(personMockJson)
-                    return HttpResponse(statusCode: 200, json: personMockJson)
-                case ("DELETE", "/appdata/_kid_/Person/\(person.entityId!)"):
-                    if let idx = personMockJson.index(where: { $0[Entity.EntityCodingKeys.entityId] as? String == person.entityId }) {
-                        personMockJson.remove(at: idx)
-                        return HttpResponse(statusCode: 200, json: ["count" : 1])
-                    }
-                    fallthrough
+                    return HttpResponse(statusCode: 200, json: [personMockJson!])
                 default:
-                    XCTFail("HTTP Method: \(request.httpMethod!)")
-                    XCTFail("URL Path: \(urlComponents.path)")
-                    return HttpResponse(statusCode: 404, data: Data())
+                    Swift.fatalError()
                 }
             }
         }
@@ -824,106 +818,26 @@ class SyncStoreTests: StoreTestCase {
             if useMockData { setURLProtocol(nil) }
         }
         
-        do {
-            weak var expectationSync = expectation(description: "Sync")
+        weak var expectationSync = expectation(description: "Sync")
+        
+        store.sync() { count, results, error in
+            self.assertThread()
+            XCTAssertNotNil(count)
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
             
-            store.sync() { count, results, error in
-                self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let count = count {
-                    XCTAssertEqual(count, 1)
-                }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 1)
-                
-                expectationSync?.fulfill()
+            if let count = count {
+                XCTAssertEqual(Int(count), 1)
             }
             
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationSync = nil
-            }
-            
-            XCTAssertEqual(store.syncCount(), 0)
+            expectationSync?.fulfill()
         }
         
-        do {
-            weak var expectationFind = expectation(description: "Find")
-            
-            store.find() {
-                switch $0 {
-                case .success(let persons):
-                    XCTAssertEqual(persons.count, 1)
-                    if let _person = persons.first {
-                        person = _person
-                    }
-                case .failure(let error):
-                    XCTFail(error.localizedDescription)
-                }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 1)
-                
-                expectationFind?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationFind = nil
-            }
-            
-            XCTAssertEqual(store.syncCount(), 0)
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSync = nil
         }
-        
-        do {
-            weak var expectationRemove = expectation(description: "Remove")
-            
-            try store.remove(person) {
-                switch $0 {
-                case .success(let count):
-                    XCTAssertEqual(count, 1)
-                case .failure(let error):
-                    XCTFail(error.localizedDescription)
-                }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 0)
-                
-                expectationRemove?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationRemove = nil
-            }
-            
-            XCTAssertEqual(store.syncCount(), 1)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
-        
-        do {
-            weak var expectationSync = expectation(description: "Sync")
-            
-            store.sync() { count, results, error in
-                self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let count = count {
-                    XCTAssertEqual(count, 1)
-                }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 0)
-                
-                expectationSync?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationSync = nil
-            }
-            
-            XCTAssertEqual(store.syncCount(), 0)
-        }
+
+        XCTAssertEqual(store.syncCount(), 0)
     }
     
     func testSyncPullTimeoutError() {
@@ -1334,7 +1248,6 @@ class SyncStoreTests: StoreTestCase {
         ]
         
         store.clearCache(query: Query())
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
         
         do {
             weak var expectationPull = expectation(description: "Pull")
@@ -1350,8 +1263,6 @@ class SyncStoreTests: StoreTestCase {
                     let cacheCount = Int((self.store.cache?.count(query: nil))!)
                     XCTAssertEqual(cacheCount, results.count)
                 }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 3)
                 
                 expectationPull?.fulfill()
             }
@@ -1383,8 +1294,6 @@ class SyncStoreTests: StoreTestCase {
                         XCTAssertEqual(person.personId, "Victor")
                     }
                 }
-                
-                XCTAssertEqual(realm.objects(Metadata.self).count, 1)
                 
                 expectationPull?.fulfill()
             }
@@ -3525,7 +3434,6 @@ class SyncStoreTests: StoreTestCase {
     
     func testServerSideDeltaSetSyncClearCacheNoQuery() {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3579,8 +3487,6 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 1)
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3657,11 +3563,7 @@ class SyncStoreTests: StoreTestCase {
             }
         }
         
-        XCTAssertEqual(realm.objects(Metadata.self).count, 2)
-        
         store.clearCache()
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 0)
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3727,13 +3629,10 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 2)
     }
     
     func testServerSideDeltaSetSyncClearCache() {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3787,8 +3686,6 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 1)
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3864,8 +3761,6 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 2)
         
         let query = Query(format: "name == %@", "Victor")
         store.clearCache(query: query)
@@ -3934,8 +3829,6 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        
-        XCTAssertEqual(realm.objects(Metadata.self).count, 2)
     }
     
     func testServerSideDeltaSetSyncResultSetExceed() {

@@ -390,9 +390,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         var newEntity: Entity!
         executor.executeAndWait {
             try! self.write { realm in
-                if let entityId = entity.entityId, let oldEntity = realm.object(ofType: self.entityType, forPrimaryKey: entityId) {
-                    self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
-                }
                 newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
             }
             if let entity = entity as? Entity {
@@ -411,9 +408,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             newEntities.reserveCapacity(entities.count)
             try! self.write { realm in
                 for entity in entities {
-                    if let entityId = entity.entityId, let oldEntity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
-                        self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
-                    }
                     let newEntity = realm.create(entityType, value: entity, update: true)
                     newEntities.append(newEntity)
                 }
@@ -709,7 +703,7 @@ extension RealmSwift.NotificationToken: NotificationToken {
 
 extension RealmCache: DynamicCacheType {
     
-    internal func cascadeDelete(realm: Realm, entityType: String, entity: Object, deleteItself: Bool = true) {
+    internal func cascadeDelete(realm: Realm, entityType: String, entity: Object) {
         if let schema = realm.schema[entityType] {
             schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
@@ -740,9 +734,7 @@ extension RealmCache: DynamicCacheType {
                 }
             }
         }
-        if deleteItself {
-            realm.delete(entity)
-        }
+        realm.delete(entity)
     }
     
     private func cascadeDelete(realm: Realm, entityType: String, entities: List<DynamicObject>) {
