@@ -124,22 +124,22 @@ class ViewController: NSViewController {
                 "\t Artist: \(songArtist ?? "nil")\n",
                 "\t Rating: \(songRating ?? 0)"
             )
-            let songRecommendation = SongRecommendation(name: songName, artist: songArtist, rating: songRating)
-            
-            print("Sending data to \(receiverId!)")
-            
-            let stream = LiveStream<SongRecommendation>(name: "SongRecommendation")
-            stream.send(userId: receiverId!, message: songRecommendation) { (result: Result<Void, Swift.Error>) in
-                switch result {
-                case .success:
-                    print("Data Sent!")
-                    exit()
-                case .failure(let error):
-                    print("Send Data Failed")
-                    print(error)
-                    exit()
-                }
-            }
+//            let songRecommendation = SongRecommendation(name: songName, artist: songArtist, rating: songRating)
+//            
+//            print("Sending data to \(receiverId!)")
+//            
+//            let stream = LiveStream<SongRecommendation>(name: "SongRecommendation")
+//            stream.send(userId: receiverId!, message: songRecommendation) { (result: Result<Void, Swift.Error>) in
+//                switch result {
+//                case .success:
+//                    print("Data Sent!")
+//                    exit()
+//                case .failure(let error):
+//                    print("Send Data Failed")
+//                    print(error)
+//                    exit()
+//                }
+//            }
         }
         
         func registerForRealtime(user: User) {
