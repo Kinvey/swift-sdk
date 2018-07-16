@@ -26,6 +26,7 @@ public enum RealtimeStatus {
     
 }
 
+/// Abstraction layer for Realtime
 protocol RealtimeRouter {
 
     func subscribe(
