@@ -451,21 +451,6 @@ extension LiveStreamAcl: Decodable {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-extension LiveStreamAcl: StaticMappable {
-    
-    internal static func objectForMapping(map: Map) -> BaseMappable? {
-        return LiveStreamAcl()
-    }
-    
-    internal mutating func mapping(map: Map) {
-        subscribers <- ("subscribers", map["subscribe"])
-        publishers <- ("publishers", map["publish"])
-        groups <- ("groups", map["groups"])
-    }
-    
-}
-
 /// Group Access Control Level (Group Acl) for `LiveStream` objects
 internal struct LiveStreamAclGroups: Codable {
     
@@ -480,20 +465,6 @@ internal struct LiveStreamAclGroups: Codable {
         case publishers = "publish"
         case subscribers = "subscribe"
         
-    }
-    
-}
-
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-extension LiveStreamAclGroups: StaticMappable {
-    
-    internal static func objectForMapping(map: Map) -> BaseMappable? {
-        return LiveStreamAclGroups()
-    }
-    
-    internal mutating func mapping(map: Map) {
-        subscribers <- ("subscribers", map["subscribe"])
-        publishers <- ("publishers", map["publish"])
     }
     
 }
