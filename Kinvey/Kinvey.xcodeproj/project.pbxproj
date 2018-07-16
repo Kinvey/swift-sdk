@@ -14,7 +14,6 @@
 		5705B1BD1EDF823F0006980A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1BC1EDF823F0006980A /* ViewController.swift */; };
 		5705B1BF1EDF823F0006980A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1BE1EDF823F0006980A /* Assets.xcassets */; };
 		5705B1C21EDF823F0006980A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5705B1C01EDF823F0006980A /* Main.storyboard */; };
-		5705B1CD1EDF823F0006980A /* RealtimeMacAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */; };
 		5705B1D81EDF82400006980A /* KinveyMacAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */; };
 		5705B1E51EDF83DB0006980A /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		570623201F1825CA00B7FAE9 /* PerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706231F1F1825CA00B7FAE9 /* PerformanceTest.swift */; };
@@ -882,7 +881,6 @@
 		5705B1C11EDF823F0006980A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5705B1C31EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5705B1C81EDF823F0006980A /* KinveyMacAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeMacAppTests.swift; sourceTree = "<group>"; };
 		5705B1CE1EDF823F0006980A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5705B1D31EDF82400006980A /* KinveyMacAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyMacAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5705B1D71EDF82400006980A /* KinveyMacAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyMacAppUITests.swift; sourceTree = "<group>"; };
@@ -1433,7 +1431,6 @@
 		5705B1CB1EDF823F0006980A /* KinveyMacAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				5705B1CC1EDF823F0006980A /* RealtimeMacAppTests.swift */,
 				5705B1CE1EDF823F0006980A /* Info.plist */,
 				5706231F1F1825CA00B7FAE9 /* PerformanceTest.swift */,
 				578148581F2BCC5D009E8622 /* HierarchyCache.swift */,
@@ -3174,7 +3171,6 @@
 				578B80711EE746D5004D92A6 /* RealtimeTestCase.swift in Sources */,
 				578B80551EE73AD3004D92A6 /* Book.swift in Sources */,
 				578B80501EE73A77004D92A6 /* Person.swift in Sources */,
-				5705B1CD1EDF823F0006980A /* RealtimeMacAppTests.swift in Sources */,
 				578B80511EE73A84004D92A6 /* MockKinveyBackend.swift in Sources */,
 				57C731FA1F57721700B67C13 /* MacOSOnlyTestCase.swift in Sources */,
 				570623201F1825CA00B7FAE9 /* PerformanceTest.swift in Sources */,
