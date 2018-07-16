@@ -213,13 +213,13 @@ protocol RequestFactory {
     func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String, options: Options?) -> HttpRequest<Any>
     func buildOAuthGrantRefreshToken(refreshToken: String, options: Options?) -> HttpRequest<Any>
     
-    func buildLiveStreamGrantAccess<Result>(
-        streamName: String,
-        userId: String,
-        acl: LiveStreamAcl,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
+//    func buildLiveStreamGrantAccess<Result>(
+//        streamName: String,
+//        userId: String,
+//        acl: LiveStreamAcl,
+//        options: Options?,
+//        resultType: Result.Type
+//    ) -> HttpRequest<Result>
     
     func buildLiveStreamAccess<Result>(
         streamName: String,
