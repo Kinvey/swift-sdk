@@ -283,26 +283,28 @@ func XCTAssertTimeoutError(_ error: Swift.Error?) {
     }
 }
 
-internal func reportMemory() -> Int64? {
-    var info = task_basic_info()
-    var count = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size)/4
-    
-    let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-        $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-            task_info(
-                mach_task_self_,
-                task_flavor_t(TASK_BASIC_INFO),
-                $0,
+func mach_task_self() -> task_t {
+    return mach_task_self_
+}
+
+// got from https://forums.developer.apple.com/thread/64665
+func getMegabytesUsed() -> Float? {
+    var info = mach_task_basic_info()
+    var count = mach_msg_type_number_t(MemoryLayout.size(ofValue: info) / MemoryLayout<integer_t>.size)
+    let kerr = withUnsafeMutablePointer(to: &info) { infoPtr in
+        return infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { (machPtr: UnsafeMutablePointer<integer_t>) in
+            return task_info(
+                mach_task_self(),
+                task_flavor_t(MACH_TASK_BASIC_INFO),
+                machPtr,
                 &count
             )
         }
     }
-    
-    if kerr == KERN_SUCCESS {
-        return Int64(info.resident_size)
+    guard kerr == KERN_SUCCESS else {
+        return nil
     }
-    
-    return nil
+    return Float(info.resident_size) / (1024 * 1024)
 }
 
 class KinveyTestCase: XCTestCase {

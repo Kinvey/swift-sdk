@@ -58,8 +58,7 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
     }
     
     func testRemoveAllMemoryLeak() {
-        let timer = startLogPolling()
-        let reportMemory1 = reportMemory()!
+        let megabytesUsageAtStart = getMegabytesUsed()!
         
         let count = 10_000
         let range = 1 ... count
@@ -71,12 +70,10 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
         }
         mockResponse(json: json)
         defer {
-            timer.cancel()
             setURLProtocol(nil)
         }
         
-        let reportMemory2 = reportMemory()!
-        XCTAssertLessThan(reportMemory2 - reportMemory1, 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(getMegabytesUsed()! - megabytesUsageAtStart, 20)
         
         autoreleasepool {
             weak var expectationPull = expectation(description: "Pull")
@@ -98,8 +95,7 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
             }
         }
         
-        let reportMemory3 = reportMemory()!
-        XCTAssertLessThan(reportMemory3 - reportMemory2, 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(getMegabytesUsed()! - megabytesUsageAtStart, 50)
         
         autoreleasepool {
             weak var expectationRemove = expectation(description: "Remove")
@@ -121,8 +117,7 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
             }
         }
         
-        let reportMemory4 = reportMemory()!
-        XCTAssertLessThan(reportMemory4 - reportMemory3, 1024 * 1024 * 50) // 50 Mb
+        XCTAssertLessThan(getMegabytesUsed()! - megabytesUsageAtStart, 50)
     }
     
 }

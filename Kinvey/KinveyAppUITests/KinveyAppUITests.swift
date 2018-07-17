@@ -37,6 +37,8 @@ extension RunLoop {
 }
 
 class KinveyAppUITests: XCTestCase {
+    
+    let defaultTimeout: TimeInterval = 60
         
     func testMICLoginSafariAuthenticationSession() {
         let app = XCUIApplication()
@@ -121,9 +123,9 @@ class KinveyAppUITests: XCTestCase {
                 app.tap()
             }
             return userIdValue.exists
-        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
-        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
-        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
+        }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
     }
     
     func testMICLoginWKWebView() {
@@ -206,9 +208,9 @@ class KinveyAppUITests: XCTestCase {
                 app.tap()
             }
             return userIdValue.exists
-        }).toEventually(beFalse(), timeout: 10, pollInterval: 1)
-        expect(userIdValue.exists).toEventually(beTrue(), timeout: 30)
-        expect(userIdValue.label).toEventually(equal(userId), timeout: 10)
+        }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 1)
+        expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
+        expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
     }
     
 }

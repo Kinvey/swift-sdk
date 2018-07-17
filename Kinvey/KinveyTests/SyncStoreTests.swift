@@ -2867,7 +2867,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let memoryBefore = reportMemory()
+        let memoryBefore = getMegabytesUsed()
         
         for _ in 1...10_000 {
             autoreleasepool {
@@ -2890,9 +2890,9 @@ class SyncStoreTests: StoreTestCase {
             }
         }
         
-        let memoryAfter = reportMemory()
+        let memoryAfter = getMegabytesUsed()
         
-        XCTAssertLessThan(memoryAfter! - memoryBefore!, 10_000_000)
+        XCTAssertLessThan(memoryAfter! - memoryBefore!, 10)
     }
     
     func testServerSideDeltaSetSyncAdd1Record() {
@@ -7067,7 +7067,7 @@ class SyncStoreTests: StoreTestCase {
         
         let store = try! DataStore<Person>.collection(.sync, autoPagination: true)
         
-        let startMemory = reportMemory()
+        let startMemory = getMegabytesUsed()
         XCTAssertNotNil(startMemory)
         
         weak var expectationPull = expectation(description: "Pull")
@@ -7080,9 +7080,9 @@ class SyncStoreTests: StoreTestCase {
                 XCTFail(error.localizedDescription)
             }
             
-            if let startMemory = startMemory, let endMemory = reportMemory() {
+            if let startMemory = startMemory, let endMemory = getMegabytesUsed() {
                 let diffMemory = endMemory - startMemory
-                XCTAssertLessThan(diffMemory, 400_000_000)
+                XCTAssertLessThan(diffMemory, 200)
             }
             
             expectationPull?.fulfill()
