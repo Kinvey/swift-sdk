@@ -382,6 +382,7 @@
 		57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B01C50539C00848748 /* SyncManager.swift */; };
 		57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
 		57E7C7B51C51981400848748 /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B41C51981400848748 /* RequestType.swift */; };
+		57E853A420FECE6500042C14 /* RealmSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E853A320FECE6500042C14 /* RealmSupport.swift */; };
 		57F216AC1E9DA1640084AAF9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F216AB1E9DA1640084AAF9 /* Result.swift */; };
 		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
 		57F91C291D6E2C020012850A /* CountOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C281D6E2C020012850A /* CountOperation.swift */; };
@@ -1059,6 +1060,7 @@
 		57E7C7B01C50539C00848748 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
+		57E853A320FECE6500042C14 /* RealmSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmSupport.swift; sourceTree = "<group>"; };
 		57F216AB1E9DA1640084AAF9 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		57F91C251D6D15590012850A /* TaskProgressRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskProgressRequest.swift; sourceTree = "<group>"; };
 		57F91C281D6E2C020012850A /* CountOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountOperation.swift; sourceTree = "<group>"; };
@@ -1632,6 +1634,7 @@
 				570677CF1F8FD6280092CEE3 /* ValidationStrategy.swift */,
 				57B257B820929621005B329C /* DeviceInfo.swift */,
 				57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */,
+				57E853A320FECE6500042C14 /* RealmSupport.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -3274,6 +3277,7 @@
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57B257B920929621005B329C /* DeviceInfo.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
+				57E853A420FECE6500042C14 /* RealmSupport.swift in Sources */,
 				570677D01F8FD6280092CEE3 /* ValidationStrategy.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,

@@ -12,47 +12,36 @@ import PromiseKit
 /// Class to interact with a custom endpoint in the backend.
 open class CustomEndpoint {
     
-    internal enum ParamsEnum {
-        
-        case json(JsonDictionary)
-        case object(BaseMappable)
-        case jsonEncodable(JSONEncodable)
-        
-    }
-    
     /// Parameter Wrapper
     open class Params {
         
-        internal let value: ParamsEnum
+        internal let value: JsonDictionary
         
         /**
          Sets the `value` enumeration to a JSON dictionary.
          - parameter json: JSON dictionary to be used as a parameter value
          */
         public init(_ json: JsonDictionary) {
-            value = ParamsEnum.json(json)
+            value = json.toJson()
         }
         
         /**
-         Sets the `value` enumeration to any Mappable object.
-         - parameter object: Mappable object to be used as a parameter value
+         Sets the `value` enumeration to any Mappable object or StaticMappable struct.
+         - parameter object: Mappable object or StaticMappable struct to be used as a parameter value
          */
         @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-        public init(_ object: Mappable) {
-            value = ParamsEnum.object(object)
+        public convenience init<T>(_ object: T) where T: BaseMappable {
+            self.init(object.toJSON())
         }
         
-        /**
-         Sets the `value` enumeration to any StaticMappable struct.
-         - parameter object: StaticMappable struct to be used as a parameter value
-         */
-        @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-        public init(_ object: StaticMappable) {
-            value = ParamsEnum.object(object)
+        public convenience init(_ object: JSONEncodable) throws {
+            self.init(try object.encode())
         }
         
-        public init(_ object: JSONEncodable) {
-            value = ParamsEnum.jsonEncodable(object)
+        public convenience init<T>(_ object: T) throws where T: Encodable {
+            let data = try JSONEncoder().encode(object)
+            let json = try JSONSerialization.jsonObject(with: data) as! JsonDictionary
+            self.init(json)
         }
         
     }
@@ -75,14 +64,7 @@ open class CustomEndpoint {
             resultType: resultType
         )
         if let params = params {
-            switch params.value {
-            case .json(let json):
-                request.setBody(json: json.toJson())
-            case .object(let object):
-                request.setBody(json: object.toJSON().toJson())
-            case .jsonEncodable(let jsonEncodable):
-                request.setBody(json: try! jsonEncodable.encode())
-            }
+            request.setBody(json: params.value)
         }
         request.request.setValue(nil, forHTTPHeaderField: KinveyHeaderField.requestId)
         request.execute(completionHandler)
@@ -381,6 +363,45 @@ open class CustomEndpoint {
                     resolver.fulfill(objArray)
                 } else {
                     resolver.reject(buildError(data, response, error, client))
+                }
+            }
+        }.done { objArray in
+            completionHandler?(.success(objArray))
+        }.catch { error in
+            completionHandler?(.failure(error))
+        }
+        return request
+    }
+    
+    /// Executes a custom endpoint by name and passing the expected parameters.
+    @discardableResult
+    open static func execute<T>(
+        _ name: String,
+        params: Params? = nil,
+        options: Options? = nil,
+        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<[T], Swift.Error>> where T: Decodable {
+        let client = options?.client ?? sharedClient
+        var request: AnyRequest<Result<[T], Swift.Error>>!
+        Promise<[T]> { resolver in
+            request = callEndpoint(
+                name,
+                params: params,
+                options: options,
+                resultType: Result<[T], Swift.Error>.self
+            ) { data, response, error in
+                do {
+                    if let response = response,
+                        response.isOK,
+                        let data = data
+                    {
+                        let objArray = try JSONDecoder().decode([T].self, from: data)
+                        resolver.fulfill(objArray)
+                    } else {
+                        resolver.reject(buildError(data, response, error, client))
+                    }
+                } catch {
+                    resolver.reject(error)
                 }
             }
         }.done { objArray in
