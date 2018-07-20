@@ -331,7 +331,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             if self.mustSaveQueryLastSync ?? true, let requestStart = response.requestStartHeader {
                                 syncQuery = (query: self.query, lastSync: requestStart)
                             }
-                            if let cache = cache.dynamic {
+                            if !(T.self is Codable.Type), let cache = cache.dynamic {
                                 cache.save(entities: AnyRandomAccessCollection(jsonArray), syncQuery: syncQuery)
                             } else {
                                 cache.save(entities: entities, syncQuery: syncQuery)

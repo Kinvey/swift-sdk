@@ -7287,4 +7287,128 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testPullCodable() {
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        
+        do {
+            mockResponse(json: mockObjs)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationPull = expectation(description: "Pull")
+            
+            store.pull() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                        XCTAssertEqual(person.acl?.creator, creator1)
+                        XCTAssertEqual(person.metadata?.lmt, lmt1)
+                        XCTAssertEqual(person.metadata?.ect, ect1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                        XCTAssertEqual(person.acl?.creator, creator2)
+                        XCTAssertEqual(person.metadata?.lmt, lmt2)
+                        XCTAssertEqual(person.metadata?.ect, ect2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationPull = nil
+            })
+        }
+        
+        do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                        XCTAssertEqual(person.acl?.creator, creator1)
+                        XCTAssertEqual(person.metadata?.lmt, lmt1)
+                        XCTAssertEqual(person.metadata?.ect, ect1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                        XCTAssertEqual(person.acl?.creator, creator2)
+                        XCTAssertEqual(person.metadata?.lmt, lmt2)
+                        XCTAssertEqual(person.metadata?.ect, ect2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+    }
+    
 }
