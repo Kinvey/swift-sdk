@@ -809,23 +809,6 @@ class HttpRequestFactory: RequestFactory {
         )
     }
     
-    func buildLiveStreamGrantAccess<Result>(
-        streamName: String,
-        userId: String,
-        acl: LiveStreamAcl,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result> {
-        let request = HttpRequest<Result>(
-            httpMethod: .put,
-            endpoint: Endpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
-            credential: client.activeUser,
-            options: options
-        )
-        request.setBody(json: acl.toJSON())
-        return request
-    }
-    
     func buildLiveStreamAccess<Result>(
         streamName: String,
         userId: String,

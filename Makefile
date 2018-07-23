@@ -31,10 +31,13 @@ cartfile-md5:
 	@echo $(CARTFILE_RESOLVED_MD5)
 	
 travisci-cache:
-	cd Carthage; \
-	rm -f $(CARTFILE_RESOLVED_MD5).tar.lzma; \
-	wget http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma; \
-	tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma
+	test -s Carthage/$(CARTFILE_RESOLVED_MD5).tar.lzma || \
+	{ \
+		cd Carthage; \
+		rm *.tar.lzma; \
+		wget http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma; \
+		tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma; \
+	}
 
 travisci-cache-upload:
 	cd Carthage; \

@@ -3477,20 +3477,17 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testAutoPaginationEnabledNetworkOnly() {
-        var count = 0
         mockResponse { (request) -> HttpResponse in
-            defer {
-                count += 1
-            }
-            switch count {
-            case 0:
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/_kid_/products/_count":
                 return HttpResponse(json: ["count" : 21000])
-            case 1...3:
-                var json = [[String : Any]]()
-                let limit = count == 3 ? 1000 : 10000
-                for i in 0 ..< limit {
-                    json.append([
-                        "_id" : UUID().uuidString,
+            case "/appdata/_kid_/products/":
+                let skip = Int(urlComponents.queryItems!.filter({ $0.name == "skip" }).first!.value!)!
+                let limit = Int(urlComponents.queryItems!.filter({ $0.name == "limit" }).first!.value!)!
+                let json = (0 ..< limit).map {
+                    return [
+                        "_id" : String(skip + $0 + 1),
                         "Description" : UUID().uuidString,
                         "_acl" : [
                             "creator" : UUID().uuidString
@@ -3499,11 +3496,12 @@ class NetworkStoreTests: StoreTestCase {
                             "lmt" : Date().toString(),
                             "ect" : Date().toString()
                         ]
-                    ])
+                    ]
                 }
                 return HttpResponse(json: json)
             default:
-                Swift.fatalError()
+                XCTFail(request.url!.absoluteString)
+                return HttpResponse(statusCode: 404, data: Data())
             }
         }
         defer {
@@ -3518,6 +3516,14 @@ class NetworkStoreTests: StoreTestCase {
             switch result {
             case .success(let products):
                 XCTAssertEqual(products.count, 21000)
+                XCTAssertNotNil(products.first)
+                if let product = products.first {
+                    XCTAssertEqual(product.entityId, "1")
+                }
+                XCTAssertNotNil(products.last)
+                if let product = products.last {
+                    XCTAssertEqual(product.entityId, "21000")
+                }
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
@@ -3531,27 +3537,20 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testAutoPaginationEnabled() {
-        var count = 0
         let pageSizeLimit = 2_000
         let expectedCount = 21_000
         mockResponse { (request) -> HttpResponse in
-            defer {
-                count += 1
-            }
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
             let lastPage = Int(ceil(Double(21_000) / Double(pageSizeLimit)))
-            switch count {
-            case 0:
+            switch urlComponents.path {
+            case "/appdata/_kid_/products/_count":
                 return HttpResponse(json: ["count" : 21000])
-            case 1...lastPage:
-                var json = [[String : Any]]()
-                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
-                let queryLimit = urlComponents?.queryItems?.filter({ $0.name == "limit" && $0.value != nil }).map({ Int($0.value!)! }).first
-                let isLastPage = count == lastPage
-                XCTAssertEqual(queryLimit, isLastPage ? 1_000 : pageSizeLimit)
-                let limit = isLastPage ? 1_000 : (queryLimit ?? 10_000)
-                for i in 0 ..< limit {
-                    json.append([
-                        "_id" : UUID().uuidString,
+            case "/appdata/_kid_/products/":
+                let skip = Int(urlComponents.queryItems!.filter({ $0.name == "skip" }).first!.value!)!
+                let limit = Int(urlComponents.queryItems!.filter({ $0.name == "limit" }).first!.value!)!
+                let json = (0 ..< limit).map {
+                    return [
+                        "_id" : String(skip + $0 + 1),
                         "Description" : UUID().uuidString,
                         "_acl" : [
                             "creator" : UUID().uuidString
@@ -3560,12 +3559,12 @@ class NetworkStoreTests: StoreTestCase {
                             "lmt" : Date().toString(),
                             "ect" : Date().toString()
                         ]
-                    ])
+                    ]
                 }
                 return HttpResponse(json: json)
             default:
-                XCTFail(String(describing: request))
-                Swift.fatalError()
+                XCTFail(request.url!.absoluteString)
+                return HttpResponse(statusCode: 404, data: Data())
             }
         }
         defer {
@@ -3580,6 +3579,14 @@ class NetworkStoreTests: StoreTestCase {
             switch result {
             case .success(let products):
                 XCTAssertEqual(products.count, expectedCount)
+                XCTAssertNotNil(products.first)
+                if let product = products.first {
+                    XCTAssertEqual(product.entityId, "1")
+                }
+                XCTAssertNotNil(products.last)
+                if let product = products.last {
+                    XCTAssertEqual(product.entityId, "21000")
+                }
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }

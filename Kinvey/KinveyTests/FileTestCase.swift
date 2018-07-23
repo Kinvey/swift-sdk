@@ -740,7 +740,7 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            let memoryBefore = reportMemory()
+            let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
             
             let request = fileStore.upload(file, path: path) { (uploadedFile, error) in
@@ -755,11 +755,11 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 
-                let memoryNow = reportMemory()
+                let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                    XCTAssertLessThan(diff, 15) //15 MB
                 }
                 
                 expectationUpload?.fulfill()
@@ -775,11 +775,11 @@ class FileTestCase: StoreTestCase {
                 return request.progress.fractionCompleted >= 1.0
             }
             
-            let memoryNow = reportMemory()
+            let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
-                XCTAssertLessThan(diff, 10899706)
+                XCTAssertLessThan(diff, 10)
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
@@ -960,7 +960,7 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            let memoryBefore = reportMemory()
+            let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
             
             let inputStream = InputStream(fileAtPath: path)!
@@ -976,11 +976,11 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 
-                let memoryNow = reportMemory()
+                let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                    XCTAssertLessThan(diff, 15) //15 MB
                 }
                 
                 expectationUpload?.fulfill()
@@ -995,11 +995,11 @@ class FileTestCase: StoreTestCase {
                 return request.progress.fractionCompleted >= 1.0
             }
             
-            let memoryNow = reportMemory()
+            let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
-                XCTAssertLessThan(diff, 10899706)
+                XCTAssertLessThan(diff, 10)
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
@@ -1179,7 +1179,7 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            let memoryBefore = reportMemory()
+            let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
             
             let image = Image(contentsOfFile: path)!
@@ -1196,11 +1196,11 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/png")
                 
-                let memoryNow = reportMemory()
+                let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                    XCTAssertLessThan(diff, 15) //15 MB
                 }
                 
                 expectationUpload?.fulfill()
@@ -1215,11 +1215,11 @@ class FileTestCase: StoreTestCase {
                 return request.progress.fractionCompleted >= 1.0
             }
             
-            let memoryNow = reportMemory()
+            let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
-                XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                XCTAssertLessThan(diff, 15) //15 MB
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
@@ -1405,7 +1405,7 @@ class FileTestCase: StoreTestCase {
             
             weak var expectationUpload = expectation(description: "Upload")
             
-            let memoryBefore = reportMemory()
+            let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
             
             let image = Image(contentsOfFile: path)!
@@ -1422,11 +1422,11 @@ class FileTestCase: StoreTestCase {
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/jpeg")
                 
-                let memoryNow = reportMemory()
+                let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
-                    XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                    XCTAssertLessThan(diff, 15) //15 MB
                 }
                 
                 expectationUpload?.fulfill()
@@ -1441,11 +1441,11 @@ class FileTestCase: StoreTestCase {
                 return request.progress.fractionCompleted >= 1.0
             }
             
-            let memoryNow = reportMemory()
+            let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
-                XCTAssertLessThan(diff, 15 * 1024 * 1024) //15 MB
+                XCTAssertLessThan(diff, 15) //15 MB
             }
             
             waitForExpectations(timeout: defaultTimeout) { error in
