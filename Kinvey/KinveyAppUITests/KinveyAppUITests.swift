@@ -101,6 +101,7 @@ class KinveyAppUITests: XCTestCase {
             return .notFound
         }
         try! server.start(port, forceIPv4: true)
+        expect(server.state == .running).toEventually(beTrue(), timeout: defaultTimeout)
         
         defer {
             server.stop()
@@ -189,6 +190,7 @@ class KinveyAppUITests: XCTestCase {
             return .notFound
         }
         try! server.start(port, forceIPv4: true)
+        expect(server.state == .running).toEventually(beTrue(), timeout: defaultTimeout)
         
         defer {
             server.stop()
