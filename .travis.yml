@@ -80,7 +80,6 @@ script:
 after_script:
 - date
 - security delete-keychain ios-build.keychain
-- tree DerivedData/Logs/Test/Attachments
 after_success:
 - bash <(curl -s https://codecov.io/bash) -J '^Kinvey$' -F $PLATFORM
 env:
