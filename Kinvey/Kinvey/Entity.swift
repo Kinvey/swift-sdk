@@ -79,7 +79,7 @@ open class Entity: Object, Persistable {
     public dynamic var acl: Acl?
     
     internal var realmConfiguration: Realm.Configuration?
-    internal var reference: ThreadSafeReference<Entity>?
+    internal var entityIdReference: String?
     
     /// Default Constructor.
     public required init() {
@@ -131,7 +131,7 @@ open class Entity: Object, Persistable {
      :nodoc:
      */
     open override class func ignoredProperties() -> [String] {
-        var properties = [String]()
+        var properties = [String](arrayLiteral: "entityIdReference")
         for (propertyName, (type, subType)) in ObjCRuntime.properties(forClass: self) {
             if let type = type,
                 let typeClass = NSClassFromString(type),

@@ -64,7 +64,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         var results: [PendingOperationType]?
         executor.executeAndWait {
             results = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName).map {
-                return RealmPendingOperationThreadSafeReference($0)
+                return RealmPendingOperationReference($0)
             }
         }
         return AnyCollection(results!)
@@ -74,7 +74,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         log.verbose("Removing pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
-                let realmPendingOperation = (pendingOperation as! RealmPendingOperationThreadSafeReference).realmPendingOperation
+                let realmPendingOperation = (pendingOperation as! RealmPendingOperationReference).realmPendingOperation
                 self.realm.delete(realmPendingOperation)
             }
         }

@@ -68,17 +68,32 @@ public struct Options {
         customRequestProperties: [String : Any]? = nil,
         maxSizePerResultSet: Int? = nil
     ) throws {
-        self.client = client
-        self.urlSession = urlSession
-        self.authServiceId = authServiceId
-        self.ttl = ttl
-        self.deltaSet = deltaSet
-        self.readPolicy = readPolicy
-        self.writePolicy = writePolicy
-        self.timeout = timeout
-        self.clientAppVersion = clientAppVersion
-        self.customRequestProperties = customRequestProperties
+        self.client = client ?? options?.client
+        self.urlSession = urlSession ?? options?.urlSession
+        self.authServiceId = authServiceId ?? options?.authServiceId
+        self.ttl = ttl ?? options?.ttl
+        self.deltaSet = deltaSet ?? options?.deltaSet
+        self.readPolicy = readPolicy ?? options?.readPolicy
+        self.writePolicy = writePolicy ?? options?.writePolicy
+        self.timeout = timeout ?? options?.timeout
+        self.clientAppVersion = clientAppVersion ?? options?.clientAppVersion
+        self.customRequestProperties = customRequestProperties ?? options?.customRequestProperties
         self.maxSizePerResultSet = maxSizePerResultSet ?? options?.maxSizePerResultSet
+        try validate(maxSizePerResultSet: self.maxSizePerResultSet)
+    }
+    
+    init(specific: Options?, general: Options?) throws {
+        self.client = specific?.client ?? general?.client
+        self.urlSession = specific?.urlSession ?? general?.urlSession
+        self.authServiceId = specific?.authServiceId ?? general?.authServiceId
+        self.ttl = specific?.ttl ?? general?.ttl
+        self.deltaSet = specific?.deltaSet ?? general?.deltaSet
+        self.readPolicy = specific?.readPolicy ?? general?.readPolicy
+        self.writePolicy = specific?.writePolicy ?? general?.writePolicy
+        self.timeout = specific?.timeout ?? general?.timeout
+        self.clientAppVersion = specific?.clientAppVersion ?? general?.clientAppVersion
+        self.customRequestProperties = specific?.customRequestProperties ?? general?.customRequestProperties
+        self.maxSizePerResultSet = specific?.maxSizePerResultSet ?? general?.maxSizePerResultSet
         try validate(maxSizePerResultSet: self.maxSizePerResultSet)
     }
     

@@ -107,7 +107,7 @@ class CollectionBlockOperation: BlockOperation {
 internal class Operation<T: Persistable>: NSObject where T: NSObject {
     
     let cache: AnyCache<T>?
-    let options: Options?
+    var options: Options?
     let client: Client
     
     init(
