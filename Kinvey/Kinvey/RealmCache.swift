@@ -52,7 +52,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     typealias `Type` = T
     
     let configuration: Realm.Configuration
-    let realm: Realm
+    let _realm: Realm
+    var realm: Realm {
+        executor.executeAndWait {
+            self._realm.refresh()
+        }
+        return _realm
+    }
     let objectSchema: ObjectSchema
     let properties: [String : Property]
     let propertyNames: [String]
@@ -87,15 +93,15 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         configuration.schemaVersion = schemaVersion
         
         do {
-            realm = try Realm(configuration: configuration)
+            _realm = try Realm(configuration: configuration)
         } catch {
             configuration.deleteRealmIfMigrationNeeded = true
-            realm = try! Realm(configuration: configuration)
+            _realm = try! Realm(configuration: configuration)
         }
         self.configuration = configuration
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
-        objectSchema = realm.schema[className]!
+        objectSchema = _realm.schema[className]!
         
         var properties = [String : Property]()
         var propertyNames = [String]()
@@ -344,13 +350,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         obj.setValuesForKeys(json)
         
         if let entityObj = obj as? Entity,
-            entityObj.reference == nil || entityObj.reference?.isInvalidated ?? false,
+            entityObj.entityIdReference == nil,
             let entity = entity as? Entity,
             entity.realm != nil,
             let realmConfiguration = entity.realmConfiguration
         {
             entityObj.realmConfiguration = realmConfiguration
-            entityObj.reference = ThreadSafeReference<Entity>(to: entity)
+            entityObj.entityIdReference = (entity as NSObject & Persistable).entityId
         }
             
         return obj
@@ -397,7 +403,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
             if let entity = entity as? Entity {
                 entity.realmConfiguration = self.realm.configuration
-                entity.reference = ThreadSafeReference(to: newEntity)
+                entity.entityIdReference = (newEntity as NSObject & Persistable).entityId
             }
         }
     }
@@ -419,11 +425,11 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
                 self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
-            let realm = self.realm
+            let realm = self.newRealm
             for (entity, newEntity) in zip(entities, newEntities) {
                 if let entity = entity as? Entity {
                     entity.realmConfiguration = realm.configuration
-                    entity.reference = ThreadSafeReference(to: newEntity)
+                    entity.entityIdReference = (newEntity as NSObject & Persistable).entityId
                 }
             }
         }
@@ -965,19 +971,19 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
 }
 
-class RealmPendingOperationThreadSafeReference: PendingOperationType {
+class RealmPendingOperationReference: PendingOperationType {
     
     let realmConfig: Realm.Configuration
-    let reference: ThreadSafeReference<RealmPendingOperation>
+    let requestId: String
     
     init(_ realmPendingOperation: RealmPendingOperation) {
         realmConfig = realmPendingOperation.realm!.configuration
-        reference = ThreadSafeReference(to: realmPendingOperation)
+        requestId = realmPendingOperation.requestId
     }
     
-    lazy var realmPendingOperation: RealmPendingOperation = { [unowned self] in
-        let realm = try! Realm(configuration: self.realmConfig)
-        return realm.resolve(self.reference)!
+    lazy var realmPendingOperation: RealmPendingOperation = {
+        let realm = try! Realm(configuration: realmConfig)
+        return realm.object(ofType: RealmPendingOperation.self, forPrimaryKey: requestId)!
     }()
     
     var collectionName: String {
@@ -1018,6 +1024,25 @@ internal class _QueryCache: Object {
     @objc
     override class func primaryKey() -> String? {
         return "key"
+    }
+    
+}
+
+extension List : Decodable where Element : Decodable {
+    
+    public convenience init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let array = try container.decode([Element].self)
+        self.init(array)
+    }
+    
+}
+
+extension List : Encodable where Element : Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(Array(self))
     }
     
 }

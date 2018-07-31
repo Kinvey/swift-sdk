@@ -459,11 +459,7 @@ open class Client: Credential {
     @discardableResult
     public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         guard let _ = appKey, let _ = appSecret else {
-            let result: Result<EnvironmentInfo, Swift.Error> = .failure(Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()"))
-            DispatchQueue.main.async {
-                completionHandler(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()"), completionHandler: completionHandler)
         }
         let request = networkRequestFactory.buildAppDataPing(
             options: options,

@@ -46,11 +46,14 @@ extension Persistable where Self: Entity {
                 block(.error(error))
             }
         }
-        guard let realmConfiguration = realmConfiguration, let reference = reference else {
+        guard let realmConfiguration = realmConfiguration,
+            let entityIdReference = entityIdReference,
+            let realm = try? Realm(configuration: realmConfiguration),
+            let entity = realm.object(ofType: Self.self, forPrimaryKey: entityIdReference)
+        else {
             return nil
         }
-        let realm = try! Realm(configuration: realmConfiguration)
-        return AnyNotificationToken(realm.resolve(reference)!.observe(completionHandler))
+        return AnyNotificationToken(entity.observe(completionHandler))
     }
     
 }

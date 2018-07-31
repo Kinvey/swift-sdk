@@ -184,11 +184,7 @@ open class User: NSObject, Credential {
         do {
             try client.validate()
         } catch {
-            let result: Result<U, Swift.Error> = .failure(error)
-            DispatchQueue.main.async {
-                completionHandler?(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
 
         let request = client.networkRequestFactory.buildUserSignUp(
@@ -339,11 +335,7 @@ open class User: NSObject, Credential {
         do {
             try client.validate()
         } catch {
-            let result: Result<U, Swift.Error> = .failure(error)
-            DispatchQueue.main.async {
-                completionHandler?(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
         
         let requests = MultiRequest<Result<U, Swift.Error>>()
@@ -505,11 +497,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<Void, Swift.Error>> {
         guard let _ = email else {
-            let result: Result<Void, Swift.Error> = .failure(Error.invalidOperation(description: "Email is required to send the email confirmation"))
-            DispatchQueue.main.async {
-                completionHandler?(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: Error.invalidOperation(description: "Email is required to send the email confirmation"), completionHandler: completionHandler)
         }
         
         return User.sendEmailConfirmation(
@@ -574,13 +562,7 @@ open class User: NSObject, Credential {
                 completionHandler: completionHandler
             )
         }
-        let result: Result<Void, Swift.Error> = .failure(Error.userWithoutEmailOrUsername)
-        if let completionHandler = completionHandler {
-            DispatchQueue.main.async(execute: { () -> Void in
-                completionHandler(result)
-            })
-        }
-        return AnyRequest(result)
+        return errorRequest(error: Error.userWithoutEmailOrUsername, completionHandler: completionHandler)
     }
     
     /**
@@ -1280,11 +1262,7 @@ open class User: NSObject, Credential {
             do {
                 try client.validate()
             } catch {
-                let result: Result<U, Swift.Error> = .failure(error)
-                DispatchQueue.main.async {
-                    completionHandler?(result)
-                }
-                return AnyRequest(result)
+                return errorRequest(error: error, completionHandler: completionHandler)
             }
             
             let request = client.networkRequestFactory.buildUserLogin(

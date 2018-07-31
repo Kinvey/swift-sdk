@@ -7210,12 +7210,12 @@ class SyncStoreTests: StoreTestCase {
         person.name = "Victor"
         XCTAssertNil(person.realm)
         XCTAssertNil(person.realmConfiguration)
-        XCTAssertNil(person.reference)
+        XCTAssertNil(person.entityIdReference)
         
         let person2 = try! dataStore.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertNil(person2.realm)
         XCTAssertNotNil(person2.realmConfiguration)
-        XCTAssertNotNil(person2.reference)
+        XCTAssertNotNil(person2.entityIdReference)
         
         var notified = false
         
@@ -7295,18 +7295,20 @@ class SyncStoreTests: StoreTestCase {
         person.name = personName
         XCTAssertNil(person.realm)
         XCTAssertNil(person.realmConfiguration)
-        XCTAssertNil(person.reference)
+        XCTAssertNil(person.entityIdReference)
         
         let person2 = try! dataStore.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertNil(person2.realm)
         XCTAssertNotNil(person2.realmConfiguration)
-        XCTAssertNotNil(person2.reference)
+        XCTAssertNotNil(person2.entityIdReference)
         
         waitForExpectations(timeout: defaultTimeout) { (error) in
             notificationToken?.invalidate()
             expectationObserveInitial = nil
             expectationObserveUpdate = nil
         }
+        
+        XCTAssertEqual(count, 2)
     }
     
     func testPullWithSkip() {
@@ -7389,6 +7391,81 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertEqual(results.count, json.count)
             results = try dataStore.find().waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(results.count, json.count)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testPushCodable() {
+        signUp()
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        
+        let name = UUID().uuidString
+        
+        do {
+            var person = PersonCodable()
+            person.name = name
+            
+            var address = AddressCodable()
+            address.city = "Boston"
+            person.address = address
+            
+            address = AddressCodable()
+            address.city = "Vancouver"
+            person.addresses.append(address)
+            
+            person = try store.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(person.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(person.name, name)
+            XCTAssertEqual(person.address?.city, "Boston")
+            XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["name"] as? String, name)
+                    let address = json["address"] as? [String : Any]
+                    let addresses = json["addresses"] as? [[String : Any]]
+                    XCTAssertEqual(address?["city"] as? String, "Boston")
+                    XCTAssertEqual(addresses?.count, 1)
+                    XCTAssertEqual(addresses?.first?["city"] as? String, "Vancouver")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let persons = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(persons.count, 1)
+            XCTAssertNotNil(persons.first)
+            if let person = persons.first {
+                XCTAssertFalse(person.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(person.name, name)
+                XCTAssertEqual(person.address?.city, "Boston")
+                XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+            }
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -7481,6 +7558,148 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
+            weak var expectationFind = expectation(description: "Find")
+            
+            store.find() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                        XCTAssertEqual(person.acl?.creator, creator1)
+                        XCTAssertEqual(person.metadata?.lmt, lmt1)
+                        XCTAssertEqual(person.metadata?.ect, ect1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                        XCTAssertEqual(person.acl?.creator, creator2)
+                        XCTAssertEqual(person.metadata?.lmt, lmt2)
+                        XCTAssertEqual(person.metadata?.ect, ect2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationFind = nil
+            })
+        }
+    }
+    
+    func testPullAutoPaginationDeltaSetCodable() {
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        let maxSizePerResultSet = 1
+        let store = try! DataStore<PersonCodable>.collection(.sync, autoPagination: true, options: try! Options(deltaSet: true, maxSizePerResultSet: maxSizePerResultSet))
+        
+        XCTContext.runActivity(named: "Pull Data") { activity in
+            var count = 0
+            mockResponse { request in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                switch urlComponents.path {
+                case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/_count":
+                    return HttpResponse(json: ["count" : mockObjs.count])
+                case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                    let skip = Int(urlComponents.queryItems!.filter({ $0.name == "skip" }).first!.value!)!
+                    XCTAssertEqual(skip, count)
+                    let limit = Int(urlComponents.queryItems!.filter({ $0.name == "limit" }).first!.value!)!
+                    XCTAssertEqual(limit, maxSizePerResultSet)
+                    count += limit
+                    return HttpResponse(json: Array(mockObjs[skip ..< skip + limit]))
+                default:
+                    XCTFail(request.url!.path)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationPull = expectation(description: "Pull")
+            
+            store.pull() {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 2)
+                    if let person = persons.first {
+                        XCTAssertEqual(person.entityId, id1)
+                        XCTAssertEqual(person.personId, id1)
+                        XCTAssertEqual(person.name, name1)
+                        XCTAssertEqual(person.age, age1)
+                        XCTAssertEqual(person.acl?.creator, creator1)
+                        XCTAssertEqual(person.metadata?.lmt, lmt1)
+                        XCTAssertEqual(person.metadata?.ect, ect1)
+                    }
+                    if let person = persons.last {
+                        XCTAssertEqual(person.entityId, id2)
+                        XCTAssertEqual(person.personId, id2)
+                        XCTAssertEqual(person.name, name2)
+                        XCTAssertEqual(person.age, age2)
+                        XCTAssertEqual(person.acl?.creator, creator2)
+                        XCTAssertEqual(person.metadata?.lmt, lmt2)
+                        XCTAssertEqual(person.metadata?.ect, ect2)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout, handler: { (error) in
+                expectationPull = nil
+            })
+        }
+        
+        XCTContext.runActivity(named: "Find Local Data") { activity in
             weak var expectationFind = expectation(description: "Find")
             
             store.find() {

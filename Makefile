@@ -41,7 +41,7 @@ travisci-cache:
 
 travisci-cache-upload:
 	cd Carthage; \
-	tar --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
+	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
 
 build: checkout-dependencies
@@ -68,7 +68,6 @@ test: test-ios test-macos
 
 	
 test-ios:
-	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=11.4,name=iPhone X" test -enableCodeCoverage YES
 
 test-macos:

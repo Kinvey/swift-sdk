@@ -15,7 +15,9 @@ private let MaxSizePerResultSet = 10_000
 internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCollection<T>, Swift.Error>, ReadOperationType where T: NSObject {
     
     let query: Query
-    var deltaSet: Bool
+    var deltaSet: Bool {
+        return options?.deltaSet ?? false
+    }
     let deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?
     let autoPagination: Bool
     let mustSetRequestResult: Bool
@@ -40,7 +42,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     init(
         query: Query,
-        deltaSet: Bool,
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
         autoPagination: Bool,
         readPolicy: ReadPolicy,
@@ -58,7 +59,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             query.limit = nil
         }
         self.query = query
-        self.deltaSet = deltaSet
         self.deltaSetCompletionHandler = deltaSetCompletionHandler
         self.autoPagination = autoPagination
         self.resultsHandler = resultsHandler
@@ -140,12 +140,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     query.limit = min(maxSizePerResultSet, count - offset)
                     let operation = FindOperation(
                         query: query,
-                        deltaSet: false,
                         autoPagination: false,
                         readPolicy: .forceNetwork,
                         validationStrategy: self.validationStrategy,
                         cache: self.cache,
-                        options: self.options,
+                        options: try Options(self.options, deltaSet: false),
                         mustSetRequestResult: false,
                         mustSaveQueryLastSync: mustSaveQueryLastSync
                     )
@@ -169,7 +168,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
-                    try! cache.commitWrite()
+                    try cache.commitWrite()
                     result = cache.find(byQuery: self.query)
                 } else {
                     result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
@@ -280,7 +279,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 switch error {
                 case .missingConfiguration:
                     cache.clear(syncQueries: nil)
-                    self.deltaSet = false
+                    self.options = try Options(self.options, deltaSet: false)
                     return self.fetchAllAutoPagination(multiRequest: multiRequest)
                 default:
                     break
