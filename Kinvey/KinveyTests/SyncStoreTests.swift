@@ -7394,6 +7394,81 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testPushCodable() {
+        signUp()
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        
+        let name = UUID().uuidString
+        
+        do {
+            var person = PersonCodable()
+            person.name = name
+            
+            var address = AddressCodable()
+            address.city = "Boston"
+            person.address = address
+            
+            address = AddressCodable()
+            address.city = "Vancouver"
+            person.addresses.append(address)
+            
+            person = try store.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(person.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(person.name, name)
+            XCTAssertEqual(person.address?.city, "Boston")
+            XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["name"] as? String, name)
+                    let address = json["address"] as? [String : Any]
+                    let addresses = json["addresses"] as? [[String : Any]]
+                    XCTAssertEqual(address?["city"] as? String, "Boston")
+                    XCTAssertEqual(addresses?.count, 1)
+                    XCTAssertEqual(addresses?.first?["city"] as? String, "Vancouver")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let persons = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(persons.count, 1)
+            XCTAssertNotNil(persons.first)
+            if let person = persons.first {
+                XCTAssertFalse(person.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(person.name, name)
+                XCTAssertEqual(person.address?.city, "Boston")
+                XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testPullCodable() {
         let id1 = UUID().uuidString
         let name1 = UUID().uuidString

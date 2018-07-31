@@ -89,6 +89,8 @@ class PersonCodable: Entity, Codable {
     @objc
     dynamic var address: AddressCodable?
     
+    let addresses = List<AddressCodable>()
+    
     //testing properties that must be ignored
     var personDelegate: PersonDelegate?
     var personObjCDelegate: PersonObjCDelegate?
@@ -107,6 +109,7 @@ class PersonCodable: Entity, Codable {
         case name
         case age
         case address
+        case addresses
         case geolocation
         
     }
@@ -119,6 +122,10 @@ class PersonCodable: Entity, Codable {
         name = try container.decodeIfPresent(String.self, forKey: .name)
         age = try container.decode(Int.self, forKey: .age)
         address = try container.decodeIfPresent(AddressCodable.self, forKey: .address)
+        if let addresses = try container.decodeIfPresent(List<AddressCodable>.self, forKey: .addresses) {
+            self.addresses.removeAll()
+            self.addresses.append(objectsIn: addresses)
+        }
         geolocation = try container.decodeIfPresent(GeoPoint.self, forKey: .geolocation)
     }
     
@@ -145,6 +152,7 @@ class PersonCodable: Entity, Codable {
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(age, forKey: .age)
         try container.encodeIfPresent(address, forKey: .address)
+        try container.encodeIfPresent(addresses, forKey: .addresses)
         try container.encodeIfPresent(geolocation, forKey: .geolocation)
         
         try super.encode(to: encoder)
@@ -285,20 +293,9 @@ class Address: Entity {
     
 }
 
-class AddressCodable: Entity, Codable {
+class AddressCodable: Object, Codable {
     
     @objc
     dynamic var city: String?
-    
-    enum CodingKeys: String, CodingKey {
-        
-        case city
-        
-    }
-    
-    override func encode(to encoder: Encoder) throws {
-        var container = try encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(city, forKey: .city)
-    }
     
 }

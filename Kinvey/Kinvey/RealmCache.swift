@@ -1027,3 +1027,22 @@ internal class _QueryCache: Object {
     }
     
 }
+
+extension List : Decodable where Element : Decodable {
+    
+    public convenience init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let array = try container.decode([Element].self)
+        self.init(array)
+    }
+    
+}
+
+extension List : Encodable where Element : Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(Array(self))
+    }
+    
+}
