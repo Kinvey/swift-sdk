@@ -185,9 +185,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         do {
             try validate(id: id)
         } catch {
-            let result: Result<T, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
         
         let readPolicy = options?.readPolicy ?? self.readPolicy
@@ -237,9 +235,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             }
             return request
         } catch {
-            let result: Result<AnyRandomAccessCollection<T>, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
     }
     
@@ -738,9 +734,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         do {
             try validate(id: id)
         } catch {
-            let result: Result<Int, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
 
         let writePolicy = options?.writePolicy ?? self.writePolicy
@@ -769,11 +763,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         guard !ids.isEmpty else {
-            let result: Result<Int, Swift.Error> = .failure(Error.invalidOperation(description: "ids cannot be an empty array"))
-            DispatchQueue.main.async {
-                completionHandler?(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: Error.invalidOperation(description: "ids cannot be an empty array"), completionHandler: completionHandler)
         }
         
         let query = Query(format: "\(try! T.entityIdProperty()) IN %@", ids as AnyObject)

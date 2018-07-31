@@ -60,9 +60,9 @@ extension Request {
     
 }
 
-public class AnyRequest<Result>: NSObject, Request {
+public class AnyRequest<T>: NSObject, Request {
     
-    public typealias ResultType = Result
+    public typealias ResultType = T
     
     private let _getExecuting: () -> Bool
     
@@ -82,9 +82,9 @@ public class AnyRequest<Result>: NSObject, Request {
         _cancel()
     }
     
-    private let _getResult: () -> Result?
+    private let _getResult: () -> T?
     
-    public var result: Result? {
+    public var result: T? {
         return _getResult()
     }
     
@@ -94,7 +94,7 @@ public class AnyRequest<Result>: NSObject, Request {
         return _getProgress()
     }
     
-    init<RequestType: Request>(_ request: RequestType, conversionHandler: @escaping (RequestType.ResultType?) -> Result?) {
+    init<RequestType: Request>(_ request: RequestType, conversionHandler: @escaping (RequestType.ResultType?) -> T?) {
         _getExecuting = { request.executing }
         _getCancelled = { request.cancelled }
         _cancel = request.cancel
@@ -102,7 +102,7 @@ public class AnyRequest<Result>: NSObject, Request {
         _getProgress = { request.progress }
     }
     
-    init<RequestType: Request>(_ request: RequestType) where Result == Any {
+    init<RequestType: Request>(_ request: RequestType) where T == Any {
         _getExecuting = { request.executing }
         _getCancelled = { request.cancelled }
         _cancel = request.cancel
@@ -110,7 +110,7 @@ public class AnyRequest<Result>: NSObject, Request {
         _getProgress = { request.progress }
     }
     
-    init<RequestType: Request>(_ request: RequestType) where RequestType.ResultType == Result {
+    init<RequestType: Request>(_ request: RequestType) where RequestType.ResultType == T {
         _getExecuting = { request.executing }
         _getCancelled = { request.cancelled }
         _cancel = request.cancel
