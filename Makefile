@@ -41,7 +41,7 @@ travisci-cache:
 
 travisci-cache-upload:
 	cd Carthage; \
-	tar --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
+	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
 
 build: checkout-dependencies
