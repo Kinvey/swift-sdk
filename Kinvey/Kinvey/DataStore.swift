@@ -54,7 +54,17 @@ open class DataStore<T: Persistable> where T: NSObject {
     internal let cache: AnyCache<T>?
     internal let sync: AnySync?
     
-    open fileprivate(set) var deltaSet: Bool
+    @available(*, deprecated: 3.18.2, message: "Please use DataStore.options instead")
+    open fileprivate(set) var deltaSet: Bool {
+        get {
+            return options?.deltaSet ?? false
+        }
+        set {
+            options = try! Options(self.options, deltaSet: true)
+        }
+    }
+    
+    open var options: Options?
     
     fileprivate let uuid = UUID()
     
@@ -90,19 +100,18 @@ open class DataStore<T: Persistable> where T: NSObject {
         options: Options? = nil
     ) throws -> DataStore {
         let client = options?.client ?? sharedClient
-        let deltaSet = options?.deltaSet ?? false
         if !client.isInitialized() {
             throw Error.invalidOperation(description: "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         }
         let fileURL = client.fileURL(tag)
         let dataStore = try DataStore<T>(
             type: type,
-            deltaSet: deltaSet,
             autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
             encryptionKey: client.encryptionKey,
-            validationStrategy: validationStrategy
+            validationStrategy: validationStrategy,
+            options: options
         )
         return dataStore
     }
@@ -118,26 +127,25 @@ open class DataStore<T: Persistable> where T: NSObject {
     ) throws -> DataStore<NewType> where NewType: NSObject {
         return try DataStore<NewType>(
             type: type,
-            deltaSet: deltaSet,
             autoPagination: autoPagination,
             client: client,
             fileURL: fileURL,
             encryptionKey: client.encryptionKey,
-            validationStrategy: validationStrategy
+            validationStrategy: validationStrategy,
+            options: options
         )
     }
     
     fileprivate init(
         type: StoreType,
-        deltaSet: Bool,
         autoPagination: Bool,
         client: Client,
         fileURL: URL?,
         encryptionKey: Data?,
-        validationStrategy: ValidationStrategy?
+        validationStrategy: ValidationStrategy?,
+        options: Options?
     ) throws {
         self.type = type
-        self.deltaSet = deltaSet
         self.autoPagination = autoPagination
         self.client = client
         self.fileURL = fileURL
@@ -152,6 +160,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         readPolicy = type.readPolicy
         writePolicy = type.writePolicy
         self.validationStrategy = validationStrategy
+        self.options = options
     }
     
     private func validate(id: String) throws {
@@ -176,9 +185,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         do {
             try validate(id: id)
         } catch {
-            let result: Result<T, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
         
         let readPolicy = options?.readPolicy ?? self.readPolicy
@@ -213,21 +220,23 @@ open class DataStore<T: Persistable> where T: NSObject {
         options: Options? = nil,
         completionHandler: ((Result<AnyRandomAccessCollection<T>, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
-        let readPolicy = options?.readPolicy ?? self.readPolicy
-        let deltaSet = options?.deltaSet ?? self.deltaSet
-        let operation = FindOperation<T>(
-            query: Query(query: query, persistableType: T.self),
-            deltaSet: deltaSet,
-            autoPagination: autoPagination,
-            readPolicy: readPolicy,
-            validationStrategy: validationStrategy,
-            cache: cache,
-            options: options
-        )
-        let request = operation.execute { result in
-            completionHandler?(result)
+        do {
+            let readPolicy = options?.readPolicy ?? self.readPolicy
+            let operation = FindOperation<T>(
+                query: Query(query: query, persistableType: T.self),
+                autoPagination: autoPagination,
+                readPolicy: readPolicy,
+                validationStrategy: validationStrategy,
+                cache: cache,
+                options: try Options(specific: options, general: self.options)
+            )
+            let request = operation.execute { result in
+                completionHandler?(result)
+            }
+            return request
+        } catch {
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
-        return request
     }
     
     /**
@@ -725,9 +734,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         do {
             try validate(id: id)
         } catch {
-            let result: Result<Int, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
 
         let writePolicy = options?.writePolicy ?? self.writePolicy
@@ -756,11 +763,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: ((Result<Int, Swift.Error>) -> Void)?
     ) -> AnyRequest<Result<Int, Swift.Error>> {
         guard !ids.isEmpty else {
-            let result: Result<Int, Swift.Error> = .failure(Error.invalidOperation(description: "ids cannot be an empty array"))
-            DispatchQueue.main.async {
-                completionHandler?(result)
-            }
-            return AnyRequest(result)
+            return errorRequest(error: Error.invalidOperation(description: "ids cannot be an empty array"), completionHandler: completionHandler)
         }
         
         let query = Query(format: "\(try! T.entityIdProperty()) IN %@", ids as AnyObject)
@@ -907,33 +910,35 @@ open class DataStore<T: Persistable> where T: NSObject {
     ) -> AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>> {
         var request: AnyRequest<Result<AnyRandomAccessCollection<T>, Swift.Error>>!
         Promise<AnyRandomAccessCollection<T>> { resolver in
-            if type == .network {
+            guard type != .network else {
                 let error = Error.invalidDataStoreType
                 request = AnyRequest(.failure(error))
                 resolver.reject(error)
-            } else if self.syncCount() > 0 {
+                return
+            }
+            
+            guard self.syncCount() == 0 else {
                 let error = Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them.")
                 request = AnyRequest(.failure(error))
                 resolver.reject(error)
-            } else {
-                let deltaSet = options?.deltaSet ?? self.deltaSet
-                let operation = PullOperation<T>(
-                    query: Query(query: query, persistableType: T.self),
-                    deltaSet: deltaSet,
-                    deltaSetCompletionHandler: deltaSetCompletionHandler,
-                    autoPagination: autoPagination,
-                    readPolicy: .forceNetwork,
-                    validationStrategy: validationStrategy,
-                    cache: cache,
-                    options: options
-                )
-                request = operation.execute { result in
-                    switch result {
-                    case .success(let array):
-                        resolver.fulfill(array)
-                    case .failure(let error):
-                        resolver.reject(error)
-                    }
+                return
+            }
+            
+            let operation = PullOperation<T>(
+                query: Query(query: query, persistableType: T.self),
+                deltaSetCompletionHandler: deltaSetCompletionHandler,
+                autoPagination: autoPagination,
+                readPolicy: .forceNetwork,
+                validationStrategy: validationStrategy,
+                cache: cache,
+                options: try Options(specific: options, general: self.options)
+            )
+            request = operation.execute { result in
+                switch result {
+                case .success(let array):
+                    resolver.fulfill(array)
+                case .failure(let error):
+                    resolver.reject(error)
                 }
             }
         }.done { array in

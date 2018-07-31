@@ -12,7 +12,6 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
     
     override init(
         query: Query,
-        deltaSet: Bool,
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)?,
         autoPagination: Bool,
         readPolicy: ReadPolicy,
@@ -25,7 +24,6 @@ internal class PullOperation<T: Persistable>: FindOperation<T> where T: NSObject
     ) {
         super.init(
             query: query,
-            deltaSet: deltaSet,
             deltaSetCompletionHandler: deltaSetCompletionHandler,
             autoPagination: autoPagination,
             readPolicy: readPolicy,

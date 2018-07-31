@@ -341,3 +341,13 @@ func whileAutoreleasepool(_ condition: @autoclosure () -> Bool, _ block: () thro
         }
     }
 }
+
+func errorRequest<S>(error: Swift.Error, completionHandler: ((Result<S, Swift.Error>) -> Void)? = nil) -> AnyRequest<Result<S, Swift.Error>> {
+    let result: Result<S, Swift.Error> = .failure(error)
+    if let completionHandler = completionHandler {
+        DispatchQueue.main.async {
+            completionHandler(result)
+        }
+    }
+    return AnyRequest(result)
+}

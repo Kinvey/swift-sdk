@@ -972,9 +972,7 @@ open class FileStore<FileType: File> {
         do {
             try crashIfInvalid(file: file)
         } catch {
-            let result: Result<(FileType, URL), Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
         
         if storeType == .sync || storeType == .cache,
@@ -1093,9 +1091,7 @@ open class FileStore<FileType: File> {
         do {
             try crashIfInvalid(file: file)
         } catch {
-            let result: Result<(FileType, Data), Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return errorRequest(error: error, completionHandler: completionHandler)
         }
         
         let multiRequest = MultiRequest<Result<(FileType, Data), Swift.Error>>()

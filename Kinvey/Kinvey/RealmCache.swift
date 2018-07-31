@@ -350,13 +350,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         obj.setValuesForKeys(json)
         
         if let entityObj = obj as? Entity,
-            entityObj.reference == nil || entityObj.reference?.isInvalidated ?? false,
+            entityObj.entityIdReference == nil,
             let entity = entity as? Entity,
             entity.realm != nil,
             let realmConfiguration = entity.realmConfiguration
         {
             entityObj.realmConfiguration = realmConfiguration
-            entityObj.reference = ThreadSafeReference<Entity>(to: entity)
+            entityObj.entityIdReference = (entity as NSObject & Persistable).entityId
         }
             
         return obj
@@ -403,7 +403,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
             if let entity = entity as? Entity {
                 entity.realmConfiguration = self.realm.configuration
-                entity.reference = ThreadSafeReference(to: newEntity)
+                entity.entityIdReference = (newEntity as NSObject & Persistable).entityId
             }
         }
     }
@@ -425,11 +425,11 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
                 self.saveQuery(syncQuery: syncQuery, realm: realm)
             }
-            let realm = self.realm
+            let realm = self.newRealm
             for (entity, newEntity) in zip(entities, newEntities) {
                 if let entity = entity as? Entity {
                     entity.realmConfiguration = realm.configuration
-                    entity.reference = ThreadSafeReference(to: newEntity)
+                    entity.entityIdReference = (newEntity as NSObject & Persistable).entityId
                 }
             }
         }
@@ -971,19 +971,19 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
 }
 
-class RealmPendingOperationThreadSafeReference: PendingOperationType {
+class RealmPendingOperationReference: PendingOperationType {
     
     let realmConfig: Realm.Configuration
-    let reference: ThreadSafeReference<RealmPendingOperation>
+    let requestId: String
     
     init(_ realmPendingOperation: RealmPendingOperation) {
         realmConfig = realmPendingOperation.realm!.configuration
-        reference = ThreadSafeReference(to: realmPendingOperation)
+        requestId = realmPendingOperation.requestId
     }
     
-    lazy var realmPendingOperation: RealmPendingOperation = { [unowned self] in
-        let realm = try! Realm(configuration: self.realmConfig)
-        return realm.resolve(self.reference)!
+    lazy var realmPendingOperation: RealmPendingOperation = {
+        let realm = try! Realm(configuration: realmConfig)
+        return realm.object(ofType: RealmPendingOperation.self, forPrimaryKey: requestId)!
     }()
     
     var collectionName: String {
