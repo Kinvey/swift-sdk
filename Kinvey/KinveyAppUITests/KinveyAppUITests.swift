@@ -50,10 +50,21 @@ class KinveyAppUITests: XCTestCase {
             "KINVEY_MIC_API_URL" : "http://localhost:\(port)",
             "KINVEY_MIC_AUTH_URL" : "http://localhost:\(port)",
         ]
-        app.launch()
         
-        app.staticTexts["MIC Login"].tap()
-        app.switches["SFAuthenticationSession"].tap()
+        XCTContext.runActivity(named: "Launch App") { activity in
+            app.launch()
+            activity.add(XCTAttachment(screenshot: app.screenshot()))
+        }
+        
+        XCTContext.runActivity(named: "Open MIC Login") { activity in
+            app.staticTexts["MIC Login"].tap()
+            activity.add(XCTAttachment(screenshot: app.screenshot()))
+        }
+        
+        XCTContext.runActivity(named: "Tap SFAuthenticationSession switcher") { activity in
+            app.switches["SFAuthenticationSession"].tap()
+            activity.add(XCTAttachment(screenshot: app.screenshot()))
+        }
         
         let code = UUID().uuidString
         let userId = UUID().uuidString
@@ -71,61 +82,72 @@ class KinveyAppUITests: XCTestCase {
         ] as [String : Any]
         
         let server = HttpServer()
-        server["/:v/oauth/auth"] = { request in
-            XCTAssertEqual(request.params[":v"], "v3")
-            if let (_, redirectUri) = request.queryParams.filter({ key, value in key == "redirect_uri" }).first {
-                return HttpResponse.raw(302, "Found", ["Location" : "\(redirectUri)?code=\(code)"], { bodyWriter in
-                    try! bodyWriter.write("Redirecting...".data(using: .utf8)!)
-                })
+        XCTContext.runActivity(named: "Server Setup") { _ in
+            server["/:v/oauth/auth"] = { request in
+                XCTAssertEqual(request.params[":v"], "v3")
+                if let (_, redirectUri) = request.queryParams.filter({ key, value in key == "redirect_uri" }).first {
+                    return HttpResponse.raw(302, "Found", ["Location" : "\(redirectUri)?code=\(code)"], { bodyWriter in
+                        try! bodyWriter.write("Redirecting...".data(using: .utf8)!)
+                    })
+                }
+                return .internalServerError
             }
-            return .internalServerError
-        }
-        server["/:v/oauth/token"] = { request in
-            XCTAssertEqual(request.params[":v"], "v3")
-            if let (_, _code) = request.parseUrlencodedForm().filter({ key, value in key == "code" }).first, code == _code {
-                return .ok(.json([
-                    "access_token" : UUID().uuidString,
-                    "token_type" : "Bearer",
-                    "expires_in" : 3599,
-                    "refresh_token" : UUID().uuidString
-                ] as AnyObject))
+            server["/:v/oauth/token"] = { request in
+                XCTAssertEqual(request.params[":v"], "v3")
+                if let (_, _code) = request.parseUrlencodedForm().filter({ key, value in key == "code" }).first, code == _code {
+                    return .ok(.json([
+                        "access_token" : UUID().uuidString,
+                        "token_type" : "Bearer",
+                        "expires_in" : 3599,
+                        "refresh_token" : UUID().uuidString
+                        ] as AnyObject))
+                }
+                return .internalServerError
             }
-            return .internalServerError
+            server.post["/user/:kid/login"] = { request in
+                XCTAssertEqual(request.params[":kid"], kid)
+                return .ok(.json(json as AnyObject))
+            }
+            server.notFoundHandler = { request in
+                XCTFail()
+                return .notFound
+            }
+            try! server.start(port, forceIPv4: true)
+            expect(server.state == .running).toEventually(beTrue(), timeout: defaultTimeout)
         }
-        server.post["/user/:kid/login"] = { request in
-            XCTAssertEqual(request.params[":kid"], kid)
-            return .ok(.json(json as AnyObject))
-        }
-        server.notFoundHandler = { request in
-            XCTFail()
-            return .notFound
-        }
-        try! server.start(port, forceIPv4: true)
-        
         defer {
             server.stop()
         }
         
-        let tokenMonitor = addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
-            alert.buttons["Continue"].tap()
-            return true
-        }
-        defer {
-            removeUIInterruptionMonitor(tokenMonitor)
-        }
-        
-        app.buttons["Login"].tap()
-        app.tap()
-        
         let userIdValue = app.staticTexts["User ID Value"]
-        expect(expression: {
-            if userIdValue.exists {
-                app.tap()
+        
+        XCTContext.runActivity(named: "Tap Login Button") { activity in
+            let tokenMonitor = addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
+                alert.buttons["Continue"].tap()
+                activity.add(XCTAttachment(screenshot: app.screenshot()))
+                return true
             }
-            return userIdValue.exists
-        }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 1)
-        expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
-        expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
+            defer {
+                removeUIInterruptionMonitor(tokenMonitor)
+            }
+            
+            app.buttons["Login"].tap()
+            app.tap()
+            activity.add(XCTAttachment(screenshot: app.screenshot()))
+            
+            expect(expression: {
+                if userIdValue.exists {
+                    app.tap()
+                    activity.add(XCTAttachment(screenshot: app.screenshot()))
+                }
+                return userIdValue.exists
+            }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 5)
+            
+            activity.add(XCTAttachment(screenshot: app.screenshot()))
+            
+            expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
+            expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
+        }
     }
     
     func testMICLoginWKWebView() {
@@ -189,6 +211,7 @@ class KinveyAppUITests: XCTestCase {
             return .notFound
         }
         try! server.start(port, forceIPv4: true)
+        expect(server.state == .running).toEventually(beTrue(), timeout: defaultTimeout)
         
         defer {
             server.stop()
@@ -209,6 +232,7 @@ class KinveyAppUITests: XCTestCase {
             }
             return userIdValue.exists
         }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 1)
+        XCTAssertTrue(userIdValue.waitForExistence(timeout: defaultTimeout))
         expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
         expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
     }

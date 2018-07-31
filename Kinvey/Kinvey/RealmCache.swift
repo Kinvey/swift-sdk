@@ -52,7 +52,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     typealias `Type` = T
     
     let configuration: Realm.Configuration
-    let realm: Realm
+    let _realm: Realm
+    var realm: Realm {
+        executor.executeAndWait {
+            self._realm.refresh()
+        }
+        return _realm
+    }
     let objectSchema: ObjectSchema
     let properties: [String : Property]
     let propertyNames: [String]
@@ -87,15 +93,15 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         configuration.schemaVersion = schemaVersion
         
         do {
-            realm = try Realm(configuration: configuration)
+            _realm = try Realm(configuration: configuration)
         } catch {
             configuration.deleteRealmIfMigrationNeeded = true
-            realm = try! Realm(configuration: configuration)
+            _realm = try! Realm(configuration: configuration)
         }
         self.configuration = configuration
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
-        objectSchema = realm.schema[className]!
+        objectSchema = _realm.schema[className]!
         
         var properties = [String : Property]()
         var propertyNames = [String]()

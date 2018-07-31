@@ -68,7 +68,6 @@ test: test-ios test-macos
 
 	
 test-ios:
-	open -a "simulator" --args -CurrentDeviceUDID "$(IPHONE_SE_SIMULATOR_ID)"; \
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=11.4,name=iPhone X" test -enableCodeCoverage YES
 
 test-macos:
