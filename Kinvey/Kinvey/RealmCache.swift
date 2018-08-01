@@ -1033,7 +1033,8 @@ extension List : Decodable where Element : Decodable {
     public convenience init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let array = try container.decode([Element].self)
-        self.init(array)
+        self.init()
+        self.append(objectsIn: array)
     }
     
 }
