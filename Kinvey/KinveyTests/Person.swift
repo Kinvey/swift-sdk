@@ -90,6 +90,11 @@ class PersonCodable: Entity, Codable {
     dynamic var address: AddressCodable?
     
     let addresses = List<AddressCodable>()
+    let stringValues = List<StringValue>()
+    let intValues = List<IntValue>()
+    let floatValues = List<FloatValue>()
+    let doubleValues = List<DoubleValue>()
+    let boolValues = List<BoolValue>()
     
     //testing properties that must be ignored
     var personDelegate: PersonDelegate?
@@ -111,6 +116,11 @@ class PersonCodable: Entity, Codable {
         case address
         case addresses
         case geolocation
+        case stringValues
+        case intValues
+        case floatValues
+        case doubleValues
+        case boolValues
         
     }
     
@@ -125,6 +135,26 @@ class PersonCodable: Entity, Codable {
         if let addresses = try container.decodeIfPresent(List<AddressCodable>.self, forKey: .addresses) {
             self.addresses.removeAll()
             self.addresses.append(objectsIn: addresses)
+        }
+        if let stringValues = try container.decodeIfPresent(List<StringValue>.self, forKey: .stringValues) {
+            self.stringValues.removeAll()
+            self.stringValues.append(objectsIn: stringValues)
+        }
+        if let intValues = try container.decodeIfPresent(List<IntValue>.self, forKey: .intValues) {
+            self.intValues.removeAll()
+            self.intValues.append(objectsIn: intValues)
+        }
+        if let floatValues = try container.decodeIfPresent(List<FloatValue>.self, forKey: .floatValues) {
+            self.floatValues.removeAll()
+            self.floatValues.append(objectsIn: floatValues)
+        }
+        if let doubleValues = try container.decodeIfPresent(List<DoubleValue>.self, forKey: .doubleValues) {
+            self.doubleValues.removeAll()
+            self.doubleValues.append(objectsIn: doubleValues)
+        }
+        if let boolValues = try container.decodeIfPresent(List<BoolValue>.self, forKey: .boolValues) {
+            self.boolValues.removeAll()
+            self.boolValues.append(objectsIn: boolValues)
         }
         geolocation = try container.decodeIfPresent(GeoPoint.self, forKey: .geolocation)
     }
@@ -153,6 +183,11 @@ class PersonCodable: Entity, Codable {
         try container.encodeIfPresent(age, forKey: .age)
         try container.encodeIfPresent(address, forKey: .address)
         try container.encodeIfPresent(addresses, forKey: .addresses)
+        try container.encodeIfPresent(stringValues, forKey: .stringValues)
+        try container.encodeIfPresent(intValues, forKey: .intValues)
+        try container.encodeIfPresent(floatValues, forKey: .floatValues)
+        try container.encodeIfPresent(doubleValues, forKey: .doubleValues)
+        try container.encodeIfPresent(boolValues, forKey: .boolValues)
         try container.encodeIfPresent(geolocation, forKey: .geolocation)
         
         try super.encode(to: encoder)
@@ -297,5 +332,112 @@ class AddressCodable: Object, Codable {
     
     @objc
     dynamic var city: String?
+    
+}
+
+class Issue311_MyModel: Kinvey.Entity {
+    
+    @objc dynamic var someSimpleProperty: String?
+    @objc dynamic var someComplexProperty: Issue311_ComplexType?
+    
+    override static func collectionName() -> String {
+        return "MyModel"
+    }
+    
+    override func propertyMapping(_ map: Map) {
+        super.propertyMapping(map)
+        
+        self.someSimpleProperty <- ("someSimpleProperty", map["someSimpleProperty"])
+        self.someComplexProperty <- ("someComplexProperty", map["someComplexProperty"])
+    }
+}
+
+final class Issue311_ComplexType: Kinvey.Object, Kinvey.Mappable {
+    
+    @objc dynamic var someSimpleProperty: String?
+    let someListProperty = Kinvey.List<StringValue>()
+    
+    convenience init?(map: Map) {
+        self.init()
+    }
+    
+    func mapping(map: Map) {
+        self.someSimpleProperty <- ("someSimpleProperty", map["someSimpleProperty"])
+        self.someListProperty <- ("someListProperty", map["someListProperty"])
+    }
+}
+
+class Issue311_MyModelCodable: Kinvey.Entity, Codable {
+    
+    @objc dynamic var someSimpleProperty: String?
+    @objc dynamic var someComplexProperty: Issue311_ComplexTypeCodable?
+    
+    override static func collectionName() -> String {
+        return "MyModel"
+    }
+    
+    enum CodingKeys: String, CodingKey {
+
+        case someSimpleProperty
+        case someComplexProperty
+
+    }
+
+    required init() {
+        super.init()
+    }
+
+    required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+
+    required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+
+    @available(*, deprecated)
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        someSimpleProperty = try container.decodeIfPresent(String.self, forKey: .someSimpleProperty)
+        someComplexProperty = try container.decodeIfPresent(Issue311_ComplexTypeCodable.self, forKey: .someComplexProperty)
+    }
+
+    override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+
+        var container = try encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(someSimpleProperty, forKey: .someSimpleProperty)
+        try container.encode(someComplexProperty, forKey: .someComplexProperty)
+    }
+}
+
+final class Issue311_ComplexTypeCodable: Kinvey.Object, Codable {
+    
+    @objc dynamic var someSimpleProperty: String?
+    let someListProperty = Kinvey.List<StringValue>()
+    
+    enum CodingKeys: String, CodingKey {
+        
+        case someSimpleProperty
+        case someListProperty
+        
+    }
+    
+    convenience init(from decoder: Decoder) throws {
+        self.init()
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        someSimpleProperty = try container.decodeIfPresent(String.self, forKey: .someSimpleProperty)
+        if let someListProperty = try container.decodeIfPresent(Kinvey.List<StringValue>.self, forKey: .someListProperty) {
+            self.someListProperty.removeAll()
+            self.someListProperty.append(objectsIn: someListProperty)
+        }
+    }
     
 }

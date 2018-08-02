@@ -7396,6 +7396,158 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testIssue311() {
+        signUp()
+        
+        let store = try! DataStore<Issue311_MyModel>.collection(.sync)
+        
+        do {
+            var myModel = Issue311_MyModel()
+            myModel.someSimpleProperty = "A"
+            
+            let complexType = Issue311_ComplexType()
+            complexType.someSimpleProperty = "B"
+            complexType.someListProperty.append("C")
+            complexType.someListProperty.append("D")
+            myModel.someComplexProperty = complexType
+            
+            myModel = try store.save(myModel, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(myModel.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(myModel.someSimpleProperty, "A")
+            XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(Issue311_MyModel.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["someSimpleProperty"] as? String, "A")
+                    let someComplexProperty = json["someComplexProperty"] as? [String : Any]
+                    let someListProperty = someComplexProperty?["someListProperty"] as? [String]
+                    XCTAssertEqual(someComplexProperty?["someSimpleProperty"] as? String, "B")
+                    XCTAssertEqual(someListProperty?.count, 2)
+                    XCTAssertEqual(someListProperty?.first, "C")
+                    XCTAssertEqual(someListProperty?.last, "D")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        do {
+            let myModels = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(myModels.count, 1)
+            XCTAssertNotNil(myModels.first)
+            if let myModel = myModels.first {
+                XCTAssertFalse(myModel.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(myModel.someSimpleProperty, "A")
+                XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.count, 2)
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testIssue311Codable() {
+        signUp()
+        
+        Kinvey.logLevel = .debug
+        
+        let store = try! DataStore<Issue311_MyModelCodable>.collection(.sync)
+        
+        do {
+            var myModel = Issue311_MyModelCodable()
+            myModel.someSimpleProperty = "A"
+            
+            let complexType = Issue311_ComplexTypeCodable()
+            complexType.someSimpleProperty = "B"
+            complexType.someListProperty.append("C")
+            complexType.someListProperty.append("D")
+            myModel.someComplexProperty = complexType
+            
+            myModel = try store.save(myModel, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(myModel.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(myModel.someSimpleProperty, "A")
+            XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(Issue311_MyModelCodable.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["someSimpleProperty"] as? String, "A")
+                    let someComplexProperty = json["someComplexProperty"] as? [String : Any]
+                    let someListProperty = someComplexProperty?["someListProperty"] as? [String]
+                    XCTAssertEqual(someComplexProperty?["someSimpleProperty"] as? String, "B")
+                    XCTAssertEqual(someListProperty?.count, 2)
+                    XCTAssertEqual(someListProperty?.first, "C")
+                    XCTAssertEqual(someListProperty?.last, "D")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let myModels = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(myModels.count, 1)
+            XCTAssertNotNil(myModels.first)
+            if let myModel = myModels.first {
+                XCTAssertFalse(myModel.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(myModel.someSimpleProperty, "A")
+                XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.count, 2)
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testPushCodable() {
         signUp()
         
@@ -7415,12 +7567,23 @@ class SyncStoreTests: StoreTestCase {
             address.city = "Vancouver"
             person.addresses.append(address)
             
+            person.stringValues.append("A")
+            person.intValues.append(1)
+            person.floatValues.append(2.5)
+            person.doubleValues.append(3.5)
+            person.boolValues.append(true)
+            
             person = try store.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             
             XCTAssertTrue(person.entityId!.hasPrefix("tmp_"))
             XCTAssertEqual(person.name, name)
             XCTAssertEqual(person.address?.city, "Boston")
             XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+            XCTAssertEqual(person.stringValues.first, "A")
+            XCTAssertEqual(person.intValues.first, 1)
+            XCTAssertEqual(person.floatValues.first, 2.5)
+            XCTAssertEqual(person.doubleValues.first, 3.5)
+            XCTAssertEqual(person.boolValues.first, true)
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -7438,9 +7601,19 @@ class SyncStoreTests: StoreTestCase {
                     XCTAssertEqual(json["name"] as? String, name)
                     let address = json["address"] as? [String : Any]
                     let addresses = json["addresses"] as? [[String : Any]]
+                    let stringValues = json["stringValues"] as? [String]
+                    let intValues = json["intValues"] as? [Int]
+                    let floatValues = json["floatValues"] as? [Float]
+                    let doubleValues = json["doubleValues"] as? [Double]
+                    let boolValues = json["boolValues"] as? [Bool]
                     XCTAssertEqual(address?["city"] as? String, "Boston")
                     XCTAssertEqual(addresses?.count, 1)
                     XCTAssertEqual(addresses?.first?["city"] as? String, "Vancouver")
+                    XCTAssertEqual(stringValues?.first, "A")
+                    XCTAssertEqual(intValues?.first, 1)
+                    XCTAssertEqual(floatValues?.first, 2.5)
+                    XCTAssertEqual(doubleValues?.first, 3.5)
+                    XCTAssertEqual(boolValues?.first, true)
                     return HttpResponse(json: json)
                 default:
                     return HttpResponse(statusCode: 404, data: Data())
@@ -7465,6 +7638,11 @@ class SyncStoreTests: StoreTestCase {
                 XCTAssertEqual(person.name, name)
                 XCTAssertEqual(person.address?.city, "Boston")
                 XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+                XCTAssertEqual(person.stringValues.first, "A")
+                XCTAssertEqual(person.intValues.first, 1)
+                XCTAssertEqual(person.floatValues.first, 2.5)
+                XCTAssertEqual(person.doubleValues.first, 3.5)
+                XCTAssertEqual(person.boolValues.first, true)
             }
         } catch {
             XCTFail(error.localizedDescription)
