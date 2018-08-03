@@ -268,8 +268,51 @@ let mappingOperationQueue: OperationQueue = {
 var kinveyProperyMapping = [String : PropertyMap]()
 var currentMappingClass: String?
 
+public protocol PrimitiveValue: Hashable, Decodable {}
+extension String: PrimitiveValue {}
+extension Int: PrimitiveValue {}
+extension Float: PrimitiveValue {}
+extension Double: PrimitiveValue {}
+extension Bool: PrimitiveValue {}
+
+public protocol ListSupportedValue: Hashable {
+    
+    associatedtype Value: PrimitiveValue
+    
+    var value: Value { get set }
+    
+    init(_ value: Value)
+    
+}
+
+extension ListSupportedValue {
+    
+    fileprivate func isEqual(_ this: Self, _ object: Any?) -> Bool {
+        switch object {
+        case let other as Self: return this.value == other.value
+        case let value as Self.Value: return this.value == value
+        default: return false
+        }
+    }
+    
+}
+
+fileprivate func decode<T>(from decoder: Decoder) throws -> T where T: Decodable {
+    let container = try decoder.singleValueContainer()
+    return try container.decode(T.self)
+}
+
+extension ListSupportedValue {
+    
+    fileprivate func encode<T>(_ value: T, to encoder: Encoder) throws where T: Encodable {
+        var container = encoder.singleValueContainer()
+        try container.encode(value)
+    }
+    
+}
+
 /// Wrapper type for string values that needs to be stored locally in the device
-final public class StringValue: Object, ExpressibleByStringLiteral {
+final public class StringValue: Object, ExpressibleByStringLiteral, ListSupportedValue {
     
     /// String value for the wrapper
     @objc
@@ -315,15 +358,8 @@ extension StringValue /* Hashable */ {
 
 extension StringValue /* Equatable */ {
     
-    public static func == (lhs: StringValue, rhs: StringValue) -> Bool {
-        return lhs.value == rhs.value
-    }
-    
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? StringValue else {
-            return false
-        }
-        return self == other
+        return isEqual(self, object)
     }
     
 }
@@ -331,8 +367,7 @@ extension StringValue /* Equatable */ {
 extension StringValue: Decodable {
     
     public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.init(try container.decode(String.self))
+        self.init(try decode(from: decoder))
     }
     
 }
@@ -340,8 +375,7 @@ extension StringValue: Decodable {
 extension StringValue: Encodable {
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(value)
+        try encode(value, to: encoder)
     }
     
 }
@@ -349,7 +383,7 @@ extension StringValue: Encodable {
 /**
  Wrapper type for integer values that needs to be stored locally in the device
  */
-final public class IntValue: Object, ExpressibleByIntegerLiteral {
+final public class IntValue: Object, ExpressibleByIntegerLiteral, ListSupportedValue {
     
     /// Integer value for the wrapper
     @objc
@@ -383,15 +417,8 @@ extension IntValue /* Hashable */ {
 
 extension IntValue /* Equatable */ {
     
-    public static func == (lhs: IntValue, rhs: IntValue) -> Bool {
-        return lhs.value == rhs.value
-    }
-    
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? IntValue else {
-            return false
-        }
-        return self == other
+        return isEqual(self, object)
     }
     
 }
@@ -399,8 +426,7 @@ extension IntValue /* Equatable */ {
 extension IntValue: Decodable {
     
     public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.init(try container.decode(Int.self))
+        self.init(try decode(from: decoder))
     }
     
 }
@@ -408,8 +434,7 @@ extension IntValue: Decodable {
 extension IntValue: Encodable {
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(value)
+        try encode(value, to: encoder)
     }
     
 }
@@ -417,7 +442,7 @@ extension IntValue: Encodable {
 /**
  Wrapper type for float values that needs to be stored locally in the device
  */
-final public class FloatValue: Object, ExpressibleByFloatLiteral {
+final public class FloatValue: Object, ExpressibleByFloatLiteral, ListSupportedValue {
     
     /// Float value for the wrapper
     @objc
@@ -451,15 +476,8 @@ extension FloatValue /* Hashable */ {
 
 extension FloatValue /* Equatable */ {
     
-    public static func == (lhs: FloatValue, rhs: FloatValue) -> Bool {
-        return lhs.value == rhs.value
-    }
-    
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? FloatValue else {
-            return false
-        }
-        return self == other
+        return isEqual(self, object)
     }
     
 }
@@ -467,8 +485,7 @@ extension FloatValue /* Equatable */ {
 extension FloatValue: Decodable {
     
     public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.init(try container.decode(Float.self))
+        self.init(try decode(from: decoder))
     }
     
 }
@@ -476,8 +493,7 @@ extension FloatValue: Decodable {
 extension FloatValue: Encodable {
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(value)
+        try encode(value, to: encoder)
     }
     
 }
@@ -485,7 +501,7 @@ extension FloatValue: Encodable {
 /**
  Wrapper type for double values that needs to be stored locally in the device
  */
-final public class DoubleValue: Object, ExpressibleByFloatLiteral {
+final public class DoubleValue: Object, ExpressibleByFloatLiteral, ListSupportedValue {
     
     /// Double value for the wrapper
     @objc
@@ -519,15 +535,8 @@ extension DoubleValue /* Hashable */ {
 
 extension DoubleValue /* Equatable */ {
     
-    public static func == (lhs: DoubleValue, rhs: DoubleValue) -> Bool {
-        return lhs.value == rhs.value
-    }
-    
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? DoubleValue else {
-            return false
-        }
-        return self == other
+        return isEqual(self, object)
     }
     
 }
@@ -535,8 +544,7 @@ extension DoubleValue /* Equatable */ {
 extension DoubleValue: Decodable {
     
     public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.init(try container.decode(Double.self))
+        self.init(try decode(from: decoder))
     }
     
 }
@@ -544,8 +552,7 @@ extension DoubleValue: Decodable {
 extension DoubleValue: Encodable {
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(value)
+        try encode(value, to: encoder)
     }
     
 }
@@ -553,7 +560,7 @@ extension DoubleValue: Encodable {
 /**
  Wrapper type for boolean values that needs to be stored locally in the device
  */
-final public class BoolValue: Object, ExpressibleByBooleanLiteral {
+final public class BoolValue: Object, ExpressibleByBooleanLiteral, ListSupportedValue {
     
     /// Boolean value for the wrapper
     @objc
@@ -587,15 +594,8 @@ extension BoolValue /* Hashable */ {
 
 extension BoolValue /* Equatable */ {
     
-    public static func == (lhs: BoolValue, rhs: BoolValue) -> Bool {
-        return lhs.value == rhs.value
-    }
-    
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? BoolValue else {
-            return false
-        }
-        return self == other
+        return isEqual(self, object)
     }
     
 }
@@ -603,8 +603,7 @@ extension BoolValue /* Equatable */ {
 extension BoolValue: Decodable {
     
     public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.init(try container.decode(Bool.self))
+        self.init(try decode(from: decoder))
     }
     
 }
@@ -612,8 +611,7 @@ extension BoolValue: Decodable {
 extension BoolValue: Encodable {
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(value)
+        try encode(value, to: encoder)
     }
     
 }

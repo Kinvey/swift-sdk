@@ -7417,7 +7417,11 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertEqual(myModel.someSimpleProperty, "A")
             XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
             XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.first == "C")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.first?.isEqual("C") ?? false)
             XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.last == "D")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.last?.isEqual("D") ?? false)
         } catch {
             XCTFail(error.localizedDescription)
         }
