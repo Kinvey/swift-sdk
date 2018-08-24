@@ -715,6 +715,31 @@ extension RealmSwift.NotificationToken: NotificationToken {
 
 extension RealmCache: DynamicCacheType {
     
+    private func countReferences(realm: Realm, objectClassName: String, nestedObject: Object, threshold: Int? = nil) -> Int {
+        var count = 0
+        for schema in realm.schema.objectSchema {
+            guard schema.className != objectClassName else {
+                continue
+            }
+            
+            for property in schema.properties {
+                guard property.objectClassName == objectClassName else {
+                    continue
+                }
+                
+                if property.isArray {
+                    count += realm.dynamicObjects(schema.className).filter("ANY \(property.name) == %@", nestedObject).count
+                } else {
+                    count += realm.dynamicObjects(schema.className).filter("\(property.name) == %@", nestedObject).count
+                }
+                if let threshold = threshold, count > threshold {
+                    return count
+                }
+            }
+        }
+        return count
+    }
+    
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object, deleteItself: Bool = true) {
         if let schema = realm.schema[entityType] {
             schema.properties.forEachAutoreleasepool { property in
@@ -733,7 +758,8 @@ extension RealmCache: DynamicCacheType {
                             entities: nestedArray
                         )
                     } else if let objectClassName = property.objectClassName,
-                        let nestedObject = entity[property.name] as? Object
+                        let nestedObject = entity[property.name] as? Object,
+                        countReferences(realm: realm, objectClassName: objectClassName, nestedObject: nestedObject, threshold: 1) == 1
                     {
                         cascadeDelete(
                             realm: realm,
@@ -753,6 +779,9 @@ extension RealmCache: DynamicCacheType {
     
     private func cascadeDelete(realm: Realm, entityType: String, entities: List<DynamicObject>) {
         for entity in entities {
+            guard countReferences(realm: realm, objectClassName: entityType, nestedObject: entity, threshold: 1) == 1 else {
+                continue
+            }
             cascadeDelete(
                 realm: realm,
                 entityType: entityType,

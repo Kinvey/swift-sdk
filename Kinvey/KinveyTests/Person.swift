@@ -72,6 +72,80 @@ class Person: Entity {
     
 }
 
+class Reference: Object, Codable {
+    
+    @objc
+    dynamic var entityId: String?
+    
+    override class func primaryKey() -> String {
+        return NSExpression(forKeyPath: \Reference.entityId).keyPath
+    }
+    
+}
+
+extension Reference {
+    
+    convenience init(_ entityId: String) {
+        self.init()
+        self.entityId = entityId
+    }
+    
+}
+
+class EntityWithRefenceCodable: Entity, Codable {
+    
+    override class func collectionName() -> String {
+        return "EntityWithRefence"
+    }
+    
+    @objc
+    dynamic var reference: Reference?
+    
+    let references = List<Reference>()
+    
+    enum CodingKeys: String, CodingKey {
+        case reference
+        case references
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        reference = try container.decodeIfPresent(Reference.self, forKey: .reference)
+        if let references = try container.decodeIfPresent(List<Reference>.self, forKey: .references) {
+            self.references.removeAll()
+            self.references.append(objectsIn: references)
+        }
+    }
+    
+    required init() {
+        super.init()
+    }
+    
+    @available(swift, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    
+    required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    override func encode(to encoder: Encoder) throws {
+        var container = try encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(reference, forKey: .reference)
+        try container.encodeIfPresent(references, forKey: .references)
+        
+        try super.encode(to: encoder)
+    }
+    
+}
+
 class PersonCodable: Entity, Codable {
     
     @objc
@@ -85,6 +159,11 @@ class PersonCodable: Entity, Codable {
     
     @objc
     dynamic var geolocation: GeoPoint?
+    
+    @objc
+    dynamic var reference: Reference?
+    
+    let references = List<Reference>()
     
     @objc
     dynamic var address: AddressCodable?
@@ -116,6 +195,8 @@ class PersonCodable: Entity, Codable {
         case address
         case addresses
         case geolocation
+        case reference
+        case references
         case stringValues
         case intValues
         case floatValues
@@ -157,6 +238,11 @@ class PersonCodable: Entity, Codable {
             self.boolValues.append(objectsIn: boolValues)
         }
         geolocation = try container.decodeIfPresent(GeoPoint.self, forKey: .geolocation)
+        reference = try container.decodeIfPresent(Reference.self, forKey: .reference)
+        if let references = try container.decodeIfPresent(List<Reference>.self, forKey: .references) {
+            self.references.removeAll()
+            self.references.append(objectsIn: references)
+        }
     }
     
     required init() {
@@ -189,6 +275,7 @@ class PersonCodable: Entity, Codable {
         try container.encodeIfPresent(doubleValues, forKey: .doubleValues)
         try container.encodeIfPresent(boolValues, forKey: .boolValues)
         try container.encodeIfPresent(geolocation, forKey: .geolocation)
+        try container.encodeIfPresent(reference, forKey: .reference)
         
         try super.encode(to: encoder)
     }
