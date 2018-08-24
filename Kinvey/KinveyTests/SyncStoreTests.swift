@@ -7396,6 +7396,162 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testIssue311() {
+        signUp()
+        
+        let store = try! DataStore<Issue311_MyModel>.collection(.sync)
+        
+        do {
+            var myModel = Issue311_MyModel()
+            myModel.someSimpleProperty = "A"
+            
+            let complexType = Issue311_ComplexType()
+            complexType.someSimpleProperty = "B"
+            complexType.someListProperty.append("C")
+            complexType.someListProperty.append("D")
+            myModel.someComplexProperty = complexType
+            
+            myModel = try store.save(myModel, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(myModel.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(myModel.someSimpleProperty, "A")
+            XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.first == "C")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.first?.isEqual("C") ?? false)
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.last == "D")
+            XCTAssertTrue(myModel.someComplexProperty?.someListProperty.last?.isEqual("D") ?? false)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(Issue311_MyModel.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["someSimpleProperty"] as? String, "A")
+                    let someComplexProperty = json["someComplexProperty"] as? [String : Any]
+                    let someListProperty = someComplexProperty?["someListProperty"] as? [String]
+                    XCTAssertEqual(someComplexProperty?["someSimpleProperty"] as? String, "B")
+                    XCTAssertEqual(someListProperty?.count, 2)
+                    XCTAssertEqual(someListProperty?.first, "C")
+                    XCTAssertEqual(someListProperty?.last, "D")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+        do {
+            let myModels = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(myModels.count, 1)
+            XCTAssertNotNil(myModels.first)
+            if let myModel = myModels.first {
+                XCTAssertFalse(myModel.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(myModel.someSimpleProperty, "A")
+                XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.count, 2)
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testIssue311Codable() {
+        signUp()
+        
+        Kinvey.logLevel = .debug
+        
+        let store = try! DataStore<Issue311_MyModelCodable>.collection(.sync)
+        
+        do {
+            var myModel = Issue311_MyModelCodable()
+            myModel.someSimpleProperty = "A"
+            
+            let complexType = Issue311_ComplexTypeCodable()
+            complexType.someSimpleProperty = "B"
+            complexType.someListProperty.append("C")
+            complexType.someListProperty.append("D")
+            myModel.someComplexProperty = complexType
+            
+            myModel = try store.save(myModel, options: nil).waitForResult(timeout: defaultTimeout).value()
+            
+            XCTAssertTrue(myModel.entityId!.hasPrefix("tmp_"))
+            XCTAssertEqual(myModel.someSimpleProperty, "A")
+            XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+            XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            mockResponse { request in
+                let urlComponents = request.url!
+                switch (request.httpMethod!, urlComponents.path) {
+                case ("POST", "/appdata/\(self.client.appKey!)/\(Issue311_MyModelCodable.collectionName())"):
+                    guard let object = try? JSONSerialization.jsonObject(with: request), var json = object as? [String : Any] else {
+                        fallthrough
+                    }
+                    XCTAssertNil(json["_id"])
+                    json["_id"] = UUID().uuidString
+                    XCTAssertEqual(json["someSimpleProperty"] as? String, "A")
+                    let someComplexProperty = json["someComplexProperty"] as? [String : Any]
+                    let someListProperty = someComplexProperty?["someListProperty"] as? [String]
+                    XCTAssertEqual(someComplexProperty?["someSimpleProperty"] as? String, "B")
+                    XCTAssertEqual(someListProperty?.count, 2)
+                    XCTAssertEqual(someListProperty?.first, "C")
+                    XCTAssertEqual(someListProperty?.last, "D")
+                    return HttpResponse(json: json)
+                default:
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            let count = try store.push(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let myModels = try store.find(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(myModels.count, 1)
+            XCTAssertNotNil(myModels.first)
+            if let myModel = myModels.first {
+                XCTAssertFalse(myModel.entityId!.hasPrefix("tmp_"))
+                XCTAssertEqual(myModel.someSimpleProperty, "A")
+                XCTAssertEqual(myModel.someComplexProperty?.someSimpleProperty, "B")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.count, 2)
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.first, "C")
+                XCTAssertEqual(myModel.someComplexProperty?.someListProperty.last, "D")
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
     func testPushCodable() {
         signUp()
         
@@ -7415,12 +7571,23 @@ class SyncStoreTests: StoreTestCase {
             address.city = "Vancouver"
             person.addresses.append(address)
             
+            person.stringValues.append("A")
+            person.intValues.append(1)
+            person.floatValues.append(2.5)
+            person.doubleValues.append(3.5)
+            person.boolValues.append(true)
+            
             person = try store.save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             
             XCTAssertTrue(person.entityId!.hasPrefix("tmp_"))
             XCTAssertEqual(person.name, name)
             XCTAssertEqual(person.address?.city, "Boston")
             XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+            XCTAssertEqual(person.stringValues.first, "A")
+            XCTAssertEqual(person.intValues.first, 1)
+            XCTAssertEqual(person.floatValues.first, 2.5)
+            XCTAssertEqual(person.doubleValues.first, 3.5)
+            XCTAssertEqual(person.boolValues.first, true)
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -7438,9 +7605,19 @@ class SyncStoreTests: StoreTestCase {
                     XCTAssertEqual(json["name"] as? String, name)
                     let address = json["address"] as? [String : Any]
                     let addresses = json["addresses"] as? [[String : Any]]
+                    let stringValues = json["stringValues"] as? [String]
+                    let intValues = json["intValues"] as? [Int]
+                    let floatValues = json["floatValues"] as? [Float]
+                    let doubleValues = json["doubleValues"] as? [Double]
+                    let boolValues = json["boolValues"] as? [Bool]
                     XCTAssertEqual(address?["city"] as? String, "Boston")
                     XCTAssertEqual(addresses?.count, 1)
                     XCTAssertEqual(addresses?.first?["city"] as? String, "Vancouver")
+                    XCTAssertEqual(stringValues?.first, "A")
+                    XCTAssertEqual(intValues?.first, 1)
+                    XCTAssertEqual(floatValues?.first, 2.5)
+                    XCTAssertEqual(doubleValues?.first, 3.5)
+                    XCTAssertEqual(boolValues?.first, true)
                     return HttpResponse(json: json)
                 default:
                     return HttpResponse(statusCode: 404, data: Data())
@@ -7465,6 +7642,11 @@ class SyncStoreTests: StoreTestCase {
                 XCTAssertEqual(person.name, name)
                 XCTAssertEqual(person.address?.city, "Boston")
                 XCTAssertEqual(person.addresses.first?.city, "Vancouver")
+                XCTAssertEqual(person.stringValues.first, "A")
+                XCTAssertEqual(person.intValues.first, 1)
+                XCTAssertEqual(person.floatValues.first, 2.5)
+                XCTAssertEqual(person.doubleValues.first, 3.5)
+                XCTAssertEqual(person.boolValues.first, true)
             }
         } catch {
             XCTFail(error.localizedDescription)
@@ -7734,6 +7916,570 @@ class SyncStoreTests: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferences() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "reference" : reference,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "reference" : reference,
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: mockObjs)
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(mockObjs.count, items.count)
+        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = items.first {
+            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+        }
+        
+        if let person = items.last {
+            XCTAssertEqual(person.reference?.entityId, referenceId)
+            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInALists() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "references" : [reference],
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "references" : [reference],
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: mockObjs)
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(mockObjs.count, items.count)
+        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = items.first {
+            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+        }
+        
+        if let person = items.last {
+            XCTAssertEqual(person.references.first?.entityId, referenceId)
+            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.references.first?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInAList() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "reference" : reference,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ],
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "references" : [reference],
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ]
+        ]
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: mockObjs)
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(mockObjs.count, items.count)
+        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = items.first {
+            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+        }
+        
+        if let person = items.last {
+            XCTAssertEqual(person.references.first?.entityId, referenceId)
+            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.references.first?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInAListReverse() {
+        Kinvey.logLevel = .debug
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        let id2 = UUID().uuidString
+        let name2 = UUID().uuidString
+        let age2 = Int(arc4random())
+        let creator2 = UUID().uuidString
+        let lmt2 = Date().toString()
+        let ect2 = Date().toString()
+        
+        let mockObjs: [[String : Any]] = [
+            [
+                "_id": id2,
+                "name": name2,
+                "age": age2,
+                "references" : [reference],
+                "_acl": [
+                    "creator": creator2
+                ],
+                "_kmd": [
+                    "lmt": lmt2,
+                    "ect": ect2
+                ]
+            ],
+            [
+                "_id": id1,
+                "name": name1,
+                "age": age1,
+                "reference" : reference,
+                "_acl": [
+                    "creator": creator1
+                ],
+                "_kmd": [
+                    "lmt": lmt1,
+                    "ect": ect1
+                ]
+            ]
+        ]
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: mockObjs)
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(mockObjs.count, items.count)
+        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = items.first {
+            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+        }
+        
+        if let person = items.last {
+            XCTAssertEqual(person.reference?.entityId, referenceId)
+            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInAnotherCollectionInAList() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "name": name1,
+                        "age": age1,
+                        "reference" : reference,
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                ])
+            case "/appdata/\(self.client.appKey!)/\(EntityWithRefenceCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "references" : [reference],
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                ])
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let personStore = try! DataStore<PersonCodable>.collection(.sync)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(1, persons.count)
+        XCTAssertEqual(1, entities.count)
+        XCTAssertEqual(1, personStore.cache!.count(query: nil))
+        XCTAssertEqual(1, entityWithRefenceStore.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = persons.first {
+            let count = try! personStore.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+            XCTAssertEqual(entities.first?.references.first?.entityId, referenceId)
+            
+            let refreshedInstance = try! entityWithRefenceStore.find(entities.first!.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.references.first?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInAnotherCollectionInAListReverse() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "name": name1,
+                        "age": age1,
+                        "reference" : reference,
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                    ])
+            case "/appdata/\(self.client.appKey!)/\(EntityWithRefenceCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "references" : [reference],
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                    ])
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let personStore = try! DataStore<PersonCodable>.collection(.sync)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(1, persons.count)
+        XCTAssertEqual(1, entities.count)
+        XCTAssertEqual(1, personStore.cache!.count(query: nil))
+        XCTAssertEqual(1, entityWithRefenceStore.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let entity = entities.first {
+            let count = try! entityWithRefenceStore.remove(entity).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+            XCTAssertEqual(persons.first?.reference?.entityId, referenceId)
+            
+            let refreshedInstance = try! personStore.find(persons.first!.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
+        }
+    }
+    
+    func testCascadeDeleteItemsWithOtherReferencesInAnotherCollection() {
+        let referenceId = UUID().uuidString
+        let referenceData = try! JSONEncoder().encode(Reference(referenceId))
+        let reference = try! JSONSerialization.jsonObject(with: referenceData) as! JsonDictionary
+        
+        let id1 = UUID().uuidString
+        let name1 = UUID().uuidString
+        let age1 = Int(arc4random())
+        let creator1 = UUID().uuidString
+        let lmt1 = Date().toString()
+        let ect1 = Date().toString()
+        
+        var count = 0
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            switch urlComponents.path {
+            case "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "name": name1,
+                        "age": age1,
+                        "reference" : reference,
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                    ])
+            case "/appdata/\(self.client.appKey!)/\(EntityWithRefenceCodable.collectionName())/":
+                return HttpResponse(json: [
+                    [
+                        "_id": id1,
+                        "reference" : reference,
+                        "_acl": [
+                            "creator": creator1
+                        ],
+                        "_kmd": [
+                            "lmt": lmt1,
+                            "ect": ect1
+                        ]
+                    ]
+                    ])
+            default:
+                XCTFail(request.url!.path)
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let personStore = try! DataStore<PersonCodable>.collection(.sync)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+        XCTAssertEqual(1, persons.count)
+        XCTAssertEqual(1, entities.count)
+        XCTAssertEqual(1, personStore.cache!.count(query: nil))
+        XCTAssertEqual(1, entityWithRefenceStore.cache!.count(query: nil))
+        XCTAssertEqual(1, realm.objects(Reference.self).count)
+        
+        if let person = persons.first {
+            let count = try! personStore.remove(person).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(1, count)
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+            XCTAssertEqual(entities.first?.reference?.entityId, referenceId)
+            
+            let refreshedInstance = try! entityWithRefenceStore.find(entities.first!.entityId!).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
         }
     }
     
