@@ -925,7 +925,7 @@ open class User: NSObject, Credential {
         super.init()
     }
     
-    public func encode(to encoder: Encoder) throws {
+    open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(_userId, forKey: .userId)
         try container.encodeIfPresent(acl, forKey: .acl)
