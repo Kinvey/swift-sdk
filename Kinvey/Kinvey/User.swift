@@ -938,6 +938,12 @@ open class User: NSObject, Credential {
         _userId = anotherUser.userId
         acl = anotherUser.acl
         metadata = anotherUser.metadata
+        if let refreshToken = socialIdentity?.kinvey?["refresh_token"] as? String,
+            var kinvey = anotherUser.socialIdentity?.kinvey
+        {
+            kinvey["refresh_token"] = refreshToken
+            anotherUser.socialIdentity?.kinvey = kinvey
+        }
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email
