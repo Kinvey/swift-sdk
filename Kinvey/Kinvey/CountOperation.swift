@@ -13,15 +13,18 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     let query: Query?
     
     typealias ResultType = Result<Int, Swift.Error>
+    let requestStartHeaderHandler: ((Date) -> Void)?
     
     init(
         query: Query? = nil,
         readPolicy: ReadPolicy,
         validationStrategy: ValidationStrategy?,
         cache: AnyCache<T>?,
-        options: Options?
+        options: Options?,
+        requestStartHeaderHandler: ((Date) -> Void)? = nil
     ) {
         self.query = query
+        self.requestStartHeaderHandler = requestStartHeaderHandler
         super.init(
             readPolicy: readPolicy,
             validationStrategy: validationStrategy,
@@ -54,6 +57,9 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
             resultType: ResultType.self
         )
         request.execute() { data, response, error in
+            if let requestStartHeader = response?.requestStartHeader {
+                self.requestStartHeaderHandler?(requestStartHeader)
+            }
             let result: ResultType
             if let response = response, response.isOK,
                 let data = data,

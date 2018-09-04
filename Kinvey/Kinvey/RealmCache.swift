@@ -52,13 +52,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     typealias `Type` = T
     
     let configuration: Realm.Configuration
-    let _realm: Realm
-    var realm: Realm {
-        executor.executeAndWait {
-            self._realm.refresh()
-        }
-        return _realm
-    }
     let objectSchema: ObjectSchema
     let properties: [String : Property]
     let propertyNames: [String]
@@ -91,17 +84,18 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
         configuration.encryptionKey = encryptionKey
         configuration.schemaVersion = schemaVersion
-        
+
+        let realm: Realm
         do {
-            _realm = try Realm(configuration: configuration)
+            realm = try Realm(configuration: configuration)
         } catch {
             configuration.deleteRealmIfMigrationNeeded = true
-            _realm = try! Realm(configuration: configuration)
+            realm = try! Realm(configuration: configuration)
         }
         self.configuration = configuration
         
         let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
-        objectSchema = _realm.schema[className]!
+        objectSchema = realm.schema[className]!
         
         var properties = [String : Property]()
         var propertyNames = [String]()
@@ -126,7 +120,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         
         executor = Executor()
         super.init(persistenceId: persistenceId)
-        log.debug("Cache File: \(self.realm.configuration.fileURL!.path)")
+        log.debug("Cache File: \(newRealm.configuration.fileURL!.path)")
     }
     
     func translate(predicate: NSPredicate) -> NSPredicate {
@@ -287,7 +281,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     fileprivate func realmResults(_ query: Query) -> Results<Entity>? {
-        var realmResults = self.realm.objects(self.entityType)
+        var realmResults = newRealm.objects(self.entityType)
         
         if let predicate = query.predicate {
             if let exception = tryBlock({
@@ -334,6 +328,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         
         json = entity.dictionaryWithValues(forKeys: props)
         
+        let realm = newRealm
         json.keys.forEachAutoreleasepool { property in
             let value = json[property]
                 
@@ -402,7 +397,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
             }
             if let entity = entity as? Entity {
-                entity.realmConfiguration = self.realm.configuration
+                entity.realmConfiguration = self.newRealm.configuration
                 entity.entityIdReference = (newEntity as NSObject & Persistable).entityId
             }
         }
@@ -416,7 +411,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             var newEntities = [Entity]()
             newEntities.reserveCapacity(entities.count)
             try! self.write { realm in
-                for entity in entities {
+                entities.forEachAutoreleasepool { entity in
                     if let entityId = entity.entityId, let oldEntity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
                         self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
                     }
@@ -440,7 +435,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         log.verbose("Finding object by ID: \(objectId)")
         var result: T?
         executor.executeAndWait {
-            result = self.realm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
+            result = self.newRealm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
                 if let resultObj = result as? Object {
                     result = self.detach(resultObj, props: self.propertyNames) as? T
@@ -601,7 +596,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         log.verbose("Retriving last sync date")
         var lastSync: Date? = nil
         executor.executeAndWait {
-            lastSync = self.lastSync(query: query, realm: self.realm)?.first?.lastSync
+            lastSync = self.lastSync(query: query, realm: self.newRealm)?.first?.lastSync
         }
         return lastSync
     }
@@ -647,7 +642,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         var _error: Swift.Error? = nil
         executor.executeAndWait {
             do {
-                try self.realm.write {
+                try self.newRealm.write {
                     try block()
                 }
             } catch {
@@ -661,7 +656,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     public func beginWrite() {
         executor.executeAndWait {
-            self.realm.beginWrite()
+            self.newRealm.beginWrite()
         }
     }
     
@@ -669,7 +664,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         var _error: Swift.Error? = nil
         executor.executeAndWait {
             do {
-                try self.realm.commitWrite(withoutNotifying: tokens.compactMap({
+                try self.newRealm.commitWrite(withoutNotifying: tokens.compactMap({
                     $0 as? RealmSwift.NotificationToken ?? ($0 as? AnyNotificationToken)?.notificationToken as? RealmSwift.NotificationToken
                 }))
             } catch {
@@ -683,16 +678,16 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     public func cancelWrite() {
         executor.executeAndWait {
-            self.realm.cancelWrite()
+            self.newRealm.cancelWrite()
         }
     }
     
     private func write(_ block: @escaping (Realm) throws -> Void) throws {
-        if realm.isInWriteTransaction {
+        if newRealm.isInWriteTransaction {
             var _error: Swift.Error? = nil
             executor.executeAndWait {
                 do {
-                    try block(self.realm)
+                    try block(self.newRealm)
                 } catch {
                     _error = error
                 }
@@ -876,18 +871,31 @@ extension RealmCache: DynamicCacheType {
         log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
+    func save(syncQuery: CacheType.SyncQuery) {
+        saveQuery(syncQuery: syncQuery, realm: self.newRealm)
+    }
+    
     private func saveQuery(syncQuery: SyncQuery?, realm: Realm) {
         guard let syncQuery = syncQuery else {
             return
         }
         
-        let realmSyncQuery = _QueryCache()
-        realmSyncQuery.collectionName = entityTypeCollectionName
-        realmSyncQuery.query = syncQuery.query.predicateAsString
-        realmSyncQuery.fields = syncQuery.query.fieldsAsString
-        realmSyncQuery.lastSync = syncQuery.lastSync
-        realmSyncQuery.generateKey()
-        realm.add(realmSyncQuery, update: true)
+        let block: (String) -> Void = { entityTypeCollectionName in
+            let realmSyncQuery = _QueryCache()
+            realmSyncQuery.collectionName = entityTypeCollectionName
+            realmSyncQuery.query = syncQuery.query.predicateAsString
+            realmSyncQuery.fields = syncQuery.query.fieldsAsString
+            realmSyncQuery.lastSync = syncQuery.lastSync
+            realmSyncQuery.generateKey()
+            realm.add(realmSyncQuery, update: true)
+        }
+        if realm.isInWriteTransaction {
+            block(entityTypeCollectionName)
+        } else {
+            try! realm.write {
+                block(entityTypeCollectionName)
+            }
+        }
     }
     
 }
