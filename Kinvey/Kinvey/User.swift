@@ -937,6 +937,11 @@ open class User: NSObject, Credential {
     open func refresh<UserType: User>(anotherUser: UserType) {
         _userId = anotherUser.userId
         acl = anotherUser.acl
+        if let authtoken = metadata?.authtoken,
+            let metadata = anotherUser.metadata
+        {
+            metadata.authtoken = authtoken
+        }
         metadata = anotherUser.metadata
         if let refreshToken = socialIdentity?.kinvey?["refresh_token"] as? String,
             var kinvey = anotherUser.socialIdentity?.kinvey

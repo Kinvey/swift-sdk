@@ -815,6 +815,10 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+        guard let authtoken = client.activeUser?.metadata?.authtoken as? String else {
+            XCTFail()
+            return
+        }
         guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
             XCTFail()
             return
@@ -847,6 +851,14 @@ class UserTests: KinveyTestCase {
                     kinveyAuth["refresh_token"] = UUID().uuidString
                     socialIdentity["kinveyAuth"] = kinveyAuth
                     json["_socialIdentity"] = socialIdentity
+                    
+                    guard var kmd = json["_kmd"] as? JsonDictionary else {
+                        XCTFail()
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                    kmd["authtoken"] = UUID().uuidString
+                    json["_kmd"] = kmd
+                    
                     return HttpResponse(json: json)
                 }
             }
@@ -878,6 +890,8 @@ class UserTests: KinveyTestCase {
             XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
             XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
             XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+            let newAuthtoken = client.activeUser?.metadata?.authtoken as? String
+            XCTAssertEqual(newAuthtoken, authtoken)
             let newRefreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
             XCTAssertEqual(newRefreshToken, refreshToken)
         }
