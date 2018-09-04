@@ -120,28 +120,25 @@ class KinveyAppUITests: XCTestCase {
         }
         
         let userIdValue = app.staticTexts["User ID Value"]
+        expect(userIdValue.exists).to(beTrue())
         
         XCTContext.runActivity(named: "Tap Login Button") { activity in
             let tokenMonitor = addUIInterruptionMonitor(withDescription: "SFAuthenticationSession") { (alert) -> Bool in
+                expect(userIdValue.exists).to(beTrue())
                 alert.buttons["Continue"].tap()
+                expect(userIdValue.exists).toEventually(beFalse(), timeout: self.defaultTimeout)
                 activity.add(XCTAttachment(screenshot: app.screenshot()))
+                expect(userIdValue.exists).toEventually(beTrue(), timeout: self.defaultTimeout)
                 return true
             }
             defer {
                 removeUIInterruptionMonitor(tokenMonitor)
             }
             
-            app.buttons["Login"].tap()
-            app.tap()
             activity.add(XCTAttachment(screenshot: app.screenshot()))
             
-            expect(expression: {
-                if userIdValue.exists {
-                    app.tap()
-                    activity.add(XCTAttachment(screenshot: app.screenshot()))
-                }
-                return userIdValue.exists
-            }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 5)
+            app.buttons["Login"].tap()
+            app.tap()
             
             activity.add(XCTAttachment(screenshot: app.screenshot()))
             
@@ -217,21 +214,19 @@ class KinveyAppUITests: XCTestCase {
             server.stop()
         }
         
+        let userIdValue = app.staticTexts["User ID Value"]
+        
         addUIInterruptionMonitor(withDescription: "WKWebView") { (alert) -> Bool in
+            expect(userIdValue.exists).to(beTrue())
             alert.buttons["Continue"].tap()
+            expect(userIdValue.exists).toEventually(beFalse(), timeout: self.defaultTimeout)
+            expect(userIdValue.exists).toEventually(beTrue(), timeout: self.defaultTimeout)
             return true
         }
         
         app.buttons["Login"].tap()
         app.tap()
         
-        let userIdValue = app.staticTexts["User ID Value"]
-        expect(expression: {
-            if userIdValue.exists {
-                app.tap()
-            }
-            return userIdValue.exists
-        }).toEventually(beFalse(), timeout: defaultTimeout, pollInterval: 1)
         XCTAssertTrue(userIdValue.waitForExistence(timeout: defaultTimeout))
         expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
         expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)

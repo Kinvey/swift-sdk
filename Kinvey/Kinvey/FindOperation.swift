@@ -176,7 +176,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 progress.completedUnitCount += 1
                 resolver.fulfill(result)
             }.catch { error in
-                self.cache?.cancelWrite()
                 resolver.reject(error)
             }
         }
@@ -185,22 +184,16 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) throws -> AnyRandomAccessCollection<T> {
         let startTime = CFAbsoluteTimeGetCurrent()
         let client = options?.client ?? self.client
-        let entities = AnyRandomAccessCollection(jsonArray.lazy.map { (json) -> T in
+        let entities = AnyRandomAccessCollection(try jsonArray.lazy.map { (json) throws -> T in
             if let validationStrategy = self.validationStrategy {
-                do {
-                    try validationStrategy.validate(jsonArray: [json])
-                } catch {
-                    NSException(error: error).raise()
-                }
+                try validationStrategy.validate(jsonArray: [json])
             } else {
                 guard let entityId = json[Entity.EntityCodingKeys.entityId.rawValue] as? String, !entityId.isEmpty else {
-                    NSException(error: Error.invalidOperation(description: "_id is required: \(T.self)\n\(json)")).raise()
-                    return NSObject() as! T
+                    throw Error.invalidOperation(description: "_id is required: \(T.self)\n\(json)")
                 }
             }
             guard let entity = try? client.jsonParser.parseObject(T.self, from: json) else {
-                NSException(error: Error.invalidOperation(description: "Invalid entity creation: \(T.self)\n\(json)")).raise()
-                return NSObject() as! T
+                throw Error.invalidOperation(description: "Invalid entity creation: \(T.self)\n\(json)")
             }
             return entity
         })

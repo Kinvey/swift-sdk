@@ -117,7 +117,8 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
             }
         }
         
-        XCTAssertLessThan(getMegabytesUsed()! - megabytesUsageAtStart, 50)
+        let diff = getMegabytesUsed()! - megabytesUsageAtStart
+        XCTAssertLessThan(diff, 60)
     }
     
 }

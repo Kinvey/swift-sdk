@@ -785,7 +785,7 @@ class SyncStoreTests: StoreTestCase {
         var person = save()
         
         XCTAssertEqual(store.syncCount(), 1)
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         var personMockJson = [JsonDictionary]()
         if useMockData {
@@ -1334,7 +1334,7 @@ class SyncStoreTests: StoreTestCase {
         ]
         
         store.clearCache(query: Query())
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         do {
             weak var expectationPull = expectation(description: "Pull")
@@ -2704,6 +2704,10 @@ class SyncStoreTests: StoreTestCase {
                 return "NotEntityPersistable"
             }
             
+            static func translate(property: String) -> String? {
+                return nil
+            }
+            
             required override init() {
             }
             
@@ -2746,6 +2750,10 @@ class SyncStoreTests: StoreTestCase {
             
             static func collectionName() -> String {
                 return "NotEntityPersistable"
+            }
+            
+            static func translate(property: String) -> String? {
+                return nil
             }
             
             required override init() {
@@ -3525,7 +3533,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testServerSideDeltaSetSyncClearCacheNoQuery() {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3733,7 +3741,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testServerSideDeltaSetSyncClearCache() {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
-        let realm = (store.cache!.cache as! RealmCache<Person>).realm
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -7983,7 +7991,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
         XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
@@ -8066,7 +8074,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
         XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
@@ -8149,7 +8157,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
         XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
@@ -8233,7 +8241,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
         XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
@@ -8309,7 +8317,7 @@ class SyncStoreTests: StoreTestCase {
         
         let personStore = try! DataStore<PersonCodable>.collection(.sync)
         let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
-        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(1, persons.count)
@@ -8386,7 +8394,7 @@ class SyncStoreTests: StoreTestCase {
         
         let personStore = try! DataStore<PersonCodable>.collection(.sync)
         let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
-        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(1, persons.count)
@@ -8463,7 +8471,7 @@ class SyncStoreTests: StoreTestCase {
         
         let personStore = try! DataStore<PersonCodable>.collection(.sync)
         let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
-        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).realm
+        let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(1, persons.count)

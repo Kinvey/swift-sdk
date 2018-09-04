@@ -132,9 +132,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         #endif
         
         if let predicate = predicate as? NSComparisonPredicate {
-            let leftExpressionNeedsTranslation = needsTranslation(expression: predicate.leftExpression)
-            let rightExpressionNeedsTranslation = needsTranslation(expression: predicate.rightExpression)
-            if (leftExpressionNeedsTranslation || rightExpressionNeedsTranslation) {
+            if needsTranslation(expression: predicate.leftExpression) ||
+                needsTranslation(expression: predicate.rightExpression)
+            {
                 if predicate.predicateOperatorType == .contains, let keyPathValuePairExpression = keyPathValuePairExpression(predicate: predicate) {
                     return NSPredicate(format: "SUBQUERY(\(keyPathValuePairExpression.keyPathExpression.keyPath), $item, $item.value == %@).@count > 0", keyPathValuePairExpression.valueExpression.constantValue as! CVarArg)
                 } else {
@@ -155,9 +155,11 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     func needsTranslation(expression: NSExpression) -> Bool {
         switch expression.expressionType {
         case .keyPath:
+            if T.self is Codable.Type {
+                return true
+            }
             let keyPath = expression.keyPath
-            if keyPath.contains(".") {
-            } else {
+            if !keyPath.contains(".") {
                 if let idx = propertyNames.index(of: keyPath),
                     let className = propertyObjectClassNames[idx],
                     typesNeedsTranslation.contains(className)
@@ -225,9 +227,8 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     func translate(expression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
-            var keyPath = expression.keyPath
-            if keyPath.contains(".") {
-            } else {
+            var keyPath = T.self is Codable.Type ? (try! T.translate(property: expression.keyPath) ?? expression.keyPath) : expression.keyPath
+            if !keyPath.contains(".") {
                 if let idx = propertyNames.index(of: keyPath),
                     let className = propertyObjectClassNames[idx],
                     typesNeedsTranslation.contains(className)

@@ -11,6 +11,9 @@ import Foundation
 
 class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
     
+    func save(syncQuery: CacheType.SyncQuery) {
+    }
+    
     typealias `Type` = T
     
     var memory = [String : T]()

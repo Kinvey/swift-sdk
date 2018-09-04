@@ -187,6 +187,18 @@ class PersonCodable: Entity, Codable {
         return "Person"
     }
     
+    override class func translate(property: String) -> String? {
+        guard let codingKey = CodingKeys(rawValue: property) else {
+            return nil
+        }
+        switch codingKey {
+        case .personId:
+            return "personId"
+        default:
+            return nil
+        }
+    }
+    
     enum CodingKeys: String, CodingKey {
         
         case personId = "_id"
