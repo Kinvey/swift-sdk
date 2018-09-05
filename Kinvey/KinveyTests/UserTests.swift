@@ -819,6 +819,10 @@ class UserTests: KinveyTestCase {
             XCTFail()
             return
         }
+        guard let accessToken = client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String else {
+            XCTFail()
+            return
+        }
         guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
             XCTFail()
             return
@@ -848,6 +852,7 @@ class UserTests: KinveyTestCase {
                         XCTFail()
                         return HttpResponse(statusCode: 404, data: Data())
                     }
+                    kinveyAuth["access_token"] = UUID().uuidString
                     kinveyAuth["refresh_token"] = UUID().uuidString
                     socialIdentity["kinveyAuth"] = kinveyAuth
                     json["_socialIdentity"] = socialIdentity
@@ -892,6 +897,8 @@ class UserTests: KinveyTestCase {
             XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
             let newAuthtoken = client.activeUser?.metadata?.authtoken as? String
             XCTAssertEqual(newAuthtoken, authtoken)
+            let newAccessToken = client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String
+            XCTAssertEqual(newAccessToken, accessToken)
             let newRefreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
             XCTAssertEqual(newRefreshToken, refreshToken)
         }
