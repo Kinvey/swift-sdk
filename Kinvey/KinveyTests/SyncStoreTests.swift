@@ -8491,4 +8491,46 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+    func testTranslateQueryCodable() {
+        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let id = UUID().uuidString
+        
+        if useMockData {
+            mockResponse { (request) -> HttpResponse in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                XCTAssertEqual(urlComponents.path, "/appdata/\(self.client.appKey!)/\(PersonCodable.collectionName())/")
+                return HttpResponse(json: [
+                    [
+                        "_id" : id,
+                        "age" : 0,
+                        ]
+                    ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationPull = expectation(description: "Pull")
+        
+        let query = Query(format: "_id == %@", id)
+        
+        store.pull(query) {
+            switch $0 {
+            case .success(let persons):
+                XCTAssertEqual(persons.count, 1)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationPull?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationPull = nil
+        }
+    }
+    
 }
