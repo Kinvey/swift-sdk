@@ -193,7 +193,7 @@ class PersonCodable: Entity, Codable {
         }
         switch codingKey {
         case .personId:
-            return "personId"
+            return NSExpression(forKeyPath: \PersonCodable.personId).keyPath
         default:
             return nil
         }
