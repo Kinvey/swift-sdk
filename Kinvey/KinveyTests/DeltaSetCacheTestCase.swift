@@ -3770,7 +3770,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     case 0:
                         switch urlComponents.path {
                         case "/appdata/\(sharedClient.appKey!)/\(Person.collectionName())/_count":
-                            return HttpResponse(json: ["count" : 3])
+                            let requestStartDate = Date()
+                            requestStartDates.append(requestStartDate)
+                            return HttpResponse(
+                                headerFields: ["X-Kinvey-Request-Start" : requestStartDate.toString()],
+                                json: ["count" : 3]
+                            )
                         default:
                             XCTFail(urlComponents.path)
                             return HttpResponse(statusCode: 404, data: Data())
@@ -3821,7 +3826,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let results = try store.pull(options: Options(maxSizePerResultSet: 1)).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(results.count, count)
             
-            XCTAssertEqual(requestStartDates.count, 3)
+            XCTAssertEqual(requestStartDates.count, 4)
             XCTAssertTrue(store.cache?.cache is RealmCache<Person>)
             XCTAssertNotNil(store.cache?.cache as? RealmCache<Person>)
             if let cache = store.cache?.cache as? RealmCache<Person> {
@@ -4006,9 +4011,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockRequestPathSequence.append(urlComponents.path)
                 switch urlComponents.path {
                 case "/appdata/_kid_/Person/_count":
-                    return HttpResponse(json: [
-                        "count" : json.count
-                    ])
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: ["count" : json.count]
+                    )
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         statusCode: 403,
@@ -4446,7 +4452,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         XCTAssertTrue(dataStore.cache?.cache is RealmCache<Person>)
         XCTAssertNotNil(dataStore.cache?.cache as? RealmCache<Person>)
         if let realmCache = dataStore.cache?.cache as? RealmCache<Person> {
-            XCTAssertEqual(realmCache.lastSync(query: query1, realm: realmCache.realm)?.first?.fields, "address,name")
+            XCTAssertEqual(realmCache.lastSync(query: query1, realm: realmCache.newRealm)?.first?.fields, "address,name")
         }
         
         do {
@@ -4485,7 +4491,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             XCTAssertNotNil(dataStore.cache?.cache as? RealmCache<Person>)
             if let realmCache = dataStore.cache?.cache as? RealmCache<Person> {
                 do {
-                    let queryCache = realmCache.lastSync(query: Query(), realm: realmCache.realm)?.first
+                    let queryCache = realmCache.lastSync(query: Query(), realm: realmCache.newRealm)?.first
                     XCTAssertNotNil(queryCache)
                     XCTAssertNil(queryCache?.fields)
                     XCTAssertEqual(queryCache?.key, "Person|nil")
@@ -4537,9 +4543,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockRequestPathSequence.append(request.url!.path)
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_count":
-                    return HttpResponse(json: [
-                        "count" : json.count
-                    ])
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: ["count" : json.count]
+                    )
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         statusCode: 400,
@@ -4686,9 +4693,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockRequestPathSequence.append(urlComponents.path)
                 switch urlComponents.path {
                 case "/appdata/_kid_/Person/_count":
-                    return HttpResponse(json: [
-                        "count" : json.count
-                    ])
+                    return HttpResponse(
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        json: ["count" : json.count]
+                    )
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         statusCode: 400,

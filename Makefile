@@ -35,7 +35,7 @@ travisci-cache:
 	{ \
 		cd Carthage; \
 		rm *.tar.lzma; \
-		wget http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma; \
+		curl -L http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma -o $(CARTFILE_RESOLVED_MD5).tar.lzma; \
 		tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma; \
 	}
 

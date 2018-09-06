@@ -21,6 +21,8 @@ internal protocol CacheType: class {
     
     func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?)
     
+    func save(syncQuery: SyncQuery)
+    
     func find(byId objectId: String) -> Type?
     
     func find(byQuery query: Query) -> AnyRandomAccessCollection<Type>
@@ -133,6 +135,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
     private let _saveEntities: (AnyRandomAccessCollection<Type>, SyncQuery?) -> Void
+    private let _saveSyncQuery: (SyncQuery) -> Void
     private let _findById: (String) -> T?
     private let _findByQuery: (Query) -> AnyRandomAccessCollection<Type>
     private let _findIdsLmtsByQuery: (Query) -> [String : String]
@@ -162,6 +165,7 @@ class AnyCache<T: Persistable>: CacheType {
         _setTTL = { cache.ttl = $0 }
         _saveEntity = cache.save(entity:)
         _saveEntities = cache.save(entities: syncQuery:)
+        _saveSyncQuery = cache.save(syncQuery:)
         _findById = cache.find(byId:)
         _findByQuery = cache.find(byQuery:)
         _findIdsLmtsByQuery = cache.findIdsLmts(byQuery:)
@@ -187,6 +191,10 @@ class AnyCache<T: Persistable>: CacheType {
     
     func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?) {
         _saveEntities(entities, syncQuery)
+    }
+    
+    func save(syncQuery: SyncQuery) {
+        _saveSyncQuery(syncQuery)
     }
     
     func find(byId objectId: String) -> T? {

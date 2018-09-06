@@ -925,7 +925,7 @@ open class User: NSObject, Credential {
         super.init()
     }
     
-    public func encode(to encoder: Encoder) throws {
+    open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(_userId, forKey: .userId)
         try container.encodeIfPresent(acl, forKey: .acl)
@@ -937,7 +937,15 @@ open class User: NSObject, Credential {
     open func refresh<UserType: User>(anotherUser: UserType) {
         _userId = anotherUser.userId
         acl = anotherUser.acl
+        if let authtoken = metadata?.authtoken,
+            let metadata = anotherUser.metadata
+        {
+            metadata.authtoken = authtoken
+        }
         metadata = anotherUser.metadata
+        if let socialIdentity = socialIdentity {
+            anotherUser.socialIdentity = socialIdentity
+        }
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email

@@ -66,6 +66,10 @@ open class Entity: Object, Persistable {
         throw Error.invalidOperation(description: "Method \(#function) must be overridden")
     }
     
+    open class func translate(property: String) throws -> String? {
+        return nil
+    }
+    
     /// The `_id` property mapped in the Kinvey backend.
     @objc
     public dynamic var entityId: String?

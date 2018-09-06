@@ -234,3 +234,15 @@ public struct MultipleErrors: Swift.Error {
     public let errors: [Swift.Error]
     
 }
+
+extension NSException {
+    
+    public convenience init(error: Swift.Error) {
+        self.init(error: error as NSError)
+    }
+    
+    public convenience init(error: NSError) {
+        self.init(name: NSExceptionName(rawValue: error.domain), reason: error.localizedFailureReason, userInfo: error.userInfo)
+    }
+    
+}

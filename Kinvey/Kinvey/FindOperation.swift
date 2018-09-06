@@ -92,23 +92,26 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         return AnyRequest(request)
     }
     
-    private func count(multiRequest: MultiRequest<ResultType>) -> Promise<Int?> {
-        return Promise<Int?> { resolver in
+    private func count(multiRequest: MultiRequest<ResultType>) -> Promise<(count: Int, requestStart: Date?)?> {
+        return Promise<(count: Int, requestStart: Date?)?> { resolver in
             if !deltaSet, autoPagination {
                 if let limit = query.limit {
-                    resolver.fulfill(limit)
+                    resolver.fulfill((count: limit, requestStart: nil))
                 } else {
+                    var requestStart: Date? = nil
                     let countOperation = CountOperation<T>(
                         query: query,
                         readPolicy: .forceNetwork,
                         validationStrategy: validationStrategy,
                         cache: nil,
                         options: nil
-                    )
+                    ) { _requestStart in
+                        requestStart = _requestStart
+                    }
                     let request = countOperation.execute { result in
                         switch result {
                         case .success(let count):
-                            resolver.fulfill(count)
+                            resolver.fulfill((count: count, requestStart: requestStart))
                         case .failure(let error):
                             resolver.reject(error)
                         }
@@ -122,14 +125,13 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         }
     }
     
-    private func fetchAutoPagination(multiRequest: MultiRequest<ResultType>, count: Int) -> Promise<AnyRandomAccessCollection<T>> {
+    private func fetchAutoPagination(multiRequest: MultiRequest<ResultType>, count: Int, requestStart: Date?) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { resolver in
             let maxSizePerResultSet = options?.maxSizePerResultSet ?? MaxSizePerResultSet
             let nPages = Int64(ceil(Double(count) / Double(maxSizePerResultSet)))
             let progress = Progress(totalUnitCount: nPages + 1, parent: multiRequest.progress, pendingUnitCount: 99)
             var offsetIterator = stride(from: 0, to: count, by: maxSizePerResultSet).makeIterator()
             let isCacheNotNil = cache != nil
-            var mustSaveQueryLastSync = self.mustSaveQueryLastSync ?? true
             let promisesIterator = AnyIterator<Promise<AnyRandomAccessCollection<T>>> {
                 guard let offset = offsetIterator.next() else {
                     return nil
@@ -146,11 +148,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         cache: self.cache,
                         options: try Options(self.options, deltaSet: false),
                         mustSetRequestResult: false,
-                        mustSaveQueryLastSync: mustSaveQueryLastSync
+                        mustSaveQueryLastSync: false
                     )
-                    if mustSaveQueryLastSync {
-                        mustSaveQueryLastSync = false
-                    }
                     let request = operation.execute { result in
                         switch result {
                         case .success(let results):
@@ -164,11 +163,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 }
             }
             let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
-            cache?.beginWrite()
             when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).done(on: DispatchQueue.global(qos: .default)) { results -> Void in
                 let result: AnyRandomAccessCollection<T>
                 if let cache = self.cache {
-                    try cache.commitWrite()
+                    if let requestStart = requestStart {
+                        cache.save(syncQuery: (query: self.query, lastSync: requestStart))
+                    }
                     result = cache.find(byQuery: self.query)
                 } else {
                     result = AnyRandomAccessCollection(results.lazy.flatMap { $0 })
@@ -176,7 +176,6 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 progress.completedUnitCount += 1
                 resolver.fulfill(result)
             }.catch { error in
-                self.cache?.cancelWrite()
                 resolver.reject(error)
             }
         }
@@ -354,6 +353,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         if deltaSet, let sinceDate = cache?.lastSync(query: query) {
             return fetchDelta(multiRequest: multiRequest, sinceDate: sinceDate)
         } else if deltaSet, autoPagination {
+            var requestStart: Date? = nil
             return Promise<Int> { resolver in
                 let countOperation = CountOperation<T>(
                     query: query,
@@ -361,7 +361,9 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     validationStrategy: validationStrategy,
                     cache: nil,
                     options: nil
-                )
+                ) { _requestStart in
+                    requestStart = _requestStart
+                }
                 let request = countOperation.execute { result in
                     switch result {
                     case .success(let count):
@@ -373,7 +375,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 multiRequest.progress.addChild(request.progress, withPendingUnitCount: 1)
                 multiRequest += request
             }.then {
-                return self.fetchAutoPagination(multiRequest: multiRequest, count: $0)
+                return self.fetchAutoPagination(multiRequest: multiRequest, count: $0, requestStart: requestStart)
             }
         } else {
             return fetchAll(multiRequest: multiRequest)
@@ -381,9 +383,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     func fetchAllAutoPagination(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
-        return self.count(multiRequest: multiRequest).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
-            if let count = count {
-                return self.fetchAutoPagination(multiRequest: multiRequest, count: count)
+        return self.count(multiRequest: multiRequest).then { (args) -> Promise<AnyRandomAccessCollection<T>> in
+            if let args = args {
+                let (count, requestStart) = args
+                return self.fetchAutoPagination(multiRequest: multiRequest, count: count, requestStart: requestStart)
             } else {
                 return self.fetchAll(multiRequest: multiRequest)
             }
@@ -394,10 +397,11 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
         let request = MultiRequest<ResultType>()
         request.progress = Progress(totalUnitCount: 100)
-        count(multiRequest: request).then { (count) -> Promise<AnyRandomAccessCollection<T>> in
+        count(multiRequest: request).then { (args) -> Promise<AnyRandomAccessCollection<T>> in
             request.progress.completedUnitCount = 1
-            if let count = count {
-                return self.fetchAutoPagination(multiRequest: request, count: count)
+            if let args = args {
+                let (count, requestStart) = args
+                return self.fetchAutoPagination(multiRequest: request, count: count, requestStart: requestStart)
             } else {
                 return self.fetch(multiRequest: request)
             }

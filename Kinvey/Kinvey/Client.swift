@@ -53,7 +53,7 @@ open class Client: Credential {
     
     private var accessGroup: String?
     
-    private var keychain: Keychain {
+    internal var keychain: Keychain {
         return Keychain(appKey: appKey!, client: self)
     }
     

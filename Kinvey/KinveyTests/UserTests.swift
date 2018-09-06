@@ -717,20 +717,31 @@ class UserTests: KinveyTestCase {
     }
     
     func testRefresh() {
-        signUp()
+        signUp(mustIncludeSocialIdentity: true)
         
         XCTAssertNotNil(client.activeUser)
-        
-        guard let user = client.activeUser else {
+        XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
+        XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
+        XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+        guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
+            XCTFail()
             return
         }
         
-        do {
+        guard let user = client.activeUser else {
+            XCTFail()
+            return
+        }
+        
+        XCTContext.runActivity(named: "User Refresh") { activity in
             XCTAssertNil(user.email)
             
             if useMockData {
-                var json = try! client.jsonParser.toJSON(user)
-                mockResponse(json: json)
+                mockResponse { request in
+                    XCTAssertEqual(request.url!.path, "/user/\(self.client.appKey!)/_me")
+                    let json = try! self.client.jsonParser.toJSON(user)
+                    return HttpResponse(json: json)
+                }
             }
             defer {
                 if useMockData {
@@ -756,9 +767,143 @@ class UserTests: KinveyTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRefresh = nil
             }
+            
+            XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
+            XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
+            XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
         }
         
-        do {
+        XCTContext.runActivity(named: "DataStore Find") { activity in
+            if useMockData {
+                mockResponse(json: [])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let dataStore = try! DataStore<Person>.collection(.network)
+            
+            weak var expectationFind = expectation(description: "Find")
+            
+            dataStore.find(
+                options: try! Options(
+                    client: client
+                )
+            ) {
+                switch $0 {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testRefreshUserRefreshTokenChanged() {
+        signUp(mustIncludeSocialIdentity: true)
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
+        XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
+        XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+        guard let authtoken = client.activeUser?.metadata?.authtoken as? String else {
+            XCTFail()
+            return
+        }
+        guard let accessToken = client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String else {
+            XCTFail()
+            return
+        }
+        guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
+            XCTFail()
+            return
+        }
+        
+        guard let user = client.activeUser else {
+            XCTFail()
+            return
+        }
+        
+        XCTContext.runActivity(named: "User Refresh") { activity in
+            XCTAssertNil(user.email)
+            
+            if useMockData {
+                mockResponse { request in
+                    XCTAssertEqual(request.url!.path, "/user/\(self.client.appKey!)/_me")
+                    var json = try! self.client.jsonParser.toJSON(user)
+                    let _socialIdentity = json["_socialIdentity"] as? JsonDictionary
+                    XCTAssertNotNil(_socialIdentity)
+                    guard var socialIdentity = _socialIdentity else {
+                        XCTFail()
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                    let _kinveyAuth = socialIdentity["kinveyAuth"] as? JsonDictionary
+                    XCTAssertNotNil(_kinveyAuth)
+                    guard var kinveyAuth = _kinveyAuth else {
+                        XCTFail()
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                    kinveyAuth["access_token"] = UUID().uuidString
+                    kinveyAuth["refresh_token"] = UUID().uuidString
+                    socialIdentity["kinveyAuth"] = kinveyAuth
+                    json["_socialIdentity"] = socialIdentity
+                    
+                    guard var kmd = json["_kmd"] as? JsonDictionary else {
+                        XCTFail()
+                        return HttpResponse(statusCode: 404, data: Data())
+                    }
+                    kmd["authtoken"] = UUID().uuidString
+                    json["_kmd"] = kmd
+                    
+                    return HttpResponse(json: json)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRefresh = expectation(description: "Refresh")
+            
+            user.refresh() { result in
+                XCTAssertTrue(Thread.isMainThread)
+                
+                switch result {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationRefresh?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRefresh = nil
+            }
+            
+            XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
+            XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
+            XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+            let newAuthtoken = client.activeUser?.metadata?.authtoken as? String
+            XCTAssertEqual(newAuthtoken, authtoken)
+            let newAccessToken = client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String
+            XCTAssertEqual(newAccessToken, accessToken)
+            let newRefreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
+            XCTAssertEqual(newRefreshToken, refreshToken)
+        }
+        
+        XCTContext.runActivity(named: "DataStore Find") { activity in
             if useMockData {
                 mockResponse(json: [])
             }
