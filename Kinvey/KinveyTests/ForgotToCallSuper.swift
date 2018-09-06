@@ -46,11 +46,16 @@ class ForgotToCallSuperEntity2: Entity {
 
 class ForgotToCallSuperPersistable: Persistable {
     
+    
     @objc
     dynamic var myProperty: String?
     
     class func collectionName() -> String {
         return "ForgotToCallSuper"
+    }
+    
+    class func translate(property: String) throws -> String? {
+        return nil
     }
     
     required init() {

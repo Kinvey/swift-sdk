@@ -21,6 +21,9 @@ public protocol Persistable: JSONCodable {
     /// Provides the collection name to be matched with the backend.
     static func collectionName() throws -> String
     
+    /// Provides property translations for queries
+    static func translate(property: String) throws -> String?
+    
     /// Default Constructor.
     init()
     
