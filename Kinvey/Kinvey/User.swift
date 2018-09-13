@@ -949,6 +949,12 @@ open class User: NSObject, Credential {
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email
+        for child in Mirror(reflecting: anotherUser).children {
+            guard let label = child.label else {
+                continue
+            }
+            setValue(child.value, forKey: label)
+        }
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.

@@ -1342,7 +1342,7 @@ class UserTests: KinveyTestCase {
     
     class MyCodableUser: User, Codable {
         
-        var foo: String?
+        @objc dynamic var foo: String?
         
         enum MyCodableUserCodingKeys: String, CodingKey {
             case foo
@@ -1391,6 +1391,7 @@ class UserTests: KinveyTestCase {
             if useMockData {
                 mockResponse(completionHandler: { (request) -> HttpResponse in
                     let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    XCTAssertEqual(json["foo"] as? String, "bar")
                     return HttpResponse(json: json)
                 })
             }
