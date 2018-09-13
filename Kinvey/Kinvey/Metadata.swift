@@ -130,9 +130,9 @@ public class Metadata: Object, Codable {
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     public func mapping(map: Map) {
-        lmt <- (CodingKeys.lastModifiedTime.rawValue, map[CodingKeys.lastModifiedTime.rawValue])
-        ect <- (CodingKeys.entityCreationTime.rawValue, map[CodingKeys.entityCreationTime.rawValue])
-        authtoken <- (CodingKeys.authtoken.rawValue, map[CodingKeys.authtoken.rawValue])
+        lmt <- (CodingKeys.lastModifiedTime.rawValue, map[CodingKeys.lastModifiedTime])
+        ect <- (CodingKeys.entityCreationTime.rawValue, map[CodingKeys.entityCreationTime])
+        authtoken <- (CodingKeys.authtoken.rawValue, map[CodingKeys.authtoken])
     }
 
 }
@@ -234,9 +234,9 @@ public final class UserMetadata: Metadata {
     public override func mapping(map: Map) {
         super.mapping(map: map)
         
-        emailVerification <- (UserMetadataCodingKeys.emailVerification.rawValue, map[UserMetadataCodingKeys.emailVerification.rawValue])
-        passwordReset <- (UserMetadataCodingKeys.passwordReset.rawValue, map[UserMetadataCodingKeys.passwordReset.rawValue])
-        userStatus <- (UserMetadataCodingKeys.userStatus.rawValue, map[UserMetadataCodingKeys.userStatus.rawValue])
+        emailVerification <- (UserMetadataCodingKeys.emailVerification.rawValue, map[UserMetadataCodingKeys.emailVerification])
+        passwordReset <- (UserMetadataCodingKeys.passwordReset.rawValue, map[UserMetadataCodingKeys.passwordReset])
+        userStatus <- (UserMetadataCodingKeys.userStatus.rawValue, map[UserMetadataCodingKeys.userStatus])
     }
 
 }
@@ -327,9 +327,9 @@ extension EmailVerification: Mappable {
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
         status <- (EmailVerificationCodingKeys.status.rawValue, map[EmailVerificationCodingKeys.status])
-        lsca <- (EmailVerificationCodingKeys.lastStateChangeAt.rawValue, map[EmailVerificationCodingKeys.lastStateChangeAt.rawValue])
-        lca <- (EmailVerificationCodingKeys.lastConfirmedAt.rawValue, map[EmailVerificationCodingKeys.lastConfirmedAt.rawValue])
-        emailAddress <- (EmailVerificationCodingKeys.emailAddress.rawValue, map[EmailVerificationCodingKeys.emailAddress.rawValue])
+        lsca <- (EmailVerificationCodingKeys.lastStateChangeAt.rawValue, map[EmailVerificationCodingKeys.lastStateChangeAt])
+        lca <- (EmailVerificationCodingKeys.lastConfirmedAt.rawValue, map[EmailVerificationCodingKeys.lastConfirmedAt])
+        emailAddress <- (EmailVerificationCodingKeys.emailAddress.rawValue, map[EmailVerificationCodingKeys.emailAddress])
     }
     
 }
@@ -397,8 +397,8 @@ extension PasswordReset: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        status <- (PasswordResetCodingKeys.status.rawValue, map[PasswordResetCodingKeys.status.rawValue])
-        lsca <- (PasswordResetCodingKeys.lastStateChangeAt.rawValue, map[PasswordResetCodingKeys.lastStateChangeAt.rawValue])
+        status <- (PasswordResetCodingKeys.status.rawValue, map[PasswordResetCodingKeys.status])
+        lsca <- (PasswordResetCodingKeys.lastStateChangeAt.rawValue, map[PasswordResetCodingKeys.lastStateChangeAt])
     }
     
 }
