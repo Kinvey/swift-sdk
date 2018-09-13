@@ -234,9 +234,9 @@ public final class UserMetadata: Metadata {
     public override func mapping(map: Map) {
         super.mapping(map: map)
         
-        emailVerification <- ("emailVerification", map["emailVerification"])
-        passwordReset <- ("passwordReset", map["passwordReset"])
-        userStatus <- ("status", map["status"])
+        emailVerification <- (UserMetadataCodingKeys.emailVerification.rawValue, map[UserMetadataCodingKeys.emailVerification])
+        passwordReset <- (UserMetadataCodingKeys.passwordReset.rawValue, map[UserMetadataCodingKeys.passwordReset])
+        userStatus <- (UserMetadataCodingKeys.userStatus.rawValue, map[UserMetadataCodingKeys.userStatus])
     }
 
 }
@@ -244,18 +244,75 @@ public final class UserMetadata: Metadata {
 /// Status of the email verification process for each `User`
 public final class EmailVerification: Object, Codable {
     
+    @objc
+    internal dynamic var lsca: String?
+    
+    @objc
+    internal dynamic var lca: String?
+    
     /// Current Status
     open internal(set) var status: String?
     
     /// Date of the last Status change
-    open internal(set) var lastStateChangeAt: Date?
+    open var lastStateChangeAt: Date? {
+        get {
+            return self.lsca?.toDate()
+        }
+        set {
+            lsca = newValue?.toString()
+        }
+    }
     
     /// Date of the last email confirmation
-    open internal(set) var lastConfirmedAt: Date?
+    open var lastConfirmedAt: Date? {
+        get {
+            return self.lca?.toDate()
+        }
+        set {
+            lca = newValue?.toString()
+        }
+    }
     
     /// Email Address
     open internal(set) var emailAddress: String?
     
+    public required init() {
+        super.init()
+    }
+    
+    enum EmailVerificationCodingKeys: String, CodingKey {
+        
+        case status
+        case lastStateChangeAt
+        case lastConfirmedAt
+        case emailAddress
+        
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: EmailVerificationCodingKeys.self)
+        status = try container.decodeIfPresent(String.self, forKey: .status)
+        lsca = try container.decodeIfPresent(String.self, forKey: .lastStateChangeAt)
+        lca = try container.decodeIfPresent(String.self, forKey: .lastConfirmedAt)
+        emailAddress = try container.decodeIfPresent(String.self, forKey: .emailAddress)
+        super.init()
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: EmailVerificationCodingKeys.self)
+        try container.encodeIfPresent(status, forKey: .status)
+        try container.encodeIfPresent(lsca, forKey: .lastStateChangeAt)
+        try container.encodeIfPresent(lca, forKey: .lastConfirmedAt)
+        try container.encodeIfPresent(emailAddress, forKey: .emailAddress)
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
 }
 
 /// Allows serialization and deserialization of EmailVerification
@@ -269,10 +326,10 @@ extension EmailVerification: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        status <- ("status", map["status"])
-        lastStateChangeAt <- ("lastStateChangeAt", map["lastStateChangeAt"], KinveyDateTransform())
-        lastConfirmedAt <- ("lastConfirmedAt", map["lastConfirmedAt"], KinveyDateTransform())
-        emailAddress <- ("emailAddress", map["emailAddress"])
+        status <- (EmailVerificationCodingKeys.status.rawValue, map[EmailVerificationCodingKeys.status])
+        lsca <- (EmailVerificationCodingKeys.lastStateChangeAt.rawValue, map[EmailVerificationCodingKeys.lastStateChangeAt])
+        lca <- (EmailVerificationCodingKeys.lastConfirmedAt.rawValue, map[EmailVerificationCodingKeys.lastConfirmedAt])
+        emailAddress <- (EmailVerificationCodingKeys.emailAddress.rawValue, map[EmailVerificationCodingKeys.emailAddress])
     }
     
 }
@@ -280,12 +337,53 @@ extension EmailVerification: Mappable {
 /// Status of the password reset process for each `User`
 public final class PasswordReset: Object, Codable {
     
+    @objc
+    internal dynamic var lsca: String?
+    
     /// Current Status
     open internal(set) var status: String?
     
     /// Date of the last Status change
-    open internal(set) var lastStateChangeAt: Date?
+    open var lastStateChangeAt: Date? {
+        get {
+            return self.lsca?.toDate()
+        }
+        set {
+            lsca = newValue?.toString()
+        }
+    }
     
+    public required init() {
+        super.init()
+    }
+    
+    enum PasswordResetCodingKeys: String, CodingKey {
+        
+        case status
+        case lastStateChangeAt
+        
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: PasswordResetCodingKeys.self)
+        status = try container.decodeIfPresent(String.self, forKey: .status)
+        lsca = try container.decodeIfPresent(String.self, forKey: .lastStateChangeAt)
+        super.init()
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: PasswordResetCodingKeys.self)
+        try container.encodeIfPresent(status, forKey: .status)
+        try container.encodeIfPresent(lsca, forKey: .lastStateChangeAt)
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
 }
 
 /// Allows serialization and deserialization of PasswordReset
@@ -299,8 +397,8 @@ extension PasswordReset: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     open func mapping(map: Map) {
-        status <- ("status", map["status"])
-        lastStateChangeAt <- ("lastStateChangeAt", map["lastStateChangeAt"], KinveyDateTransform())
+        status <- (PasswordResetCodingKeys.status.rawValue, map[PasswordResetCodingKeys.status])
+        lsca <- (PasswordResetCodingKeys.lastStateChangeAt.rawValue, map[PasswordResetCodingKeys.lastStateChangeAt])
     }
     
 }
