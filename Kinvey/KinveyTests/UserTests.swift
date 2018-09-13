@@ -1125,38 +1125,14 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    class MyUser: User, Codable {
+    class MyUser: User {
         
         var foo: String?
-        
-        enum MyUserCodingKeys: String, CodingKey {
-            case foo
-        }
-        
-        required init(from decoder: Decoder) throws {
-            try super.init(from: decoder)
-            let container = try decoder.container(keyedBy: MyUserCodingKeys.self)
-            self.foo = try container.decodeIfPresent(String.self, forKey: .foo)
-        }
-        
-        override func encode(to encoder: Encoder) throws {
-            try super.encode(to: encoder)
-            var container = encoder.container(keyedBy: MyUserCodingKeys.self)
-            try container.encodeIfPresent(self.foo, forKey: .foo)
-        }
-        
-        init() {
-            super.init()
-        }
-        
-        required init?(map: Map) {
-            super.init(map: map)
-        }
         
         override func mapping(map: Map) {
             super.mapping(map: map)
             
-            foo <- (MyUserCodingKeys.foo.rawValue, map[MyUserCodingKeys.foo.rawValue])
+            foo <- map["foo"]
         }
         
     }
