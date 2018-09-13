@@ -1378,6 +1378,9 @@ class UserTests: KinveyTestCase {
     
     func testSaveCustomCodableUser() {
         client.userType = MyCodableUser.self
+        defer {
+            client.userType = User.self
+        }
         
         let user = MyCodableUser()
         user.foo = "bar"
@@ -1428,6 +1431,9 @@ class UserTests: KinveyTestCase {
     
     func testRefreshCustomCodableUser() {
         client.userType = MyCodableUser.self
+        defer {
+            client.userType = User.self
+        }
         
         signUp(mustIncludeSocialIdentity: false)
         
