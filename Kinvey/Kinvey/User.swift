@@ -949,11 +949,13 @@ open class User: NSObject, Credential {
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email
-        for child in Mirror(reflecting: anotherUser).children {
-            guard let label = child.label else {
-                continue
+        if (type(of: self) != User.self) {
+            for child in Mirror(reflecting: anotherUser).children {
+                guard let label = child.label else {
+                    continue
+                }
+                setValue(child.value, forKey: label)
             }
-            setValue(child.value, forKey: label)
         }
     }
     
