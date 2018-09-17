@@ -2867,8 +2867,10 @@ class UserTests: KinveyTestCase {
             
             static let code = "7af647ad1414986bec71d7799ced85fd271050a8"
             static let tempLoginUri = "https://auth.kinvey.com/oauth/authenticate/b3ca941c1141468bb19d2f2c7409f7a6"
+            static let refreshToken = "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
             lazy var code: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.code
             lazy var tempLoginUri: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.tempLoginUri
+            lazy var refreshToken: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.refreshToken
             static var count = 0
             
             override class func canInit(with request: URLRequest) -> Bool {
@@ -2919,7 +2921,7 @@ class UserTests: KinveyTestCase {
                         "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
                         "token_type" : "bearer",
                         "expires_in" : 3599,
-                        "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
+                        "refresh_token" : refreshToken
                     ] as [String : Any]
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
@@ -3055,6 +3057,12 @@ class UserTests: KinveyTestCase {
         }
         
         XCTAssertNotNil(client.activeUser)
+        
+        guard let user = client.activeUser else {
+            return
+        }
+        
+        XCTAssertEqual(user.refreshToken, MICLoginAutomatedAuthorizationGrantFlowURLProtocol.refreshToken)
         
         do {
             let store = try! DataStore<Person>.collection(.network)

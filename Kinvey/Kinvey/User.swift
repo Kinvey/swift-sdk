@@ -46,6 +46,8 @@ open class User: NSObject, Credential {
     /// `_kmd` property of the user.
     open fileprivate(set) var metadata: UserMetadata?
     
+    internal fileprivate(set) var refreshToken: String?
+    
     /// `_socialIdentity` property of the user.
     open fileprivate(set) var socialIdentity: UserSocialIdentity?
     
@@ -379,6 +381,7 @@ open class User: NSObject, Credential {
             }
             requests += request
         }.done { user in
+            user.refreshToken = authData["refresh_token"] as? String
             client.activeUser = user
             client.clientId = options?.authServiceId
             completionHandler?(.success(user))
@@ -920,6 +923,7 @@ open class User: NSObject, Credential {
         _userId = try container.decode(String.self, forKey: .userId)
         acl = try container.decodeIfPresent(Acl.self, forKey: .acl)
         metadata = try container.decodeIfPresent(UserMetadata.self, forKey: .metadata)
+        refreshToken = try container.decodeIfPresent(String.self, forKey: .refreshToken)
         username = try container.decodeIfPresent(String.self, forKey: .username)
         email = try container.decodeIfPresent(String.self, forKey: .email)
         super.init()
@@ -930,6 +934,7 @@ open class User: NSObject, Credential {
         try container.encodeIfPresent(_userId, forKey: .userId)
         try container.encodeIfPresent(acl, forKey: .acl)
         try container.encodeIfPresent(metadata, forKey: .metadata)
+        try container.encodeIfPresent(refreshToken, forKey: .refreshToken)
         try container.encodeIfPresent(username, forKey: .username)
         try container.encodeIfPresent(email, forKey: .email)
     }
@@ -965,6 +970,7 @@ open class User: NSObject, Credential {
         _userId <- ("_userId", map[Entity.EntityCodingKeys.entityId])
         acl <- ("acl", map[Entity.EntityCodingKeys.acl])
         metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
+        refreshToken <- ("refreshToken", map[CodingKeys.refreshToken])
         socialIdentity <- ("socialIdentity", map["_socialIdentity"])
         username <- ("username", map["username"])
         email <- ("email", map["email"])
@@ -1576,6 +1582,7 @@ extension User {
         case userId = "_id"
         case acl = "_acl"
         case metadata = "_kmd"
+        case refreshToken = "refresh_token"
         case socialIdentity = "_socialIdentity"
         case username
         case email
