@@ -1,4 +1,4 @@
-github "DaveWoodCom/XCGLogger" "6.0.4"
+github "DaveWoodCom/XCGLogger" "6.1.0"
 github "Hearst-DD/ObjectMapper" "3.3.0"
 github "Quick/Nimble" "v7.3.0"
 github "glock45/swifter" "1.4.2"
