@@ -190,7 +190,16 @@ open class Client: Credential {
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
     @available(*, deprecated: 3.17.0, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:(Result<User?, Swift.Error>) -> Void")
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encrypted: Bool, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        encrypted: Bool,
+        schema: Schema? = nil,
+        completionHandler: @escaping User.UserHandler<U>
+    ) {
         initialize(
             appKey: appKey,
             appSecret: appSecret,
@@ -207,6 +216,28 @@ open class Client: Credential {
                 completionHandler(nil, error)
             }
         }
+    }
+    
+    private func encryptionKey(appKey: String) -> Data? {
+        lockEncryptionKey.lock()
+        
+        var encryptionKey: Data? = nil
+        let keychain = Keychain(appKey: appKey, client: self)
+        if let key = keychain.defaultEncryptionKey {
+            encryptionKey = key as Data
+        } else {
+            let numberOfBytes = 64
+            var bytes = [UInt8](repeating: 0, count: numberOfBytes)
+            let result = SecRandomCopyBytes(kSecRandomDefault, numberOfBytes, &bytes)
+            if result == 0 {
+                let key = Data(bytes: bytes)
+                keychain.defaultEncryptionKey = key
+                encryptionKey = key
+            }
+        }
+        
+        lockEncryptionKey.unlock()
+        return encryptionKey
     }
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
@@ -228,26 +259,7 @@ open class Client: Credential {
             return
         }
 
-        var encryptionKey: Data? = nil
-        if encrypted {
-            lockEncryptionKey.lock()
-            
-            let keychain = Keychain(appKey: appKey, client: self)
-            if let key = keychain.defaultEncryptionKey {
-                encryptionKey = key as Data
-            } else {
-                let numberOfBytes = 64
-                var bytes = [UInt8](repeating: 0, count: numberOfBytes)
-                let result = SecRandomCopyBytes(kSecRandomDefault, numberOfBytes, &bytes)
-                if result == 0 {
-                    let key = Data(bytes: bytes)
-                    keychain.defaultEncryptionKey = key
-                    encryptionKey = key
-                }
-            }
-            
-            lockEncryptionKey.unlock()
-        }
+        let encryptionKey = encrypted ? self.encryptionKey(appKey: appKey) : nil
         
         initialize(
             appKey: appKey,
@@ -286,6 +298,60 @@ open class Client: Credential {
     /**
      Initialize a `Client` instance.
      - parameters:
+     - appKey: `App Key` value from Kinvey Console
+     - appSecret: `App Secret` value from Kinvey Console
+     - instanceId: Prefix value of `Host URL` from Kinvey Console. eg: my-instance if the Host URL looks like my-instance-baas.kinvey.com
+     - accessGroup: Access Group for Keychain
+     - encrypted: Enable encryption for cache
+     - schema: Migration Schema to be used in case a migration is required
+     - options: Custom Options to be used instead of default values
+     - completionHandler: Completion Handler async call
+     */
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        instanceId: String,
+        accessGroup: String? = nil,
+        encrypted: Bool,
+        schema: Schema? = nil,
+        options: Options? = nil,
+        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+    ) {
+        do {
+            try validateInitialize(appKey: appKey, appSecret: appSecret)
+        } catch {
+            completionHandler(.failure(error))
+            return
+        }
+        
+        let (apiHostNameString, authHostNameString) = hostNames(instanceId: instanceId)
+        guard let apiHostName = URL(string: apiHostNameString) else {
+            completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")))
+            return
+        }
+        guard let authHostName = URL(string: authHostNameString) else {
+            completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(authHostNameString) is not a valid URL.")))
+            return
+        }
+        
+        let encryptionKey = encrypted ? self.encryptionKey(appKey: appKey) : nil
+        
+        return initialize(
+            appKey: appKey,
+            appSecret: appSecret,
+            accessGroup: accessGroup,
+            apiHostName: apiHostName,
+            authHostName: authHostName,
+            encryptionKey: encryptionKey,
+            schema: schema,
+            options: options,
+            completionHandler: completionHandler
+        )
+    }
+    
+    /**
+     Initialize a `Client` instance.
+     - parameters:
        - appKey: `App Key` value from Kinvey Console
        - appSecret: `App Secret` value from Kinvey Console
        - instanceId: Prefix value of `Host URL` from Kinvey Console. eg: my-instance if the Host URL looks like my-instance-baas.kinvey.com
@@ -305,13 +371,11 @@ open class Client: Credential {
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
-        let apiHostNameString = "https://\(instanceId)-baas.kinvey.com"
+        let (apiHostNameString, authHostNameString) = hostNames(instanceId: instanceId)
         guard let apiHostName = URL(string: apiHostNameString) else {
             completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(apiHostNameString) is not a valid URL.")))
             return
         }
-        
-        let authHostNameString = "https://\(instanceId)-auth.kinvey.com"
         guard let authHostName = URL(string: authHostNameString) else {
             completionHandler(.failure(Error.invalidOperation(description: "Invalid InstanceID: \(instanceId). \(authHostNameString) is not a valid URL.")))
             return
@@ -328,6 +392,10 @@ open class Client: Credential {
             options: options,
             completionHandler: completionHandler
         )
+    }
+    
+    private func hostNames(instanceId: String) -> (apiHostName: String, authHostName: String) {
+        return (apiHostName: "https://\(instanceId)-baas.kinvey.com", authHostName: "https://\(instanceId)-auth.kinvey.com")
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
