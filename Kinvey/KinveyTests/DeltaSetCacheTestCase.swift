@@ -1714,8 +1714,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     mockCount += 1
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
-                    let fields = urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value
-                    XCTAssertEqual(fields, "_kmd,age")
+                    let fieldsString = urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value
+                    let fields = fieldsString!.split(separator: ",").sorted()
+                    XCTAssertEqual(fields.count, 2)
+                    XCTAssertEqual(fields.first, "_kmd")
+                    XCTAssertEqual(fields.last, "age")
                     XCTAssertEqual(urlComponents.path, "/appdata/_kid_/Person/")
                     return HttpResponse(
                         headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
@@ -1767,8 +1770,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     mockCount += 1
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
-                    let fields = urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value
-                    XCTAssertEqual(fields, "_kmd,age")
+                    let fieldsString = urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value
+                    let fields = fieldsString!.split(separator: ",").sorted()
+                    XCTAssertEqual(fields.count, 2)
+                    XCTAssertEqual(fields.first, "_kmd")
+                    XCTAssertEqual(fields.last, "age")
                     XCTAssertEqual(urlComponents.path, "/appdata/_kid_/Person/_deltaset")
                     return HttpResponse(
                         headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
@@ -4399,7 +4405,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             case "/appdata/_kid_/Person/":
                 switch count {
                 case 0:
-                    XCTAssertEqual(urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value, "name,address")
+                    let fields = urlComponents.queryItems?.filter({ $0.name == "fields" }).first?.value?.split(separator: ",").sorted()
+                    XCTAssertEqual(fields?.count, 2)
+                    XCTAssertEqual(fields?.first, "address")
+                    XCTAssertEqual(fields?.last, "name")
                 default:
                     break
                 }

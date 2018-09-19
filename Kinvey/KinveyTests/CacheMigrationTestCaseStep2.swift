@@ -43,7 +43,12 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     
     override func setUp() {
         let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
-        let destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
+        var destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
+        #if os(macOS)
+        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
+            destination = URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent()
+        }
+        #endif
         removeItemIfExists(at: destination.appendingPathComponent("__MACOSX"))
         removeItemIfExists(at: destination.appendingPathComponent("appKey"))
         try! FileManager.default.unzipItem(at: zipDataPath, to: destination)
@@ -60,14 +65,18 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL {
-            var path = fileURL.path
-            var pathComponents = (path as NSString).pathComponents
-            pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
-            path = NSString.path(withComponents: pathComponents)
+            var fileURL = fileURL
+            #if os(macOS)
+            if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
+                fileURL = URL(fileURLWithPath: xcTestConfigurationFilePath)
+            }
+            #endif
+            fileURL = fileURL.deletingLastPathComponent()
+            fileURL.appendPathComponent("com.kinvey.appKey_cache.realm")
             let fileManager = FileManager.default
-            if fileManager.fileExists(atPath: path) {
+            if fileManager.fileExists(atPath: fileURL.path) {
                 do {
-                    try fileManager.removeItem(atPath: path)
+                    try fileManager.removeItem(at: fileURL)
                 } catch {
                     XCTFail()
                     return
@@ -220,6 +229,11 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         var realmConfiguration = Realm.Configuration.defaultConfiguration
         let lastPathComponent = realmConfiguration.fileURL!.lastPathComponent
+        #if os(macOS)
+        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
+            realmConfiguration.fileURL = URL(fileURLWithPath: xcTestConfigurationFilePath)
+        }
+        #endif
         realmConfiguration.fileURL!.deleteLastPathComponent()
         realmConfiguration.fileURL!.appendPathComponent("appKey")
         realmConfiguration.fileURL!.appendPathComponent(lastPathComponent)
