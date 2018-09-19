@@ -33,7 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    @available(*, deprecated)
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let envs = ProcessInfo.processInfo.environment
         let unitTesting = envs["KINVEY_APP_KEY"] == nil && envs["KINVEY_APP_SECRET"] == nil
         if !unitTesting {

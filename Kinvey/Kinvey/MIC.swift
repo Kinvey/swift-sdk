@@ -420,7 +420,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
             views: views
         ))
         
-        activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         activityIndicatorView.hidesWhenStopped = true
         activityIndicatorView.backgroundColor = UIColor(white: 0, alpha: 0.5)
@@ -603,7 +603,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     
     // MARK: - UIWebViewDelegate
     
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
         if let url = request.url {
             switch MIC.parseCode(redirectURI: redirectURI, url: url) {
             case .success(let code):
