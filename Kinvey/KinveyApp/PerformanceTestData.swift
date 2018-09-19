@@ -57,6 +57,7 @@ class PerformanceTestData: UIViewController {
     func test() {
     }
     
+    @available(*, deprecated)
     @IBAction func runTouchUpInside(_ sender: AnyObject) {
         if client.activeUser != nil {
             test()

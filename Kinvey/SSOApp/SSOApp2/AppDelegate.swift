@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
+    @available(*, deprecated)
     var completionHandler: User.UserHandler<User>? {
         didSet {
             if let result = result {
@@ -25,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    @available(*, deprecated)
     var result: (user: User?, error: Swift.Error?)? {
         didSet {
             if let result = result {
@@ -44,6 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    @available(*, deprecated)
     func initializeKinvey() {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") { user, error in
             self.result = (user: user, error: error)
@@ -53,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    @available(*, deprecated)
     func discardLocalCachedUser(completionHandler: @escaping User.UserHandler<User>) {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", completionHandler: completionHandler)
     }

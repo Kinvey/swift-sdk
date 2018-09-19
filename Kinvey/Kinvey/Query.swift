@@ -15,27 +15,27 @@ import Foundation
 public final class Query: NSObject, BuilderType {
     
     /// Fields to be included in the results of the query.
-    open var fields: Set<String>?
+    public var fields: Set<String>?
     
     internal var fieldsAsString: String? {
         return fields?.sorted().joined(separator: ",")
     }
     
     /// `NSPredicate` used to filter records.
-    open var predicate: NSPredicate?
+    public var predicate: NSPredicate?
     
     internal var predicateAsString: String? {
         return predicate.map({ String(describing: $0) })
     }
     
     /// Array of `NSSortDescriptor`s used to sort records.
-    open var sortDescriptors: [NSSortDescriptor]?
+    public var sortDescriptors: [NSSortDescriptor]?
     
     /// Skip a certain amount of records in the results of the query.
-    open var skip: Int?
+    public var skip: Int?
     
     /// Impose a limit of records in the results of the query.
-    open var limit: Int?
+    public var limit: Int?
     
     internal var emptyPredicateMustReturnNil = true
     
@@ -290,14 +290,14 @@ public final class Query: NSObject, BuilderType {
     }
     
     /// Adds ascending properties to be sorted.
-    open func ascending(_ properties: String...) {
+    public func ascending(_ properties: String...) {
         for property in properties {
             addSort(property, ascending: true)
         }
     }
     
     /// Adds descending properties to be sorted.
-    open func descending(_ properties: String...) {
+    public func descending(_ properties: String...) {
         for property in properties {
             addSort(property, ascending: false)
         }

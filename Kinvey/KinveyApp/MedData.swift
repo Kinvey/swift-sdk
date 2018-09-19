@@ -45,6 +45,7 @@ class MedData: Entity {
         return "meddata"
     }
     
+    @available(*, deprecated)
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         

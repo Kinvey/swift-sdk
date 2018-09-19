@@ -15,19 +15,19 @@ public final class Acl: Object, BuilderType {
     
     /// The `userId` of the `User` used to create the record.
     @objc
-    open dynamic var creator: String?
+    public dynamic var creator: String?
     
     /// The `userId` of the `User` used to create the record.
-    open let globalRead = RealmOptional<Bool>()
+    public let globalRead = RealmOptional<Bool>()
     
     /// The `userId` of the `User` used to create the record.
-    open let globalWrite = RealmOptional<Bool>()
+    public let globalWrite = RealmOptional<Bool>()
     
     @objc
     fileprivate dynamic var readersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to read the entity.
-    open var readers: [String]? {
+    public var readers: [String]? {
         get {
             if let value = readersValue,
                 let array = AclTransformType().transformFromJSON(value as AnyObject?)
@@ -45,7 +45,7 @@ public final class Acl: Object, BuilderType {
     fileprivate dynamic var writersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
-    open var writers: [String]? {
+    public var writers: [String]? {
         get {
             if let value = writersValue,
                 let array = AclTransformType().transformFromJSON(value as AnyObject?)
@@ -83,7 +83,7 @@ public final class Acl: Object, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    open override class func ignoredProperties() -> [String] {
+    public override class func ignoredProperties() -> [String] {
         return ["readers", "writers"]
     }
 
@@ -152,7 +152,7 @@ extension Acl: Mappable {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
+    public func mapping(map: Map) {
         creator <- ("creator", map[Acl.CodingKeys.creator])
         globalRead.value <- ("globalRead", map[Acl.CodingKeys.globalRead])
         globalWrite.value <- ("globalWrite", map[Acl.CodingKeys.globalWrite])

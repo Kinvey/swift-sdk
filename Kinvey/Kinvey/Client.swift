@@ -15,7 +15,7 @@ private let lockEncryptionKey = NSLock()
 open class Client: Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
-    open static let sharedClient = Client()
+    public static let sharedClient = Client()
     
     typealias UserChangedListener = (User?) -> Void
     var userChangedListener: UserChangedListener?
@@ -93,10 +93,10 @@ open class Client: Credential {
     open var options: Options?
     
     /// The default value for `apiHostName` variable.
-    open static let defaultApiHostName = URL(string: "https://baas.kinvey.com/")!
+    public static let defaultApiHostName = URL(string: "https://baas.kinvey.com/")!
     
     /// The default value for `authHostName` variable.
-    open static let defaultAuthHostName = URL(string: "https://auth.kinvey.com/")!
+    public static let defaultAuthHostName = URL(string: "https://auth.kinvey.com/")!
     
     var networkRequestFactory: RequestFactory!
     var jsonParser: JSONParser!
@@ -116,7 +116,7 @@ open class Client: Credential {
     open var userType = User.self
     
     ///Default Value for DataStore tag
-    open static let defaultTag = Kinvey.defaultTag
+    public static let defaultTag = Kinvey.defaultTag
     
     /// Enables logging for any network calls.
     open var logNetworkEnabled = false
