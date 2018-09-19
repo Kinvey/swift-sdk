@@ -427,11 +427,13 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                     }
                 }
                 if response.statusCode == 401,
-                    let user = self.credential as? User,
-                    let socialIdentity = user.socialIdentity,
-                    let kinveyAuthToken = socialIdentity.kinvey,
-                    let refreshToken = kinveyAuthToken["refresh_token"] as? String
+                    let user = self.credential as? User
                 {
+                    guard let refreshToken = user.refreshToken else {
+                        user.logout()
+                        completionHandler?(data, HttpResponse(response: response), error)
+                        return
+                    }
                     let options = try! Options(self.options, authServiceId: self.client.clientId)
                     MIC.login(refreshToken: refreshToken, options: options) {
                         switch $0 {

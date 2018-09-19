@@ -1238,6 +1238,11 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPushError401EmptyBody() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertEqual(store.syncCount(), 0)
+        
         save()
         
         defer {
@@ -1269,7 +1274,8 @@ class SyncStoreTests: StoreTestCase {
             expectationPush = nil
         }
         
-        XCTAssertEqual(store.syncCount(), 1)
+        XCTAssertEqual(store.syncCount(), 0)
+        XCTAssertNil(client.activeUser)
     }
     
     func testPushInvalidDataStoreType() {
