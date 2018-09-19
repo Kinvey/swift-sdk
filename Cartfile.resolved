@@ -1,7 +1,7 @@
 github "DaveWoodCom/XCGLogger" "6.1.0"
 github "Hearst-DD/ObjectMapper" "3.3.0"
 github "Quick/Nimble" "v7.3.0"
-github "glock45/swifter" "1.4.2"
+github "httpswift/swifter" "b366f5ed088d9d0d216a9ce18ec726f7912c30f3"
 github "kif-framework/KIF" "v3.7.4"
 github "kishikawakatsumi/KeychainAccess" "v3.1.1"
 github "mxcl/PromiseKit" "6.4.0"
