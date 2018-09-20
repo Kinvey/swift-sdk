@@ -395,6 +395,8 @@ class KinveyTestCase: XCTestCase {
         if let activeUser = client.activeUser {
             activeUser.logout()
         }
+        
+        client.userType = User.self
     }
     
     class SignUpMockURLProtocol: URLProtocol {
@@ -587,6 +589,8 @@ class KinveyTestCase: XCTestCase {
         removeAll(Person.self)
         
         Kinvey.logLevel = originalLogLevel
+        
+        client.userType = User.self
         
         super.tearDown()
     }

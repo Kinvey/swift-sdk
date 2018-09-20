@@ -141,7 +141,7 @@ func changeDownloadsJson(pathURL: URL) {
                 ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: downloadURLString)
             case "releaseDate":
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy/MM/dd"
+                dateFormatter.dateFormat = "yyyy-MM-dd"
                 ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: dateFormatter.string(from: Date()))
             default:
                 break

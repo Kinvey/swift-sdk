@@ -1340,6 +1340,155 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    class MyCodableUser: User, Codable {
+        
+        @objc dynamic var foo: String?
+        
+        enum MyCodableUserCodingKeys: String, CodingKey {
+            case foo
+        }
+        
+        required init(from decoder: Decoder) throws {
+            try super.init(from: decoder)
+            let container = try decoder.container(keyedBy: MyCodableUserCodingKeys.self)
+            foo = try container.decodeIfPresent(String.self, forKey: .foo)
+        }
+        
+        override func encode(to encoder: Encoder) throws {
+            try super.encode(to: encoder)
+            var container = encoder.container(keyedBy: MyCodableUserCodingKeys.self)
+            try container.encodeIfPresent(foo, forKey: .foo)
+        }
+        
+        init() {
+            super.init()
+        }
+        
+        required init?(map: Map) {
+            super.init(map: map)
+        }
+        
+        override func mapping(map: Map) {
+            super.mapping(map: map)
+            
+            foo <- (MyCodableUserCodingKeys.foo.rawValue, map[MyCodableUserCodingKeys.foo.rawValue])
+        }
+        
+    }
+    
+    func testSaveCustomCodableUser() {
+        client.userType = MyCodableUser.self
+        defer {
+            client.userType = User.self
+        }
+        
+        let user = MyCodableUser()
+        user.foo = "bar"
+        signUp(user: user)
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertTrue(client.activeUser is MyCodableUser)
+        XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyCodableUser)
+        
+        if let user = client.activeUser as? MyCodableUser {
+            if useMockData {
+                mockResponse(completionHandler: { (request) -> HttpResponse in
+                    let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                    XCTAssertEqual(json["foo"] as? String, "bar")
+                    return HttpResponse(json: json)
+                })
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationUserSave = expectation(description: "User Save")
+            
+            user.save { (user, error) -> Void in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(error)
+                
+                XCTAssertNotNil(user)
+                XCTAssertTrue(user is MyCodableUser)
+                
+                XCTAssertNotNil(self.client.activeUser)
+                XCTAssertTrue(self.client.activeUser is MyCodableUser)
+                
+                if let myUser = user as? MyCodableUser {
+                    XCTAssertEqual(myUser.foo, "bar")
+                }
+                
+                expectationUserSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationUserSave = nil
+            }
+        }
+    }
+    
+    func testRefreshCustomCodableUser() {
+        client.userType = MyCodableUser.self
+        defer {
+            client.userType = User.self
+        }
+        
+        signUp(mustIncludeSocialIdentity: false)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        guard let user = client.activeUser as? MyCodableUser else {
+            XCTFail()
+            return
+        }
+        
+        XCTContext.runActivity(named: "User Refresh") { activity in
+            XCTAssertNil(user.email)
+            XCTAssertNil(user.foo)
+            
+            if useMockData {
+                mockResponse { request in
+                    XCTAssertEqual(request.url!.path, "/user/\(self.client.appKey!)/_me")
+                    let originalJson = try! self.client.jsonParser.toJSON(user)
+                    let updatedUser = MyCodableUser(JSON: originalJson)!
+                    updatedUser.email = "test@test.com"
+                    updatedUser.foo = "bar"
+                    let updatedJson = try! self.client.jsonParser.toJSON(updatedUser)
+                    return HttpResponse(json: updatedJson)
+                }
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            weak var expectationRefresh = expectation(description: "Refresh")
+            
+            user.refresh() { result in
+                XCTAssertTrue(Thread.isMainThread)
+                
+                switch result {
+                case .success:
+                    break
+                case .failure:
+                    XCTFail()
+                }
+                
+                expectationRefresh?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRefresh = nil
+            }
+            
+            XCTAssertEqual(user.email, "test@test.com")
+            XCTAssertEqual(user.foo, "bar")
+        }
+    }
+    
     func testUserQueryMapping() {
         XCTAssertNotNil(UserQuery(JSON: [:]))
     }
@@ -2718,8 +2867,10 @@ class UserTests: KinveyTestCase {
             
             static let code = "7af647ad1414986bec71d7799ced85fd271050a8"
             static let tempLoginUri = "https://auth.kinvey.com/oauth/authenticate/b3ca941c1141468bb19d2f2c7409f7a6"
+            static let refreshToken = "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
             lazy var code: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.code
             lazy var tempLoginUri: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.tempLoginUri
+            lazy var refreshToken: String = MICLoginAutomatedAuthorizationGrantFlowURLProtocol.refreshToken
             static var count = 0
             
             override class func canInit(with request: URLRequest) -> Bool {
@@ -2770,7 +2921,7 @@ class UserTests: KinveyTestCase {
                         "access_token" : "7f3fe7847a7292994c87fa322405cb8e03b7bf9c",
                         "token_type" : "bearer",
                         "expires_in" : 3599,
-                        "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
+                        "refresh_token" : refreshToken
                     ] as [String : Any]
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
@@ -2906,6 +3057,12 @@ class UserTests: KinveyTestCase {
         }
         
         XCTAssertNotNil(client.activeUser)
+        
+        guard let user = client.activeUser else {
+            return
+        }
+        
+        XCTAssertEqual(user.refreshToken, MICLoginAutomatedAuthorizationGrantFlowURLProtocol.refreshToken)
         
         do {
             let store = try! DataStore<Person>.collection(.network)
