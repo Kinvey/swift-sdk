@@ -19,6 +19,7 @@ class ForgotToCallSuperEntity: Entity {
         return "ForgotToCallSuper"
     }
     
+    @available(*, deprecated)
     override func propertyMapping(_ map: Map) {
         myProperty <- ("myProperty", map["myProperty"])
     }
@@ -37,6 +38,7 @@ class ForgotToCallSuperEntity2: Entity {
         return "ForgotToCallSuper"
     }
     
+    @available(*, deprecated)
     override func propertyMapping(_ map: Map) {
         myId <- ("myId", map[EntityCodingKeys.entityId])
         myProperty <- ("myProperty", map["myProperty"])
@@ -61,9 +63,11 @@ class ForgotToCallSuperPersistable: Persistable {
     required init() {
     }
     
+    @available(*, deprecated)
     required init?(map: Map) {
     }
     
+    @available(*, deprecated)
     func mapping(map: Map) {
         myProperty <- ("myProperty", map["myProperty"])
     }

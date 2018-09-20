@@ -51,9 +51,9 @@ public enum ImageRepresentation {
     func data(image: UIImage) -> Data? {
         switch self {
         case .png:
-            return UIImagePNGRepresentation(image)
+            return image.pngData()
         case .jpeg(let compressionQuality):
-            return UIImageJPEGRepresentation(image, CGFloat(compressionQuality))
+            return image.jpegData(compressionQuality: CGFloat(compressionQuality))
         }
     }
     

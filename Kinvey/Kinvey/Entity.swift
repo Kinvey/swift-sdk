@@ -236,20 +236,16 @@ extension Entity {
 
 extension Entity /* Hashable */ {
     
-    open override var hashValue: Int {
-        return entityId?.hashValue ?? 0
-    }
-    
     // Obj-C
     open override var hash: Int {
-        return hashValue
+        return entityId?.hashValue ?? 0
     }
     
 }
 
 extension Entity /* Equatable */ {
     
-    open static func == (lhs: Entity, rhs: Entity) -> Bool {
+    public static func == (lhs: Entity, rhs: Entity) -> Bool {
         return lhs.entityId == rhs.entityId
     }
     
@@ -354,10 +350,6 @@ extension StringValue /* Hashable */ {
         return value.hash
     }
     
-    public override var hashValue: Int {
-        return value.hashValue
-    }
-    
 }
 
 extension StringValue /* Equatable */ {
@@ -410,10 +402,6 @@ final public class IntValue: Object, ExpressibleByIntegerLiteral, ListSupportedV
 extension IntValue /* Hashable */ {
     
     public override var hash: Int {
-        return value.hashValue
-    }
-    
-    public override var hashValue: Int {
         return value.hashValue
     }
     
@@ -472,10 +460,6 @@ extension FloatValue /* Hashable */ {
         return value.hashValue
     }
     
-    public override var hashValue: Int {
-        return value.hashValue
-    }
-    
 }
 
 extension FloatValue /* Equatable */ {
@@ -531,10 +515,6 @@ extension DoubleValue /* Hashable */ {
         return value.hashValue
     }
     
-    public override var hashValue: Int {
-        return value.hashValue
-    }
-    
 }
 
 extension DoubleValue /* Equatable */ {
@@ -587,10 +567,6 @@ final public class BoolValue: Object, ExpressibleByBooleanLiteral, ListSupported
 extension BoolValue /* Hashable */ {
     
     public override var hash: Int {
-        return value.hashValue
-    }
-    
-    public override var hashValue: Int {
         return value.hashValue
     }
     

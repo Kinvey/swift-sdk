@@ -11,7 +11,7 @@ import Kinvey
 
 class LargeDataScrollViewController: UITableViewController {
     
-    lazy var dataStore = DataStore<HierarchyCache>.collection(.sync)
+    lazy var dataStore = try! DataStore<HierarchyCache>.collection(.sync)
     
     override func awakeFromNib() {
         super.awakeFromNib()

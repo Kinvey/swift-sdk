@@ -20,6 +20,7 @@ open class MICLoginViewController: UIViewController {
     @IBOutlet weak var uiWebViewSwitch: UISwitch!
     @IBOutlet weak var textFieldDelay: UITextField!
     
+    @available(*, deprecated)
     open var completionHandler: User.UserHandler<User>?
     
     var delay: Int = 0 {
@@ -91,6 +92,7 @@ open class MICLoginViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
 
+    @available(*, deprecated)
     @IBAction func login(_ sender: UIButton) {
         URLCache.shared.removeAllCachedResponses()
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))

@@ -31,6 +31,12 @@ class Keychain {
         self.appKey = appKey
         self.accessGroup = nil
         self._client = client
+        #if os(macOS)
+        var appKey = appKey
+        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
+            appKey += URL(fileURLWithPath: xcTestConfigurationFilePath).lastPathComponent
+        }
+        #endif
         self.keychain = KeychainAccess.Keychain(service: "com.kinvey.Kinvey.\(appKey)").accessibility(.afterFirstUnlockThisDeviceOnly)
     }
     

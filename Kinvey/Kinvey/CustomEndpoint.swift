@@ -74,7 +74,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -97,7 +97,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -113,7 +113,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
@@ -149,7 +149,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -172,7 +172,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -188,7 +188,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute(
+    open class func execute(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
@@ -226,7 +226,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute<T: BaseMappable>(
+    open class func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -249,7 +249,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute<T: BaseMappable>(
+    open class func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -265,7 +265,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T>(
+    open class func execute<T>(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
@@ -301,7 +301,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute<T: BaseMappable>(
+    open class func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -324,7 +324,7 @@ open class CustomEndpoint {
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
     @available(*, deprecated: 3.17.0, message: "Please use CustomEndpoint.execute(_:params:options:completionHandler:)")
-    open static func execute<T: BaseMappable>(
+    open class func execute<T: BaseMappable>(
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
@@ -340,7 +340,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T>(
+    open class func execute<T>(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
@@ -375,7 +375,7 @@ open class CustomEndpoint {
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult
-    open static func execute<T>(
+    open class func execute<T>(
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,

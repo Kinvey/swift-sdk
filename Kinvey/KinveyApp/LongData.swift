@@ -51,6 +51,7 @@ class LongData: Entity {
         return "longdata"
     }
     
+    @available(*, deprecated)
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         

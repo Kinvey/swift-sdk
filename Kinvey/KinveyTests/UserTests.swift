@@ -4296,7 +4296,7 @@ extension UserTests {
         
         tester().tapView(withAccessibilityIdentifier: "MIC Login")
         defer {
-            tester().tapView(withAccessibilityLabel: "Back", traits: UIAccessibilityTraitButton)
+            tester().tapView(withAccessibilityLabel: "Back", traits: UIAccessibilityTraits.button)
         }
         tester().tapView(withAccessibilityIdentifier: "Login")
         
@@ -4930,7 +4930,16 @@ extension UserTests {
         mockResponse { (request) -> HttpResponse in
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 10))
             DispatchQueue.main.async {
-                self.tester().tapView(withAccessibilityLabel: " X ")
+                guard let keyWindow = UIApplication.shared.keyWindow,
+                    let navigationController = keyWindow.rootViewController as? UINavigationController,
+                    let navigationController2 = navigationController.topViewController?.presentedViewController as? UINavigationController,
+                    let micLoginViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController,
+                    let closeButton = micLoginViewController.navigationItem.leftBarButtonItem
+                else {
+                    XCTFail()
+                    return
+                }
+                closeButton.target!.performSelector(onMainThread: closeButton.action!, with: self, waitUntilDone: true)
             }
             return HttpResponse(error: timeoutError)
         }

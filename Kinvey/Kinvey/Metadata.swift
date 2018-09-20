@@ -186,13 +186,13 @@ extension Metadata {
 public final class UserMetadata: Metadata {
     
     /// Status of the email verification process
-    open internal(set) var emailVerification: EmailVerification?
+    public internal(set) var emailVerification: EmailVerification?
     
     /// Status of the password reset process
-    open internal(set) var passwordReset: PasswordReset?
+    public internal(set) var passwordReset: PasswordReset?
     
     /// Status of the activation process
-    open internal(set) var userStatus: UserStatus?
+    public internal(set) var userStatus: UserStatus?
     
     public required init() {
         super.init()
@@ -251,10 +251,10 @@ public final class EmailVerification: Object, Codable {
     internal dynamic var lca: String?
     
     /// Current Status
-    open internal(set) var status: String?
+    public internal(set) var status: String?
     
     /// Date of the last Status change
-    open var lastStateChangeAt: Date? {
+    public var lastStateChangeAt: Date? {
         get {
             return self.lsca?.toDate()
         }
@@ -264,7 +264,7 @@ public final class EmailVerification: Object, Codable {
     }
     
     /// Date of the last email confirmation
-    open var lastConfirmedAt: Date? {
+    public var lastConfirmedAt: Date? {
         get {
             return self.lca?.toDate()
         }
@@ -274,7 +274,7 @@ public final class EmailVerification: Object, Codable {
     }
     
     /// Email Address
-    open internal(set) var emailAddress: String?
+    public internal(set) var emailAddress: String?
     
     public required init() {
         super.init()
@@ -325,7 +325,7 @@ extension EmailVerification: Mappable {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
+    public func mapping(map: Map) {
         status <- (EmailVerificationCodingKeys.status.rawValue, map[EmailVerificationCodingKeys.status])
         lsca <- (EmailVerificationCodingKeys.lastStateChangeAt.rawValue, map[EmailVerificationCodingKeys.lastStateChangeAt])
         lca <- (EmailVerificationCodingKeys.lastConfirmedAt.rawValue, map[EmailVerificationCodingKeys.lastConfirmedAt])
@@ -341,10 +341,10 @@ public final class PasswordReset: Object, Codable {
     internal dynamic var lsca: String?
     
     /// Current Status
-    open internal(set) var status: String?
+    public internal(set) var status: String?
     
     /// Date of the last Status change
-    open var lastStateChangeAt: Date? {
+    public var lastStateChangeAt: Date? {
         get {
             return self.lsca?.toDate()
         }
@@ -396,7 +396,7 @@ extension PasswordReset: Mappable {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
+    public func mapping(map: Map) {
         status <- (PasswordResetCodingKeys.status.rawValue, map[PasswordResetCodingKeys.status])
         lsca <- (PasswordResetCodingKeys.lastStateChangeAt.rawValue, map[PasswordResetCodingKeys.lastStateChangeAt])
     }
@@ -407,10 +407,10 @@ extension PasswordReset: Mappable {
 public final class UserStatus: Object {
     
     /// Current Status
-    open internal(set) var value: String?
+    public internal(set) var value: String?
     
     /// Date of the last Status change
-    open internal(set) var lastChange: Date?
+    public internal(set) var lastChange: Date?
     
     enum CodingKeys: String, CodingKey {
         
@@ -452,7 +452,7 @@ extension UserStatus: Mappable {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    open func mapping(map: Map) {
+    public func mapping(map: Map) {
         value <- ("value", map["val"])
         lastChange <- ("lastChange", map["lastChange"], KinveyDateTransform())
     }

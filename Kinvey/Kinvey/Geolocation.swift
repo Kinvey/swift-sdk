@@ -16,11 +16,11 @@ public final class GeoPoint: Object, Codable {
     
     /// Specifies the north–south position of a point
     @objc
-    open dynamic var latitude: CLLocationDegrees = 0.0
+    public dynamic var latitude: CLLocationDegrees = 0.0
     
     /// Specifies the east-west position of a point
     @objc
-    open dynamic var longitude: CLLocationDegrees = 0.0
+    public dynamic var longitude: CLLocationDegrees = 0.0
     
     /**
      Constructor that takes `CLLocationDegrees` (`Double`) values for latitude

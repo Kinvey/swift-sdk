@@ -2448,10 +2448,23 @@ class FileTestCase: StoreTestCase {
         let resultData = try! JSONSerialization.data(withJSONObject: result)
         let expectedData = try! JSONSerialization.data(withJSONObject: expected)
         
-        let resultString = String(data: resultData, encoding: .utf8)!
-        let expectedString = String(data: expectedData, encoding: .utf8)!
+        let resultJsonObject = try! JSONSerialization.jsonObject(with: resultData) as! [String : Any]
+        let expectedJsonObject = try! JSONSerialization.jsonObject(with: expectedData) as! [String : Any]
         
-        XCTAssertEqual(resultString, expectedString)
+        XCTAssertEqual(resultJsonObject.count, expectedJsonObject.count)
+        XCTAssertEqual(resultJsonObject["_public"] as? Bool, expectedJsonObject["_public"] as? Bool)
+        
+        let resultAcl = resultJsonObject["_acl"] as? [String : Any]
+        let expectedAcl = expectedJsonObject["_acl"] as? [String : Any]
+        
+        XCTAssertEqual(resultAcl?.count, expectedAcl?.count)
+        
+        let resultAclW = resultAcl?["w"] as? [String]
+        let expectedAclW = expectedAcl?["w"] as? [String]
+        
+        XCTAssertEqual(resultAclW?.count, expectedAclW?.count)
+        XCTAssertEqual(resultAclW?.count, 1)
+        XCTAssertEqual(resultAclW?.first, expectedAclW?.first)
     }
     
     func testAclShareWithAnotherUser() {

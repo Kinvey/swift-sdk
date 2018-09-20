@@ -2331,6 +2331,7 @@
 					570423F51F82EC3E00EE5CBD = {
 						CreatedOnToolsVersion = 9.0;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5765B8431C9771BC00080FFA;
 					};
@@ -2376,7 +2377,7 @@
 					5765B8431C9771BC00080FFA = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -2389,16 +2390,19 @@
 					};
 					5771CD3A1ECF6CDC0057E505 = {
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 					};
 					578148221F2BC262009E8622 = {
 						DevelopmentTeam = 5W7CYNR7UE;
 					};
 					5783BA0720F722DC0090D0BD = {
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 					};
 					5788708F1DD52EC70087FE78 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -2409,12 +2413,14 @@
 					578870A21DD52EC80087FE78 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5788708F1DD52EC70087FE78;
 					};
 					578870B31DD52ECF0087FE78 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -2425,35 +2431,39 @@
 					578870C61DD52ECF0087FE78 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 578870B31DD52ECF0087FE78;
 					};
 					578D9FC11E8DE53900C2B280 = {
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 					};
 					578D9FF81E8EC3CB00C2B280 = {
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 					};
 					5793B86C1D2306A60088B5F9 = {
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57A27C801C178F17000DF951 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57A27C8A1C178F18000DF951 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57A465811CC02A59009E7384 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5765B8431C9771BC00080FFA;
 					};
@@ -2462,16 +2472,17 @@
 					};
 					57D642EF1CA3268000F6D16E = {
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57D643161CA3268600F6D16E = {
 						DevelopmentTeam = 5W7CYNR7UE;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57E447EB1DF62DC7003D1AFA = {
 						DevelopmentTeam = 5W7CYNR7UE;
+						LastSwiftMigration = 1000;
 					};
 				};
 			};
@@ -2773,7 +2784,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
 			);
 			name = "Carthage Copy Frameworks";
@@ -2781,7 +2791,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		5777513E1DF8BDF4006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2803,7 +2813,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		5777513F1DF8BF90006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2828,14 +2838,13 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		577751411DF8BFEB006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2873,7 +2882,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		577751431DF8BFFE006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2881,14 +2890,13 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		578148511F2BC262009E8622 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2916,8 +2924,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
-				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
 			);
 			name = "Carthage Copy Frameworks";
@@ -2925,7 +2931,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		578B805A1EE73B4D004D92A6 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2956,7 +2962,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		578DA0231E8EC3CB00C2B280 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3677,12 +3683,12 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = KinveyApp;
 			};
@@ -3705,11 +3711,11 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = KinveyApp;
 			};
@@ -3998,6 +4004,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4014,6 +4021,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4035,6 +4043,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4055,6 +4064,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4117,6 +4127,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4133,6 +4144,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4157,6 +4169,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4180,6 +4193,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4204,6 +4218,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp1.app/SSOApp1";
 			};
 			name = Debug;
@@ -4228,6 +4243,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp1Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp1.app/SSOApp1";
 			};
 			name = Release;
@@ -4253,6 +4269,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4276,6 +4293,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4300,6 +4318,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp2.app/SSOApp2";
 			};
 			name = Debug;
@@ -4324,6 +4343,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.SSOApp2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SSOApp2.app/SSOApp2";
 			};
 			name = Release;
@@ -4347,6 +4367,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4368,6 +4389,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4390,6 +4412,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4411,6 +4434,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4432,6 +4456,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4452,6 +4477,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4587,6 +4613,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
@@ -4615,6 +4642,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
@@ -4634,6 +4662,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4650,6 +4679,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4670,6 +4700,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 			};
 			name = Debug;
@@ -4691,6 +4722,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 			};
 			name = Release;
@@ -4758,6 +4790,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4778,6 +4811,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4799,6 +4833,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4819,6 +4854,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -4840,6 +4876,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -4860,6 +4897,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SUPPRESS_WARNINGS = YES;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
