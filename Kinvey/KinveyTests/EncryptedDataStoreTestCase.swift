@@ -35,6 +35,67 @@ class EncryptedDataStoreTestCase: StoreTestCase {
         save(newPerson)
     }
     
+    func testEncryptedDataStoreInstanceId() {
+        dataStoreInstanceId(encrypted: true)
+    }
+    
+    func testUnEncryptedDataStoreInstanceId() {
+        dataStoreInstanceId(encrypted: false)
+    }
+    
+    func dataStoreInstanceId(encrypted: Bool) {
+        let appKey = UUID().uuidString
+        let appSecret = UUID().uuidString
+        let instanceId = "my-instance"
+        
+        let client = Client()
+        client.initialize(appKey: appKey, appSecret: appSecret, instanceId: instanceId, encrypted: encrypted) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertNil(user)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTContext.runActivity(named: "Pull") { activity in
+            mockResponse(client: client) { request in
+                XCTAssertEqual(request.url!.absoluteString, "https://\(instanceId)-baas.kinvey.com/appdata/\(appKey)/\(Person.collectionName())/")
+                return HttpResponse(json: [])
+            }
+            defer {
+                setURLProtocol(nil, client: client)
+            }
+            
+            let options = try! Options(client: client)
+            let dataStore = try! DataStore<Person>.collection(.sync, options: options)
+            
+            let expectationPull = expectation(description: "Pull")
+            
+            dataStore.pull(options: options) {
+                switch $0 {
+                case .success(let persons):
+                    XCTAssertEqual(persons.count, 0)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationPull.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+            
+            let data = try! Data(contentsOf: (dataStore.cache!.cache as! RealmCache<Person>).configuration.fileURL!)
+            let dataString = String(data: data, encoding: .ascii)!
+            let searchTerm = "Person"
+            if encrypted {
+                XCTAssertFalse(dataString.contains(searchTerm))
+            } else {
+                XCTAssertTrue(dataString.contains(searchTerm))
+            }
+        }
+    }
+    
     override func tearDown() {
         super.tearDown()
         
