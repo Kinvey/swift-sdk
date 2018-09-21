@@ -22,7 +22,7 @@ open class File: Object {
     open dynamic var fileName: String?
     
     /// `size` property of the file.
-    open let size = RealmOptional<Int64>()
+    public let size = RealmOptional<Int64>()
     
     /// `mimeType` property of the file.
     @objc

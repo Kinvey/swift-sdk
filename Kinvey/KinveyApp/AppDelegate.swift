@@ -27,7 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static let username = ProcessInfo.processInfo.environment["KINVEY_USERNAME"]
     static let password = ProcessInfo.processInfo.environment["KINVEY_PASSWORD"]
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+    @available(*, deprecated)
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Override point for customization after application launch.
         
         if let appKey = AppDelegate.appKey,
@@ -92,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if User.login(
             redirectURI: redirectURI,
             micURL: url,

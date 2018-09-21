@@ -100,15 +100,6 @@ public func <- (left: inout GeoPoint?, right: (String, Map)) {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-public func <- (left: inout GeoPoint!, right: (String, Map)) {
-    let (right, map) = right
-    let transform = GeoPointTransform()
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- <T>(left: inout T, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -118,14 +109,6 @@ public func <- <T>(left: inout T, right: (String, Map)) {
 /// Override operator used during the `propertyMapping(_:)` method.
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- <T>(left: inout T?, right: (String, Map)) {
-    let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
-    left <- map
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-public func <- <T>(left: inout T!, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
     left <- map
@@ -149,14 +132,6 @@ public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
 
 /// Override operator used during the `propertyMapping(_:)` method.
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-public func <- <T: BaseMappable>(left: inout T!, right: (String, Map)) {
-    let (right, map) = right
-    kinveyMappingType(left: right, right: map.currentKey!)
-    left <- map
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
     let (right, map, transform) = right
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
@@ -166,14 +141,6 @@ public func <- <Transform: TransformType>(left: inout Transform.Object, right: (
 /// Override operator used during the `propertyMapping(_:)` method.
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
-    let (right, map, transform) = right
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
     let (right, map, transform) = right
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
@@ -193,15 +160,6 @@ public func <- (left: inout Date, right: (String, Map)) {
 /// Override operator used during the `propertyMapping(_:)` method.
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- (left: inout Date?, right: (String, Map)) {
-    let (right, map) = right
-    let transform = KinveyDateTransform()
-    kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
-    left <- (map, transform)
-}
-
-/// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
-public func <- (left: inout Date!, right: (String, Map)) {
     let (right, map) = right
     let transform = KinveyDateTransform()
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)

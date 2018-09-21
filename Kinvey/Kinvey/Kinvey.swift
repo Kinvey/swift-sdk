@@ -151,7 +151,13 @@ let groupId = "_group_"
 #endif
 
 #if os(macOS)
-    let cacheBasePath = URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+    let cacheBasePath: String = {
+        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
+            return URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent().path
+        } else {
+            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+        }
+    }()
 #else
     let cacheBasePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 #endif

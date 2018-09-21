@@ -56,7 +56,7 @@ class PullDataStoreViewController: UIViewController {
         }
     }
     
-    lazy var dataStore = DataStore<HierarchyCache>.collection(.sync, autoPagination: true)
+    lazy var dataStore = try! DataStore<HierarchyCache>.collection(.sync, autoPagination: true)
     var request: AnyRequest<Result<AnyRandomAccessCollection<HierarchyCache>, Swift.Error>>?
     
     @objc func updateTimer() {

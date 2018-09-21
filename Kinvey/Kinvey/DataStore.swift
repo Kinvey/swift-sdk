@@ -39,15 +39,15 @@ open class DataStore<T: Persistable> where T: NSObject {
     fileprivate let writePolicy: WritePolicy
     
     /// Collection name that matches with the name in the backend.
-    open let collectionName: String
+    public let collectionName: String
     
     /// Client instance attached to the DataStore.
-    open let client: Client
+    public let client: Client
     
     /// DataStoreType defines how the DataStore will behave.
-    open let type: StoreType
+    public let type: StoreType
     
-    open let validationStrategy: ValidationStrategy?
+    public let validationStrategy: ValidationStrategy?
     
     fileprivate let fileURL: URL?
     

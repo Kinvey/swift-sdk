@@ -38,6 +38,7 @@ class MICAuthorizationGrantViewController: UIViewController {
         }
     }
     
+    @available(*, deprecated)
     @IBAction func login(_ sender: UIButton) {
         let redirectURI = URL(string: "micAuthGrantFlow://")!
         User.login(

@@ -16,9 +16,9 @@ let authServiceId = "sso_app1_client_id"
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    
+    @available(*, deprecated)
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", accessGroup: "5W7CYNR7UE.com.kinvey.SSOApp") { user, error in
             if let user = user  {
                 print("User: \(user)")
@@ -50,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if User.login(redirectURI: micRedirectURI, micURL: url, options: try! Options(authServiceId: authServiceId)) {
             return true
         }

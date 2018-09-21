@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     
     var micUserInterface: MICUserInterface = .safari
     
+    @available(*, deprecated)
     var completionHandler: User.UserHandler<User>?
     
     override func viewDidLoad() {
@@ -32,6 +33,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @available(*, deprecated)
     @IBAction func signIn(_ sender: Any) {
         if let user = Kinvey.sharedClient.activeUser {
             user.logout()

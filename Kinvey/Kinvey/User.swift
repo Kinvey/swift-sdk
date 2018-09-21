@@ -18,7 +18,7 @@ open class User: NSObject, Credential {
     
     /// Username Key.
     @available(*, deprecated: 3.17.0, message: "Please use User.CodingKeys.username instead")
-    open static let PersistableUsernameKey = "username"
+    public static let PersistableUsernameKey = "username"
     
     @available(*, deprecated: 3.17.0, message: "Please use Result<U, Swift.Error> instead")
     public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
@@ -1625,21 +1625,17 @@ extension User: Mappable {
 }
 
 extension User /* Hashable */ {
-
-    open override var hashValue: Int {
-        return userId.hashValue
-    }
     
     // Obj-C
     open override var hash: Int {
-        return hashValue
+        return userId.hashValue
     }
 
 }
 
 extension User /* Equatable */ {
 
-    open static func == (lhs: User, rhs: User) -> Bool {
+    public static func == (lhs: User, rhs: User) -> Bool {
         return lhs.userId == rhs.userId
     }
 

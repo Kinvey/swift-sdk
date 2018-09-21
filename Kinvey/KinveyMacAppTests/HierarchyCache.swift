@@ -53,6 +53,7 @@ public class HierarchyCache: Entity {
         return "hierarchycache"
     }
     
+    @available(*, deprecated)
     public override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         

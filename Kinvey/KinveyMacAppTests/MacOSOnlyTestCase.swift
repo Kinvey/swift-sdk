@@ -34,8 +34,7 @@ class MacOSOnlyTestCase: KinveyTestCase {
         }
         
         let realmCache = dataStore.cache?.cache as? RealmCache<Person>
-        let basePath = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!
-        XCTAssertEqual(realmCache?.configuration.fileURL?.path, "\(basePath)/\(Bundle.main.bundleIdentifier!)/_kid_/kinvey.realm")
+        XCTAssertEqual(realmCache?.configuration.fileURL?.path, "\(Kinvey.cacheBasePath)/_kid_/kinvey.realm")
     }
     
 }
