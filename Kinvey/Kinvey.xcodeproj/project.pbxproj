@@ -1984,7 +1984,6 @@
 				5771CD601ECF6CDC0057E505 /* Frameworks */,
 				5771CD651ECF6CDC0057E505 /* Resources */,
 				5771CD671ECF6CDC0057E505 /* CopyFiles */,
-				5771CD691ECF6CDC0057E505 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2024,7 +2023,6 @@
 				5783BA3420F722DC0090D0BD /* Frameworks */,
 				5783BA3920F722DC0090D0BD /* Resources */,
 				5783BA3B20F722DC0090D0BD /* CopyFiles */,
-				5783BA3D20F722DC0090D0BD /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2123,7 +2121,6 @@
 				578D9FE31E8DE53900C2B280 /* Frameworks */,
 				578D9FE81E8DE53900C2B280 /* Resources */,
 				578D9FEA1E8DE53900C2B280 /* CopyFiles */,
-				578D9FEC1E8DE53900C2B280 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2144,7 +2141,6 @@
 				578DA01A1E8EC3CB00C2B280 /* Frameworks */,
 				578DA01F1E8EC3CB00C2B280 /* Resources */,
 				578DA0211E8EC3CB00C2B280 /* CopyFiles */,
-				578DA0231E8EC3CB00C2B280 /* Carthage Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2778,21 +2774,6 @@
 			shellPath = /bin/sh;
 			shellScript = "carthage copy-frameworks";
 		};
-		5771CD691ECF6CDC0057E505 /* Carthage Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
-			);
-			name = "Carthage Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks\n";
-		};
 		5777513E1DF8BDF4006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2918,21 +2899,6 @@
 			shellPath = /bin/sh;
 			shellScript = "carthage copy-frameworks";
 		};
-		5783BA3D20F722DC0090D0BD /* Carthage Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
-			);
-			name = "Carthage Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks\n";
-		};
 		578B805A1EE73B4D004D92A6 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2941,36 +2907,6 @@
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/Mac/Nimble.framework",
 				"$(SRCROOT)/../Carthage/Build/Mac/PubNub.framework",
-			);
-			name = "Carthage Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
-		};
-		578D9FEC1E8DE53900C2B280 /* Carthage Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
-			);
-			name = "Carthage Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks\n";
-		};
-		578DA0231E8EC3CB00C2B280 /* Carthage Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
