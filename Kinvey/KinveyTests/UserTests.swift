@@ -1382,50 +1382,65 @@ class UserTests: KinveyTestCase {
             client.userType = User.self
         }
         
-        let user = MyCodableUser()
-        user.foo = "bar"
-        signUp(user: user)
+        XCTContext.runActivity(named: "Sign Up") { activity in
+            let user = MyCodableUser()
+            user.foo = "bar"
+            signUp(user: user, mustIncludeSocialIdentity: true)
+            
+            XCTAssertNotNil(client.activeUser)
+            XCTAssertTrue(client.activeUser is MyCodableUser)
+            XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyCodableUser)
+        }
         
-        XCTAssertNotNil(client.activeUser)
-        XCTAssertTrue(client.activeUser is MyCodableUser)
-        XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyCodableUser)
+        guard let user = client.activeUser as? MyCodableUser else {
+            return
+        }
         
-        if let user = client.activeUser as? MyCodableUser {
+        XCTAssertNotNil(user.socialIdentity?.kinvey)
+        let kinveyCount = user.socialIdentity?.kinvey?.count
+        XCTAssertGreaterThan(kinveyCount ?? 0, 0)
+        
+        if useMockData {
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                XCTAssertEqual(json["foo"] as? String, "bar")
+                let socialIdentity = json["_socialIdentity"] as? [String : Any]
+                XCTAssertNotNil(socialIdentity)
+                if let socialIdentity = socialIdentity {
+                    let kinvey = socialIdentity["kinveyAuth"] as? [String : Any]
+                    XCTAssertNotNil(kinvey)
+                    XCTAssertEqual(kinvey?.count, kinveyCount)
+                }
+                return HttpResponse(json: json)
+            })
+        }
+        defer {
             if useMockData {
-                mockResponse(completionHandler: { (request) -> HttpResponse in
-                    let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    XCTAssertEqual(json["foo"] as? String, "bar")
-                    return HttpResponse(json: json)
-                })
+                setURLProtocol(nil)
             }
-            defer {
-                if useMockData {
-                    setURLProtocol(nil)
-                }
+        }
+        
+        weak var expectationUserSave = expectation(description: "User Save")
+        
+        user.save { (user, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(error)
+            
+            XCTAssertNotNil(user)
+            XCTAssertTrue(user is MyCodableUser)
+            
+            XCTAssertNotNil(self.client.activeUser)
+            XCTAssertTrue(self.client.activeUser is MyCodableUser)
+            
+            if let myUser = user as? MyCodableUser {
+                XCTAssertEqual(myUser.foo, "bar")
             }
             
-            weak var expectationUserSave = expectation(description: "User Save")
-            
-            user.save { (user, error) -> Void in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                
-                XCTAssertNotNil(user)
-                XCTAssertTrue(user is MyCodableUser)
-                
-                XCTAssertNotNil(self.client.activeUser)
-                XCTAssertTrue(self.client.activeUser is MyCodableUser)
-                
-                if let myUser = user as? MyCodableUser {
-                    XCTAssertEqual(myUser.foo, "bar")
-                }
-                
-                expectationUserSave?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationUserSave = nil
-            }
+            expectationUserSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationUserSave = nil
         }
     }
     
