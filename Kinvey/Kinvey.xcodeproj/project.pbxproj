@@ -70,6 +70,7 @@
 		573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573DD9841D11CCD6006ECF1C /* RealmCache.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
+		5740AB91215B654E005AB4C5 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57373AB31ECCE670002842CE /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57465B3B1F956E5E007F86C7 /* PullDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57465B3A1F956E5E007F86C7 /* PullDataStoreViewController.swift */; };
 		57470FA11C76834B0096B15F /* ReadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA01C76834B0096B15F /* ReadOperation.swift */; };
@@ -116,7 +117,6 @@
 		5771CD661ECF6CDC0057E505 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		5771CD701ECF6D910057E505 /* ForgotToCallSuper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771CD6F1ECF6D440057E505 /* ForgotToCallSuper.swift */; };
 		5771CD711ECF6ECB0057E505 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
-		5771CD721ECF6EDC0057E505 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5771CD731ECF6FA10057E505 /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; };
 		5771CD751ECFE9B60057E505 /* MetadataTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771CD741ECFE9B60057E505 /* MetadataTestCase.swift */; };
 		5771F9FF1D301F6300903777 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5771F9FE1D301F6300903777 /* Event.swift */; };
@@ -643,7 +643,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5771CD721ECF6EDC0057E505 /* Kinvey.framework in CopyFiles */,
+				5740AB91215B654E005AB4C5 /* Nimble.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
