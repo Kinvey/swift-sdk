@@ -73,9 +73,9 @@ script:
 - set -o pipefail;
   case $PLATFORM in
   iOS)
-    travis_retry make test-ios;;
+    travis_retry make test-ios | xcpretty;;
   Mac)
-    travis_retry make test-macos;;
+    travis_retry make test-macos | xcpretty;;
   esac
 after_script:
 - date
