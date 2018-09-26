@@ -3802,6 +3802,7 @@ class SyncStoreTests: StoreTestCase {
             }
         }
         
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 1)
         
         do {

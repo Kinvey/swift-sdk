@@ -87,46 +87,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    lazy var dataStore = DataStore<Book>.collection(.network)
+    lazy var dataStore = try! DataStore<Book>.collection(.network)
     
     lazy var fileStore = FileStore()
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("background fetch")
         
-        var promises = [AnyPromise]()
-        
-        let promiseDataStore = Promise<AnyRandomAccessCollection<Book>> { fulfill, reject in
+        let promiseDataStore = Promise<AnyRandomAccessCollection<Book>> { resolver in
             print("DataStore find")
             self.dataStore.find { (result: Kinvey.Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
                 switch result {
                 case .success(let books):
                     print("\(books.count) Book(s)")
-                    fulfill(books)
+                    resolver.fulfill(books)
                 case .failure(let error):
                     print(error)
-                    reject(error)
+                    resolver.reject(error)
                 }
             }
         }
-        promises.append(AnyPromise(promiseDataStore))
         
-        let promiseFileStore = Promise<[File]> { fulfill, reject in
+        let promiseFileStore = Promise<[File]> { resolver in
             print("Files find")
             self.fileStore.find(options: nil) { (result: Kinvey.Result<[File], Swift.Error>) in
                 switch result {
                 case .success(let files):
                     print("\(files.count) File(s)")
-                    fulfill(files)
+                    resolver.fulfill(files)
                 case .failure(let error):
                     print(error)
-                    reject(error)
+                    resolver.reject(error)
                 }
             }
         }
-        promises.append(AnyPromise(promiseFileStore))
         
-        when(fulfilled: promises.map { $0.asPromise() }).then { (result) -> Void in
+        firstly {
+            when(fulfilled: promiseDataStore, promiseFileStore)
+        }.done { _, _ in
             print("completionHandler new data")
             completionHandler(.newData)
         }.catch { (error) -> Void in
