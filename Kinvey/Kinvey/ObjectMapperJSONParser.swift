@@ -29,13 +29,12 @@ class ObjectMapperJSONParser: JSONParser {
     
     func parseDictionaries(from data: Data) throws -> [JsonDictionary] {
         #if canImport(os)
-        let logName: StaticString = "Parse Dictionaries"
         if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: logName)
+            os_signpost(.begin, log: osLog, name: "Parse Dictionaries")
         }
         defer {
             if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: logName)
+                os_signpost(.end, log: osLog, name: "Parse Dictionaries")
             }
         }
         #endif

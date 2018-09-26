@@ -410,13 +410,12 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
         #if canImport(os)
-        let logName: StaticString = "Save Entities (Generics)"
         if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: logName)
+            os_signpost(.begin, log: osLog, name: "Save Entities (Generics)")
         }
         defer {
             if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: logName)
+                os_signpost(.end, log: osLog, name: "Save Entities (Generics)")
             }
         }
         #endif
@@ -832,13 +831,12 @@ extension RealmCache: DynamicCacheType {
     
     func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: SyncQuery?) {
         #if canImport(os)
-        let logName: StaticString = "Save Entities (JsonDictionary)"
         if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: logName)
+            os_signpost(.begin, log: osLog, name: "Save Entities (JsonDictionary)")
         }
         defer {
             if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: logName)
+                os_signpost(.end, log: osLog, name: "Save Entities (JsonDictionary)")
             }
         }
         #endif

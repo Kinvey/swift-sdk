@@ -117,13 +117,12 @@ public final class Query: NSObject, BuilderType {
     
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
         #if canImport(os)
-        let logName: StaticString = "Translate Query"
         if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: logName)
+            os_signpost(.begin, log: osLog, name: "Translate Query")
         }
         defer {
             if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: logName)
+                os_signpost(.end, log: osLog, name: "Translate Query")
             }
         }
         #endif

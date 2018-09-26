@@ -186,13 +186,12 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) throws -> AnyRandomAccessCollection<T> {
         #if canImport(os)
-        let logName: StaticString = "Convert Entities"
         if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: logName)
+            os_signpost(.begin, log: osLog, name: "Convert Entities")
         }
         defer {
             if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: logName)
+                os_signpost(.end, log: osLog, name: "Convert Entities")
             }
         }
         #endif
