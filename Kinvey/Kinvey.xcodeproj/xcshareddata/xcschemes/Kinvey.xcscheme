@@ -171,6 +171,11 @@
                BlueprintName = "KinveyAppUITests"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "KinveyAppUITests/testMICLoginSafariAuthenticationSession()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO"
