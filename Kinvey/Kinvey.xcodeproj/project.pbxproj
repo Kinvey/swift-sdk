@@ -59,6 +59,7 @@
 		572C457B1C86690700A41935 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* Date.swift */; };
 		572F12E41EDF909B006E5D2B /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
+		5736EB93215B5F430071EC51 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57373AB21ECCD8C6002842CE /* EntityTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57373AB11ECCD8C6002842CE /* EntityTestCase.swift */; };
 		57373ABF1ECE1849002842CE /* LogTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57373ABE1ECE1849002842CE /* LogTestCase.swift */; };
 		57375F901E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */; };
@@ -229,7 +230,6 @@
 		578D9FE61E8DE53900C2B280 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		578D9FE71E8DE53900C2B280 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		578D9FE91E8DE53900C2B280 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
-		578D9FEB1E8DE53900C2B280 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		578D9FF21E8DE55000C2B280 /* PushMissingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578D9FC01E8DE4D100C2B280 /* PushMissingConfiguration.swift */; };
 		578D9FF31E8DE55400C2B280 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		578D9FF41E8DE5D900C2B280 /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
@@ -701,7 +701,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				578D9FEB1E8DE53900C2B280 /* Kinvey.framework in CopyFiles */,
+				5736EB93215B5F430071EC51 /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
