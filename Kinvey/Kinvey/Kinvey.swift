@@ -109,7 +109,7 @@ extension SwiftyBeaver.Level {
 
 #if canImport(os)
 
-fileprivate let osLog = OSLog(subsystem: Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName, category: "Kinvey")
+internal let osLog = OSLog(subsystem: Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName, category: "Kinvey")
 
 final class OSLogDestination : BaseDestination {
     

@@ -11,6 +11,10 @@ import Realm
 import RealmSwift
 import MapKit
 
+#if canImport(os)
+import os
+#endif
+
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
 fileprivate let typeFloatValue = FloatValue.self.className()
@@ -405,8 +409,18 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        log.verbose("Saving \(entities.count) object(s)")
+        #if canImport(os)
+        let logName: StaticString = "Save Entities (Generics)"
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: logName)
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: logName)
+            }
+        }
+        #endif
+        log.debug("Saving \(entities.count) object(s)")
         executor.executeAndWait {
             let entityType = self.entityType
             var newEntities = [Entity]()
@@ -429,7 +443,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
             }
         }
-        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func find(byId objectId: String) -> T? {
@@ -818,8 +831,18 @@ extension RealmCache: DynamicCacheType {
     }
     
     func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: SyncQuery?) {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        log.verbose("Saving \(entities.count) object(s)")
+        #if canImport(os)
+        let logName: StaticString = "Save Entities (JsonDictionary)"
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: logName)
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: logName)
+            }
+        }
+        #endif
+        log.debug("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
             try entities.forEachAutoreleasepool { entity in
@@ -869,7 +892,6 @@ extension RealmCache: DynamicCacheType {
             }
             self.saveQuery(syncQuery: syncQuery, realm: realm)
         }
-        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func save(syncQuery: CacheType.SyncQuery) {

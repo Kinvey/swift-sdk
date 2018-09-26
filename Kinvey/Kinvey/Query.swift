@@ -11,6 +11,10 @@ import Foundation
     import MapKit
 #endif
 
+#if canImport(os)
+    import os
+#endif
+
 /// Class that represents a query including filters and sorts.
 public final class Query: NSObject, BuilderType {
     
@@ -112,10 +116,17 @@ public final class Query: NSObject, BuilderType {
     }
     
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        defer {
-            log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
+        #if canImport(os)
+        let logName: StaticString = "Translate Query"
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: logName)
         }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: logName)
+            }
+        }
+        #endif
         if let predicate = predicate as? NSComparisonPredicate {
             return NSComparisonPredicate(
                 leftExpression: translate(expression: predicate.leftExpression, otherSideExpression: predicate.rightExpression),
