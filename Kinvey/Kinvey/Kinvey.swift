@@ -155,7 +155,7 @@ let groupId = "_group_"
         if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
             return URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent().path
         } else {
-            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName).path
         }
     }()
 #else
