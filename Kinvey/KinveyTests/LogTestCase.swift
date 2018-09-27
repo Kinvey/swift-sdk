@@ -8,7 +8,7 @@
 
 import XCTest
 @testable import Kinvey
-import XCGLogger
+import SwiftyBeaver
 
 class LogTestCase: XCTestCase {
     
@@ -23,50 +23,38 @@ class LogTestCase: XCTestCase {
     }
     
     func testLogLevelInitialState() {
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.warning)
-        XCTAssertEqual(Kinvey.LogLevel.warning, XCGLogger.Level.warning.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.warning)
+        XCTAssertEqual(Kinvey.LogLevel.warning, SwiftyBeaver.Level.warning.logLevel)
     }
     
     func testLogLevelVerbose() {
         logLevel = .verbose
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.verbose)
-        XCTAssertEqual(logLevel, XCGLogger.Level.verbose.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.verbose)
+        XCTAssertEqual(logLevel, SwiftyBeaver.Level.verbose.logLevel)
     }
     
     func testLogLevelDebug() {
         logLevel = .debug
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.debug)
-        XCTAssertEqual(logLevel, XCGLogger.Level.debug.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.debug)
+        XCTAssertEqual(logLevel, SwiftyBeaver.Level.debug.logLevel)
     }
     
     func testLogLevelInfo() {
         logLevel = .info
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.info)
-        XCTAssertEqual(logLevel, XCGLogger.Level.info.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.info)
+        XCTAssertEqual(logLevel, SwiftyBeaver.Level.info.logLevel)
     }
     
     func testLogLevelWarning() {
         logLevel = .warning
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.warning)
-        XCTAssertEqual(logLevel, XCGLogger.Level.warning.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.warning)
+        XCTAssertEqual(logLevel, SwiftyBeaver.Level.warning.logLevel)
     }
     
     func testLogLevelError() {
         logLevel = .error
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.error)
-        XCTAssertEqual(logLevel, XCGLogger.Level.error.logLevel)
-    }
-    
-    func testLogLevelSevere() {
-        logLevel = .severe
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.severe)
-        XCTAssertEqual(logLevel, XCGLogger.Level.severe.logLevel)
-    }
-    
-    func testLogLevelNone() {
-        logLevel = .none
-        XCTAssertEqual(Kinvey.log.outputLevel, XCGLogger.Level.none)
-        XCTAssertEqual(logLevel, XCGLogger.Level.none.logLevel)
+        XCTAssertEqual(Kinvey.log.destinations.first?.minLevel, SwiftyBeaver.Level.error)
+        XCTAssertEqual(logLevel, SwiftyBeaver.Level.error.logLevel)
     }
     
 }
