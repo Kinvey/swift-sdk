@@ -24,7 +24,13 @@ open class Migration: NSObject {
         self.realmMigration = realmMigration
     }
     
-    internal class func performMigration(persistenceId: String, encryptionKey: Data? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    internal class func performMigration(
+        persistenceId: String,
+        encryptionKey: Data? = nil,
+        schemaVersion: CUnsignedLongLong = 0,
+        migrationHandler: Migration.MigrationHandler? = nil,
+        compactCacheOnLaunch: Bool = true
+    ) {
         var realmBaseConfiguration = Realm.Configuration()
         if let encryptionKey = encryptionKey {
             realmBaseConfiguration.encryptionKey = encryptionKey
@@ -37,6 +43,12 @@ open class Migration: NSObject {
             }
         } else {
             realmBaseConfiguration.deleteRealmIfMigrationNeeded = true
+        }
+        if compactCacheOnLaunch {
+            realmBaseConfiguration.shouldCompactOnLaunch = { totalBytes, usedBytes in
+                log.debug("\(compactCacheOnLaunch ? "Compacting" : "Not Compacting") Cache: \(usedBytes) bytes used in a total of \(totalBytes) bytes")
+                return compactCacheOnLaunch
+            }
         }
         let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
         let fileManager = FileManager.default
