@@ -1343,9 +1343,11 @@ class UserTests: KinveyTestCase {
     class MyCodableUser: User, Codable {
         
         @objc dynamic var foo: String?
+        var nonObjCProperty: String?
         
         enum MyCodableUserCodingKeys: String, CodingKey {
             case foo
+            case nonObjCProperty
         }
         
         required init(from decoder: Decoder) throws {
@@ -1371,7 +1373,8 @@ class UserTests: KinveyTestCase {
         override func mapping(map: Map) {
             super.mapping(map: map)
             
-            foo <- (MyCodableUserCodingKeys.foo.rawValue, map[MyCodableUserCodingKeys.foo.rawValue])
+            foo <- (MyCodableUserCodingKeys.foo.rawValue, map[MyCodableUserCodingKeys.foo])
+            nonObjCProperty <- (MyCodableUserCodingKeys.nonObjCProperty.rawValue, map[MyCodableUserCodingKeys.nonObjCProperty])
         }
         
     }

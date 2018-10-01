@@ -1651,6 +1651,14 @@ extension User /* Equatable */ {
 
 }
 
+extension User {
+    
+    open override func setValue(_ value: Any?, forUndefinedKey key: String) {
+        log.warning("Value for property \(type(of: self)).\(key) cannot not be set. Please override the \(#function) method.")
+    }
+    
+}
+
 /// Holds the Social Identities attached to a specific User
 public struct UserSocialIdentity {
     
