@@ -312,8 +312,6 @@ public final class Query: NSObject, BuilderType {
             addSort(property, ascending: false)
         }
     }
-    
-    
 
 }
 

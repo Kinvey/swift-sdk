@@ -108,8 +108,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                         validationStrategy: validationStrategy,
                         cache: nil,
                         options: nil
-                    ) { _requestStart in
-                        requestStart = _requestStart
+                    ) {
+                        requestStart = $0
                     }
                     let request = countOperation.execute { result in
                         switch result {

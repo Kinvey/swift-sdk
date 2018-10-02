@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 //        Kinvey.sharedClient.initialize(
 //            appKey: "",
@@ -134,4 +133,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
-

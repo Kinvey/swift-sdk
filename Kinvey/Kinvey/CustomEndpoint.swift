@@ -221,7 +221,7 @@ open class CustomEndpoint {
         return request
     }
     
-    //MARK: BaseMappable: Mappable or StaticMappable
+    // MARK: BaseMappable: Mappable or StaticMappable
     
     /// Executes a custom endpoint by name and passing the expected parameters.
     @discardableResult

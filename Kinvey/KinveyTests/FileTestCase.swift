@@ -260,7 +260,7 @@ class FileTestCase: StoreTestCase {
         if let result = request.result {
             do {
                 let _ = try result.value()
-                XCTFail()
+                XCTFail("An error is expected")
             } catch {
                 XCTAssertTimeoutError(error)
             }
@@ -1524,7 +1524,7 @@ class FileTestCase: StoreTestCase {
             
             let request = fileStore.upload(file, path: path) { (file, error) in
                 self.file = file
-                XCTFail()
+                XCTFail("Handler was not expected to be called")
             }
             
             let delayTime = DispatchTime.now() + Double(Int64(3 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
@@ -1747,7 +1747,7 @@ class FileTestCase: StoreTestCase {
             
             let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 self.myFile = file
-                XCTFail()
+                XCTFail(error?.localizedDescription ?? "Handler was not expected to be called")
             }
             
             let delayTime = DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
@@ -1875,10 +1875,10 @@ class FileTestCase: StoreTestCase {
                     if let dataTmp = try? Data(contentsOf: url) {
                         XCTAssertEqual(dataTmp.count, data.count)
                     } else {
-                        XCTFail()
+                        XCTFail("Data not found")
                     }
                 } else {
-                    XCTFail()
+                    XCTFail("URL not found")
                 }
                 
                 if let _ = expectationCached {
@@ -1928,7 +1928,7 @@ class FileTestCase: StoreTestCase {
                     {
                         XCTAssertEqual(dataTmp.count, data.count)
                     } else {
-                        XCTFail()
+                        XCTFail("Data not found")
                     }
                     
                     expectationCached?.fulfill()
@@ -1939,7 +1939,7 @@ class FileTestCase: StoreTestCase {
                     {
                         XCTAssertEqual(dataTmp.count, data2.count)
                     } else {
-                        XCTFail()
+                        XCTFail("Data not found")
                     }
                     
                     expectationDownload?.fulfill()
@@ -2061,7 +2061,7 @@ class FileTestCase: StoreTestCase {
         do {
             try data.write(to: path, options: [.atomic])
         } catch {
-            XCTFail()
+            XCTFail(error.localizedDescription)
         }
         
         do {
@@ -2116,7 +2116,7 @@ class FileTestCase: StoreTestCase {
                 {
                     XCTAssertEqual(dataTmp.count, data.count)
                 } else {
-                    XCTFail()
+                    XCTFail("Data not found")
                 }
                 
                 if let _ = expectationCached {
@@ -2137,7 +2137,7 @@ class FileTestCase: StoreTestCase {
         do {
             try data2.write(to: path, options: [.atomic])
         } catch {
-            XCTFail()
+            XCTFail(error.localizedDescription)
         }
         
         do {
@@ -2171,7 +2171,7 @@ class FileTestCase: StoreTestCase {
                     {
                         XCTAssertEqual(dataTmp.count, data.count)
                     } else {
-                        XCTFail()
+                        XCTFail("Data not found")
                     }
                     
                     expectationCached?.fulfill()
@@ -2182,7 +2182,7 @@ class FileTestCase: StoreTestCase {
                     {
                         XCTAssertEqual(dataTmp.count, data2.count)
                     } else {
-                        XCTFail()
+                        XCTFail("Data not found")
                     }
                     
                     expectationDownload?.fulfill()
@@ -2612,8 +2612,8 @@ class FileTestCase: StoreTestCase {
                         switch $0 {
                         case .success:
                             break
-                        case .failure:
-                            XCTFail()
+                        case .failure(let error):
+                            XCTFail(error.localizedDescription)
                         }
                         
                         expectationDestroy?.fulfill()
@@ -3059,12 +3059,12 @@ class FileTestCase: StoreTestCase {
                     let object = try? JSONSerialization.jsonObject(with: request),
                     let json = object as? [String : Any]
                 else {
-                    XCTFail()
+                    XCTFail("Json not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertNotNil(json["_public"] as? Bool)
                 guard let _public = json["_public"] as? Bool else {
-                    XCTFail()
+                    XCTFail("_public property not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertFalse(_public)
@@ -3123,7 +3123,7 @@ class FileTestCase: StoreTestCase {
         let request = fileStore.create(File(), data: data)
         do {
             let _ = try request.waitForResult().value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)
         }
@@ -3139,12 +3139,12 @@ class FileTestCase: StoreTestCase {
                     let object = try? JSONSerialization.jsonObject(with: request),
                     let json = object as? [String : Any]
                 else {
-                    XCTFail()
+                    XCTFail("Json not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertNotNil(json["_public"] as? Bool)
                 guard let _public = json["_public"] as? Bool else {
-                    XCTFail()
+                    XCTFail("_public property not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertFalse(_public)
@@ -3200,7 +3200,7 @@ class FileTestCase: StoreTestCase {
         let request = fileStore.create(File(), path: caminandes3TrailerImageURL.path)
         do {
             let _ = try request.waitForResult().value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)
         }
@@ -3219,12 +3219,12 @@ class FileTestCase: StoreTestCase {
                     let object = try? JSONSerialization.jsonObject(with: request),
                     let json = object as? [String : Any]
                 else {
-                    XCTFail()
+                    XCTFail("Json not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertNotNil(json["_public"] as? Bool)
                 guard let _public = json["_public"] as? Bool else {
-                    XCTFail()
+                    XCTFail("_public property not found")
                     return HttpResponse(statusCode: 404, data: Data())
                 }
                 XCTAssertFalse(_public)
@@ -3282,7 +3282,7 @@ class FileTestCase: StoreTestCase {
         let request = fileStore.create(File(), stream: inputStream)
         do {
             let _ = try request.waitForResult().value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)
         }

@@ -106,9 +106,7 @@ enum Attribute: String {
 extension Dictionary where Key == String, Value == SourceKitRepresentable {
     
     subscript<Key: RawRepresentable>(key: Key) -> SourceKitRepresentable? where Key.RawValue == String {
-        get {
-            return self[key.rawValue]
-        }
+        return self[key.rawValue]
     }
     
     func get<Key: RawRepresentable>(key: Key) -> SourceKitRepresentable? where Key.RawValue == String {
@@ -123,7 +121,7 @@ func isDeprecated(_ symbol: [String : SourceKitRepresentable]) -> Bool {
     guard let docDeclaration = symbol[Key.docDeclaration] as? String else {
         return false
     }
-    return regexDeprecated.numberOfMatches(in: docDeclaration, range: NSMakeRange(0, docDeclaration.count)) > 0
+    return regexDeprecated.numberOfMatches(in: docDeclaration, range: NSRange(location: 0, length: docDeclaration.count)) > 0
 }
 
 func format(_ names: String...) -> String {

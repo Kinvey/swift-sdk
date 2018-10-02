@@ -46,9 +46,7 @@ public class Metadata: Object, Codable {
     
     /// Last Read Time
     open var lastReadTime: Date {
-        get {
-            return self.lrt
-        }
+        return self.lrt
     }
     
     /// Last Modification Time.

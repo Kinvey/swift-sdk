@@ -67,7 +67,7 @@ class ErrorTestCase: KinveyTestCase {
         User.signup(username: "test", password: "test", options: nil) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 XCTAssertNotNil(error as? Kinvey.Error)
@@ -87,7 +87,7 @@ class ErrorTestCase: KinveyTestCase {
                         XCTAssertEqual(error.requestId, requestId)
                         XCTAssertEqual(httpResponse?.allHeaderFields[KinveyHeaderField.requestId] as? String, requestId)
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     
                     XCTAssertNotNil(error.httpResponse)

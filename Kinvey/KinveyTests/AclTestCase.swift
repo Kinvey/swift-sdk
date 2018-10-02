@@ -41,7 +41,7 @@ class AclTestCase: StoreTestCase {
             self.assertThread()
             switch $0 {
             case .success(let count):
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 XCTAssertNotNil(error as? Kinvey.Error)
@@ -63,7 +63,7 @@ class AclTestCase: StoreTestCase {
                     case .unauthorized(_, _, let error, _, _):
                         XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -179,7 +179,7 @@ class AclTestCase: StoreTestCase {
                         case .unauthorized(_, _, let error, _, _):
                             XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
                         default:
-                            XCTFail()
+                            XCTFail(error.localizedDescription)
                         }
                     }
                 }

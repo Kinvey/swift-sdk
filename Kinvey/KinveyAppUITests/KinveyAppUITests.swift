@@ -109,7 +109,7 @@ class KinveyAppUITests: XCTestCase {
                 return .ok(.json(json as AnyObject))
             }
             server.notFoundHandler = { request in
-                XCTFail()
+                XCTFail("Handler was not expected to be called")
                 return .notFound
             }
             try! server.start(port, forceIPv4: true)
@@ -204,7 +204,7 @@ class KinveyAppUITests: XCTestCase {
             return .ok(.json(json as AnyObject))
         }
         server.notFoundHandler = { request in
-            XCTFail()
+            XCTFail("A handler for the request could not be found. Request: \(request)")
             return .notFound
         }
         try! server.start(port, forceIPv4: true)

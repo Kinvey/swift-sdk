@@ -18,70 +18,71 @@ class SSOApp2Tests: KinveyTestCase {
     override func tearDown() {
     }
     
-    func testSSO() {
-        class MockURLProtocol: URLProtocol {
-            
-            override class func canInit(with request: URLRequest) -> Bool {
-                if let url = request.url {
-                    return url.scheme == "https" && (url.host == "auth.kinvey.com" || url.host == "baas.kinvey.com")
-                }
-                return false
+    class MockURLProtocol: URLProtocol {
+        
+        override class func canInit(with request: URLRequest) -> Bool {
+            if let url = request.url {
+                return url.scheme == "https" && (url.host == "auth.kinvey.com" || url.host == "baas.kinvey.com")
             }
-            
-            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-                return request
-            }
-            
-            override class func requestIsCacheEquivalent(_ a: URLRequest, to b: URLRequest) -> Bool {
-                return false
-            }
-            
-            override func startLoading() {
-                if request.url!.scheme != "https" && request.url!.scheme != "http" {
-                    return
-                }
-                switch request.url!.path {
-                case "/user/appKey/login":
-                    let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    
-                    let json: [String : Any] = [
-                        "_id" : UUID().uuidString,
-                        "_socialIdentity" : [
-                            "kinveyAuth" :[
-                                "access_token" : UUID().uuidString,
-                                "id" : "custom",
-                                "refresh_token" : UUID().uuidString
-                            ]
-                        ],
-                        "username" : UUID().uuidString,
-                        "_acl" : [
-                            "creator" : UUID().uuidString
-                        ],
-                        "_kmd" : [
-                            "lmt" : "2016-11-10T21:10:50.372Z",
-                            "ect" : "2016-10-27T17:19:33.086Z",
-                            "authtoken" : UUID().uuidString
-                        ]
-                    ]
-                    let data = try! JSONSerialization.data(withJSONObject: json)
-                    client?.urlProtocol(self, didLoad: data)
-                    
-                    client?.urlProtocolDidFinishLoading(self)
-                case "/user/appKey/_logout":
-                    let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "1.1", headerFields: [:])!
-                    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    client?.urlProtocol(self, didLoad: Data())
-                    client?.urlProtocolDidFinishLoading(self)
-                default:
-                    XCTFail("URL Path not handled: \(request.url!.path)")
-                }
-            }
-            
-            override func stopLoading() {
-            }
-            
+            return false
         }
+        
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+            return request
+        }
+        
+        override class func requestIsCacheEquivalent(_ a: URLRequest, to b: URLRequest) -> Bool {
+            return false
+        }
+        
+        override func startLoading() {
+            if request.url!.scheme != "https" && request.url!.scheme != "http" {
+                return
+            }
+            switch request.url!.path {
+            case "/user/appKey/login":
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                
+                let json: [String : Any] = [
+                    "_id" : UUID().uuidString,
+                    "_socialIdentity" : [
+                        "kinveyAuth" :[
+                            "access_token" : UUID().uuidString,
+                            "id" : "custom",
+                            "refresh_token" : UUID().uuidString
+                        ]
+                    ],
+                    "username" : UUID().uuidString,
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : "2016-11-10T21:10:50.372Z",
+                        "ect" : "2016-10-27T17:19:33.086Z",
+                        "authtoken" : UUID().uuidString
+                    ]
+                ]
+                let data = try! JSONSerialization.data(withJSONObject: json)
+                client?.urlProtocol(self, didLoad: data)
+                
+                client?.urlProtocolDidFinishLoading(self)
+            case "/user/appKey/_logout":
+                let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "1.1", headerFields: [:])!
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client?.urlProtocol(self, didLoad: Data())
+                client?.urlProtocolDidFinishLoading(self)
+            default:
+                XCTFail("URL Path not handled: \(request.url!.path)")
+            }
+        }
+        
+        override func stopLoading() {
+        }
+        
+    }
+    
+    func testSSO() {
         
         setURLProtocol(MockURLProtocol.self)
         defer {

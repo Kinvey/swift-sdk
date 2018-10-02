@@ -495,16 +495,14 @@ open class Client: Credential {
     
     /// Autorization header used for calls that don't requires a logged `User`.
     open var authorizationHeader: String? {
-        get {
-            var authorization: String? = nil
-            if let appKey = appKey, let appSecret = appSecret {
-                let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString()
-                if let appKeySecret = appKeySecret {
-                    authorization = "Basic \(appKeySecret)"
-                }
+        var authorization: String? = nil
+        if let appKey = appKey, let appSecret = appSecret {
+            let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString()
+            if let appKeySecret = appKeySecret {
+                authorization = "Basic \(appKeySecret)"
             }
-            return authorization
         }
+        return authorization
     }
 
     internal func isInitialized() -> Bool {

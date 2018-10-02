@@ -129,23 +129,21 @@ func changeDownloadsJson(pathURL: URL) {
     var ios = json[match.range]
     
     let regexKeyValue = try! NSRegularExpression(pattern: "\"([^\"]*)\"\\s*:\\s*\"([^\"]*)\"")
-    for match in regexKeyValue.matches(in: ios, range: NSRange(location: 0, length: ios.count)) {
-        if match.numberOfRanges == 3 {
-            let rangeKey = match.range(at: 1)
-            let rangeValue = match.range(at: 2)
-            let key = ios[rangeKey]
-            switch key {
-            case "version":
-                ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: version)
-            case "link":
-                ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: downloadURLString)
-            case "releaseDate":
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd"
-                ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: dateFormatter.string(from: Date()))
-            default:
-                break
-            }
+    for match in regexKeyValue.matches(in: ios, range: NSRange(location: 0, length: ios.count)) where match.numberOfRanges == 3 {
+        let rangeKey = match.range(at: 1)
+        let rangeValue = match.range(at: 2)
+        let key = ios[rangeKey]
+        switch key {
+        case "version":
+            ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: version)
+        case "link":
+            ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: downloadURLString)
+        case "releaseDate":
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            ios.replaceSubrange(rangeValue.rangeStringIndex(for: ios), with: dateFormatter.string(from: Date()))
+        default:
+            break
         }
     }
     json.replaceSubrange(match.range.rangeStringIndex(for: json), with: ios)

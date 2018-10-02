@@ -28,14 +28,12 @@ public let deviceId = Keychain().deviceId
 fileprivate extension Keychain {
     
     var deviceId: String {
-        get {
-            var deviceId = keychain[.deviceId]
-            if deviceId == nil {
-                deviceId = UUID().uuidString
-                keychain[.deviceId] = deviceId
-            }
-            return deviceId!
+        var deviceId = keychain[.deviceId]
+        if deviceId == nil {
+            deviceId = UUID().uuidString
+            keychain[.deviceId] = deviceId
         }
+        return deviceId!
     }
     
 }

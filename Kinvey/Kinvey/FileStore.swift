@@ -9,7 +9,6 @@
 import Foundation
 import PromiseKit
 
-
 #if os(macOS)
     import AppKit
 #else
@@ -576,7 +575,6 @@ open class FileStore<FileType: File> {
                     }
                 case .stream:
                     request.setValue("bytes */*", forHTTPHeaderField: "Content-Range")
-                    break
                 }
                 
                 if self.client.logNetworkEnabled {
@@ -600,7 +598,7 @@ open class FileStore<FileType: File> {
                         response.statusCode == 308
                     {
                         if let rangeString = response.allHeaderFields["Range"] as? String,
-                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSMakeRange(0, rangeString.count)).first,
+                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSRange(location: 0, length: rangeString.count)).first,
                             textCheckingResult.numberOfRanges == 3
                         {
                             let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))

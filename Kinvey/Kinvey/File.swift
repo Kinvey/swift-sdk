@@ -69,7 +69,6 @@ open class File: Object {
     
     }
 
-    
     /// Expiration data of the `downloadURL`.
     @objc
     open dynamic var expiresAt: Date?

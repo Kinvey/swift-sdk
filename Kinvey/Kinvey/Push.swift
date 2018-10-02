@@ -28,9 +28,7 @@ open class Push {
     fileprivate let client: Client
     
     fileprivate var keychain: Keychain {
-        get {
-            return Keychain(appKey: client.appKey!, client: client)
-        }
+        return Keychain(appKey: client.appKey!, client: client)
     }
     
     internal var deviceToken: Data? {
@@ -384,6 +382,5 @@ open class Push {
         badgeNumber = 0
     }
 #endif
-    
-    
+
 }

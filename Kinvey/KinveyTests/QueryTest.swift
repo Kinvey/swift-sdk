@@ -146,7 +146,6 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(encodeQuery(Query(format: "name BEGINSWITH %@", "acme")), "query=\(encodeURL(["name" : ["$regex" : "^acme"]]))")
     }
 
-    
     func testQueryGeoWithinCenterSphere() {
         let result = convert(urlQueryItems: Query(format: "location = %@", MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)).urlQueryItems)!
         let expect = convert(jsonDictionary: [
@@ -226,7 +225,7 @@ class QueryTest: XCTestCase {
                 
                 if let coordinatesResult = coordinatesResult, let coordinatesExpect = coordinatesExpect {
                     XCTAssertEqual(coordinatesResult.count, coordinatesExpect.count)
-                    for (index, _) in coordinatesResult.enumerated() {
+                    for index in coordinatesResult.indices {
                         XCTAssertEqual(coordinatesResult[index].count, coordinatesExpect[index].count)
                     }
                 }

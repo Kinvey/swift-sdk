@@ -635,8 +635,8 @@ class NetworkStoreTests: StoreTestCase {
             }
             switch result {
             case .success(let count):
+                XCTAssertNotNil(eventsCount)
                 guard let eventsCount = eventsCount else {
-                    XCTFail()
                     return
                 }
                 XCTAssertEqual(eventsCount + 1, count)
@@ -722,8 +722,8 @@ class NetworkStoreTests: StoreTestCase {
             
             let request = store.count(options: nil)
             let count = try request.waitForResult(timeout: defaultTimeout).value()
+            XCTAssertNotNil(eventsCount)
             guard let eventsCount = eventsCount else {
-                XCTFail()
                 return
             }
             XCTAssertEqual(eventsCount + 1, count)
@@ -784,7 +784,7 @@ class NetworkStoreTests: StoreTestCase {
         store.count {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -1003,7 +1003,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find("sample-id", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1012,7 +1012,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "Error: Not Found")
                         XCTAssertEqual(description, "The data link could not find this entity")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1039,7 +1039,7 @@ class NetworkStoreTests: StoreTestCase {
         store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1055,7 +1055,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(description, MethodNotAllowedError.descriptionValue)
                         XCTAssertEqual(debug, MethodNotAllowedError.debugValue)
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1079,7 +1079,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1088,7 +1088,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                         XCTAssertEqual(description, "The method is not allowed for this resource.")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1114,7 +1114,7 @@ class NetworkStoreTests: StoreTestCase {
         }
         switch result {
         case .success:
-            XCTFail()
+            XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1124,7 +1124,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1139,7 +1139,7 @@ class NetworkStoreTests: StoreTestCase {
         let request = store.find(options: try! Options(readPolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1149,7 +1149,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1173,7 +1173,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find("id-not-found", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 
@@ -1183,7 +1183,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "")
                         XCTAssertEqual(description, "This entity not found in the collection")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1216,7 +1216,7 @@ class NetworkStoreTests: StoreTestCase {
         }
         switch result {
         case .success:
-            XCTFail()
+            XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1226,7 +1226,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "")
                     XCTAssertEqual(description, "This entity not found in the collection")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1248,7 +1248,7 @@ class NetworkStoreTests: StoreTestCase {
         let request = store.find("id-not-found", options: try! Options(readPolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1258,7 +1258,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "")
                     XCTAssertEqual(description, "This entity not found in the collection")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1281,7 +1281,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as? Kinvey.Error
                 XCTAssertNotNil(error)
@@ -1319,7 +1319,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 switch error {
                 case let error as Kinvey.Error:
@@ -1327,10 +1327,10 @@ class NetworkStoreTests: StoreTestCase {
                     case .objectIdMissing:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             expectationFind?.fulfill()
@@ -1358,7 +1358,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 switch error {
                 case let error as Kinvey.Error:
@@ -1366,10 +1366,10 @@ class NetworkStoreTests: StoreTestCase {
                     case .objectIdMissing:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             expectationFind?.fulfill()
@@ -1489,7 +1489,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find("sample-id", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1498,7 +1498,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                         XCTAssertEqual(description, "The method is not allowed for this resource.")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1522,7 +1522,7 @@ class NetworkStoreTests: StoreTestCase {
         store.remove(byId: "sample-id", options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1531,7 +1531,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                         XCTAssertEqual(description, "The method is not allowed for this resource.")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1557,7 +1557,7 @@ class NetworkStoreTests: StoreTestCase {
         }
         switch result {
         case .success:
-            XCTFail()
+            XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1567,7 +1567,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1582,7 +1582,7 @@ class NetworkStoreTests: StoreTestCase {
         let request = store.remove(byId: "sample-id", options: try! Options(writePolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
             
@@ -1592,7 +1592,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -1609,7 +1609,7 @@ class NetworkStoreTests: StoreTestCase {
         store.remove(options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -1618,7 +1618,7 @@ class NetworkStoreTests: StoreTestCase {
                         XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                         XCTAssertEqual(description, "The method is not allowed for this resource.")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1699,7 +1699,7 @@ class NetworkStoreTests: StoreTestCase {
             store.remove(persons, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
@@ -2031,7 +2031,7 @@ class NetworkStoreTests: StoreTestCase {
             store.remove(byIds: persons.map { $0.entityId! }, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
@@ -2056,7 +2056,7 @@ class NetworkStoreTests: StoreTestCase {
         store.remove(byIds: [], options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertEqual(error.localizedDescription, "ids cannot be an empty array")
             }
@@ -2984,7 +2984,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3062,7 +3062,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3142,7 +3142,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3224,7 +3224,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3304,7 +3304,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3384,7 +3384,7 @@ class NetworkStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -3411,7 +3411,7 @@ class NetworkStoreTests: StoreTestCase {
         store.remove(byId: "") {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as? Kinvey.Error
                 XCTAssertNotNil(error)
@@ -3452,7 +3452,7 @@ class NetworkStoreTests: StoreTestCase {
         store.find { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 if let error = error as? Kinvey.Error {
                     switch error {
@@ -3693,7 +3693,6 @@ class NetworkStoreTests: StoreTestCase {
                             XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
                         }
                     }
-                    break
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
@@ -3729,7 +3728,6 @@ class NetworkStoreTests: StoreTestCase {
                             XCTAssertEqual(_nextEdition.retailPrice, nextEdition.retailPrice)
                         }
                     }
-                    break
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
@@ -3773,7 +3771,7 @@ class NetworkStoreTests: StoreTestCase {
         weak var expectationFind = expectation(description: "Find")
         
         let request = dataStore.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
-            XCTFail()
+            XCTFail("Handler was not expected to be called")
             expectationFind?.fulfill()
         }
         
@@ -3818,7 +3816,7 @@ class NetworkStoreTests: StoreTestCase {
         dataStore.find() {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 XCTAssertNotNil(error as? Kinvey.Error)

@@ -16,15 +16,11 @@ class URLSessionTaskRequest<Result>: TaskProgressRequest, Request {
     var result: Result?
     
     var executing: Bool {
-        get {
-            return task?.state == .running
-        }
+        return task?.state == .running
     }
     
     var cancelled: Bool {
-        get {
-            return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
-        }
+        return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
     }
     
     let client: Client

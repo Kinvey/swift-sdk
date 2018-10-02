@@ -375,7 +375,6 @@ class PerformanceProductTestCase: KinveyTestCase {
     func testPerformance_ConsideringNetworkLatency_10K() {
         let query = Query()
         query.skip = 0
-        // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
         let store = try! DataStore<Product>.collection(.network)
@@ -406,7 +405,6 @@ class PerformanceProductTestCase: KinveyTestCase {
     func testPerformance_CacheStore_ConsideringNetworkLatency_10K() {
         let query = Query()
         query.skip = 0
-        // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
         let store = try! DataStore<Product>.collection(.cache)
@@ -446,7 +444,6 @@ class PerformanceProductTestCase: KinveyTestCase {
     func testPerformance_SyncStore_ConsideringNetworkLatency_10K() {
         let query = Query()
         query.skip = 0
-        // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
         let store = try! DataStore<Product>.collection(.sync)
@@ -511,7 +508,6 @@ class PerformanceProductTestCase: KinveyTestCase {
     func testPerformanceConsideringNetworkLatencyDeltaSet10K() {
         let query = Query()
         query.skip = 0
-        // TODO: change after https://kinvey.atlassian.net/browse/BACK-2315 gets solved
         query.limit = 10000 - 1
         
         let store = try! DataStore<Product>.collection(.network)
