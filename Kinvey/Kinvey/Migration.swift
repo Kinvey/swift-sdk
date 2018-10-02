@@ -44,11 +44,9 @@ open class Migration: NSObject {
         } else {
             realmBaseConfiguration.deleteRealmIfMigrationNeeded = true
         }
-        if compactCacheOnLaunch {
-            realmBaseConfiguration.shouldCompactOnLaunch = { totalBytes, usedBytes in
-                log.debug("\(compactCacheOnLaunch ? "Compacting" : "Not Compacting") Cache: \(usedBytes) bytes used in a total of \(totalBytes) bytes")
-                return compactCacheOnLaunch
-            }
+        realmBaseConfiguration.shouldCompactOnLaunch = { totalBytes, usedBytes in
+            log.debug("Cache: \(usedBytes) bytes used in a total of \(totalBytes) bytes. Compact Cache on Launch: \(compactCacheOnLaunch)")
+            return compactCacheOnLaunch
         }
         let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
         let fileManager = FileManager.default
@@ -56,14 +54,19 @@ open class Migration: NSObject {
             for realmFileURL in allFilesURL.filter({ $0.lastPathComponent.hasSuffix(".realm") }) {
                 var realmConfiguration = realmBaseConfiguration //copy
                 realmConfiguration.fileURL = realmFileURL
-                do {
-                    try Realm.performMigration(for: realmConfiguration)
-                } catch {
-                    log.error("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
-                    realmConfiguration.deleteRealmIfMigrationNeeded = true
-                    try! Realm.performMigration(for: realmConfiguration)
-                }
+                performMigration(realmConfiguration: realmConfiguration)
             }
+        }
+    }
+    
+    private class func performMigration(realmConfiguration: Realm.Configuration) {
+        var realmConfiguration = realmConfiguration //copy
+        do {
+            try Realm.performMigration(for: realmConfiguration)
+        } catch {
+            log.error("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
+            realmConfiguration.deleteRealmIfMigrationNeeded = true
+            try! Realm.performMigration(for: realmConfiguration)
         }
     }
     
