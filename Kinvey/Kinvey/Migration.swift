@@ -31,7 +31,7 @@ open class Migration: NSObject {
         migrationHandler: Migration.MigrationHandler? = nil,
         compactCacheOnLaunch: Bool = true
     ) {
-        var realmBaseConfiguration = Realm.Configuration()
+        var realmBaseConfiguration = Realm.Configuration.defaultConfiguration
         if let encryptionKey = encryptionKey {
             realmBaseConfiguration.encryptionKey = encryptionKey
         }
