@@ -941,7 +941,7 @@ open class User: NSObject, Credential {
         try container.encodeIfPresent(email, forKey: .email)
     }
     
-    open func refresh<UserType: User>(anotherUser: UserType) {
+    open func refresh<UserType: User>(anotherUser: UserType, refreshCustomProperties: Bool = true) {
         _userId = anotherUser.userId
         acl = anotherUser.acl
         if let authtoken = metadata?.authtoken,
@@ -956,7 +956,7 @@ open class User: NSObject, Credential {
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email
-        if (type(of: self) != User.self) {
+        if refreshCustomProperties, type(of: self) != User.self {
             for child in Mirror(reflecting: anotherUser).children {
                 guard let label = child.label else {
                     continue
@@ -1649,6 +1649,14 @@ extension User /* Equatable */ {
         return self == otherUser
     }
 
+}
+
+extension User {
+    
+    open override func setValue(_ value: Any?, forUndefinedKey key: String) {
+        log.warning("Value for property \(type(of: self)).\(key) cannot not be set. Please override the \(#function) method.")
+    }
+    
 }
 
 /// Holds the Social Identities attached to a specific User
