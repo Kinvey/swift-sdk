@@ -150,6 +150,5 @@ class StoreTestCase: KinveyTestCase {
         
         return person
     }
-
     
 }

@@ -48,7 +48,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
                 do {
                     try fileManager.removeItem(atPath: path)
                 } catch {
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                     return
                 }
             }

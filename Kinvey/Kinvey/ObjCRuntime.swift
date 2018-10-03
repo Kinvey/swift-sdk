@@ -31,7 +31,7 @@ internal class ObjCRuntime: NSObject {
         if let attributeValueCString = attributeValueCString,
             let attributeValue = String(validatingUTF8: attributeValueCString),
             let regexClassName = try? NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\""),
-            let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.count)).first
+            let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSRange(location: 0, length: attributeValue.count)).first
         {
             let attributeValueNSString = attributeValue as NSString
             let propertyTypeName = attributeValueNSString.substring(with: textCheckingResult.range(at: 1))
@@ -60,7 +60,7 @@ internal class ObjCRuntime: NSObject {
                                 if let attributeName = String(validatingUTF8: attribute.name),
                                     attributeName == "T",
                                     let attributeValue = String(validatingUTF8: attribute.value),
-                                    let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSMakeRange(0, attributeValue.count)).first
+                                    let textCheckingResult = regexClassName.matches(in: attributeValue, range: NSRange(location: 0, length: attributeValue.count)).first
                                 {
                                     var tuple: (type: String?, subType: String?) = (nil, nil)
                                     if let range = Range(textCheckingResult.range(at: 1)) {

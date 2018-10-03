@@ -9,6 +9,8 @@
 import XCTest
 @testable import Kinvey
 
+// swiftlint:disable nesting
+
 class PersistableTestCase: StoreTestCase {
     
     func testAclNull() {
@@ -248,3 +250,5 @@ class PersistableTestCase: StoreTestCase {
     }
     
 }
+
+// swiftlint:enable nesting

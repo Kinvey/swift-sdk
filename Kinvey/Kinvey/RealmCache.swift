@@ -938,7 +938,7 @@ extension AnyRandomAccessCollection where Element: NSObject, Element: Persistabl
                 } else if let polygon = constantValue as? MKPolygon {
                     let pointCount = polygon.pointCount
                     var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
-                    polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
+                    polygon.getCoordinates(&coordinates, range: NSRange(location: 0, length: pointCount))
                     if let first = coordinates.first, let last = coordinates.last, first == last {
                         coordinates.removeLast()
                     }

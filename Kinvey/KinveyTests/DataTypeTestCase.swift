@@ -29,7 +29,6 @@ class DataTypeTestCase: StoreTestCase {
         dataType.boolValue = true
         dataType.colorValue = Color.orange
         
-        
         let fullName = FullName()
         fullName.firstName = "Victor"
         fullName.lastName = "Barros"
@@ -309,7 +308,7 @@ class DataTypeTestCase: StoreTestCase {
                 XCTAssertEqual(right, "editions_available")
                 editionsAvailable = true
             default:
-                XCTFail()
+                XCTFail("Property Mapping Key \(left) not handled")
             }
         }
         

@@ -78,7 +78,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 do {
                     try fileManager.removeItem(at: fileURL)
                 } catch {
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                     return
                 }
             }
@@ -246,7 +246,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         })
         expect {
             Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) { _ in
-                XCTFail()
+                XCTFail("Exception is expected")
             }
         }.to(raiseException(named: "RLMException", reason: "Cannot migrate Realms that are already open."))
     }

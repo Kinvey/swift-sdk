@@ -25,7 +25,6 @@ internal protocol SyncType {
     
 }
 
-
 internal final class AnySync: SyncType {
     
     private let _createPendingOperation: (URLRequest, String?) -> PendingOperationType

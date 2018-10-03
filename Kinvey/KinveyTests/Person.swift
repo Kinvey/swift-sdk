@@ -11,8 +11,10 @@ import ObjectMapper
 import CoreLocation
 import Realm
 
+// swiftlint:disable class_delegate_protocol
 protocol PersonDelegate {
 }
+// swiftlint:enable class_delegate_protocol
 
 @objc
 protocol PersonObjCDelegate {
@@ -49,8 +51,10 @@ class Person: Entity {
     dynamic var address: Address?
     
     //testing properties that must be ignored
+    // swiftlint:disable weak_delegate
     var personDelegate: PersonDelegate?
     var personObjCDelegate: PersonObjCDelegate?
+    // swiftlint:enable weak_delegate
     weak var weakPersonObjCDelegate: PersonObjCDelegate?
     var personStruct: PersonStruct?
     var personEnum: PersonEnum?
@@ -176,8 +180,10 @@ class PersonCodable: Entity, Codable {
     let boolValues = List<BoolValue>()
     
     //testing properties that must be ignored
+    // swiftlint:disable weak_delegate
     var personDelegate: PersonDelegate?
     var personObjCDelegate: PersonObjCDelegate?
+    // swiftlint:enable weak_delegate
     weak var weakPersonObjCDelegate: PersonObjCDelegate?
     var personStruct: PersonStruct?
     var personEnum: PersonEnum?
@@ -312,8 +318,10 @@ class PersonCustomParser: Entity {
     dynamic var address: Address?
     
     //testing properties that must be ignored
+    // swiftlint:disable weak_delegate
     var personDelegate: PersonDelegate?
     var personObjCDelegate: PersonObjCDelegate?
+    // swiftlint:enable weak_delegate
     weak var weakPersonObjCDelegate: PersonObjCDelegate?
     var personStruct: PersonStruct?
     var personEnum: PersonEnum?
@@ -354,8 +362,10 @@ class PersonWithDifferentClassName: Entity {
     dynamic var address: Address?
     
     //testing properties that must be ignored
+    // swiftlint:disable weak_delegate
     var personDelegate: PersonDelegate?
     var personObjCDelegate: PersonObjCDelegate?
+    // swiftlint:enable weak_delegate
     weak var weakPersonObjCDelegate: PersonObjCDelegate?
     var personStruct: PersonStruct?
     var personEnum: PersonEnum?

@@ -59,8 +59,7 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
 
-        //FIXME: make it configurable
-        request.request.setValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
+        request.request.setValue("\(restApiVersion)", forHTTPHeaderField: "X-Kinvey-API-Version")
         return request
     }
     
@@ -381,7 +380,7 @@ class HttpRequestFactory: RequestFactory {
             options: options
         )
         
-        if (isNewObj) {
+        if isNewObj {
             bodyObject[Entity.EntityCodingKeys.entityId] = nil
         }
         

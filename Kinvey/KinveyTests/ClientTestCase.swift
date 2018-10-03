@@ -181,7 +181,7 @@ class ClientTestCase: KinveyTestCase {
                 case .appNotFound(let description):
                     XCTAssertEqual(description, "This app backend not found")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             
@@ -209,7 +209,7 @@ class ClientTestCase: KinveyTestCase {
                 case .invalidOperation(let description):
                     XCTAssertEqual(description, "Please initialize your client calling the initialize() method before call ping()")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             
@@ -231,7 +231,7 @@ class ClientTestCase: KinveyTestCase {
         let client = Client(appKey: "", appSecret: "") {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as? Kinvey.Error
                 XCTAssertNotNil(error)

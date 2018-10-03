@@ -35,12 +35,12 @@ extension String {
     /// Converts a `String` to `Date`, if possible
     public func toDate() -> Date? {
         switch self.count {
-            case 20:
-                return dateFormatters.rfc3339DateFormatter.date(from: self)
-            case 24:
-                return dateFormatters.rfc3339MilliSecondsDateFormatter.date(from: self)
-            default:
-                return nil
+        case 20:
+            return dateFormatters.rfc3339DateFormatter.date(from: self)
+        case 24:
+            return dateFormatters.rfc3339MilliSecondsDateFormatter.date(from: self)
+        default:
+            return nil
         }
     }
     

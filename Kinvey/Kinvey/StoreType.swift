@@ -21,28 +21,24 @@ public enum StoreType {
     case network
     
     var readPolicy: ReadPolicy {
-        get {
-            switch self {
-            case .cache:
-                return .both
-            case .network:
-                return .forceNetwork
-            case .sync:
-                return .forceLocal
-            }
+        switch self {
+        case .cache:
+            return .both
+        case .network:
+            return .forceNetwork
+        case .sync:
+            return .forceLocal
         }
     }
     
     var writePolicy: WritePolicy {
-        get {
-            switch self {
-            case .cache:
-                return .localThenNetwork
-            case .network:
-                return .forceNetwork
-            case .sync:
-                return .forceLocal
-            }
+        switch self {
+        case .cache:
+            return .localThenNetwork
+        case .network:
+            return .forceNetwork
+        case .sync:
+            return .forceLocal
         }
     }
     

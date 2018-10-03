@@ -101,8 +101,7 @@ class PerformanceTest: XCTestCase {
                     case .success(let count):
                         XCTAssertEqual(count, 0)
                     case .failure(let error):
-                        print(error)
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     expectationFindLocal?.fulfill()
                     expectationFindLocal = nil
@@ -111,8 +110,7 @@ class PerformanceTest: XCTestCase {
                     case .success(let count):
                         XCTAssertEqual(count, expectedCount)
                     case .failure(let error):
-                        print(error)
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     expectationFindNetwork?.fulfill()
                 }
@@ -254,8 +252,7 @@ class PerformanceTest: XCTestCase {
                     case .success(let count):
                         XCTAssertEqual(count, 0)
                     case .failure(let error):
-                        print(error)
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     expectationFindLocal?.fulfill()
                     expectationFindLocal = nil
@@ -264,8 +261,7 @@ class PerformanceTest: XCTestCase {
                     case .success(let count):
                         XCTAssertEqual(count, expectedCount)
                     case .failure(let error):
-                        print(error)
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                     expectationFindNetwork?.fulfill()
                 }

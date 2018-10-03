@@ -26,26 +26,12 @@ internal class MultiRequest<Result>: NSObject, Request {
     }
     
     internal var executing: Bool {
-        get {
-            for request in requests {
-                if request.executing {
-                    return true
-                }
-            }
-            return false
-        }
+        return requests.first(where: { $0.executing })?.executing ?? false
     }
     
     private var _cancelled = false
     internal var cancelled: Bool {
-        get {
-            for request in requests {
-                if request.cancelled {
-                    return true
-                }
-            }
-            return _cancelled
-        }
+        return requests.first(where: { $0.cancelled })?.cancelled ?? _cancelled
     }
     
     internal func cancel() {

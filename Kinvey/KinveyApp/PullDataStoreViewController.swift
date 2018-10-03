@@ -58,6 +58,7 @@ class PullDataStoreViewController: UIViewController {
     
     lazy var dataStore = try! DataStore<HierarchyCache>.collection(.sync, autoPagination: true)
     var request: AnyRequest<Result<AnyRandomAccessCollection<HierarchyCache>, Swift.Error>>?
+    var observationToken: NSKeyValueObservation?
     
     @objc func updateTimer() {
         let seconds = CFAbsoluteTimeGetCurrent() - startTime!
@@ -80,25 +81,18 @@ class PullDataStoreViewController: UIViewController {
                 print(error)
             }
         }
-        request!.progress.addObserver(self, forKeyPath: "fractionCompleted", options: [.initial, .new], context: nil)
+        observationToken = request!.progress.observe(\.fractionCompleted, options:  [.initial, .new]) { progress, change in
+            DispatchQueue.main.async {
+                self.progressView.progress = Float(progress.fractionCompleted)
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let request = request {
-            request.progress.removeObserver(self, forKeyPath: "fractionCompleted")
-        }
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let progress = object as? Progress,
-            let request = self.request,
-            progress == request.progress
-        {
-            DispatchQueue.main.async {
-                self.progressView.progress = Float(progress.fractionCompleted)
-            }
+        if let observationToken = observationToken {
+            observationToken.invalidate()
         }
     }
     
