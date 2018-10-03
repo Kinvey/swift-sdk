@@ -48,7 +48,6 @@ class ForgotToCallSuperEntity2: Entity {
 
 class ForgotToCallSuperPersistable: Persistable {
     
-    
     @objc
     dynamic var myProperty: String?
     

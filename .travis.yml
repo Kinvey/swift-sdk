@@ -17,6 +17,7 @@ before_script:
 - "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
 - brew update
+- brew install swiftlint
 - brew install tree
 # - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
@@ -25,7 +26,7 @@ before_script:
 - if [ ! -d $( md5 Cartfile.resolved | awk '{ print "Carthage/" $4 ".zip" }' ) ]; then
     make travisci-cache;
   fi
-- if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ] || [ ! -d "Carthage/Checkouts/XCGLogger" ]; then
+- if [ ! -d "Carthage/Checkouts/CwlPreconditionTesting" ] || [ ! -d "Carthage/Checkouts/KeychainAccess" ] || [ ! -d "Carthage/Checkouts/KIF" ] || [ ! -d "Carthage/Checkouts/ObjectMapper" ] || [ ! -d "Carthage/Checkouts/PromiseKit" ] || [ ! -d "Carthage/Checkouts/realm-cocoa" ]; then
     carthage checkout;
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/Realm.framework" ] || [ ! -d "Carthage/Build/$PLATFORM/RealmSwift.framework" ]; then
@@ -51,9 +52,6 @@ before_script:
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/ObjectMapper.framework" ]; then
     carthage build --platform $PLATFORM ObjectMapper;
-  fi
-- if [ ! -d "Carthage/Build/$PLATFORM/XCGLogger.framework" ]; then
-    carthage build --platform $PLATFORM XCGLogger;
   fi
 - if [ ! -d "Carthage/Build/$PLATFORM/PubNub.framework" ]; then
     carthage build --platform $PLATFORM objective-c;

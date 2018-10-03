@@ -211,30 +211,23 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
             request.setValue("application/zip", forHTTPHeaderField: "Content-Type")
             
-            class Observer: NSObject {
-                
-                let fileName: String
-                var task: URLSessionUploadTask?
-                
-                init(fileName: String) {
-                    self.fileName = fileName
+            let reportProgress = { (task: URLSessionUploadTask, change: NSKeyValueObservedChange<Int64>) in
+                guard task.countOfBytesExpectedToSend > 0 else {
+                    return
                 }
-                
-                override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?)
-                {
-                    if let task = task, task.countOfBytesExpectedToSend > 0 {
-                        let percent = Float(task.countOfBytesSent) / Float(task.countOfBytesExpectedToSend) * 100
-                        print(String(format: "File \(fileName) status: \(task.countOfBytesSent)/\(task.countOfBytesExpectedToSend) %.1f%%\r", percent))
-                    }
-                }
+                let percent = Float(task.countOfBytesSent) / Float(task.countOfBytesExpectedToSend) * 100
+                print(String(format: "File \(fileName) status: \(task.countOfBytesSent)/\(task.countOfBytesExpectedToSend) %.1f%%\r", percent))
             }
-            let observer = Observer(fileName: fileName)
             
-            weak var weakTask: URLSessionUploadTask? = nil
+            var countOfBytesSentObservationToken: NSKeyValueObservation?
+            var countOfBytesExpectedToSendObservationToken: NSKeyValueObservation?
+            
             let task = session.uploadTask(with: request, fromFile: file) { (data, response, error) in
-                if let task = weakTask {
-                    task.removeObserver(observer, forKeyPath: "countOfBytesSent")
-                    task.removeObserver(observer, forKeyPath: "countOfBytesExpectedToSend")
+                if let observationToken = countOfBytesSentObservationToken {
+                    observationToken.invalidate()
+                }
+                if let observationToken = countOfBytesExpectedToSendObservationToken {
+                    observationToken.invalidate()
                 }
                 if let httpResponse = response as? HTTPURLResponse,
                     200 <= httpResponse.statusCode && httpResponse.statusCode < 300
@@ -248,12 +241,19 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
                     fatalError("Failure during upload file")
                 }
             }
-            weakTask = task
-            observer.task = task
             print("Uploading \(fileName)")
             print("POST \(url)")
-            task.addObserver(observer, forKeyPath: "countOfBytesSent", options: .new, context: nil)
-            task.addObserver(observer, forKeyPath: "countOfBytesExpectedToSend", options: .new, context: nil)
+            let options: NSKeyValueObservingOptions = [.new]
+            countOfBytesSentObservationToken = task.observe(
+                \.countOfBytesSent,
+                options: options,
+                changeHandler: reportProgress
+            )
+            countOfBytesExpectedToSendObservationToken = task.observe(
+                \.countOfBytesExpectedToSend,
+                options: options,
+                changeHandler: reportProgress
+            )
             task.resume()
         }
         

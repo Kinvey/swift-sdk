@@ -165,6 +165,7 @@ open class Client: Credential {
         apiHostName: URL = Client.defaultApiHostName,
         authHostName: URL = Client.defaultAuthHostName,
         schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
         completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
     ) {
@@ -176,6 +177,7 @@ open class Client: Credential {
             apiHostName: apiHostName,
             authHostName: authHostName,
             schema: schema,
+            compactCacheOnLaunch: compactCacheOnLaunch,
             options: options
         ) { (result: Result<U?, Swift.Error>) in
             completionHandler?(result)
@@ -249,6 +251,7 @@ open class Client: Credential {
         authHostName: URL = Client.defaultAuthHostName,
         encrypted: Bool,
         schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
@@ -269,6 +272,7 @@ open class Client: Credential {
             authHostName: authHostName,
             encryptionKey: encryptionKey,
             schema: Schema(version: schema?.version ?? 0, migrationHandler: schema?.migrationHandler),
+            compactCacheOnLaunch: compactCacheOnLaunch,
             options: options,
             completionHandler: completionHandler
         )
@@ -276,7 +280,17 @@ open class Client: Credential {
     
     /// Initialize a `Client` instance with all the needed parameters.
     @available(*, deprecated: 3.17.0, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:(Result<U?, Swift.Error>) -> Void) instead")
-    open func initialize<U: User>(appKey: String, appSecret: String, accessGroup: String? = nil, apiHostName: URL = Client.defaultApiHostName, authHostName: URL = Client.defaultAuthHostName, encryptionKey: Data? = nil, schema: Schema? = nil, completionHandler: @escaping User.UserHandler<U>) {
+    open func initialize<U: User>(
+        appKey: String,
+        appSecret: String,
+        accessGroup: String? = nil,
+        apiHostName: URL = Client.defaultApiHostName,
+        authHostName: URL = Client.defaultAuthHostName,
+        encryptionKey: Data? = nil,
+        schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
+        completionHandler: @escaping User.UserHandler<U>
+    ) {
         initialize(
             appKey: appKey,
             appSecret: appSecret,
@@ -284,7 +298,8 @@ open class Client: Credential {
             apiHostName: apiHostName,
             authHostName: authHostName,
             encryptionKey: encryptionKey,
-            schema: schema
+            schema: schema,
+            compactCacheOnLaunch: compactCacheOnLaunch
         ) { (result: Result<U?, Swift.Error>) in
             switch result {
             case .success(let user):
@@ -314,6 +329,7 @@ open class Client: Credential {
         accessGroup: String? = nil,
         encrypted: Bool,
         schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
@@ -344,6 +360,7 @@ open class Client: Credential {
             authHostName: authHostName,
             encryptionKey: encryptionKey,
             schema: schema,
+            compactCacheOnLaunch: compactCacheOnLaunch,
             options: options,
             completionHandler: completionHandler
         )
@@ -368,6 +385,7 @@ open class Client: Credential {
         accessGroup: String? = nil,
         encryptionKey: Data? = nil,
         schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
@@ -389,6 +407,7 @@ open class Client: Credential {
             authHostName: authHostName,
             encryptionKey: encryptionKey,
             schema: schema,
+            compactCacheOnLaunch: compactCacheOnLaunch,
             options: options,
             completionHandler: completionHandler
         )
@@ -407,6 +426,7 @@ open class Client: Credential {
         authHostName: URL = Client.defaultAuthHostName,
         encryptionKey: Data? = nil,
         schema: Schema? = nil,
+        compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
         completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
     ) {
@@ -421,7 +441,13 @@ open class Client: Credential {
         self.schemaVersion = schema?.version ?? 0
         self.options = options
         
-        Migration.performMigration(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: schema?.migrationHandler)
+        Migration.performMigration(
+            persistenceId: appKey,
+            encryptionKey: encryptionKey,
+            schemaVersion: schemaVersion,
+            migrationHandler: schema?.migrationHandler,
+            compactCacheOnLaunch: compactCacheOnLaunch
+        )
         
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
@@ -469,16 +495,14 @@ open class Client: Credential {
     
     /// Autorization header used for calls that don't requires a logged `User`.
     open var authorizationHeader: String? {
-        get {
-            var authorization: String? = nil
-            if let appKey = appKey, let appSecret = appSecret {
-                let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString()
-                if let appKeySecret = appKeySecret {
-                    authorization = "Basic \(appKeySecret)"
-                }
+        var authorization: String? = nil
+        if let appKey = appKey, let appSecret = appSecret {
+            let appKeySecret = "\(appKey):\(appSecret)".data(using: String.Encoding.utf8)?.base64EncodedString()
+            if let appKeySecret = appKeySecret {
+                authorization = "Basic \(appKeySecret)"
             }
-            return authorization
         }
+        return authorization
     }
 
     internal func isInitialized() -> Bool {

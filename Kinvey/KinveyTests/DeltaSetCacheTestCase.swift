@@ -212,7 +212,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 case .success:
                     break
                 case .failure(let error):
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreate?.fulfill()
@@ -411,8 +411,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch result {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationUpdate?.fulfill()
@@ -582,8 +582,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch result {
                 case .success(let count):
                     XCTAssertEqual(count, 1)
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDelete?.fulfill()
@@ -693,8 +693,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch result {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationCreate?.fulfill()
@@ -1023,8 +1023,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     switch result {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationCreate?.fulfill()
@@ -1290,6 +1290,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = try! DataStore<Person>.collection()
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", client.activeUser!.userId)
         
+        // swiftlint:disable nesting
         class OnePersonURLProtocol: URLProtocol {
             
             static var userId = ""
@@ -1329,6 +1330,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             
         }
+        // swiftlint:enable nesting
         
         OnePersonURLProtocol.userId = client.activeUser!.userId
         
@@ -2029,7 +2031,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -2262,7 +2264,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 break
             }
@@ -2922,7 +2924,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                 }
-            }else {
+            } else {
                 var person = Person()
                 person.name = "Victor Emmanuel"
                 person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -3151,7 +3153,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                 }
-            }else {
+            } else {
                 var person = Person()
                 person.name = "Victor Emmanuel"
                 person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -3388,7 +3390,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                 }
-            }else {
+            } else {
                 var person = Person()
                 person.name = "Victor Emmanuel"
                 person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -4472,7 +4474,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             dataStore.pull(
                 deltaSetCompletionHandler: { (changed, deleted) in
                     deltaSetCompletionHandlerCalled = true
-                    XCTFail()
+                    XCTFail("Delta Set Completion Handler was not expected to be called")
                 }
             ) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
@@ -4627,10 +4629,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         do {
             let results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertTrue(autoPagination)
             if autoPagination {
                 XCTAssertEqual(results.count, count2)
-            } else {
-                XCTFail()
             }
         } catch {
             if autoPagination {
@@ -4765,7 +4766,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         do {
             let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)
         }

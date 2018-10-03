@@ -11,6 +11,10 @@ import Realm
 import RealmSwift
 import MapKit
 
+#if canImport(os)
+import os
+#endif
+
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
 fileprivate let typeFloatValue = FloatValue.self.className()
@@ -405,8 +409,17 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        log.verbose("Saving \(entities.count) object(s)")
+        #if canImport(os)
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: "Save Entities (Generics)")
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: "Save Entities (Generics)")
+            }
+        }
+        #endif
+        log.debug("Saving \(entities.count) object(s)")
         executor.executeAndWait {
             let entityType = self.entityType
             var newEntities = [Entity]()
@@ -429,7 +442,6 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 }
             }
         }
-        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func find(byId objectId: String) -> T? {
@@ -818,8 +830,17 @@ extension RealmCache: DynamicCacheType {
     }
     
     func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: SyncQuery?) {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        log.verbose("Saving \(entities.count) object(s)")
+        #if canImport(os)
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: "Save Entities (JsonDictionary)")
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: "Save Entities (JsonDictionary)")
+            }
+        }
+        #endif
+        log.debug("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
             try entities.forEachAutoreleasepool { entity in
@@ -869,7 +890,6 @@ extension RealmCache: DynamicCacheType {
             }
             self.saveQuery(syncQuery: syncQuery, realm: realm)
         }
-        log.debug("Time elapsed: \(CFAbsoluteTimeGetCurrent() - startTime) s")
     }
     
     func save(syncQuery: CacheType.SyncQuery) {
@@ -918,7 +938,7 @@ extension AnyRandomAccessCollection where Element: NSObject, Element: Persistabl
                 } else if let polygon = constantValue as? MKPolygon {
                     let pointCount = polygon.pointCount
                     var coordinates = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: polygon.pointCount)
-                    polygon.getCoordinates(&coordinates, range: NSMakeRange(0, pointCount))
+                    polygon.getCoordinates(&coordinates, range: NSRange(location: 0, length: pointCount))
                     if let first = coordinates.first, let last = coordinates.last, first == last {
                         coordinates.removeLast()
                     }

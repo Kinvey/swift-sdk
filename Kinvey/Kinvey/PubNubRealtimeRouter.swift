@@ -156,7 +156,6 @@ extension PubNubRealtimeRouter: PNObjectEventListener {
                     callback.onError(error)
                 }
             }
-            break
         }
     }
     

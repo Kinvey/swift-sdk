@@ -148,7 +148,7 @@ class CacheStoreTests: StoreTestCase {
             store.find(temporaryObjectId, options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let person):
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     break
                 }
@@ -901,7 +901,6 @@ class CacheStoreTests: StoreTestCase {
         let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
-        
         
         var initialCount = Int64(0)
         do {
@@ -2142,7 +2141,6 @@ class CacheStoreTests: StoreTestCase {
         var idToUpdate = ""
         var idToDelete = ""
         
-        
         var initialCount = Int64(0)
         do {
             if !useMockData {
@@ -2361,7 +2359,6 @@ class CacheStoreTests: StoreTestCase {
         }
     }
     
-
     func testCacheStoreDeltaset1WithQuery1ItemDeletedWithSync() {
         let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToDelete = ""
@@ -3391,7 +3388,6 @@ class CacheStoreTests: StoreTestCase {
         let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
-        
         
         var initialCount = Int64(0)
         do {

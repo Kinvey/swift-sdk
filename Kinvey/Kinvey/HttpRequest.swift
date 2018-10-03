@@ -43,19 +43,15 @@ enum HttpMethod {
     case get, post, put, delete
     
     var stringValue: String {
-        get {
-            switch self {
-            case .post:
-                return "POST"
-            case .put:
-                return "PUT"
-            case .delete:
-                return "DELETE"
-            case .get:
-                fallthrough
-            default:
-                return "GET"
-            }
+        switch self {
+        case .post:
+            return "POST"
+        case .put:
+            return "PUT"
+        case .delete:
+            return "DELETE"
+        default:
+            return "GET"
         }
     }
     
@@ -67,27 +63,21 @@ enum HttpMethod {
             return .put
         case "DELETE":
             return .delete
-        case "GET":
-            fallthrough
         default:
             return .get
         }
     }
     
     var requestType: RequestType {
-        get {
-            switch self {
-            case .post:
-                return .create
-            case .put:
-                return .update
-            case .delete:
-                return .delete
-            case .get:
-                fallthrough
-            default:
-                return .read
-            }
+        switch self {
+        case .post:
+            return .create
+        case .put:
+            return .update
+        case .delete:
+            return .delete
+        default:
+            return .read
         }
     }
     
@@ -108,37 +98,33 @@ enum HttpHeader {
     case deviceInfo
     
     var name: String {
-        get {
-            switch self {
-            case .authorization:
-                return HttpHeaderKey.authorization.rawValue
-            case .apiVersion:
-                return KinveyHeaderField.apiVersion.rawValue
-            case .requestId:
-                return KinveyHeaderField.requestId.rawValue
-            case .userAgent:
-                return HeaderField.userAgent
-            case .deviceInfo:
-                return KinveyHeaderField.deviceInfo.rawValue
-            }
+        switch self {
+        case .authorization:
+            return HttpHeaderKey.authorization.rawValue
+        case .apiVersion:
+            return KinveyHeaderField.apiVersion.rawValue
+        case .requestId:
+            return KinveyHeaderField.requestId.rawValue
+        case .userAgent:
+            return HeaderField.userAgent
+        case .deviceInfo:
+            return KinveyHeaderField.deviceInfo.rawValue
         }
     }
     
     var value: String? {
-        get {
-            switch self {
-            case .authorization(let credential):
-                return credential?.authorizationHeader
-            case .apiVersion(let version):
-                return String(version)
-            case .requestId(let requestId):
-                return requestId
-            case .userAgent:
-                return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
-            case .deviceInfo:
-                let data = try! JSONEncoder().encode(DeviceInfo())
-                return String(data: data, encoding: .utf8)
-            }
+        switch self {
+        case .authorization(let credential):
+            return credential?.authorizationHeader
+        case .apiVersion(let version):
+            return String(version)
+        case .requestId(let requestId):
+            return requestId
+        case .userAgent:
+            return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
+        case .deviceInfo:
+            let data = try! JSONEncoder().encode(DeviceInfo())
+            return String(data: data, encoding: .utf8)
         }
     }
     
@@ -147,17 +133,15 @@ enum HttpHeader {
 extension RequestType {
     
     var httpMethod: HttpMethod {
-        get {
-            switch self {
-            case .create:
-                return .post
-            case .read:
-                return .get
-            case .update:
-                return .put
-            case .delete:
-                return .delete
-            }
+        switch self {
+        case .create:
+            return .post
+        case .read:
+            return .get
+        case .update:
+            return .put
+        case .delete:
+            return .delete
         }
     }
     
@@ -270,12 +254,10 @@ enum Body {
         let regex = try! NSRegularExpression(pattern: "([^&=]+)=([^&]*)")
         var params = [String : String]()
         let nsbody = body as NSString
-        for match in regex.matches(in: body, range: NSMakeRange(0, body.count)) {
-            if match.numberOfRanges == 3 {
-                let key = nsbody.substring(with: match.range(at: 1))
-                let value = nsbody.substring(with: match.range(at: 2))
-                params[key] = value
-            }
+        for match in regex.matches(in: body, range: NSRange(location: 0, length: body.count)) where match.numberOfRanges == 3 {
+            let key = nsbody.substring(with: match.range(at: 1))
+            let value = nsbody.substring(with: match.range(at: 2))
+            params[key] = value
         }
         return .formUrlEncoded(params: params)
     }
@@ -308,15 +290,11 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     let client: Client
     
     internal var executing: Bool {
-        get {
-            return task?.state == .running
-        }
+        return task?.state == .running
     }
     
     internal var cancelled: Bool {
-        get {
-            return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
-        }
+        return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
     }
     
     init(
@@ -467,17 +445,15 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     
     var curlCommand: String {
-        get {
-            prepareRequest()
-            
-            var headers = ""
-            if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-                for (headerField, value) in allHTTPHeaderFields {
-                    headers += "-H \"\(headerField): \(value)\" "
-                }
+        prepareRequest()
+        
+        var headers = ""
+        if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+            for (headerField, value) in allHTTPHeaderFields {
+                headers += "-H \"\(headerField): \(value)\" "
             }
-            return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
         }
+        return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
     }
     
     func setBody(json: [String : Any]) {

@@ -44,7 +44,7 @@ class PushMissingConfigurationTestCase: KinveyTestCase {
                             XCTAssertEqual(debug, "Push notifications for iOS are not properly configured for this app backend. Please enable push notifications through the console first.")
                             XCTAssertEqual(description, "This feature is not properly configured for this app backend. Please configure it through the console first, or contact support for more information.")
                         default:
-                            XCTFail()
+                            XCTFail(error.localizedDescription)
                         }
                     }
                 }

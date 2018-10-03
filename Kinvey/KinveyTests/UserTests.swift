@@ -13,6 +13,8 @@ import ObjectMapper
 import SafariServices
 import Nimble
 
+// swiftlint:disable nesting
+
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
@@ -89,8 +91,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -128,8 +130,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -188,8 +190,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -224,8 +226,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -260,8 +262,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -295,7 +297,7 @@ class UserTests: KinveyTestCase {
                 
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure:
                     break
                 }
@@ -327,8 +329,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationDestroyUser?.fulfill()
@@ -585,7 +587,7 @@ class UserTests: KinveyTestCase {
                 XCTAssertMainThread()
                 switch $0 {
                 case .success(let user):
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
@@ -702,7 +704,7 @@ class UserTests: KinveyTestCase {
                 XCTAssertTrue(Thread.isMainThread)
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
@@ -723,13 +725,13 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+        XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String)
         guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
-            XCTFail()
             return
         }
         
+        XCTAssertNotNil(client.activeUser)
         guard let user = client.activeUser else {
-            XCTFail()
             return
         }
         
@@ -757,8 +759,8 @@ class UserTests: KinveyTestCase {
                 switch result {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationRefresh?.fulfill()
@@ -795,8 +797,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -815,21 +817,20 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertNotNil(client.keychain.user?.socialIdentity?.kinvey?["refresh_token"])
         XCTAssertEqual(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String, client.keychain.user?.socialIdentity?.kinvey?["refresh_token"] as? String)
+        XCTAssertNotNil(client.activeUser?.metadata?.authtoken as? String)
         guard let authtoken = client.activeUser?.metadata?.authtoken as? String else {
-            XCTFail()
             return
         }
+        XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String)
         guard let accessToken = client.activeUser?.socialIdentity?.kinvey?["access_token"] as? String else {
-            XCTFail()
             return
         }
+        XCTAssertNotNil(client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String)
         guard let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String else {
-            XCTFail()
             return
         }
-        
+        XCTAssertNotNil(client.activeUser)
         guard let user = client.activeUser else {
-            XCTFail()
             return
         }
         
@@ -842,14 +843,13 @@ class UserTests: KinveyTestCase {
                     var json = try! self.client.jsonParser.toJSON(user)
                     let _socialIdentity = json["_socialIdentity"] as? JsonDictionary
                     XCTAssertNotNil(_socialIdentity)
+                    XCTAssertNotNil(_socialIdentity)
                     guard var socialIdentity = _socialIdentity else {
-                        XCTFail()
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     let _kinveyAuth = socialIdentity["kinveyAuth"] as? JsonDictionary
                     XCTAssertNotNil(_kinveyAuth)
                     guard var kinveyAuth = _kinveyAuth else {
-                        XCTFail()
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     kinveyAuth["access_token"] = UUID().uuidString
@@ -857,8 +857,9 @@ class UserTests: KinveyTestCase {
                     socialIdentity["kinveyAuth"] = kinveyAuth
                     json["_socialIdentity"] = socialIdentity
                     
-                    guard var kmd = json["_kmd"] as? JsonDictionary else {
-                        XCTFail()
+                    let _kmd = json["_kmd"] as? JsonDictionary
+                    XCTAssertNotNil(_kmd)
+                    guard var kmd = _kmd else {
                         return HttpResponse(statusCode: 404, data: Data())
                     }
                     kmd["authtoken"] = UUID().uuidString
@@ -881,8 +882,8 @@ class UserTests: KinveyTestCase {
                 switch result {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationRefresh?.fulfill()
@@ -925,8 +926,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationFind?.fulfill()
@@ -962,7 +963,7 @@ class UserTests: KinveyTestCase {
                 
                 switch result {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure:
                     break
                 }
@@ -1343,9 +1344,11 @@ class UserTests: KinveyTestCase {
     class MyCodableUser: User, Codable {
         
         @objc dynamic var foo: String?
+        var nonObjCProperty: String?
         
         enum MyCodableUserCodingKeys: String, CodingKey {
             case foo
+            case nonObjCProperty
         }
         
         required init(from decoder: Decoder) throws {
@@ -1371,7 +1374,8 @@ class UserTests: KinveyTestCase {
         override func mapping(map: Map) {
             super.mapping(map: map)
             
-            foo <- (MyCodableUserCodingKeys.foo.rawValue, map[MyCodableUserCodingKeys.foo.rawValue])
+            foo <- (MyCodableUserCodingKeys.foo.rawValue, map[MyCodableUserCodingKeys.foo])
+            nonObjCProperty <- (MyCodableUserCodingKeys.nonObjCProperty.rawValue, map[MyCodableUserCodingKeys.nonObjCProperty])
         }
         
     }
@@ -1382,50 +1386,65 @@ class UserTests: KinveyTestCase {
             client.userType = User.self
         }
         
-        let user = MyCodableUser()
-        user.foo = "bar"
-        signUp(user: user)
+        XCTContext.runActivity(named: "Sign Up") { activity in
+            let user = MyCodableUser()
+            user.foo = "bar"
+            signUp(user: user, mustIncludeSocialIdentity: true)
+            
+            XCTAssertNotNil(client.activeUser)
+            XCTAssertTrue(client.activeUser is MyCodableUser)
+            XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyCodableUser)
+        }
         
-        XCTAssertNotNil(client.activeUser)
-        XCTAssertTrue(client.activeUser is MyCodableUser)
-        XCTAssertTrue(Keychain(appKey: client.appKey!, client: client).user is MyCodableUser)
+        guard let user = client.activeUser as? MyCodableUser else {
+            return
+        }
         
-        if let user = client.activeUser as? MyCodableUser {
+        XCTAssertNotNil(user.socialIdentity?.kinvey)
+        let kinveyCount = user.socialIdentity?.kinvey?.count
+        XCTAssertGreaterThan(kinveyCount ?? 0, 0)
+        
+        if useMockData {
+            mockResponse(completionHandler: { (request) -> HttpResponse in
+                let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+                XCTAssertEqual(json["foo"] as? String, "bar")
+                let socialIdentity = json["_socialIdentity"] as? [String : Any]
+                XCTAssertNotNil(socialIdentity)
+                if let socialIdentity = socialIdentity {
+                    let kinvey = socialIdentity["kinveyAuth"] as? [String : Any]
+                    XCTAssertNotNil(kinvey)
+                    XCTAssertEqual(kinvey?.count, kinveyCount)
+                }
+                return HttpResponse(json: json)
+            })
+        }
+        defer {
             if useMockData {
-                mockResponse(completionHandler: { (request) -> HttpResponse in
-                    let json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    XCTAssertEqual(json["foo"] as? String, "bar")
-                    return HttpResponse(json: json)
-                })
+                setURLProtocol(nil)
             }
-            defer {
-                if useMockData {
-                    setURLProtocol(nil)
-                }
+        }
+        
+        weak var expectationUserSave = expectation(description: "User Save")
+        
+        user.save { (user, error) -> Void in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(error)
+            
+            XCTAssertNotNil(user)
+            XCTAssertTrue(user is MyCodableUser)
+            
+            XCTAssertNotNil(self.client.activeUser)
+            XCTAssertTrue(self.client.activeUser is MyCodableUser)
+            
+            if let myUser = user as? MyCodableUser {
+                XCTAssertEqual(myUser.foo, "bar")
             }
             
-            weak var expectationUserSave = expectation(description: "User Save")
-            
-            user.save { (user, error) -> Void in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                
-                XCTAssertNotNil(user)
-                XCTAssertTrue(user is MyCodableUser)
-                
-                XCTAssertNotNil(self.client.activeUser)
-                XCTAssertTrue(self.client.activeUser is MyCodableUser)
-                
-                if let myUser = user as? MyCodableUser {
-                    XCTAssertEqual(myUser.foo, "bar")
-                }
-                
-                expectationUserSave?.fulfill()
-            }
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationUserSave = nil
-            }
+            expectationUserSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationUserSave = nil
         }
     }
     
@@ -1438,9 +1457,8 @@ class UserTests: KinveyTestCase {
         signUp(mustIncludeSocialIdentity: false)
         
         XCTAssertNotNil(client.activeUser)
-        
+        XCTAssertNotNil(client.activeUser as? MyCodableUser)
         guard let user = client.activeUser as? MyCodableUser else {
-            XCTFail()
             return
         }
         
@@ -1473,8 +1491,8 @@ class UserTests: KinveyTestCase {
                 switch result {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationRefresh?.fulfill()
@@ -1560,8 +1578,8 @@ class UserTests: KinveyTestCase {
                     switch $0 {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationDestroy?.fulfill()
@@ -1633,8 +1651,8 @@ class UserTests: KinveyTestCase {
                     switch $0 {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationDestroy?.fulfill()
@@ -1768,7 +1786,7 @@ class UserTests: KinveyTestCase {
                         switch $0 {
                         case .success(let exists):
                             XCTAssertFalse(exists)
-                            XCTFail()
+                            XCTFail("A failure result is expected")
                         case .failure(let error):
                             XCTAssertTimeoutError(error)
                         }
@@ -1797,7 +1815,7 @@ class UserTests: KinveyTestCase {
                 
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure:
                     break
                 }
@@ -1855,8 +1873,8 @@ class UserTests: KinveyTestCase {
                     switch $0 {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationSendEmailConfirmation?.fulfill()
@@ -1913,8 +1931,8 @@ class UserTests: KinveyTestCase {
                     switch $0 {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationSendEmailConfirmation?.fulfill()
@@ -1945,7 +1963,7 @@ class UserTests: KinveyTestCase {
                 
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTrue(error is Kinvey.Error)
                     if let error = error as? Kinvey.Error {
@@ -1954,7 +1972,7 @@ class UserTests: KinveyTestCase {
                         case .invalidOperation(let description):
                             XCTAssertEqual(description, "Email is required to send the email confirmation")
                         default:
-                            XCTFail()
+                            XCTFail(error.localizedDescription)
                         }
                     }
                 }
@@ -2011,7 +2029,7 @@ class UserTests: KinveyTestCase {
                     
                     switch $0 {
                     case .success:
-                        XCTFail()
+                        XCTFail("A failure result is expected")
                     case .failure(let error):
                         let error = error as NSError
                         XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -2150,8 +2168,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationResetPassword?.fulfill()
@@ -2186,8 +2204,8 @@ class UserTests: KinveyTestCase {
                 switch $0 {
                 case .success:
                     break
-                case .failure:
-                    XCTFail()
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationResetPassword?.fulfill()
@@ -2255,7 +2273,7 @@ class UserTests: KinveyTestCase {
                 XCTAssertTrue(Thread.isMainThread)
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
@@ -2356,7 +2374,7 @@ class UserTests: KinveyTestCase {
                     
                     switch $0 {
                     case .success:
-                        XCTFail()
+                        XCTFail("A failure result is expected")
                     case .failure:
                         break
                     }
@@ -2389,7 +2407,7 @@ class UserTests: KinveyTestCase {
                 
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure:
                     break
                 }
@@ -2450,8 +2468,8 @@ class UserTests: KinveyTestCase {
                     switch $0 {
                     case .success:
                         break
-                    case .failure:
-                        XCTFail()
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
                     
                     expectationForgotUsername?.fulfill()
@@ -2474,7 +2492,7 @@ class UserTests: KinveyTestCase {
             
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure:
                 break
             }
@@ -2741,7 +2759,7 @@ class UserTests: KinveyTestCase {
                     case .clientNotInitialized:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -2813,7 +2831,7 @@ class UserTests: KinveyTestCase {
                     case .clientNotInitialized:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -2912,7 +2930,7 @@ class UserTests: KinveyTestCase {
                             "grant_type" : "authorization_code"
                         ])
                     default:
-                        XCTFail()
+                        XCTFail("A form URL encoded is expected")
                     }
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
@@ -3022,7 +3040,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 default:
-                    XCTFail()
+                    XCTFail("Mock request not handled. Request: \(request)")
                 }
                 type(of: self).count += 1
             }
@@ -3146,7 +3164,7 @@ class UserTests: KinveyTestCase {
                             "grant_type" : "authorization_code"
                         ])
                     default:
-                        XCTFail()
+                        XCTFail("Mock request not handled. Request: \(request)")
                     }
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
@@ -3256,7 +3274,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 default:
-                    XCTFail()
+                    XCTFail("Mock request not handled. Request: \(request)")
                 }
                 type(of: self).count += 1
             }
@@ -3372,7 +3390,7 @@ class UserTests: KinveyTestCase {
                             "grant_type" : "authorization_code"
                         ])
                     default:
-                        XCTFail()
+                        XCTFail("Mock request not handled. Request: \(request)")
                     }
                     
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
@@ -3480,7 +3498,7 @@ class UserTests: KinveyTestCase {
             store.find {
                 switch $0 {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure:
                     break
                 }
@@ -3611,16 +3629,15 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
                     switch error {
                     case .clientNotInitialized:
                         XCTAssertEqual(error.description, "Client is not initialized. Please call the initialize() method to initialize the client and try again.")
-                        break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -3663,7 +3680,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -3702,7 +3719,7 @@ class UserTests: KinveyTestCase {
             case 1:
                 return HttpResponse(error: timeoutError)
             default:
-                XCTFail()
+                XCTFail("Mock request not handled. Request: \(request)")
                 return HttpResponse(statusCode: 200, data: Data())
             }
         }
@@ -3723,7 +3740,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -3758,7 +3775,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -3813,7 +3830,7 @@ class UserTests: KinveyTestCase {
             case 1:
                 return HttpResponse(error: timeoutError)
             default:
-                XCTFail()
+                XCTFail("Mock request not handled. Request: \(request)")
                 return HttpResponse(statusCode: 200, data: Data())
             }
         }
@@ -3835,7 +3852,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -3873,7 +3890,7 @@ class UserTests: KinveyTestCase {
             case 2:
                 return HttpResponse(error: timeoutError)
             default:
-                XCTFail()
+                XCTFail("Mock request not handled. Request: \(request)")
                 return HttpResponse(statusCode: 200, data: Data())
             }
         }
@@ -3895,7 +3912,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.domain, NSURLErrorDomain)
@@ -3933,7 +3950,7 @@ class UserTests: KinveyTestCase {
                     data: Data()
                 )
             default:
-                XCTFail()
+                XCTFail("Mock request not handled. Request: \(request)")
                 return HttpResponse(statusCode: 200, data: Data())
             }
         }
@@ -3955,7 +3972,7 @@ class UserTests: KinveyTestCase {
             
             switch result {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 XCTAssertNotNil(error as? Kinvey.Error)
@@ -4303,86 +4320,87 @@ extension UserTests {
         tester().waitForAnimationsToFinish()
         tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
+        guard let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
-        {
-            weak var expectationLogin: XCTestExpectation? = nil
+        else {
+            XCTFail("Kinvey.MICLoginViewController was not found")
+            return
+        }
+        
+        weak var expectationLogin: XCTestExpectation? = nil
+        
+        micLoginViewController.completionHandler = { (user, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(error)
+            XCTAssertNotNil(user)
             
-            micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                
-                expectationLogin?.fulfill()
+            expectationLogin?.fulfill()
+        }
+        
+        let webView = micViewController.value(forKey: "webView") as? WKWebView
+        XCTAssertNotNil(webView)
+        if let webView = webView {
+            var username: String? = nil
+            webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                if let result = result as? String {
+                    username = result
+                }
+            })
+            XCTAssertTrue(wait(toBeTrue: username == "", timeout: 10))
+            
+            tester().waitForAnimationsToFinish()
+            tester().wait(forTimeInterval: 1)
+            
+            weak var expectationTypeUsername = expectation(description: "Type Username")
+            weak var expectationTypePassword = expectation(description: "Type Password")
+            
+            webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
+                expectationTypeUsername?.fulfill()
+            })
+            webView.evaluateJavaScript("document.getElementById('ping-password').value = 'Zse45rfv'", completionHandler: { (result, error) -> Void in
+                expectationTypePassword?.fulfill()
+            })
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationTypeUsername = nil
+                expectationTypePassword = nil
             }
             
-            let webView = micViewController.value(forKey: "webView") as? WKWebView
-            XCTAssertNotNil(webView)
-            if let webView = webView {
-                var username: String? = nil
-                webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                    if let result = result as? String {
-                        username = result
+            weak var expectationSubmitForm = expectation(description: "Submit Form")
+            
+            webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
+                expectationSubmitForm?.fulfill()
+            })
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSubmitForm = nil
+            }
+            
+            XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
+            
+            do {
+                let store = try! DataStore<Person>.collection(.network)
+                
+                weak var expectationFind = expectation(description: "Find")
+                
+                store.find {
+                    XCTAssertTrue(Thread.isMainThread)
+                    switch $0 {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
                     }
-                })
-                XCTAssertTrue(wait(toBeTrue: username == "", timeout: 10))
-                
-                tester().waitForAnimationsToFinish()
-                tester().wait(forTimeInterval: 1)
-                
-                weak var expectationTypeUsername = expectation(description: "Type Username")
-                weak var expectationTypePassword = expectation(description: "Type Password")
-                
-                webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
-                    expectationTypeUsername?.fulfill()
-                })
-                webView.evaluateJavaScript("document.getElementById('ping-password').value = 'Zse45rfv'", completionHandler: { (result, error) -> Void in
-                    expectationTypePassword?.fulfill()
-                })
-                
-                waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationTypeUsername = nil
-                    expectationTypePassword = nil
+                    
+                    expectationFind?.fulfill()
                 }
                 
-                weak var expectationSubmitForm = expectation(description: "Submit Form")
-                
-                webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
-                    expectationSubmitForm?.fulfill()
-                })
-                
                 waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationSubmitForm = nil
-                }
-                
-                XCTAssertTrue(wait(toBeTrue: self.client.activeUser != nil))
-                
-                do {
-                    let store = try! DataStore<Person>.collection(.network)
-                    
-                    weak var expectationFind = expectation(description: "Find")
-                    
-                    store.find {
-                        XCTAssertTrue(Thread.isMainThread)
-                        switch $0 {
-                        case .success:
-                            break
-                        case .failure(let error):
-                            XCTFail(error.localizedDescription)
-                        }
-                        
-                        expectationFind?.fulfill()
-                    }
-                    
-                    waitForExpectations(timeout: defaultTimeout) { error in
-                        expectationFind = nil
-                    }
+                    expectationFind = nil
                 }
             }
-        } else {
-            XCTFail()
         }
     }
     
@@ -4411,73 +4429,74 @@ extension UserTests {
         tester().waitForAnimationsToFinish()
         tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
+        guard let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.presentedViewController as? MICLoginViewController,
             let navigationController2 = micLoginViewController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
-        {
-            weak var expectationLogin: XCTestExpectation? = nil
+        else {
+            XCTFail("Kinvey.MICLoginViewController was not found")
+            return
+        }
+        
+        weak var expectationLogin: XCTestExpectation? = nil
+        
+        micLoginViewController.completionHandler = { (user, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(error)
+            XCTAssertNotNil(user)
             
-            micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
+            expectationLogin?.fulfill()
+        }
+        
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+        
+        let webView = micViewController.value(forKey: "webView") as? WKWebView
+        XCTAssertNotNil(webView)
+        if let webView = webView {
+            var wait = true
+            while wait {
+                weak var expectationWait = expectation(description: "Wait")
                 
-                expectationLogin?.fulfill()
+                webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                    if let result = result, !(result is NSNull) {
+                        wait = false
+                    }
+                    expectationWait?.fulfill()
+                })
+                
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationWait = nil
+                }
             }
             
             tester().waitForAnimationsToFinish()
             tester().wait(forTimeInterval: 1)
             
-            let webView = micViewController.value(forKey: "webView") as? WKWebView
-            XCTAssertNotNil(webView)
-            if let webView = webView {
-                var wait = true
-                while wait {
-                    weak var expectationWait = expectation(description: "Wait")
-                    
-                    webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
-                        if let result = result, !(result is NSNull) {
-                            wait = false
-                        }
-                        expectationWait?.fulfill()
-                    })
-                    
-                    waitForExpectations(timeout: defaultTimeout) { error in
-                        expectationWait = nil
-                    }
-                }
-                
-                tester().waitForAnimationsToFinish()
-                tester().wait(forTimeInterval: 1)
-                
-                weak var expectationTypeUsername = expectation(description: "Type Username")
-                weak var expectationTypePassword = expectation(description: "Type Password")
-                
-                webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
-                    expectationTypeUsername?.fulfill()
-                })
-                webView.evaluateJavaScript("document.getElementById('ping-password').value = 'Zse45rfv'", completionHandler: { (result, error) -> Void in
-                    expectationTypePassword?.fulfill()
-                })
-                
-                waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationTypeUsername = nil
-                    expectationTypePassword = nil
-                }
-                
-                weak var expectationSubmitForm = expectation(description: "Submit Form")
-                
-                webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
-                    expectationSubmitForm?.fulfill()
-                })
-                
-                waitForExpectations(timeout: defaultTimeout) { error in
-                    expectationSubmitForm = nil
-                }
+            weak var expectationTypeUsername = expectation(description: "Type Username")
+            weak var expectationTypePassword = expectation(description: "Type Password")
+            
+            webView.evaluateJavaScript("document.getElementById('ping-username').value = 'ivan'", completionHandler: { (result, error) -> Void in
+                expectationTypeUsername?.fulfill()
+            })
+            webView.evaluateJavaScript("document.getElementById('ping-password').value = 'Zse45rfv'", completionHandler: { (result, error) -> Void in
+                expectationTypePassword?.fulfill()
+            })
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationTypeUsername = nil
+                expectationTypePassword = nil
             }
-        } else {
-            XCTFail()
+            
+            weak var expectationSubmitForm = expectation(description: "Submit Form")
+            
+            webView.evaluateJavaScript("document.getElementById('userpass').submit()", completionHandler: { (result, error) -> Void in
+                expectationSubmitForm?.fulfill()
+            })
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSubmitForm = nil
+            }
         }
     }
     
@@ -4504,38 +4523,39 @@ extension UserTests {
         tester().waitForAnimationsToFinish()
         tester().wait(forTimeInterval: 1)
         
-        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
+        guard let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController,
             let navigationController2 = navigationController.presentedViewController as? UINavigationController,
             let micViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController
-        {
-            weak var expectationLogin: XCTestExpectation? = nil
+        else {
+            XCTFail("Kinvey.MICLoginViewController was not found")
+            return
+        }
+        
+        weak var expectationLogin: XCTestExpectation? = nil
+        
+        micLoginViewController.completionHandler = { (user, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNil(error)
+            XCTAssertNotNil(user)
             
-            micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                
-                expectationLogin?.fulfill()
+            expectationLogin?.fulfill()
+        }
+        
+        let webView = micViewController.value(forKey: "webView") as? UIWebView
+        XCTAssertNotNil(webView)
+        if let webView = webView {
+            var result: String?
+            while result == nil {
+                result = webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value")
             }
             
-            let webView = micViewController.value(forKey: "webView") as? UIWebView
-            XCTAssertNotNil(webView)
-            if let webView = webView {
-                var result: String?
-                while result == nil {
-                    result = webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value")
-                }
-                
-                tester().waitForAnimationsToFinish()
-                tester().wait(forTimeInterval: 1)
-                
-                webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value = 'ivan'")
-                webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-password').value = 'Zse45rfv'")
-                webView.stringByEvaluatingJavaScript(from: "document.getElementById('userpass').submit()")
-            }
-        } else {
-            XCTFail()
+            tester().waitForAnimationsToFinish()
+            tester().wait(forTimeInterval: 1)
+            
+            webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-username').value = 'ivan'")
+            webView.stringByEvaluatingJavaScript(from: "document.getElementById('ping-password').value = 'Zse45rfv'")
+            webView.stringByEvaluatingJavaScript(from: "document.getElementById('userpass').submit()")
         }
     }
     
@@ -4565,26 +4585,27 @@ extension UserTests {
             }
         }
         
-        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
+        guard let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController,
             let micLoginViewController = navigationController.topViewController as? MICLoginViewController
-        {
-            weak var expectationLogin = expectation(description: "Login")
+        else {
+            XCTFail("MICLoginViewController not found")
+            return
+        }
+        
+        weak var expectationLogin = expectation(description: "Login")
+        
+        micLoginViewController.completionHandler = { (user, error) in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertNotNil(error)
+            XCTAssertNil(user)
             
-            micLoginViewController.completionHandler = { (user, error) in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertNotNil(error)
-                XCTAssertNil(user)
-                
-                expectationLogin?.fulfill()
-            }
-            
-            tester().tapView(withAccessibilityIdentifier: "Login")
-            
-            waitForExpectations(timeout: defaultTimeout) { error in
-                expectationLogin = nil
-            }
-        } else {
-            XCTFail()
+            expectationLogin?.fulfill()
+        }
+        
+        tester().tapView(withAccessibilityIdentifier: "Login")
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationLogin = nil
         }
     }
     
@@ -4609,7 +4630,7 @@ extension UserTests {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertNotNil(error as? Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -4620,7 +4641,7 @@ extension UserTests {
                         XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
                         XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -4653,7 +4674,7 @@ extension UserTests {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertNotNil(error as? Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -4664,7 +4685,7 @@ extension UserTests {
                         XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
                         XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -4694,7 +4715,7 @@ extension UserTests {
                 case .clientNotInitialized:
                     break
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             
@@ -4905,7 +4926,7 @@ extension UserTests {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -4913,7 +4934,7 @@ extension UserTests {
                     case .requestTimeout:
                         XCTAssertEqual(error.description, "Request Timeout")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -4936,7 +4957,7 @@ extension UserTests {
                     let micLoginViewController = navigationController2.topViewController as? Kinvey.MICLoginViewController,
                     let closeButton = micLoginViewController.navigationItem.leftBarButtonItem
                 else {
-                    XCTFail()
+                    XCTFail("Kinvey.MICLoginViewController close button not found")
                     return
                 }
                 closeButton.target!.performSelector(onMainThread: closeButton.action!, with: self, waitUntilDone: true)
@@ -4958,7 +4979,7 @@ extension UserTests {
             XCTAssertTrue(Thread.isMainThread)
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -4966,7 +4987,7 @@ extension UserTests {
                     case .requestCancelled:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -5033,7 +5054,7 @@ extension UserTests {
             
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
@@ -5066,7 +5087,7 @@ extension UserTests {
             
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertNotNil(error as? Kinvey.Error)
             }
@@ -5144,7 +5165,7 @@ extension UserTests {
             store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
                 switch result {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let errors):
                     XCTAssertEqual(errors.count, 1)
                     XCTAssertNotNil(errors.first as? Kinvey.Error)
@@ -5227,3 +5248,5 @@ extension UserTests {
 }
 
 #endif
+
+// swiftlint:enable nesting

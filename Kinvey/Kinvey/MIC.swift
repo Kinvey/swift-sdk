@@ -318,13 +318,13 @@ public enum MICUserInterface {
 public enum MICApiVersion: String {
     
     /// Version 1
-    case v1 = "v1"
+    case v1
     
     /// Version 2
-    case v2 = "v2"
+    case v2
     
     /// Version 3
-    case v3 = "v3"
+    case v3
     
 }
 

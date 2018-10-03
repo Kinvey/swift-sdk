@@ -16,7 +16,7 @@ class SyncStoreTests: StoreTestCase {
     class CheckForNetworkURLProtocol: URLProtocol {
         
         override class func canInit(with request: URLRequest) -> Bool {
-            XCTFail()
+            XCTFail("A request was initialized: \(request)")
             return false
         }
         
@@ -345,7 +345,6 @@ class SyncStoreTests: StoreTestCase {
         }
         
     }
-    
     
     func testCustomTag() {
         let fileManager = FileManager.default
@@ -699,7 +698,7 @@ class SyncStoreTests: StoreTestCase {
                 case .invalidDataStoreType:
                     break
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
             
@@ -713,7 +712,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testPurgeTimeoutError() {
         let person = save()
-        person.age = person.age + 1
+        person.age += 1
         save(person)
         
         mockResponse(error: timeoutError)
@@ -740,7 +739,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testPurgeTimeoutErrorSync() {
         let person = save()
-        person.age = person.age + 1
+        person.age += 1
         save(person)
         
         mockResponse(error: timeoutError)
@@ -756,7 +755,7 @@ class SyncStoreTests: StoreTestCase {
         }
         switch result {
         case .success:
-            XCTFail()
+            XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTimeoutError(error)
         }
@@ -764,7 +763,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testPurgeTimeoutErrorTryCatchSync() {
         let person = save()
-        person.age = person.age + 1
+        person.age += 1
         save(person)
         
         mockResponse(error: timeoutError)
@@ -1001,7 +1000,7 @@ class SyncStoreTests: StoreTestCase {
                     case .invalidDataStoreType:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1299,7 +1298,7 @@ class SyncStoreTests: StoreTestCase {
                     case .invalidDataStoreType:
                         break
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -1476,8 +1475,6 @@ class SyncStoreTests: StoreTestCase {
             ]
         ]
         
-        
-        
         do {
             let query = Query(format: "personId == %@", "Victor")
             
@@ -1540,7 +1537,7 @@ class SyncStoreTests: StoreTestCase {
             self.assertThread()
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 break
             }
@@ -1771,7 +1768,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationRemove?.fulfill()
             }
         } catch {
-            XCTFail()
+            XCTFail(error.localizedDescription)
             expectationRemove?.fulfill()
         }
             
@@ -1841,11 +1838,11 @@ class SyncStoreTests: StoreTestCase {
         do {
             person.personId = nil
             try store.remove(person) { _ in
-                XCTFail()
+                XCTFail("Handler was not expected to be called")
                 
                 expectationRemove?.fulfill()
             }
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             expectationRemove?.fulfill()
         }
@@ -2162,7 +2159,6 @@ class SyncStoreTests: StoreTestCase {
             }
         }
 
-        
         do {
             weak var expectationFind = expectation(description: "Find")
             
@@ -2704,6 +2700,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testRealmCacheNotEntity() {
+        // swiftlint:disable nesting
         class NotEntityPersistable: NSObject, Persistable {
             
             static func collectionName() -> String {
@@ -2745,6 +2742,7 @@ class SyncStoreTests: StoreTestCase {
             }
             
         }
+        // swiftlint:enable nesting
         
         expect {
             try RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
@@ -2752,6 +2750,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testRealmSyncNotEntity() {
+        // swiftlint:disable nesting
         class NotEntityPersistable: NSObject, Persistable {
             
             static func collectionName() -> String {
@@ -2791,6 +2790,7 @@ class SyncStoreTests: StoreTestCase {
             }
             
         }
+        // swiftlint:enable nesting
         
         expect {
             try RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
@@ -2851,7 +2851,7 @@ class SyncStoreTests: StoreTestCase {
         ) {
             switch $0 {
             case .success:
-                XCTFail()
+                XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertNotNil(error as? Kinvey.Error)
                 if let error = error as? Kinvey.Error {
@@ -2859,7 +2859,7 @@ class SyncStoreTests: StoreTestCase {
                     case .invalidOperation(let description):
                         XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
                     default:
-                        XCTFail()
+                        XCTFail(error.localizedDescription)
                     }
                 }
             }
@@ -2900,7 +2900,7 @@ class SyncStoreTests: StoreTestCase {
         }
         switch result {
         case .success:
-            XCTFail()
+            XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertNotNil(error as? Kinvey.Error)
             if let error = error as? Kinvey.Error {
@@ -2908,7 +2908,7 @@ class SyncStoreTests: StoreTestCase {
                 case .invalidOperation(let description):
                     XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -2938,7 +2938,7 @@ class SyncStoreTests: StoreTestCase {
         )
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
-            XCTFail()
+            XCTFail("Error is expected")
         } catch {
             XCTAssertNotNil(error as? Kinvey.Error)
             if let error = error as? Kinvey.Error {
@@ -2946,7 +2946,7 @@ class SyncStoreTests: StoreTestCase {
                 case .invalidOperation(let description):
                     XCTAssertEqual(description, "Custom Aggregation not supported against local cache")
                 default:
-                    XCTFail()
+                    XCTFail(error.localizedDescription)
                 }
             }
         }
@@ -3802,6 +3802,7 @@ class SyncStoreTests: StoreTestCase {
             }
         }
         
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 1)
         
         do {
@@ -4026,7 +4027,7 @@ class SyncStoreTests: StoreTestCase {
             store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
                 switch result {
                 case .success:
-                    XCTFail()
+                    XCTFail("A failure result is expected")
                 case .failure(let errors):
                     XCTAssertEqual(errors.count, 1)
                     if let error = errors.first {
@@ -4709,7 +4710,6 @@ class SyncStoreTests: StoreTestCase {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
-        
         
         var initialCount = Int64(0)
         do {
@@ -5520,7 +5520,6 @@ class SyncStoreTests: StoreTestCase {
             }
         }
     }
-    
 
     func testSyncStoreDisabledDeltasetWithSync() {
         let store = try! DataStore<Person>.collection(.sync)
@@ -5949,7 +5948,6 @@ class SyncStoreTests: StoreTestCase {
         let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
-        
         
         var initialCount = Int64(0)
         do {
@@ -6732,7 +6730,6 @@ class SyncStoreTests: StoreTestCase {
         var idToUpdate = ""
         var idToDelete = ""
         
-        
         var initialCount = Int64(0)
         do {
             if !useMockData {
@@ -7241,7 +7238,7 @@ class SyncStoreTests: StoreTestCase {
             case .change(let person):
                 XCTAssertEqual(person.name, "Victor Barros")
             case .deleted:
-                XCTFail()
+                XCTFail("Delete changes was not expected")
             case .error(let error):
                 XCTFail(error.localizedDescription)
             }

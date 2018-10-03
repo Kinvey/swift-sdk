@@ -1,0 +1,30 @@
+excluded:
+  - .build
+  - Carthage
+disabled_rules:
+  - opening_brace
+  - line_length
+  - force_cast
+  - identifier_name
+  - force_try
+  - type_name
+  - cyclomatic_complexity
+  - function_body_length
+  - type_body_length
+  - file_length
+  - trailing_whitespace
+  - colon
+  - empty_enum_arguments
+  - empty_parentheses_with_trailing_closure
+  - redundant_discardable_let
+  - function_parameter_count
+  - redundant_optional_initialization
+  - private_over_fileprivate
+  - unused_optional_binding
+  - operator_whitespace
+  - unused_closure_parameter
+  - large_tuple
+  - generic_type_name
+  - syntactic_sugar
+  - trailing_comma
+  - multiple_closures_with_trailing_closure

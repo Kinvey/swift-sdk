@@ -924,6 +924,7 @@ open class User: NSObject, Credential {
         acl = try container.decodeIfPresent(Acl.self, forKey: .acl)
         metadata = try container.decodeIfPresent(UserMetadata.self, forKey: .metadata)
         refreshToken = try container.decodeIfPresent(String.self, forKey: .refreshToken)
+        socialIdentity = try container.decodeIfPresent(UserSocialIdentity.self, forKey: .socialIdentity)
         username = try container.decodeIfPresent(String.self, forKey: .username)
         email = try container.decodeIfPresent(String.self, forKey: .email)
         super.init()
@@ -935,11 +936,12 @@ open class User: NSObject, Credential {
         try container.encodeIfPresent(acl, forKey: .acl)
         try container.encodeIfPresent(metadata, forKey: .metadata)
         try container.encodeIfPresent(refreshToken, forKey: .refreshToken)
+        try container.encodeIfPresent(socialIdentity, forKey: .socialIdentity)
         try container.encodeIfPresent(username, forKey: .username)
         try container.encodeIfPresent(email, forKey: .email)
     }
     
-    open func refresh<UserType: User>(anotherUser: UserType) {
+    open func refresh<UserType: User>(anotherUser: UserType, refreshCustomProperties: Bool = true) {
         _userId = anotherUser.userId
         acl = anotherUser.acl
         if let authtoken = metadata?.authtoken,
@@ -954,7 +956,7 @@ open class User: NSObject, Credential {
         socialIdentity = anotherUser.socialIdentity
         username = anotherUser.username
         email = anotherUser.email
-        if (type(of: self) != User.self) {
+        if refreshCustomProperties, type(of: self) != User.self {
             for child in Mirror(reflecting: anotherUser).children {
                 guard let label = child.label else {
                     continue
@@ -1649,6 +1651,14 @@ extension User /* Equatable */ {
 
 }
 
+extension User {
+    
+    open override func setValue(_ value: Any?, forUndefinedKey key: String) {
+        log.warning("Value for property \(type(of: self)).\(key) cannot not be set. Please override the \(#function) method.")
+    }
+    
+}
+
 /// Holds the Social Identities attached to a specific User
 public struct UserSocialIdentity {
     
@@ -1675,6 +1685,158 @@ public struct UserSocialIdentity {
         case linkedIn
         case kinvey = "kinveyAuth"
         
+    }
+    
+}
+
+extension UserSocialIdentity : Decodable {
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let container = try? container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .facebook) {
+            facebook = try container.decodeUnknownKeyValues()
+        }
+        if let container = try? container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .twitter) {
+            twitter = try container.decodeUnknownKeyValues()
+        }
+        if let container = try? container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .googlePlus) {
+            googlePlus = try container.decodeUnknownKeyValues()
+        }
+        if let container = try? container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .linkedIn) {
+            linkedIn = try container.decodeUnknownKeyValues()
+        }
+        if let container = try? container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .kinvey) {
+            kinvey = try container.decodeUnknownKeyValues()
+        }
+    }
+    
+}
+
+extension UserSocialIdentity : Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let facebook = facebook {
+            var container = container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .facebook)
+            try container.encodeUnknownKeyValues(facebook)
+        }
+        if let twitter = twitter {
+            var container = container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .twitter)
+            try container.encodeUnknownKeyValues(twitter)
+        }
+        if let googlePlus = googlePlus {
+            var container = container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .googlePlus)
+            try container.encodeUnknownKeyValues(googlePlus)
+        }
+        if let linkedIn = linkedIn {
+            var container = container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .linkedIn)
+            try container.encodeUnknownKeyValues(linkedIn)
+        }
+        if let kinvey = kinvey {
+            var container = container.nestedContainer(keyedBy: UnknownCodingKeys.self, forKey: .kinvey)
+            try container.encodeUnknownKeyValues(kinvey)
+        }
+    }
+    
+}
+
+internal struct UnknownCodingKeys: CodingKey {
+    
+    var stringValue: String
+    var intValue: Int?
+    
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+    
+    init?(intValue: Int) {
+        return nil
+    }
+    
+}
+
+extension KeyedDecodingContainer where Key == UnknownCodingKeys {
+    
+    func decodeUnknownKeyValues() throws -> [String : Any] {
+        var data = [String: Any](minimumCapacity: allKeys.count)
+
+        for key in allKeys {
+            if let value = try? decode(String.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Bool.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Double.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Float.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Int.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Int8.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Int16.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Int32.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(Int64.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(UInt.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(UInt8.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(UInt16.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(UInt32.self, forKey: key) {
+                data[key.stringValue] = value
+            } else if let value = try? decode(UInt64.self, forKey: key) {
+                data[key.stringValue] = value
+            }
+        }
+        
+        return data
+    }
+    
+}
+
+extension KeyedEncodingContainer where Key == UnknownCodingKeys {
+    
+    mutating func encodeUnknownKeyValues<T>(_ data: [String : T]) throws {
+        for (keyString, value) in data {
+            let key = UnknownCodingKeys(stringValue: keyString)!
+            switch value {
+            case is String:
+                try encode(value as! String, forKey: key)
+            case is Bool:
+                try encode(value as! Bool, forKey: key)
+            case is Double:
+                try encode(value as! Double, forKey: key)
+            case is Float:
+                try encode(value as! Float, forKey: key)
+            case is Int:
+                try encode(value as! Int, forKey: key)
+            case is Int8:
+                try encode(value as! Int8, forKey: key)
+            case is Int16:
+                try encode(value as! Int16, forKey: key)
+            case is Int32:
+                try encode(value as! Int32, forKey: key)
+            case is Int64:
+                try encode(value as! Int64, forKey: key)
+            case is UInt:
+                try encode(value as! UInt, forKey: key)
+            case is UInt8:
+                try encode(value as! UInt8, forKey: key)
+            case is UInt16:
+                try encode(value as! UInt16, forKey: key)
+            case is UInt32:
+                try encode(value as! UInt32, forKey: key)
+            case is UInt64:
+                try encode(value as! UInt64, forKey: key)
+            case is NSNull:
+                try encodeNil(forKey: key)
+            default:
+                break
+            }
+        }
     }
     
 }

@@ -22,8 +22,8 @@ class MacOSOnlyTestCase: KinveyTestCase {
             switch result {
             case .success:
                 break
-            case .failure:
-                XCTFail()
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
             }
             
             expectationSave?.fulfill()

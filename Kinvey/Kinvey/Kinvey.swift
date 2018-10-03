@@ -7,7 +7,10 @@
 //
 
 import Foundation
-import XCGLogger
+import SwiftyBeaver
+#if canImport(os)
+import os
+#endif
 
 let ObjectIdTmpPrefix = "tmp_"
 
@@ -25,14 +28,12 @@ public let deviceId = Keychain().deviceId
 fileprivate extension Keychain {
     
     var deviceId: String {
-        get {
-            var deviceId = keychain[.deviceId]
-            if deviceId == nil {
-                deviceId = UUID().uuidString
-                keychain[.deviceId] = deviceId
-            }
-            return deviceId!
+        var deviceId = keychain[.deviceId]
+        if deviceId == nil {
+            deviceId = UUID().uuidString
+            keychain[.deviceId] = deviceId
         }
+        return deviceId!
     }
     
 }
@@ -62,27 +63,26 @@ public enum LogLevel {
     /// Only log error messages when needed
     case error
     
-    /// Only log severe error messages when needed
-    case severe
+    #if DEBUG
+    static let defaultLevel: LogLevel = .debug
+    #else
+    static let defaultLevel: LogLevel = .warning
+    #endif
     
-    /// Log is turned off
-    case none
-    
-    internal var outputLevel: XCGLogger.Level {
+    internal var outputLevel: SwiftyBeaver.Level {
         switch self {
         case .verbose: return .verbose
         case .debug: return .debug
         case .info: return .info
         case .warning: return .warning
         case .error: return .error
-        case .severe: return .severe
-        case .none: return .none
         }
     }
     
 }
 
-extension XCGLogger.Level {
+extension SwiftyBeaver.Level {
+    
     internal var logLevel: LogLevel {
         switch self {
         case .verbose: return .verbose
@@ -90,28 +90,95 @@ extension XCGLogger.Level {
         case .info: return .info
         case .warning: return .warning
         case .error: return .error
-        case .severe: return .severe
-        case .none: return .none
         }
     }
+    
+    internal var osLogType: OSLogType {
+        switch self {
+        case .verbose: return .default
+        case .debug: return .debug
+        case .info: return .info
+        case .warning: return .info
+        case .error: return .error
+        }
+    }
+    
 }
 
-let log: XCGLogger = {
-    let log = XCGLogger.default
-    log.outputLevel = .warning
-    return log
+#if canImport(os)
+
+internal let osLog = OSLog(subsystem: Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName, category: "Kinvey")
+
+final class OSLogDestination : BaseDestination {
+    
+    override func send(
+        _ level: SwiftyBeaver.Level,
+        msg: String,
+        thread: String,
+        file: String,
+        function: String,
+        line: Int,
+        context: Any?
+    ) -> String? {
+        if level.rawValue >= minLevel.rawValue {
+            os_log(
+                "%@.%@:%i - \n%@",
+                log: osLog,
+                type: level.osLogType,
+                file,
+                function,
+                line,
+                msg
+            )
+        }
+        
+        return super.send(
+            level,
+            msg: msg,
+            thread: thread,
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+    
+}
+
+#endif
+
+let log: SwiftyBeaver.Type = {
+    let logLevel = LogLevel.defaultLevel.outputLevel
+    
+    let console = ConsoleDestination()
+    console.levelColor.verbose  = "⚪️ "
+    console.levelColor.debug    = "☑️ "
+    console.levelColor.info     = "🔵 "
+    console.levelColor.warning  = "🔶 "
+    console.levelColor.error    = "🔴 "
+    console.minLevel = logLevel
+    SwiftyBeaver.addDestination(console)
+    
+    #if canImport(os)
+    let osLog = OSLogDestination()
+    osLog.minLevel = logLevel
+    SwiftyBeaver.addDestination(osLog)
+    #endif
+    
+    return SwiftyBeaver.self
 }()
 
 func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) -> Never  {
     let message = message()
-    log.severe(message)
+    log.error(message)
     Swift.fatalError(message, file: file, line: line)
 }
 
 /// Level of logging used to log messages inside the Kinvey library
-public var logLevel: LogLevel = log.outputLevel.logLevel {
+public var logLevel: LogLevel = LogLevel.defaultLevel {
     didSet {
-        log.outputLevel = logLevel.outputLevel
+        for destination in SwiftyBeaver.destinations {
+            destination.minLevel = logLevel.outputLevel
+        }
     }
 }
 
@@ -155,7 +222,7 @@ let groupId = "_group_"
         if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
             return URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent().path
         } else {
-            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier!).path
+            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName).path
         }
     }()
 #else

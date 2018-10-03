@@ -10,6 +10,8 @@ import XCTest
 import ObjectMapper
 import Kinvey
 
+// swiftlint:disable nesting
+
 class CustomEndpointTests: KinveyTestCase {
     
     func testCustomEndpoint() {
@@ -1455,3 +1457,5 @@ class CustomEndpointTests: KinveyTestCase {
     }
     
 }
+
+// swiftlint:enable nesting
