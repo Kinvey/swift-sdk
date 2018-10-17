@@ -114,8 +114,14 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             let data = data
                         {
                             let json = try? self.client.jsonParser.parseDictionary(from: data)
-                            if let cache = self.cache, let json = json, let objectId = objectId, request.request.httpMethod != "DELETE" {
-                                if let entity = cache.find(byId: objectId) {
+                            if let cache = self.cache,
+                                let json = json,
+                                request.request.httpMethod != "DELETE"
+                            {
+                                if let objectId = objectId,
+                                    objectId.starts(with: ObjectIdTmpPrefix),
+                                    let entity = cache.find(byId: objectId)
+                                {
                                     cache.remove(entity: entity)
                                 }
                                 
