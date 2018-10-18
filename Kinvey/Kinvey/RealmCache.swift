@@ -352,15 +352,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         if let entityObj = obj as? Entity,
             entityObj.entityIdReference == nil,
             let entity = entity as? Entity,
-            entity.realm != nil,
-            let realmConfiguration = entity.realmConfiguration
+            let realm = entity.realm
         {
-            entityObj.realmConfiguration = realmConfiguration
+            entityObj.realmConfiguration = realm.configuration
             entityObj.entityIdReference = (entity as NSObject & Persistable).entityId
         }
             
         return obj
-
     }
     
     func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
