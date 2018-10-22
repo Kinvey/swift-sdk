@@ -383,6 +383,10 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     
     func execute(urlSession: URLSession? = nil, _ completionHandler: DataResponseCompletionHandler? = nil) {
+        execute(retries: true, urlSession: urlSession, completionHandler: completionHandler)
+    }
+    
+    func execute(retries: Bool, urlSession: URLSession?, completionHandler: DataResponseCompletionHandler?) {
         guard !cancelled else {
             completionHandler?(nil, nil, Error.requestCancelled)
             return
@@ -390,6 +394,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         
         prepareRequest()
         
+        let client = self.options?.client ?? self.client
         if client.logNetworkEnabled {
             do {
                 log.debug("\(self.request.description)")
@@ -405,30 +410,49 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                     }
                 }
                 if response.statusCode == 401,
+                    retries,
                     let user = self.credential as? User
                 {
-                    guard let refreshToken = user.refreshToken else {
-                        user.logout()
-                        completionHandler?(data, HttpResponse(response: response), error)
-                        return
-                    }
-                    let options = try! Options(self.options, authServiceId: self.client.clientId)
-                    MIC.login(refreshToken: refreshToken, options: options) {
-                        switch $0 {
-                        case .success(let user):
-                            self.credential = user
-                            self.execute(urlSession: urlSession, completionHandler)
-                        case .failure(let error):
-                            if let error = error as? Kinvey.Error {
-                                switch error {
-                                case .invalidCredentials:
-                                    if let user = self.credential as? User {
-                                        user.logout()
-                                    }
-                                default: break
-                                }
+                    DispatchQueue.global(qos: .default).async {
+                        guard !client.refreshingToken else {
+                            client.refreshTokenDispatchGroup.wait()
+                            if let newUser = client.activeUser {
+                                self.credential = newUser
+                                self.execute(retries: false, urlSession: urlSession, completionHandler: completionHandler)
+                            } else {
+                                user.logout()
+                                completionHandler?(data, HttpResponse(response: response), error)
                             }
+                            return
+                        }
+                        client.refreshingToken = true
+                        client.refreshTokenDispatchGroup.enter()
+                        guard let refreshToken = user.refreshToken else {
+                            user.logout()
                             completionHandler?(data, HttpResponse(response: response), error)
+                            client.refreshTokenDispatchGroup.leave()
+                            return
+                        }
+                        let options = try! Options(self.options, authServiceId: client.clientId)
+                        MIC.login(refreshToken: refreshToken, options: options) {
+                            switch $0 {
+                            case .success(let user):
+                                self.credential = user
+                                self.execute(urlSession: urlSession, completionHandler)
+                            case .failure(let error):
+                                if let error = error as? Kinvey.Error {
+                                    switch error {
+                                    case .invalidCredentials:
+                                        if let user = self.credential as? User {
+                                            user.logout()
+                                        }
+                                    default: break
+                                    }
+                                }
+                                completionHandler?(data, HttpResponse(response: response), error)
+                            }
+                            client.refreshingToken = false
+                            client.refreshTokenDispatchGroup.leave()
                         }
                     }
                     return

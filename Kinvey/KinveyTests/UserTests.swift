@@ -3333,6 +3333,159 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testMICRefreshTokenMultipleCalls() {
+        signUp(mustIncludeSocialIdentity: true)
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        XCTAssertNotNil(user.metadata?.authtoken)
+        guard let authtoken = user.metadata?.authtoken else {
+            return
+        }
+        
+        XCTAssertNotNil(user.authorizationHeader)
+        guard let authorizationHeader = user.authorizationHeader else {
+            return
+        }
+        
+        let newAuthToken = UUID().uuidString
+        let newRefreshToken = UUID().uuidString
+        
+        var requests = [String]()
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            requests.append(urlComponents.path)
+            let authorization = request.allHTTPHeaderFields!["Authorization"]!
+            if authorization == authorizationHeader {
+                return HttpResponse(
+                    statusCode: 401,
+                    json: [:]
+                )
+            }
+            switch urlComponents.path {
+            case "/user/_kid_/id1":
+                return HttpResponse(json: [
+                    "_id" : "id1",
+                    "username" : "user1"
+                ])
+            case "/user/_kid_/id2":
+                return HttpResponse(json: [
+                    "_id" : "id2",
+                    "username" : "user2"
+                ])
+            case "/user/_kid_/id3":
+                return HttpResponse(json: [
+                    "_id" : "id3",
+                    "username" : "user3"
+                ])
+            case "/v3/oauth/token":
+                return HttpResponse(json: [
+                    "access_token" : UUID().uuidString,
+                    "token_type" : "Bearer",
+                    "expires_in" : 3599,
+                    "refresh_token" : newRefreshToken
+                ])
+            case "/user/_kid_/login":
+                let userId = user.userId
+                let user = [
+                    "_socialIdentity" : [
+                        "kinveyAuth" : [
+                            "id" : "custom",
+                            "access_token" : UUID().uuidString,
+                            "refresh_token" : UUID().uuidString
+                        ]
+                    ],
+                    "password" : UUID().uuidString,
+                    "username" : UUID().uuidString,
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString(),
+                        "authtoken" : newAuthToken
+                    ],
+                    "_id" : userId,
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ]
+                ] as [String : Any]
+                MockKinveyBackend.user[userId] = user
+                return HttpResponse(statusCode: 201, json: user)
+            default:
+                XCTFail(urlComponents.path)
+                return HttpResponse(
+                    statusCode: 404,
+                    json: [:]
+                )
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var user1Expectation = expectation(description: "User 1")
+        
+        User.get(userId: "id1", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user1")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user1Expectation?.fulfill()
+        }
+        
+        weak var user2Expectation = expectation(description: "User 2")
+        
+        User.get(userId: "id2", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user2")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user2Expectation?.fulfill()
+        }
+        
+        weak var user3Expectation = expectation(description: "User 3")
+        
+        User.get(userId: "id3", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user3")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user3Expectation?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+            XCTAssertNil(error)
+            if let error = error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTAssertEqual(requests.count, 8)
+        XCTAssertTrue(requests[0].starts(with: "/user/_kid_/id"))
+        XCTAssertTrue(requests[1].starts(with: "/user/_kid_/id"))
+        XCTAssertTrue(requests[2].starts(with: "/user/_kid_/id"))
+        XCTAssertEqual(requests[3], "/v3/oauth/token")
+        XCTAssertEqual(requests[4], "/user/_kid_/login")
+        XCTAssertTrue(requests[5].starts(with: "/user/_kid_/id"))
+        XCTAssertTrue(requests[6].starts(with: "/user/_kid_/id"))
+        XCTAssertTrue(requests[7].starts(with: "/user/_kid_/id"))
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        guard let user2 = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        XCTAssertEqual(newAuthToken, user2.metadata?.authtoken)
+        XCTAssertEqual(newRefreshToken, user2.refreshToken)
+    }
+    
     func testMICLoginAutomatedAuthorizationGrantFlowRefreshTokenFails() {
         if let user = client.activeUser {
             user.logout()
