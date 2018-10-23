@@ -3468,11 +3468,9 @@ class UserTests: KinveyTestCase {
         }
         
         XCTAssertEqual(requests.count, 8)
-        XCTAssertTrue(requests[0].starts(with: "/user/_kid_/id"))
-        XCTAssertTrue(requests[1].starts(with: "/user/_kid_/id"))
-        XCTAssertTrue(requests[2].starts(with: "/user/_kid_/id"))
-        XCTAssertEqual(requests[3], "/v3/oauth/token")
-        XCTAssertEqual(requests[4], "/user/_kid_/login")
+        XCTAssertTrue(requests.first!.starts(with: "/user/_kid_/id"))
+        XCTAssertEqual(requests.filter { $0 == "/v3/oauth/token" }.count, 1)
+        XCTAssertEqual(requests.filter { $0 == "/user/_kid_/login" }.count, 1)
         XCTAssertTrue(requests[5].starts(with: "/user/_kid_/id"))
         XCTAssertTrue(requests[6].starts(with: "/user/_kid_/id"))
         XCTAssertTrue(requests[7].starts(with: "/user/_kid_/id"))
