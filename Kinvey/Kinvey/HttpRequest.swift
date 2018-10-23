@@ -383,10 +383,10 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     
     func execute(urlSession: URLSession? = nil, _ completionHandler: DataResponseCompletionHandler? = nil) {
-        execute(retries: true, urlSession: urlSession, completionHandler: completionHandler)
+        execute(retry: true, urlSession: urlSession, completionHandler)
     }
     
-    func execute(retries: Bool, urlSession: URLSession?, completionHandler: DataResponseCompletionHandler?) {
+    func execute(retry: Bool, urlSession: URLSession?, _ completionHandler: DataResponseCompletionHandler?) {
         guard !cancelled else {
             completionHandler?(nil, nil, Error.requestCancelled)
             return
@@ -394,74 +394,110 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         
         prepareRequest()
         
-        let client = self.options?.client ?? self.client
         if client.logNetworkEnabled {
             do {
-                log.debug("\(self.request.description)")
+                log.debug("\(request.description)")
             }
         }
         
         let urlSession = urlSession ?? options?.urlSession ?? client.urlSession
         task = urlSession.dataTask(with: request) { (data, response, error) -> Void in
-            if let response = response as? HTTPURLResponse {
-                if self.client.logNetworkEnabled {
-                    do {
-                        log.debug("\(response.description(data))")
-                    }
-                }
-                if response.statusCode == 401,
-                    retries,
-                    let user = self.credential as? User
-                {
-                    DispatchQueue.global(qos: .default).async {
-                        guard !client.refreshingToken else {
-                            client.refreshTokenDispatchGroup.wait()
-                            if let newUser = client.activeUser {
-                                self.credential = newUser
-                                self.execute(retries: false, urlSession: urlSession, completionHandler: completionHandler)
-                            } else {
-                                user.logout()
-                                completionHandler?(data, HttpResponse(response: response), error)
-                            }
-                            return
-                        }
-                        client.refreshingToken = true
-                        client.refreshTokenDispatchGroup.enter()
-                        guard let refreshToken = user.refreshToken else {
-                            user.logout()
-                            completionHandler?(data, HttpResponse(response: response), error)
-                            client.refreshTokenDispatchGroup.leave()
-                            return
-                        }
-                        let options = try! Options(self.options, authServiceId: client.clientId)
-                        MIC.login(refreshToken: refreshToken, options: options) {
-                            switch $0 {
-                            case .success(let user):
-                                self.credential = user
-                                self.execute(urlSession: urlSession, completionHandler)
-                            case .failure(let error):
-                                if let error = error as? Kinvey.Error {
-                                    switch error {
-                                    case .invalidCredentials:
-                                        if let user = self.credential as? User {
-                                            user.logout()
-                                        }
-                                    default: break
-                                    }
-                                }
-                                completionHandler?(data, HttpResponse(response: response), error)
-                            }
-                            client.refreshingToken = false
-                            client.refreshTokenDispatchGroup.leave()
-                        }
-                    }
-                    return
-                }
-            }
-            
-            completionHandler?(data, HttpResponse(response: response), error)
+            self.handleResponse(
+                retry: retry,
+                urlSession: urlSession,
+                data: data,
+                response: response,
+                error: error,
+                completionHandler: completionHandler
+            )
         }
         task!.resume()
+    }
+    
+    private func handleResponse(
+        retry: Bool,
+        urlSession: URLSession,
+        data: Data?,
+        response: URLResponse?,
+        error: Swift.Error?,
+        completionHandler: DataResponseCompletionHandler?
+    ) {
+        if let response = response as? HTTPURLResponse {
+            if client.logNetworkEnabled {
+                do {
+                    log.debug("\(response.description(data))")
+                }
+            }
+            if response.statusCode == 401,
+                retry,
+                let user = credential as? User
+            {
+                DispatchQueue.global(qos: .default).async {
+                    self.refreshToken(
+                        user: user,
+                        urlSession: urlSession,
+                        data: data,
+                        response: response,
+                        error: error,
+                        completionHandler: completionHandler
+                    )
+                }
+                return
+            }
+        }
+        
+        completionHandler?(data, HttpResponse(response: response), error)
+    }
+    
+    private func refreshToken(
+        user: User,
+        urlSession: URLSession,
+        data: Data?,
+        response: URLResponse?,
+        error: Swift.Error?,
+        completionHandler: DataResponseCompletionHandler?
+    ) {
+        guard !client.refreshingToken else {
+            client.refreshTokenDispatchGroup.wait()
+            if let newUser = client.activeUser {
+                credential = newUser
+                execute(retry: false, urlSession: urlSession, completionHandler)
+            } else {
+                user.logout()
+                completionHandler?(data, HttpResponse(response: response), error)
+            }
+            return
+        }
+        client.refreshingToken = true
+        client.refreshTokenDispatchGroup.enter()
+        guard let refreshToken = user.refreshToken else {
+            user.logout()
+            completionHandler?(data, HttpResponse(response: response), error)
+            client.refreshTokenDispatchGroup.leave()
+            return
+        }
+        let options = try! Options(self.options, authServiceId: client.clientId)
+        MIC.login(refreshToken: refreshToken, options: options) {
+            switch $0 {
+            case .success(let user):
+                self.credential = user
+                self.execute(retry: false, urlSession: urlSession, completionHandler)
+            case .failure(let error):
+                if let error = error as? Kinvey.Error {
+                    switch error {
+                    case .invalidCredentials:
+                        if let user = self.credential as? User {
+                            user.logout()
+                        }
+                    default:
+                        break
+                    }
+                }
+                completionHandler?(data, HttpResponse(response: response), error)
+            }
+            self.client.refreshingToken = false
+            self.client.refreshTokenDispatchGroup.leave()
+        }
     }
     
     internal func cancel() {
