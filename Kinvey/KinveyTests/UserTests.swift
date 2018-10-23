@@ -3468,12 +3468,20 @@ class UserTests: KinveyTestCase {
         }
         
         XCTAssertEqual(requests.count, 8)
-        XCTAssertTrue(requests.first!.starts(with: "/user/_kid_/id"))
+        if let request = requests.first {
+            XCTAssertTrue(request.starts(with: "/user/_kid_/id"))
+        }
         XCTAssertEqual(requests.filter { $0 == "/v3/oauth/token" }.count, 1)
         XCTAssertEqual(requests.filter { $0 == "/user/_kid_/login" }.count, 1)
-        XCTAssertTrue(requests[5].starts(with: "/user/_kid_/id"))
-        XCTAssertTrue(requests[6].starts(with: "/user/_kid_/id"))
-        XCTAssertTrue(requests[7].starts(with: "/user/_kid_/id"))
+        if requests.count > 5 {
+            XCTAssertTrue(requests[5].starts(with: "/user/_kid_/id"))
+        }
+        if requests.count > 6 {
+            XCTAssertTrue(requests[6].starts(with: "/user/_kid_/id"))
+        }
+        if requests.count > 7 {
+            XCTAssertTrue(requests[7].starts(with: "/user/_kid_/id"))
+        }
         
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         guard let user2 = Kinvey.sharedClient.activeUser else {
