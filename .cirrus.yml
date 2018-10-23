@@ -1,0 +1,7 @@
+task:
+  name: macOS
+  osx_instance:
+    image: high-sierra-xcode-10.0
+  download_dependencies_script: make travisci-cache
+  test_macos_script: make test-macos
+  test_ios_script: make test-ios
