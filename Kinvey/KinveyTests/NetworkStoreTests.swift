@@ -177,7 +177,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -3759,10 +3759,19 @@ class NetworkStoreTests: StoreTestCase {
         
         var running = true
         
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         mockResponse { (request) -> HttpResponse in
+            let currentRunLoop = CFRunLoopGetCurrent()
             while running {
                 autoreleasepool {
+                    DispatchQueue.main.async { runLoop = currentRunLoop }
                     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                    DispatchQueue.main.async { runLoop = nil }
                 }
             }
             return HttpResponse(statusCode: 404, data: Data())

@@ -458,11 +458,14 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         completionHandler: DataResponseCompletionHandler?
     ) {
         guard !client.refreshingToken else {
+            log.debug("Waiting to refresh token. Request: \(request.url!)")
             client.refreshTokenDispatchGroup.wait()
             if let newUser = client.activeUser {
+                log.debug("Retrying request after refresh token. Request: \(request.url!)")
                 credential = newUser
                 execute(retry: false, urlSession: urlSession, completionHandler)
             } else {
+                log.debug("Refresh token failed. Logging out current user. Request: \(request.url!)")
                 user.logout()
                 completionHandler?(data, HttpResponse(response: response), error)
             }
@@ -471,28 +474,34 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         client.refreshingToken = true
         client.refreshTokenDispatchGroup.enter()
         guard let refreshToken = user.refreshToken else {
+            log.debug("Refresh token not available. Logging out current user. Request: \(request.url!)")
             user.logout()
             completionHandler?(data, HttpResponse(response: response), error)
+            self.client.refreshingToken = false
             client.refreshTokenDispatchGroup.leave()
             return
         }
+        log.debug("Refreshing token. Request: \(request.url!)")
         let options = try! Options(self.options, authServiceId: client.clientId)
         MIC.login(refreshToken: refreshToken, options: options) {
             switch $0 {
             case .success(let user):
                 self.credential = user
+                log.debug("Retrying request after refresh token. Request: \(self.request.url!)")
                 self.execute(retry: false, urlSession: urlSession, completionHandler)
             case .failure(let error):
                 if let error = error as? Kinvey.Error {
                     switch error {
                     case .invalidCredentials:
                         if let user = self.credential as? User {
+                            log.debug("Logging out current user. Request: \(self.request.url!)")
                             user.logout()
                         }
                     default:
                         break
                     }
                 }
+                log.debug("Refresh token failed. Request: \(self.request.url!)")
                 completionHandler?(data, HttpResponse(response: response), error)
             }
             self.client.refreshingToken = false
