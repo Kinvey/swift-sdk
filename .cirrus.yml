@@ -1,0 +1,17 @@
+task:
+  name: macOS
+  osx_instance:
+    image: high-sierra-xcode-10.0
+  download_dependencies_script: make travisci-cache
+  brew_update_script: brew update
+  install_carthage_script: brew install carthage
+  test_macos_script: make test-macos
+
+task:
+  name: iOS
+  osx_instance:
+    image: high-sierra-xcode-10.0
+  download_dependencies_script: make travisci-cache
+  brew_update_script: brew update
+  install_carthage_script: brew install carthage
+  test_ios_script: make test-ios

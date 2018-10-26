@@ -163,14 +163,23 @@ extension XCTestCase {
         } else {
             protocolClasses = []
             client.urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
+            while MockURLProtocol.running {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+            }
         }
     }
     
     class MockURLProtocol: URLProtocol {
         
         static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
+        static var function: String?
+        static var runLoop: CFRunLoop?
+        static var running = false
         
         override class func canInit(with request: URLRequest) -> Bool {
+            while running {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+            }
             var matches = false
             if let url = request.url,
                 let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
@@ -178,22 +187,35 @@ extension XCTestCase {
             {
                 matches = host.hasSuffix(".kinvey.com") || host.hasSuffix(".googleapis.com")
             }
+            log.debug("Mock \(function ?? "") return \(matches) \(request.url!)")
             return matches
         }
         
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+            while running {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+            }
             return request
         }
         
         override class func canInit(with task: URLSessionTask) -> Bool {
+            while running {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+            }
             var matches = false
             if let request = task.currentRequest {
                 matches = canInit(with: request)
             }
+            log.debug("Mock \(function ?? "") return \(matches) \(task.currentRequest!.url!)")
             return matches
         }
         
         override func startLoading() {
+            while MockURLProtocol.running {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+            }
+            MockURLProtocol.running = true
+            log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
             let responseObj = MockURLProtocol.completionHandler!(self.request)
             if let error = responseObj.error {
                 self.client!.urlProtocol(self, didFailWithError: error)
@@ -201,10 +223,13 @@ extension XCTestCase {
                 let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
                 self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
                 if let chunks = responseObj.chunks {
+                    let currentRunLoop = CFRunLoopGetCurrent()
                     for chunk in chunks {
                         self.client!.urlProtocol(self, didLoad: chunk.data)
-                        if let delay = chunk.delay {                        
+                        if let delay = chunk.delay {
+                            DispatchQueue.main.async { MockURLProtocol.runLoop = currentRunLoop }
                             RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                            DispatchQueue.main.async { MockURLProtocol.runLoop = nil }
                         }
                     }
                 }
@@ -213,56 +238,63 @@ extension XCTestCase {
         }
         
         override func stopLoading() {
+            log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
+            MockURLProtocol.running = false
         }
         
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary, function: String = #function) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary], function: String = #function) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json))
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String) {
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: string.data(using: .utf8))
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String, function: String = #function) {
+        mockResponse(statusCode: statusCode, headerFields: headerFields, data: string.data(using: .utf8), function: function)
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?, function: String = #function) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)
         }
+        MockURLProtocol.function = function
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?, function: String = #function) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: chunks)
         }
+        MockURLProtocol.function = function
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?) {
+    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?, function: String = #function) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: data?.map { ChunkData(data: $0) })
         }
+        MockURLProtocol.function = function
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func mockResponse(error: Swift.Error) {
+    func mockResponse(error: Swift.Error, function: String = #function) {
         MockURLProtocol.completionHandler = { _ in
             return HttpResponse(error: error)
         }
+        MockURLProtocol.function = function
         setURLProtocol(MockURLProtocol.self)
     }
     
-    func mockResponse(client: Client = sharedClient, completionHandler: @escaping (URLRequest) -> HttpResponse) {
+    func mockResponse(client: Client = sharedClient, function: String = #function, completionHandler: @escaping (URLRequest) -> HttpResponse) {
         MockURLProtocol.completionHandler = completionHandler
+        MockURLProtocol.function = function
         setURLProtocol(MockURLProtocol.self, client: client)
     }
     
@@ -377,8 +409,19 @@ class KinveyTestCase: XCTestCase {
     }
     
     private var originalLogLevel: LogLevel!
+    private var running = false
     
     override func setUp() {
+        if running {
+            keyValueObservingExpectation(for: self, keyPath: NSExpression(forKeyPath: \KinveyTestCase.running).keyPath) { (obj, change) -> Bool in
+                return !self.running
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+        }
+        XCTAssertFalse(MockURLProtocol.running)
+        running = true
+        
         super.setUp()
         
         originalLogLevel = Kinvey.logLevel
@@ -551,6 +594,13 @@ class KinveyTestCase: XCTestCase {
     var deleteUserDuringTearDown = true
     
     override func tearDown() {
+        defer {
+            running = false
+        }
+        while MockURLProtocol.running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+        }
+        XCTAssertFalse(MockURLProtocol.running)
         setURLProtocol(nil)
         
         if deleteUserDuringTearDown, let user = client.activeUser {

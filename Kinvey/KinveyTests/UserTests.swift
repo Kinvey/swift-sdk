@@ -2892,16 +2892,34 @@ class UserTests: KinveyTestCase {
             static var count = 0
             
             override class func canInit(with request: URLRequest) -> Bool {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+                return true
+            }
+            
+            override class func canInit(with request: URLSessionTask) -> Bool {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
                 return true
             }
             
             override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
                 return request
             }
             
             override func startLoading() {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+                MockURLProtocol.running = true
                 switch type(of: self).count {
                 case 0:
+                    XCTAssertEqual(request.url!, URL(string: "https://auth.kinvey.com/v3/oauth/auth"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -2920,6 +2938,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 2:
+                    XCTAssertEqual(request.url!, URL(string: "https://auth.kinvey.com/v3/oauth/token"))
                     XCTAssertEqual(request.allHTTPHeaderFields?["Authorization"], Kinvey.sharedClient.authorizationHeader)
                     switch Body.buildFormUrlEncoded(body: request.httpBodyString) {
                     case .formUrlEncoded(let params):
@@ -2945,6 +2964,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 3:
+                    XCTAssertEqual(request.url!, URL(string: "https://baas.kinvey.com/user/_kid_/login"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -2956,6 +2976,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 4:
+                    XCTAssertEqual(request.url!, URL(string: "https://baas.kinvey.com/user/_kid_"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -2983,6 +3004,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 5:
+                    XCTAssertEqual(request.url!, URL(string: "https://baas.kinvey.com/appdata/_kid_/Person/"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -2994,6 +3016,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 6:
+                    XCTAssertEqual(request.url!, URL(string: "https://auth.kinvey.com/v3/oauth/token"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3001,11 +3024,12 @@ class UserTests: KinveyTestCase {
                         "token_type" : "bearer",
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
-                        ] as [String : Any]
+                    ] as [String : Any]
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 7:
+                    XCTAssertEqual(request.url!, URL(string: "https://baas.kinvey.com/user/_kid_/login"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3033,6 +3057,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 8:
+                    XCTAssertEqual(request.url!, URL(string: "https://baas.kinvey.com/appdata/_kid_/Person/"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [[String : Any]]()
@@ -3046,6 +3071,7 @@ class UserTests: KinveyTestCase {
             }
             
             override func stopLoading() {
+                MockURLProtocol.running = false
             }
         }
         
@@ -3124,16 +3150,34 @@ class UserTests: KinveyTestCase {
             static var count = 0
             
             override class func canInit(with request: URLRequest) -> Bool {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+                return true
+            }
+            
+            override class func canInit(with task: URLSessionTask) -> Bool {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
                 return true
             }
             
             override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
                 return request
             }
             
             override func startLoading() {
+                while MockURLProtocol.running {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+                }
+                MockURLProtocol.running = true
                 switch type(of: self).count {
                 case 0:
+                    XCTAssertEqual(request.url, URL(string: "https://auth.kinvey.com/v3/oauth/auth"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3152,6 +3196,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 2:
+                    XCTAssertEqual(request.url, URL(string: "https://auth.kinvey.com/v3/oauth/token"))
                     XCTAssertNotEqual(request.allHTTPHeaderFields?["Authorization"], Kinvey.sharedClient.authorizationHeader)
                     let token = "\(Kinvey.sharedClient.appKey!).\(MICLoginAutomatedAuthorizationGrantFlowURLProtocol.authServiceId):\(Kinvey.sharedClient.appSecret!)".data(using: String.Encoding.utf8)?.base64EncodedString()
                     XCTAssertEqual(request.allHTTPHeaderFields?["Authorization"], "Basic \(token!)")
@@ -3179,6 +3224,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 3:
+                    XCTAssertEqual(request.url, URL(string: "https://baas.kinvey.com/user/_kid_/login"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3190,6 +3236,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 4:
+                    XCTAssertEqual(request.url, URL(string: "https://baas.kinvey.com/user/_kid_"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3217,6 +3264,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 5:
+                    XCTAssertEqual(request.url, URL(string: "https://baas.kinvey.com/appdata/_kid_/Person/"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3228,6 +3276,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 6:
+                    XCTAssertEqual(request.url, URL(string: "https://auth.kinvey.com/v3/oauth/token"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3235,11 +3284,12 @@ class UserTests: KinveyTestCase {
                         "token_type" : "bearer",
                         "expires_in" : 3599,
                         "refresh_token" : "dc6118e98b8c004a6e2d3e2aa985f57e40a87a02"
-                        ] as [String : Any]
+                    ] as [String : Any]
                     let data = try! JSONSerialization.data(withJSONObject: json)
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 7:
+                    XCTAssertEqual(request.url, URL(string: "https://baas.kinvey.com/user/_kid_/login"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 201, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [
@@ -3267,6 +3317,7 @@ class UserTests: KinveyTestCase {
                     client?.urlProtocol(self, didLoad: data)
                     client?.urlProtocolDidFinishLoading(self)
                 case 8:
+                    XCTAssertEqual(request.url, URL(string: "https://baas.kinvey.com/appdata/_kid_/Person/"))
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                     let json = [[String : Any]]()
@@ -3280,6 +3331,7 @@ class UserTests: KinveyTestCase {
             }
             
             override func stopLoading() {
+                MockURLProtocol.running = false
             }
         }
         
@@ -3331,6 +3383,165 @@ class UserTests: KinveyTestCase {
                 expectationFind = nil
             }
         }
+    }
+    
+    func testMICRefreshTokenMultipleCalls() {
+        signUp(mustIncludeSocialIdentity: true)
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        XCTAssertNotNil(user.metadata?.authtoken)
+        guard let authtoken = user.metadata?.authtoken else {
+            return
+        }
+        
+        XCTAssertNotNil(user.authorizationHeader)
+        guard let authorizationHeader = user.authorizationHeader else {
+            return
+        }
+        
+        let newAuthToken = UUID().uuidString
+        let newRefreshToken = UUID().uuidString
+        
+        var requests = [String]()
+        mockResponse { request in
+            let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+            requests.append(urlComponents.path)
+            let authorization = request.allHTTPHeaderFields!["Authorization"]!
+            if authorization == authorizationHeader {
+                return HttpResponse(
+                    statusCode: 401,
+                    json: [:]
+                )
+            }
+            switch urlComponents.path {
+            case "/user/_kid_/id1":
+                return HttpResponse(json: [
+                    "_id" : "id1",
+                    "username" : "user1"
+                ])
+            case "/user/_kid_/id2":
+                return HttpResponse(json: [
+                    "_id" : "id2",
+                    "username" : "user2"
+                ])
+            case "/user/_kid_/id3":
+                return HttpResponse(json: [
+                    "_id" : "id3",
+                    "username" : "user3"
+                ])
+            case "/v3/oauth/token":
+                return HttpResponse(json: [
+                    "access_token" : UUID().uuidString,
+                    "token_type" : "Bearer",
+                    "expires_in" : 3599,
+                    "refresh_token" : newRefreshToken
+                ])
+            case "/user/_kid_/login":
+                let userId = user.userId
+                let user = [
+                    "_socialIdentity" : [
+                        "kinveyAuth" : [
+                            "id" : "custom",
+                            "access_token" : UUID().uuidString,
+                            "refresh_token" : UUID().uuidString
+                        ]
+                    ],
+                    "password" : UUID().uuidString,
+                    "username" : UUID().uuidString,
+                    "_kmd" : [
+                        "lmt" : Date().toString(),
+                        "ect" : Date().toString(),
+                        "authtoken" : newAuthToken
+                    ],
+                    "_id" : userId,
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ]
+                ] as [String : Any]
+                MockKinveyBackend.user[userId] = user
+                return HttpResponse(statusCode: 201, json: user)
+            default:
+                XCTFail(urlComponents.path)
+                return HttpResponse(
+                    statusCode: 404,
+                    json: [:]
+                )
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var user1Expectation = expectation(description: "User 1")
+        
+        User.get(userId: "id1", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user1")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user1Expectation?.fulfill()
+        }
+        
+        weak var user2Expectation = expectation(description: "User 2")
+        
+        User.get(userId: "id2", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user2")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user2Expectation?.fulfill()
+        }
+        
+        weak var user3Expectation = expectation(description: "User 3")
+        
+        User.get(userId: "id3", options: nil) {
+            switch $0 {
+            case .success(let user):
+                XCTAssertEqual(user.username, "user3")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            user3Expectation?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout * 3) { (error) in
+            XCTAssertNil(error)
+            if let error = error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        XCTAssertEqual(requests.count, 8)
+        if let request = requests.first {
+            XCTAssertTrue(request.starts(with: "/user/_kid_/id"))
+        }
+        XCTAssertEqual(requests.filter { $0 == "/v3/oauth/token" }.count, 1)
+        XCTAssertEqual(requests.filter { $0 == "/user/_kid_/login" }.count, 1)
+        if requests.count > 5 {
+            XCTAssertTrue(requests[5].starts(with: "/user/_kid_/id"))
+        }
+        if requests.count > 6 {
+            XCTAssertTrue(requests[6].starts(with: "/user/_kid_/id"))
+        }
+        if requests.count > 7 {
+            XCTAssertTrue(requests[7].starts(with: "/user/_kid_/id"))
+        }
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        guard let user2 = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        XCTAssertEqual(newAuthToken, user2.metadata?.authtoken)
+        XCTAssertEqual(newRefreshToken, user2.refreshToken)
     }
     
     func testMICLoginAutomatedAuthorizationGrantFlowRefreshTokenFails() {
@@ -4907,16 +5118,24 @@ extension UserTests {
     }
     
     func testMICTimeoutAction() {
+        var runLoop: CFRunLoop?
         mockResponse { (request) -> HttpResponse in
-            RunLoop.current.run(until: Date(timeIntervalSinceNow: 10))
+            runLoop = CFRunLoopGetCurrent()
+            CFRunLoopRun()
+            DispatchQueue.main.async {
+                runLoop = nil
+            }
             return HttpResponse(error: timeoutError)
         }
         defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
             setURLProtocol(nil)
         }
-        
+
         weak var expectationLogin = expectation(description: "Login")
-        
+
         let redirectURI = URL(string: "throwAnError://")!
         User.presentMICViewController(
             redirectURI: redirectURI,
@@ -4938,19 +5157,27 @@ extension UserTests {
                     }
                 }
             }
-            
+
             expectationLogin?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationLogin = nil
         }
     }
     
     func testMICCancelUserAction() {
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         mockResponse { (request) -> HttpResponse in
+            runLoop = CFRunLoopGetCurrent()
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 10))
             DispatchQueue.main.async {
+                runLoop = nil
                 guard let keyWindow = UIApplication.shared.keyWindow,
                     let navigationController = keyWindow.rootViewController as? UINavigationController,
                     let navigationController2 = navigationController.topViewController?.presentedViewController as? UINavigationController,
