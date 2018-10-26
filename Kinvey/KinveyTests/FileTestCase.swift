@@ -620,6 +620,12 @@ class FileTestCase: StoreTestCase {
         
         var uploadProgressCount = 0
         
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         do {
             if useMockData {
                 var count = 0
@@ -656,12 +662,17 @@ class FileTestCase: StoreTestCase {
                             let chunkSize = 4096
                             var buffer = [UInt8](repeating: 0, count: chunkSize)
                             var data = Data()
+                            let currentRunLoop = CFRunLoopGetCurrent()
                             while stream.hasBytesAvailable {
                                 let read = stream.read(&buffer, maxLength: chunkSize)
                                 data.append(buffer, count: read)
+                                DispatchQueue.main.async { runLoop = currentRunLoop }
                                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.0001))
+                                DispatchQueue.main.async { runLoop = nil }
                             }
+                            DispatchQueue.main.async { runLoop = currentRunLoop }
                             RunLoop.current.run(until: Date(timeIntervalSinceNow: 3))
+                            DispatchQueue.main.async { runLoop = nil }
                         }
                         return HttpResponse(json: [
                             "kind": "storage#object",
@@ -843,6 +854,12 @@ class FileTestCase: StoreTestCase {
         
         var uploadProgressCount = 0
         
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         do {
             if useMockData {
                 var count = 0
@@ -877,12 +894,17 @@ class FileTestCase: StoreTestCase {
                             let chunkSize = 4096
                             var buffer = [UInt8](repeating: 0, count: chunkSize)
                             var data = Data()
+                            let currentRunLoop = CFRunLoopGetCurrent()
                             while stream.hasBytesAvailable {
                                 let read = stream.read(&buffer, maxLength: chunkSize)
                                 data.append(buffer, count: read)
+                                DispatchQueue.main.async { runLoop = currentRunLoop }
                                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.0001))
+                                DispatchQueue.main.async { runLoop = nil }
                             }
+                            DispatchQueue.main.async { runLoop = currentRunLoop }
                             RunLoop.current.run(until: Date(timeIntervalSinceNow: 3))
+                            DispatchQueue.main.async { runLoop = nil }
                         }
                         return HttpResponse(json: [
                             "kind": "storage#object",
@@ -991,7 +1013,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -1035,7 +1057,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -1058,6 +1080,12 @@ class FileTestCase: StoreTestCase {
         
         var uploadProgressCount = 0
         
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         do {
             if useMockData {
                 var count = 0
@@ -1095,12 +1123,17 @@ class FileTestCase: StoreTestCase {
                             let chunkSize = 4096
                             var buffer = [UInt8](repeating: 0, count: chunkSize)
                             var data = Data()
+                            let currentRunLoop = CFRunLoopGetCurrent()
                             while stream.hasBytesAvailable {
                                 let read = stream.read(&buffer, maxLength: chunkSize)
                                 data.append(buffer, count: read)
+                                DispatchQueue.main.async { runLoop = currentRunLoop }
                                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.0001))
+                                DispatchQueue.main.async { runLoop = nil }
                             }
+                            DispatchQueue.main.async { runLoop = currentRunLoop }
                             RunLoop.current.run(until: Date(timeIntervalSinceNow: 3))
+                            DispatchQueue.main.async { runLoop = nil }
                         }
                         return HttpResponse(json: [
                             "kind": "storage#object",
@@ -1211,7 +1244,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -1262,7 +1295,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -1285,6 +1318,12 @@ class FileTestCase: StoreTestCase {
         
         var uploadProgressCount = 0
         
+        var runLoop: CFRunLoop?
+        defer {
+            if let runLoop = runLoop {
+                CFRunLoopStop(runLoop)
+            }
+        }
         do {
             if useMockData {
                 var count = 0
@@ -1321,12 +1360,17 @@ class FileTestCase: StoreTestCase {
                             let chunkSize = 4096
                             var buffer = [UInt8](repeating: 0, count: chunkSize)
                             var data = Data()
+                            let currentRunLoop = CFRunLoopGetCurrent()
                             while stream.hasBytesAvailable {
                                 let read = stream.read(&buffer, maxLength: chunkSize)
                                 data.append(buffer, count: read)
+                                DispatchQueue.main.async { runLoop = currentRunLoop }
                                 RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.0001))
+                                DispatchQueue.main.async { runLoop = nil }
                             }
+                            DispatchQueue.main.async { runLoop = currentRunLoop }
                             RunLoop.current.run(until: Date(timeIntervalSinceNow: 3))
+                            DispatchQueue.main.async { runLoop = nil }
                         }
                         return HttpResponse(json: [
                             "kind": "storage#object",
@@ -1490,7 +1534,7 @@ class FileTestCase: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
                 XCTAssertGreaterThanOrEqual(request.progress.fractionCompleted, 0.0)
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
-                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
+                print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
             
@@ -1696,6 +1740,9 @@ class FileTestCase: StoreTestCase {
             }
             defer {
                 if useMockData {
+                    if let runLoop = MockURLProtocol.runLoop {
+                        CFRunLoopStop(runLoop)
+                    }
                     setURLProtocol(nil)
                 }
             }

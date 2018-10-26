@@ -150,6 +150,7 @@ let log: SwiftyBeaver.Type = {
     let logLevel = LogLevel.defaultLevel.outputLevel
     
     let console = ConsoleDestination()
+    console.asynchronously = false
     console.levelColor.verbose  = "⚪️ "
     console.levelColor.debug    = "☑️ "
     console.levelColor.info     = "🔵 "
@@ -160,6 +161,7 @@ let log: SwiftyBeaver.Type = {
     
     #if canImport(os)
     let osLog = OSLogDestination()
+    osLog.asynchronously = false
     osLog.minLevel = logLevel
     SwiftyBeaver.addDestination(osLog)
     #endif

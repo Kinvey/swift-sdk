@@ -124,6 +124,9 @@ open class Client: Credential {
     /// Stores the MIC API Version to be used in MIC calls 
     open var micApiVersion: MICApiVersion? = .v3
     
+    internal let refreshTokenDispatchGroup = DispatchGroup()
+    internal var refreshingToken = false
+    
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public init() {
         apiHostName = Client.defaultApiHostName

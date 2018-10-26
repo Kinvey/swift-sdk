@@ -156,6 +156,9 @@ open class User: NSObject, Credential {
                     let data = data,
                     let user = try? client.jsonParser.parseUser(U.self, from: data)
                 {
+                    if user.refreshToken == nil, let refreshToken = user.socialIdentity?.kinvey?["refresh_token"] as? String {
+                        user.refreshToken = refreshToken
+                    }
                     client.activeUser = user
                     resolver.fulfill(user)
                 } else {
