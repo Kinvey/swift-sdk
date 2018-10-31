@@ -104,7 +104,7 @@ open class Client: Credential {
     var encryptionKey: Data?
     
     /// Set a different schema version to perform migrations in your local cache.
-    open fileprivate(set) var schemaVersion: CUnsignedLongLong = 0
+    open fileprivate(set) var schemaVersion: CUnsignedLongLong?
     
     internal fileprivate(set) var cacheManager: CacheManager!
     internal fileprivate(set) var syncManager: SyncManager!
@@ -188,6 +188,12 @@ open class Client: Credential {
     }
     
     private func validateInitialize(appKey: String, appSecret: String) throws {
+        guard Thread.isMainThread else {
+            throw Error.invalidOperation(description: "Client.initialize() must be called in the main thread.")
+        }
+        guard !isInitialized() else {
+            throw Error.invalidOperation(description: "Client instance already initialized.")
+        }
         if appKey.isEmpty || appSecret.isEmpty {
             throw Error.invalidOperation(description: "Please provide a valid appKey and appSecret. Your app's key and secret can be found on the Kinvey management console.")
         }
@@ -441,7 +447,8 @@ open class Client: Credential {
         }
         
         self.encryptionKey = encryptionKey
-        self.schemaVersion = schema?.version ?? 0
+        let schemaVersion = schema?.version ?? 0
+        self.schemaVersion = schemaVersion
         self.options = options
         
         Migration.performMigration(
@@ -509,7 +516,7 @@ open class Client: Credential {
     }
 
     internal func isInitialized() -> Bool {
-        return self.appKey != nil && self.appSecret != nil
+        return self.appKey != nil && self.appSecret != nil && self.schemaVersion != nil
     }
     
     internal func validate() throws {

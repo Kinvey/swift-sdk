@@ -335,4 +335,73 @@ class ClientTestCase: KinveyTestCase {
         }
     }
     
+    func testMultipleInitialize() {
+        let appKey = "appKey1"
+        let appSecret = "appSecret1"
+        
+        let expectationInitialize1 = expectation(description: "Initialize 1")
+        
+        let client = Client(appKey: appKey, appSecret: appSecret) {
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            expectationInitialize1.fulfill()
+        }
+        
+        let expectationInitialize2 = expectation(description: "Initialize 2")
+        
+        client.initialize(appKey: appKey, appSecret: appSecret) {
+            switch $0 {
+            case .success:
+                XCTFail("Multiple calls to initialize() should not be allowed")
+            case .failure(let _error):
+                guard let error = _error as? Kinvey.Error else {
+                    XCTAssertTrue(_error is Kinvey.Error)
+                    break
+                }
+                switch error {
+                case .invalidOperation(let description):
+                    XCTAssertEqual(description, "Client instance already initialized.")
+                default:
+                    XCTFail(error.localizedDescription)
+                }
+            }
+            expectationInitialize2.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout)
+    }
+    
+    func testInitializeNotMainThread() {
+        let expectationInitialize = expectation(description: "Initialize")
+        
+        DispatchQueue.global().async {
+            let appKey = "appKey1"
+            let appSecret = "appSecret1"
+            let _ = Client(appKey: appKey, appSecret: appSecret) {
+                switch $0 {
+                case .success:
+                    XCTFail("Calls to initialize() should be done from the Main Thread")
+                case .failure(let _error):
+                    guard let error = _error as? Kinvey.Error else {
+                        XCTAssertTrue(_error is Kinvey.Error)
+                        break
+                    }
+                    switch error {
+                    case .invalidOperation(let description):
+                        XCTAssertEqual(description, "Client.initialize() must be called in the main thread.")
+                    default:
+                        XCTFail(error.localizedDescription)
+                    }
+                }
+                expectationInitialize.fulfill()
+            }
+        }
+        
+        waitForExpectations(timeout: defaultTimeout)
+    }
+    
 }
