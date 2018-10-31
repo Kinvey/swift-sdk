@@ -191,7 +191,7 @@ open class Client: Credential {
         guard Thread.isMainThread else {
             throw Error.invalidOperation(description: "Client.initialize() must be called in the main thread.")
         }
-        guard schemaVersion == nil else {
+        guard !isInitialized() else {
             throw Error.invalidOperation(description: "Client instance already initialized.")
         }
         if appKey.isEmpty || appSecret.isEmpty {
@@ -516,7 +516,7 @@ open class Client: Credential {
     }
 
     internal func isInitialized() -> Bool {
-        return self.appKey != nil && self.appSecret != nil
+        return self.appKey != nil && self.appSecret != nil && self.schemaVersion != nil
     }
     
     internal func validate() throws {
