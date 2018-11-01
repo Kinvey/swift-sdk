@@ -22,6 +22,7 @@ class Person: Entity {
         return "CacheMigrationTestCase_Person"
     }
     
+    @available(*, deprecated)
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
@@ -41,6 +42,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         }
     }
     
+    var client: Client?
+    
     override func setUp() {
         let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
         var destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
@@ -55,12 +58,16 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         clearCache = true
         
+        client = Client()
+        
         super.setUp()
     }
     
     override func tearDown() {
         if clearCache {
-            Kinvey.sharedClient.cacheManager.clearAll()
+            if let client = client, client.isInitialized() {
+                client.cacheManager.clearAll()
+            }
         }
         
         let realmConfiguration = Realm.Configuration.defaultConfiguration
@@ -110,7 +117,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 return newEntity
             }
         })
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+        client!.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
             switch $0 {
             case .success:
                 break
@@ -122,7 +129,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         XCTAssertTrue(migrationCalled)
         XCTAssertTrue(migrationPersonCalled)
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, options: Options(client: client))
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -152,7 +159,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         let schema: Kinvey.Schema = (version: 2, migrationHandler: { migration, oldSchemaVersion in
             migrationCalled = true
         })
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+        client!.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
             switch $0 {
             case .success:
                 break
@@ -163,7 +170,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         
         XCTAssertTrue(migrationCalled)
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, options: Options(client: client))
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -195,7 +202,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     
     func testMigrationWithoutMigrationBlock() {
         let schema: Kinvey.Schema = (version: 2, migrationHandler: nil)
-        Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
+        client!.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) {
             switch $0 {
             case .success:
                 break
@@ -204,7 +211,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             }
         }
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, options: Options(client: client))
         
         weak var expectationFind = expectation(description: "Find")
         
@@ -237,7 +244,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         realmConfiguration.fileURL!.deleteLastPathComponent()
         realmConfiguration.fileURL!.appendPathComponent("appKey")
         realmConfiguration.fileURL!.appendPathComponent(lastPathComponent)
-        let realm = try! Realm(configuration: realmConfiguration)
+        let _ = try! Realm(configuration: realmConfiguration)
         
         let schema: Kinvey.Schema = (version: 2, migrationHandler: { migration, oldSchemaVersion in
             migration.execute(Person.self) { (oldEntity) in
@@ -245,7 +252,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             }
         })
         expect {
-            Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) { _ in
+            self.client!.initialize(appKey: "appKey", appSecret: "appSecret", schema: schema) { _ in
                 XCTFail("Exception is expected")
             }
         }.to(raiseException(named: "RLMException", reason: "Cannot migrate Realms that are already open."))
