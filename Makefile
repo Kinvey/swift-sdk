@@ -92,7 +92,7 @@ docs:
 				--output docs
 				
 deploy-cocoapods:
-	pod trunk push Kinvey.podspec --verbose --allow-warnings
+	pod trunk push Kinvey.podspec
 
 test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
