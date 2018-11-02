@@ -14,4 +14,8 @@ extension Date {
         return KinveyDateTransform().transformToJSON(self)!
     }
     
+    public func toISO8601() -> String {
+        return toString()
+    }
+    
 }
