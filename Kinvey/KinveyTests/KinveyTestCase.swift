@@ -653,8 +653,8 @@ class KinveyTestCase: XCTestCase {
             Acl.Key.creator : self.client.activeUser!.userId
         ]
         json[Entity.EntityCodingKeys.metadata] = [
-            Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-            Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+            Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+            Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
         ]
         return json
     }

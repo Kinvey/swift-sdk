@@ -406,8 +406,8 @@ class SyncStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ],
                     [
@@ -418,8 +418,8 @@ class SyncStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 ])
@@ -552,8 +552,8 @@ class SyncStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ],
                     [
@@ -564,8 +564,8 @@ class SyncStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 ])
@@ -798,8 +798,8 @@ class SyncStoreTests: StoreTestCase {
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
                     json[Entity.EntityCodingKeys.metadata] = [
-                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
                     ]
                     personMockJson.append(json)
                     return HttpResponse(statusCode: 201, json: json)
@@ -944,8 +944,8 @@ class SyncStoreTests: StoreTestCase {
                         Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                     ]
                     json[Entity.EntityCodingKeys.metadata] = [
-                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
                     ]
                     personMockJson = json
                     return HttpResponse(statusCode: 201, json: json)
@@ -1085,8 +1085,8 @@ class SyncStoreTests: StoreTestCase {
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
                 json[Entity.EntityCodingKeys.metadata] = [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -1154,8 +1154,8 @@ class SyncStoreTests: StoreTestCase {
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
                 json[Entity.EntityCodingKeys.metadata] = [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -1208,8 +1208,8 @@ class SyncStoreTests: StoreTestCase {
                     Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
                 ]
                 json[Entity.EntityCodingKeys.metadata] = [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toString(),
-                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toString()
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                    Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
                 ]
                 return HttpResponse(statusCode: 201, json: json)
             }
@@ -2542,8 +2542,8 @@ class SyncStoreTests: StoreTestCase {
                         "creator" : self.client.activeUser!.userId
                     ]
                     json["_kmd"] = [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                     mockResponses.append(json)
                     return HttpResponse(statusCode: 201, json: json)
@@ -2963,8 +2963,8 @@ class SyncStoreTests: StoreTestCase {
                     "creator" : UUID().uuidString
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ]
         ])
@@ -3034,7 +3034,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3083,7 +3083,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -3094,7 +3094,7 @@ class SyncStoreTests: StoreTestCase {
                                             "creator": "58450d87c077970e38a388ba"
                                         ],
                                         "_kmd": [
-                                            "lmt": Date().toString(),
+                                            "lmt": Date().toISO8601(),
                                             "ect": "2016-12-05T06:47:35.711Z"
                                         ]
                                     ]
@@ -3156,7 +3156,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -3209,7 +3209,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             "changed" : [
@@ -3220,7 +3220,7 @@ class SyncStoreTests: StoreTestCase {
                                         "creator": "58450d87c077970e38a388ba"
                                     ],
                                     "_kmd": [
-                                        "lmt": Date().toString(),
+                                        "lmt": Date().toISO8601(),
                                         "ect": "2016-12-05T06:47:35.711Z"
                                     ]
                                 ]
@@ -3272,7 +3272,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -3325,7 +3325,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             "changed" : [],
@@ -3375,7 +3375,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -3450,7 +3450,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             "changed" : [
@@ -3551,7 +3551,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -3606,7 +3606,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             "changed" : [
@@ -3759,7 +3759,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -3815,7 +3815,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             "changed" : [
@@ -3966,7 +3966,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -4067,7 +4067,7 @@ class SyncStoreTests: StoreTestCase {
             case "/appdata/_kid_/Person":
                 return HttpResponse(
                     headerFields: [
-                        "X-Kinvey-Request-Start" : Date().toString()
+                        "X-Kinvey-Request-Start" : Date().toISO8601()
                     ],
                     json: [
                         [
@@ -4153,7 +4153,7 @@ class SyncStoreTests: StoreTestCase {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -4215,7 +4215,7 @@ class SyncStoreTests: StoreTestCase {
                 case (1, "/appdata/_kid_/Person"?):
                     return HttpResponse(
                         headerFields: [
-                            "X-Kinvey-Request-Start" : Date().toString()
+                            "X-Kinvey-Request-Start" : Date().toISO8601()
                         ],
                         json: [
                             [
@@ -4293,7 +4293,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4373,7 +4373,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4457,7 +4457,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4513,7 +4513,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -4611,7 +4611,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4667,7 +4667,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -4753,7 +4753,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4818,7 +4818,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -4893,7 +4893,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -4988,7 +4988,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5059,7 +5059,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -5154,7 +5154,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5225,7 +5225,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -5325,7 +5325,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5381,7 +5381,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -5457,7 +5457,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 [
@@ -5555,7 +5555,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5627,7 +5627,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5708,7 +5708,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5761,7 +5761,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -5855,7 +5855,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -5908,7 +5908,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -5991,7 +5991,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -6053,7 +6053,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -6124,7 +6124,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -6215,7 +6215,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -6282,7 +6282,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -6373,7 +6373,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -6440,7 +6440,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -6539,7 +6539,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -6592,7 +6592,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -6664,7 +6664,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 [
@@ -6772,7 +6772,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -6842,7 +6842,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -6922,7 +6922,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -7021,7 +7021,7 @@ class SyncStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -7097,7 +7097,7 @@ class SyncStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -7168,8 +7168,8 @@ class SyncStoreTests: StoreTestCase {
                         "creator" : UUID().uuidString
                     ]
                     entity["_kmd"] = [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                     entities.append(entity)
                 }
@@ -7335,8 +7335,8 @@ class SyncStoreTests: StoreTestCase {
                     "creator" : self.client.activeUser!.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
         }
@@ -7349,17 +7349,17 @@ class SyncStoreTests: StoreTestCase {
                     let skip = Int(skipString)
                 {
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: Array(json[skip...])
                     )
                 }
                 return HttpResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: json
                 )
             case "/appdata/_kid_/Person/_deltaset":
                 return HttpResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: [
                         "changed" : [],
                         "deleted" : []
@@ -7669,15 +7669,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -7793,15 +7793,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -7939,15 +7939,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -8022,15 +8022,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -8105,15 +8105,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -8189,15 +8189,15 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -8272,8 +8272,8 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         var count = 0
         mockResponse { request in
@@ -8349,8 +8349,8 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         var count = 0
         mockResponse { request in
@@ -8426,8 +8426,8 @@ class SyncStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         var count = 0
         mockResponse { request in

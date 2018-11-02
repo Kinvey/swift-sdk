@@ -351,8 +351,8 @@ class UserTests: KinveyTestCase {
             "_id" : userId,
             "username" : username,
             "_kmd": [
-                "lmt" : Date().toString(),
-                "ect" : Date().toString(),
+                "lmt" : Date().toISO8601(),
+                "ect" : Date().toISO8601(),
                 "authtoken" : UUID().uuidString
             ],
             "_acl" : [
@@ -3453,8 +3453,8 @@ class UserTests: KinveyTestCase {
                     "password" : UUID().uuidString,
                     "username" : UUID().uuidString,
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString(),
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601(),
                         "authtoken" : newAuthToken
                     ],
                     "_id" : userId,
@@ -3749,8 +3749,8 @@ class UserTests: KinveyTestCase {
                         "password" : UUID().uuidString,
                         "username" : UUID().uuidString,
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString(),
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601(),
                             "authtoken" : UUID().uuidString
                         ],
                         "_id" : userId,
@@ -3770,8 +3770,8 @@ class UserTests: KinveyTestCase {
                                 "creator": UUID().uuidString
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ]
                         ]
                     ])
@@ -4260,8 +4260,8 @@ extension UserTests {
                 "_id" : userId,
                 "username" : UUID().uuidString,
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString(),
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601(),
                     "authtoken" : UUID().uuidString
                 ],
                 "_acl" : [
@@ -4482,8 +4482,8 @@ extension UserTests {
                 "_id" : userId,
                 "username" : UUID().uuidString,
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString(),
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601(),
                     "authtoken" : UUID().uuidString
                 ],
                 "_acl" : [
@@ -4996,8 +4996,8 @@ extension UserTests {
                     "_id" : UUID().uuidString,
                     "username" : "test",
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString(),
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601(),
                         "authtoken" : UUID().uuidString
                     ],
                     "_acl" : [
@@ -5074,8 +5074,8 @@ extension UserTests {
                     "_id" : UUID().uuidString,
                     "username" : "test",
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString(),
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601(),
                         "authtoken" : UUID().uuidString
                     ],
                     "_acl" : [
@@ -5344,8 +5344,8 @@ extension UserTests {
                         "creator": client.activeUser?.userId
                     ],
                     "_kmd": [
-                        "lmt": Date().toString(),
-                        "ect": Date().toString()
+                        "lmt": Date().toISO8601(),
+                        "ect": Date().toISO8601()
                     ]
                 ]
             ])

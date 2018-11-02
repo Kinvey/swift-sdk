@@ -9,13 +9,9 @@
 import Foundation
 
 extension Date {
-    
-    func toString() -> String {
-        return KinveyDateTransform().transformToJSON(self)!
-    }
-    
+
     public func toISO8601() -> String {
-        return toString()
+        return KinveyDateTransform().transformToJSON(self)!
     }
     
 }

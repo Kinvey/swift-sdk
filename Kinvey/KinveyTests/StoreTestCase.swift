@@ -33,13 +33,13 @@ class StoreTestCase: KinveyTestCase {
                     json = mockResponseHandler(json)
                 }
                 json["_id"] = json["_id"] ?? UUID().uuidString
-                json["date"] = Date().toString()
+                json["date"] = Date().toISO8601()
                 json["_acl"] = [
                     "creator" : UUID().uuidString
                 ]
                 json["_kmd"] = [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
                 return HttpResponse(json: json)
             }
@@ -89,8 +89,8 @@ class StoreTestCase: KinveyTestCase {
                     "creator" : UUID().uuidString
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
         }
