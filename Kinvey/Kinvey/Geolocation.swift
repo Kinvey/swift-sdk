@@ -12,7 +12,7 @@ import CoreLocation
 import MapKit
 
 /// Class that represents a 2D geolocation with latitude and longitude
-public final class GeoPoint: Object, Codable {
+public final class GeoPoint: Object {
     
     /// Specifies the north–south position of a point
     @objc
@@ -49,6 +49,27 @@ public final class GeoPoint: Object, Codable {
      */
     convenience init(_ array: [CLLocationDegrees]) {
         self.init(latitude: array[1], longitude: array[0])
+    }
+    
+}
+
+extension GeoPoint: Encodable {
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(longitude)
+        try container.encode(latitude)
+    }
+    
+}
+
+extension GeoPoint: Decodable {
+    
+    public convenience init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let longitude = try container.decode(CLLocationDegrees.self)
+        let latitude = try container.decode(CLLocationDegrees.self)
+        self.init(latitude: latitude, longitude: longitude)
     }
     
 }
