@@ -80,8 +80,8 @@ class CacheStoreTests: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -197,8 +197,8 @@ class CacheStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                     return HttpResponse(json: json)
@@ -351,8 +351,8 @@ class CacheStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                     mockJson = json
@@ -480,7 +480,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -560,7 +560,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -612,7 +612,7 @@ class CacheStoreTests: StoreTestCase {
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testCacheStoreDeltaset1ExtraItemAddedWithPull() {
         let store = try! DataStore<Person>.collection(.cache, options: try! Options(deltaSet: true))
-        var sinceTime = Date().toString()
+        var sinceTime = Date().toISO8601()
         var initialCount = Int64(0)
         do {
             if !useMockData {
@@ -629,7 +629,7 @@ class CacheStoreTests: StoreTestCase {
                     }
                     switch url.path {
                     case "/appdata/_kid_/\(Person.collectionName())":
-                        sinceTime = Date().toString()
+                        sinceTime = Date().toISO8601()
                         let json = [
                             [
                                 "_id": "58450d87f29e22207c83a236",
@@ -704,7 +704,7 @@ class CacheStoreTests: StoreTestCase {
                         XCTAssert(sinceTime == sinceInRequest)
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -802,7 +802,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -858,7 +858,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -944,7 +944,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1009,7 +1009,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -1084,7 +1084,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -1179,7 +1179,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1250,7 +1250,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -1345,7 +1345,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1416,7 +1416,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -1517,7 +1517,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1573,7 +1573,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -1649,7 +1649,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 [
@@ -1747,7 +1747,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1819,7 +1819,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1900,7 +1900,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -1953,7 +1953,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -2047,7 +2047,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -2100,7 +2100,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -2183,7 +2183,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -2245,7 +2245,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -2316,7 +2316,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -2407,7 +2407,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -2474,7 +2474,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -2565,7 +2565,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -2632,7 +2632,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -2731,7 +2731,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -2784,7 +2784,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -2856,7 +2856,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 [
@@ -2950,7 +2950,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3030,7 +3030,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3114,7 +3114,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3175,7 +3175,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -3279,7 +3279,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3340,7 +3340,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -3431,7 +3431,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3501,7 +3501,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -3581,7 +3581,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -3680,7 +3680,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3756,7 +3756,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [],
@@ -3855,7 +3855,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -3931,7 +3931,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -4038,7 +4038,7 @@ class CacheStoreTests: StoreTestCase {
                         ]
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4099,7 +4099,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person/_deltaset":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "changed" : [
@@ -4179,7 +4179,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/Person":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 [
@@ -4283,7 +4283,7 @@ class CacheStoreTests: StoreTestCase {
                         ] as JsonDictionary
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: json
                         )
@@ -4335,7 +4335,7 @@ class CacheStoreTests: StoreTestCase {
                     case "/appdata/_kid_/\(Person.collectionName())/\(idToFind)":
                         return HttpResponse(
                             headerFields: [
-                                "X-Kinvey-Request-Start" : Date().toString()
+                                "X-Kinvey-Request-Start" : Date().toISO8601()
                             ],
                             json: [
                                 "_id": idToFind,

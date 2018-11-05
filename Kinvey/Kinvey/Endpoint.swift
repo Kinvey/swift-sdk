@@ -115,7 +115,7 @@ internal enum Endpoint {
             let url = client.apiHostName.appendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_deltaset")
             var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             var queryItems = urlComponents.queryItems ?? []
-            queryItems.append(URLQueryItem(name: "since", value: sinceDate.toString()))
+            queryItems.append(URLQueryItem(name: "since", value: sinceDate.toISO8601()))
             urlComponents.queryItems = queryItems
             return translate(url: urlComponents.url!, query: query)
         case .appDataCount(let client, let collectionName, let query):

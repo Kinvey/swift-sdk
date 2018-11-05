@@ -57,19 +57,19 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             let person = Person()
             person.personId = "update"
-            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString()])
+            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toISO8601()])
             cache.save(entity: person)
         }
         do {
             let person = Person()
             person.personId = "noChange"
-            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString()])
+            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toISO8601()])
             cache.save(entity: person)
         }
         do {
             let person = Person()
             person.personId = "delete"
-            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString()])
+            person.metadata = Metadata(JSON: [Metadata.CodingKeys.lastModifiedTime.rawValue : date.toISO8601()])
             cache.save(entity: person)
         }
         let operation = Operation(
@@ -83,19 +83,19 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             [
                 Entity.EntityCodingKeys.entityId.rawValue : "create",
                 Entity.EntityCodingKeys.metadata.rawValue : [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString(),
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : date.toISO8601(),
                 ]
             ],
             [
                 Entity.EntityCodingKeys.entityId.rawValue : "update",
                 Entity.EntityCodingKeys.metadata.rawValue : [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date(timeInterval: 1, since: date).toString()
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : Date(timeInterval: 1, since: date).toISO8601()
                 ]
             ],
             [
                 Entity.EntityCodingKeys.entityId.rawValue : "noChange",
                 Entity.EntityCodingKeys.metadata.rawValue : [
-                    Metadata.CodingKeys.lastModifiedTime.rawValue : date.toString()
+                    Metadata.CodingKeys.lastModifiedTime.rawValue : date.toISO8601()
                 ]
             ]
         ]
@@ -136,8 +136,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                     ])
             }
@@ -187,8 +187,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -259,8 +259,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator" : client.activeUser!.userId
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ],
                     [
@@ -271,8 +271,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator" : client.activeUser!.userId
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 ])
@@ -332,8 +332,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator": client.activeUser?.userId
                     ],
                     "_kmd": [
-                        "lmt": Date().toString(),
-                        "ect": Date().toString()
+                        "lmt": Date().toISO8601(),
+                        "ect": Date().toISO8601()
                     ]
                 ])
             }
@@ -387,8 +387,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator": client.activeUser?.userId
                     ],
                     "_kmd": [
-                        "lmt": Date().toString(),
-                        "ect": Date().toString()
+                        "lmt": Date().toISO8601(),
+                        "ect": Date().toISO8601()
                     ]
                 ])
             }
@@ -459,8 +459,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator": client.activeUser?.userId
                         ],
                         "_kmd": [
-                            "lmt": Date().toString(),
-                            "ect": Date().toString()
+                            "lmt": Date().toISO8601(),
+                            "ect": Date().toISO8601()
                         ]
                     ]
                 ])
@@ -516,8 +516,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -669,8 +669,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser?.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -719,8 +719,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser?.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -1252,7 +1252,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator": client.activeUser?.userId
                         ],
                         "_kmd": [
-                            "lmt": Date().toString()
+                            "lmt": Date().toISO8601()
                         ]
                     ]
                 ])
@@ -1401,8 +1401,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : client.activeUser?.userId
                     ],
                     "_kmd" : [
-                        "lmt" : mockDate?.toString(),
-                        "ect" : mockDate?.toString()
+                        "lmt" : mockDate?.toISO8601(),
+                        "ect" : mockDate?.toISO8601()
                     ]
                 ])
             }
@@ -1435,7 +1435,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     mockCount += 1
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             [
                                 "_id" : mockObjectId!,
@@ -1445,8 +1445,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser?.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : mockDate?.toString(),
-                                    "ect" : mockDate?.toString()
+                                    "lmt" : mockDate?.toISO8601(),
+                                    "ect" : mockDate?.toISO8601()
                                 ]
                             ]
                         ]
@@ -1489,7 +1489,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     mockCount += 1
                     XCTAssertEqual(request.url!.path, "/appdata/_kid_/Person/_deltaset")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             "changed" : [],
                             "deleted" : []
@@ -1567,8 +1567,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : client.activeUser?.userId
                     ],
                     "_kmd" : [
-                        "lmt" : mockDate?.toString(),
-                        "ect" : mockDate?.toString()
+                        "lmt" : mockDate?.toISO8601(),
+                        "ect" : mockDate?.toISO8601()
                     ]
                 ])
             }
@@ -1602,7 +1602,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     mockCount += 1
                     XCTAssertEqual(request.url!.path, "/appdata/_kid_/Person")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             [
                                 "_id" : mockObjectId!,
@@ -1612,8 +1612,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser?.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
-                                    "ect" : mockDate?.toString()
+                                    "lmt" : Date(timeInterval: 1, since: mockDate!).toISO8601(),
+                                    "ect" : mockDate?.toISO8601()
                                 ]
                             ]
                         ]
@@ -1656,7 +1656,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     mockCount += 1
                     XCTAssertEqual(request.url!.path, "/appdata/_kid_/Person/_deltaset")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             "changed" : [
                                 [
@@ -1667,8 +1667,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser?.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
-                                        "ect" : mockDate?.toString()
+                                        "lmt" : Date(timeInterval: 1, since: mockDate!).toISO8601(),
+                                        "ect" : mockDate?.toISO8601()
                                     ]
                                 ]
                             ],
@@ -1723,7 +1723,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     XCTAssertEqual(fields.last, "age")
                     XCTAssertEqual(urlComponents.path, "/appdata/_kid_/Person/")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             [
                                 "_id" : mockObjectId!,
@@ -1779,7 +1779,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     XCTAssertEqual(fields.last, "age")
                     XCTAssertEqual(urlComponents.path, "/appdata/_kid_/Person/_deltaset")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             "changed" : [
                                 [
@@ -1896,7 +1896,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             if useMockData {
                 mockResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: [
                         [
                             "_id" : mockObjectId!,
@@ -1944,7 +1944,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     mockCount += 1
                     XCTAssertEqual(request.url!.path, "/appdata/_kid_/Person/_deltaset")
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             "changed" : [
                                 [
@@ -1955,8 +1955,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser?.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date(timeInterval: 1, since: mockDate!).toString(),
-                                        "ect" : mockDate?.toString()
+                                        "lmt" : Date(timeInterval: 1, since: mockDate!).toISO8601(),
+                                        "ect" : mockDate?.toISO8601()
                                     ]
                                 ]
                             ],
@@ -2079,8 +2079,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : client.activeUser?.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
             defer {
@@ -2114,14 +2114,14 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : self.client.activeUser!.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
         }
         
         do {
-            mockResponse(headerFields: ["X-Kinvey-Request-Start" : Date().toString()], json: jsonArray)
+            mockResponse(headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()], json: jsonArray)
             defer {
                 setURLProtocol(nil)
             }
@@ -2149,7 +2149,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 let urlComponents = URLComponents(url: response.url!, resolvingAgainstBaseURL: false)!
                 XCTAssertEqual(urlComponents.path.components(separatedBy: "/").last, "_deltaset")
                 return HttpResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: [
                         "changed" : [],
                         "deleted" : []
@@ -2214,8 +2214,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : client.activeUser?.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
             defer {
@@ -2249,8 +2249,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : self.client.activeUser!.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ])
         }
@@ -2295,8 +2295,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 ])
@@ -2348,8 +2348,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 ])
@@ -2387,7 +2387,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             switch request.url!.path {
             case "/appdata/_kid_/Person":
                 return HttpResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: [
                         [
                             "_id" : UUID().uuidString,
@@ -2397,8 +2397,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                 "creator" : UUID().uuidString
                             ],
                             "_kmd" : [
-                                "lmt" : Date().toString(),
-                                "ect" : Date().toString()
+                                "lmt" : Date().toISO8601(),
+                                "ect" : Date().toISO8601()
                             ]
                         ]
                     ]
@@ -2470,7 +2470,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person":
-                    date1 = Date().toString()
+                    date1 = Date().toISO8601()
                     return HttpResponse(
                         headerFields: ["X-Kinvey-Request-Start" : date1!],
                         json: [
@@ -2482,8 +2482,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ]
                         ]
@@ -2507,7 +2507,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
-                    date2 = Date().toString()
+                    date2 = Date().toISO8601()
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                     let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                     XCTAssertNotNil(since)
@@ -2526,8 +2526,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -2553,7 +2553,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
-                    date3 = Date().toString()
+                    date3 = Date().toISO8601()
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                     let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                     XCTAssertNotNil(since)
@@ -2573,8 +2573,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -2608,7 +2608,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person":
-                    date1 = Date().toString()
+                    date1 = Date().toISO8601()
                     return HttpResponse(
                         headerFields: ["X-Kinvey-Request-Start" : date1!],
                         json: [
@@ -2620,8 +2620,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ]
                         ]
@@ -2645,7 +2645,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
-                    date2 = Date().toString()
+                    date2 = Date().toISO8601()
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                     let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                     XCTAssertNotNil(since)
@@ -2664,8 +2664,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -2691,7 +2691,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
-                    date3 = Date().toString()
+                    date3 = Date().toISO8601()
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                     let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                     XCTAssertNotNil(since)
@@ -2711,8 +2711,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -2754,7 +2754,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date1 = Date().toString()
+                        date1 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date1!],
                             json: [
@@ -2766,8 +2766,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ]
@@ -2815,7 +2815,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date2 = Date().toString()
+                        date2 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -2834,8 +2834,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -2891,7 +2891,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date3 = Date().toString()
+                        date3 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -2911,8 +2911,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -2983,7 +2983,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date1 = Date().toString()
+                        date1 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date1!],
                             json: [
@@ -2995,8 +2995,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ]
@@ -3044,7 +3044,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date2 = Date().toString()
+                        date2 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -3063,8 +3063,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -3120,7 +3120,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date3 = Date().toString()
+                        date3 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -3140,8 +3140,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -3213,7 +3213,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date1 = Date().toString()
+                        date1 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date1!],
                             json: [
@@ -3225,8 +3225,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ]
@@ -3279,7 +3279,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date2 = Date().toString()
+                        date2 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date2!],
                             json: [
@@ -3291,8 +3291,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ],
                                 [
@@ -3303,8 +3303,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                                 
@@ -3357,7 +3357,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date3 = Date().toString()
+                        date3 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -3377,8 +3377,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -3451,7 +3451,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date1 = Date().toString()
+                        date1 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date1!],
                             json: [
@@ -3463,8 +3463,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ]
@@ -3517,7 +3517,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person":
-                        date2 = Date().toString()
+                        date2 = Date().toISO8601()
                         return HttpResponse(
                             headerFields: ["X-Kinvey-Request-Start" : date2!],
                             json: [
@@ -3529,8 +3529,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ],
                                 [
@@ -3541,8 +3541,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                                 
@@ -3595,7 +3595,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 mockResponse { request in
                     switch request.url!.path {
                     case "/appdata/_kid_/Person/_deltaset":
-                        date3 = Date().toString()
+                        date3 = Date().toISO8601()
                         let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                         let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                         XCTAssertNotNil(since)
@@ -3615,8 +3615,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -3680,7 +3680,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person":
-                    date1 = Date().toString()
+                    date1 = Date().toISO8601()
                     return HttpResponse(
                         headerFields: ["x-kinvey-request-start" : date1!],
                         json: [
@@ -3692,8 +3692,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ]
                         ]
@@ -3717,7 +3717,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             mockResponse { request in
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
-                    date2 = Date().toString()
+                    date2 = Date().toISO8601()
                     let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
                     let since = urlComponents?.queryItems?.filter { $0.name == "since" }.first?.value
                     XCTAssertNotNil(since)
@@ -3736,8 +3736,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -3781,7 +3781,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             let requestStartDate = Date()
                             requestStartDates.append(requestStartDate)
                             return HttpResponse(
-                                headerFields: ["X-Kinvey-Request-Start" : requestStartDate.toString()],
+                                headerFields: ["X-Kinvey-Request-Start" : requestStartDate.toISO8601()],
                                 json: ["count" : 3]
                             )
                         default:
@@ -3801,7 +3801,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                             let requestStartDate = Date()
                             requestStartDates.append(requestStartDate)
                             return HttpResponse(
-                                headerFields: ["X-Kinvey-Request-Start" : requestStartDate.toString()],
+                                headerFields: ["X-Kinvey-Request-Start" : requestStartDate.toISO8601()],
                                 json: [
                                     [
                                         "_id" : UUID().uuidString,
@@ -3811,8 +3811,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ]
@@ -3859,7 +3859,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     switch request.url!.path {
                     case "/appdata/\(sharedClient.appKey!)/\(Person.collectionName())/_deltaset":
                         return HttpResponse(
-                            headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                            headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                             json: [
                                 "changed" : [
                                     [
@@ -3870,8 +3870,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                             "creator" : self.client.activeUser!.userId
                                         ],
                                         "_kmd" : [
-                                            "lmt" : Date().toString(),
-                                            "ect" : Date().toString()
+                                            "lmt" : Date().toISO8601(),
+                                            "ect" : Date().toISO8601()
                                         ]
                                     ]
                                 ],
@@ -3922,7 +3922,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     )
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             [
                                 "_id" : UUID().uuidString,
@@ -3932,8 +3932,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ]
                         ]
@@ -4009,8 +4009,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -4020,7 +4020,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch urlComponents.path {
                 case "/appdata/_kid_/Person/_count":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: ["count" : json.count]
                     )
                 case "/appdata/_kid_/Person/_deltaset":
@@ -4036,7 +4036,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     let skip = urlComponents.queryItems?.filter({ $0.name == "skip" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.startIndex
                     let limit = urlComponents.queryItems?.filter({ $0.name == "limit" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.endIndex
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: Array(json[skip ..< skip + limit])
                     )
                 default:
@@ -4115,8 +4115,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ],
                 [
@@ -4127,8 +4127,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ]
             ]
@@ -4155,7 +4155,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         }
                     }
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: json
                     )
                 default:
@@ -4227,7 +4227,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch request.url!.path {
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             [
                                 "_id" : "58450d87f29e22207c83a237",
@@ -4237,8 +4237,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ],
                             [
@@ -4249,8 +4249,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ],
                             [
@@ -4261,8 +4261,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                     "creator" : self.client.activeUser!.userId
                                 ],
                                 "_kmd" : [
-                                    "lmt" : Date().toString(),
-                                    "ect" : Date().toString()
+                                    "lmt" : Date().toISO8601(),
+                                    "ect" : Date().toISO8601()
                                 ]
                             ]
                         ]
@@ -4299,7 +4299,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_deltaset":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: [
                             "changed" : [
                                 [
@@ -4310,8 +4310,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                                         "creator" : self.client.activeUser!.userId
                                     ],
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ]
                                 ]
                             ],
@@ -4380,8 +4380,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : self.client.activeUser!.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ],
             [
@@ -4392,8 +4392,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     "creator" : self.client.activeUser!.userId
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ]
         ]
@@ -4424,7 +4424,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     }
                 }
                 return HttpResponse(
-                    headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                    headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                     json: json
                 )
             default:
@@ -4533,8 +4533,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ],
                 [
@@ -4545,8 +4545,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ]
             ]
@@ -4555,7 +4555,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch request.url!.path {
                 case "/appdata/_kid_/Person/_count":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: ["count" : json.count]
                     )
                 case "/appdata/_kid_/Person/_deltaset":
@@ -4569,7 +4569,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     )
                 case "/appdata/_kid_/Person":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: json
                     )
                 default:
@@ -4680,8 +4680,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ],
                 [
@@ -4692,8 +4692,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         "creator" : self.client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ]
             ]
@@ -4704,7 +4704,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 switch urlComponents.path {
                 case "/appdata/_kid_/Person/_count":
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: ["count" : json.count]
                     )
                 case "/appdata/_kid_/Person/_deltaset":
@@ -4725,7 +4725,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     let skip = urlComponents.queryItems?.filter({ $0.name == "skip" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? 0
                     let limit = urlComponents.queryItems?.filter({ $0.name == "limit" && $0.value != nil && Int($0.value!) != nil }).map({ Int($0.value!)! }).first ?? json.endIndex - skip
                     return HttpResponse(
-                        headerFields: ["X-Kinvey-Request-Start" : Date().toString()],
+                        headerFields: ["X-Kinvey-Request-Start" : Date().toISO8601()],
                         json: Array(json[skip ..< skip + limit])
                     )
                 default:

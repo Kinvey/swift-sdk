@@ -20,8 +20,8 @@ class MetadataTestCase: XCTestCase {
         let ect = Date(timeIntervalSinceNow: 2)
         
         let json = [
-            Metadata.Key.lastModifiedTime: lmt.toString(),
-            Metadata.Key.entityCreationTime: ect.toString(),
+            Metadata.Key.lastModifiedTime: lmt.toISO8601(),
+            Metadata.Key.entityCreationTime: ect.toISO8601(),
             Metadata.Key.authtoken: authToken
         ]
         let metadata = Metadata(JSON: json)

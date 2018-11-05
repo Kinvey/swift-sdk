@@ -51,8 +51,8 @@ class NoCacheTestCase: XCTestCase {
                 "_id" : UUID().uuidString,
                 "name" : "Victor",
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ]
         ])

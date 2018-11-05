@@ -82,8 +82,8 @@ class DataTypeTestCase: StoreTestCase {
                     "creator" : UUID().uuidString
                 ],
                 "_kmd" : [
-                    "lmt" : Date().toString(),
-                    "ect" : Date().toString()
+                    "lmt" : Date().toISO8601(),
+                    "ect" : Date().toISO8601()
                 ]
             ]
         ])
@@ -143,13 +143,13 @@ class DataTypeTestCase: StoreTestCase {
             mockResponse(json: [
                 [
                     "_id" : UUID().uuidString,
-                    "date" : Date().toString(),
+                    "date" : Date().toISO8601(),
                     "_acl" : [
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ]
             ])
@@ -194,13 +194,13 @@ class DataTypeTestCase: StoreTestCase {
             mockResponse(json: [
                 [
                     "_id" : UUID().uuidString,
-                    "date" : Date().toString(),
+                    "date" : Date().toISO8601(),
                     "_acl" : [
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ]
             ])

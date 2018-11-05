@@ -1660,11 +1660,11 @@ class FileTestCase: StoreTestCase {
                                 "creator": self.client.activeUser?.userId
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)/o?name=\(UUID().uuidString)%2F\(UUID().uuidString)&uploadType=resumable&predefinedAcl=publicRead&upload_id=\(UUID().uuidString)",
-                            "_expiresAt": Date().toString(),
+                            "_expiresAt": Date().toISO8601(),
                             "_requiredHeaders": [
                             ]
                         ])
@@ -1727,8 +1727,8 @@ class FileTestCase: StoreTestCase {
                                 "creator": self.client.activeUser?.userId
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ],
                             "label": "trailer",
                             "_downloadURL": "https://storage.googleapis.com/\(UUID().uuidString)/\(UUID().uuidString)/\(UUID().uuidString)"
@@ -2313,11 +2313,11 @@ class FileTestCase: StoreTestCase {
                                 "creator": self.client.activeUser?.userId
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)/o?name=\(UUID().uuidString)%2F\(UUID().uuidString)&uploadType=resumable&predefinedAcl=publicRead&upload_id=\(UUID().uuidString)",
-                            "_expiresAt": Date().toString(),
+                            "_expiresAt": Date().toISO8601(),
                             "_requiredHeaders": [
                             ]
                         ])
@@ -2350,11 +2350,11 @@ class FileTestCase: StoreTestCase {
                                 "creator": self.client.activeUser?.userId
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ],
                             "_downloadURL": "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/79d48489-d197-48c8-98e6-b5b4028858a1/4b27cacf-33d2-4c90-b790-271000631895?GoogleAccessId=558440376631@developer.gserviceaccount.com&Expires=1480757466&Signature=djWo6FIonq3gdON80i26xfBnOiGobxxbIVEY5wjVbcBnHpXoUbwDhdK5oPZVkTYkqpABj%2FFNDZpeVDG0UCUL8eS4ujD3%2FwPeHdX2z9cnmNXDLvi%2FPoMQHZg6XatKCQvY6swht6Ybptj5%2Ftx8euHnGLf4l4eTRcwBsDv2mAVz6MU%3D",
-                            "_expiresAt": Date(timeIntervalSinceNow: 3600).toString()
+                            "_expiresAt": Date(timeIntervalSinceNow: 3600).toISO8601()
                         ])
                     default:
                         Swift.fatalError()
@@ -2409,11 +2409,11 @@ class FileTestCase: StoreTestCase {
                                 "creator": self.client.activeUser?.userId
                             ],
                             "_kmd": [
-                                "lmt": Date().toString(),
-                                "ect": Date().toString()
+                                "lmt": Date().toISO8601(),
+                                "ect": Date().toISO8601()
                             ],
                             "_downloadURL": "https://storage.googleapis.com/\(UUID().uuidString)/\(UUID().uuidString)/\(UUID().uuidString)?GoogleAccessId=\(UUID().uuidString)@developer.gserviceaccount.com&Expires=\(UUID().uuidString)&Signature=\(UUID().uuidString)%2F\(UUID().uuidString)%2B\(UUID().uuidString)%2B\(UUID().uuidString)%3D",
-                            "_expiresAt": Date(timeIntervalSinceNow: ttl.1.toTimeInterval(ttl.0)).toString()
+                            "_expiresAt": Date(timeIntervalSinceNow: ttl.1.toTimeInterval(ttl.0)).toISO8601()
                         ])
                     case 1:
                         return HttpResponse(data: data)
@@ -2557,11 +2557,11 @@ class FileTestCase: StoreTestCase {
                                     "_id" : "b69d8159-e59f-4337-b03b-1c2df3ccfed9",
                                     "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ],
                                     "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429&uploadType=resumable&upload_id=AEnB2Up1heH7qbZXQIqsaT-XJNJTv3OKufiMN_9OXh5qGPVfwP4SaWrU5LW7-ZXswXc11l_Wi027IUjZx44CzajfycP8aam7HQ",
-                                    "_expiresAt" : Date(timeIntervalSinceNow: 7 * TimeUnit.day.timeInterval).toString(),
+                                    "_expiresAt" : Date(timeIntervalSinceNow: 7 * TimeUnit.day.timeInterval).toISO8601(),
                                     "_requiredHeaders" : [
                                     ]
                                 ])
@@ -2575,10 +2575,10 @@ class FileTestCase: StoreTestCase {
                                     "generation": "1486777096687000",
                                     "metageneration": "1",
                                     "contentType": "application/octet-stream",
-                                    "timeCreated": Date().toString(),
-                                    "updated": Date().toString(),
+                                    "timeCreated": Date().toISO8601(),
+                                    "updated": Date().toISO8601(),
                                     "storageClass": "STANDARD",
-                                    "timeStorageClassUpdated": Date().toString(),
+                                    "timeStorageClassUpdated": Date().toISO8601(),
                                     "size": "14",
                                     "md5Hash": "stMQhvCYJU0yMUQ4qGPmHg==",
                                     "mediaLink": "https://www.googleapis.com/download/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o/b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429?generation=1486777096687000&alt=media",
@@ -2596,11 +2596,11 @@ class FileTestCase: StoreTestCase {
                                     ],
                                     "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ],
                                     "_downloadURL" : "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429?GoogleAccessId=558440376631@developer.gserviceaccount.com&Expires=1486780696&Signature=XW1B07b1srNI890hH0AUKiwroJJ8gl0DrqoDai1G45Txi2YzpJ1UAiDlrxeAMNWRNEYCTmJkuwkNXtdp8sXz7dYbQMK3x96vIQ6QRVVef590rvSbObhziBVBBdn%2B814PmTNEm6737awQNBTc%2FweK2SnDU6jFdbA5cCXqWs5USWk%3D",
-                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toString()
+                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toISO8601()
                                 ])
                             default:
                                 Swift.fatalError()
@@ -2680,8 +2680,8 @@ class FileTestCase: StoreTestCase {
                             "_id" : userId,
                             "username" : "aclShareWithAnotherUser_2AB4A3E2-793C-4E6F-B02D-BD4F714CE248",
                             "_kmd" : [
-                                "lmt" : Date().toString(),
-                                "ect" : Date().toString(),
+                                "lmt" : Date().toISO8601(),
+                                "ect" : Date().toISO8601(),
                                 "authtoken" : "f44b8f07-93ab-4c79-b413-f846ed7f34df.24+7RR+w8t845iG/dqkAJ3Vi6cU9ieO6tpg98vfVakY="
                             ],
                             "_acl" : [
@@ -2735,11 +2735,11 @@ class FileTestCase: StoreTestCase {
                                     ],
                                     "_filename" : "9b77d4f0-43ea-4d70-9f65-e40808d1e429",
                                     "_kmd" : [
-                                        "lmt" : Date().toString(),
-                                        "ect" : Date().toString()
+                                        "lmt" : Date().toISO8601(),
+                                        "ect" : Date().toISO8601()
                                     ],
                                     "_downloadURL" : "https://storage.googleapis.com/0b5b1cd673164e3185a2e75e815f5cfe/b69d8159-e59f-4337-b03b-1c2df3ccfed9/9b77d4f0-43ea-4d70-9f65-e40808d1e429?GoogleAccessId=558440376631@developer.gserviceaccount.com&Expires=1486780697&Signature=dS5zlMOJ3jgNZawRHd%2FZfCGx9eIYgARLDiDV3QcFP6%2BKshaxjbpAbc9NF2%2FkkDt3KxKPKfQKJoKJ%2FYvGJ2H3qH7vnrab7%2F1zx56roHawWnkexusZ1WxWJzmc3KNyGV9PeQrtyMzAoeZEjEmX38IMZrcat3Lzqo3rpzsSwONOiBI%3D",
-                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toString()
+                                    "_expiresAt" : Date(timeIntervalSinceNow: TimeUnit.hour.timeInterval).toISO8601()
                                 ])
                             case 1:
                                 return HttpResponse(data: "secret message".data(using: .utf8))
@@ -2851,8 +2851,8 @@ class FileTestCase: StoreTestCase {
                     "mimeType" : "plain/txt",
                     "size" : 100,
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ],
                     "_downloadURL" : "https://storage.googleapis.com/file.txt"
                 ]
@@ -2902,11 +2902,11 @@ class FileTestCase: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ],
                         "_downloadURL" : "https://storage.googleapis.com/image.png",
-                        "_expiresAt" : Date(timeIntervalSinceNow: 3).toString()
+                        "_expiresAt" : Date(timeIntervalSinceNow: 3).toISO8601()
                     ]
                 ])
             }
@@ -2960,11 +2960,11 @@ class FileTestCase: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ],
                     "_downloadURL" : "https://storage.googleapis.com/image.png",
-                    "_expiresAt" : Date(timeIntervalSinceNow: 3).toString()
+                    "_expiresAt" : Date(timeIntervalSinceNow: 3).toISO8601()
                 ])
             }
             defer {
@@ -3017,11 +3017,11 @@ class FileTestCase: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ],
                         "_downloadURL" : "https://storage.googleapis.com/image.png",
-                        "_expiresAt" : Date(timeIntervalSinceNow: 3).toString()
+                        "_expiresAt" : Date(timeIntervalSinceNow: 3).toISO8601()
                     ]
                 ])
             }
@@ -3127,11 +3127,11 @@ class FileTestCase: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
-                        "_expiresAt" : Date().toString(),
+                        "_expiresAt" : Date().toISO8601(),
                         "_requiredHeaders" : [
                         ]
                     ]
@@ -3207,11 +3207,11 @@ class FileTestCase: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
-                        "_expiresAt" : Date().toString(),
+                        "_expiresAt" : Date().toISO8601(),
                         "_requiredHeaders" : [
                         ]
                     ]
@@ -3285,11 +3285,11 @@ class FileTestCase: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
-                        "_expiresAt" : Date().toString(),
+                        "_expiresAt" : Date().toISO8601(),
                         "_requiredHeaders" : [
                         ]
                     ]
