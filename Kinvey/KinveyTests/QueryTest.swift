@@ -134,6 +134,10 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(encodeQuery(Query(format: "age = %@ AND age = %@", 18, 21)), "query=\(encodeURL(["$and" : [["age" : 18], ["age" : 21]]]))")
     }
     
+    func testQueryAndOptimized() {
+        XCTAssertEqual(encodeQuery(Query(format: "name = %@ AND age = %@", "Victor", 21)), "query=\(encodeURL(["name" : "Victor", "age" : 21]))")
+    }
+    
     func testQueryNot() {
         XCTAssertEqual(encodeQuery(Query(format: "NOT age = %@", 30)), "query=\(encodeURL(["$not" : [["age" : 30]]]))")
     }
