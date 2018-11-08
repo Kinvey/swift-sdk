@@ -5,6 +5,7 @@ task:
   download_dependencies_script: make travisci-cache
   brew_update_script: brew update
   install_carthage_script: brew install carthage
+  xcode_version_script: xcodebuild -version
   test_macos_script: make test-macos
 
 task:
@@ -14,4 +15,6 @@ task:
   download_dependencies_script: make travisci-cache
   brew_update_script: brew update
   install_carthage_script: brew install carthage
+  xcode_version_script: xcodebuild -version
+  xcode_show_destinations_script: make show-destinations
   test_ios_script: make test-ios
