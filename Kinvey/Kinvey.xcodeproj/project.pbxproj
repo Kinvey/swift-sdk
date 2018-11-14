@@ -3695,6 +3695,7 @@
 		};
 		5705B1DC1EDF82400006980A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3737,6 +3738,7 @@
 		};
 		5705B1DF1EDF82400006980A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3934,6 +3936,7 @@
 		};
 		5765B85E1C9771BD00080FFA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
@@ -3949,6 +3952,7 @@
 		};
 		5765B85F1C9771BD00080FFA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
@@ -4653,6 +4657,7 @@
 		};
 		57CCBCD520D2CD3F00197CC2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

@@ -824,7 +824,7 @@ open class FileStore<FileType: File> {
     @discardableResult
     fileprivate func downloadFileURL(
         _ file: FileType,
-        storeType: StoreType = .cache,
+        storeType: StoreType,
         downloadURL: URL,
         options: Options?
     ) -> (
@@ -836,7 +836,8 @@ open class FileStore<FileType: File> {
             let executor = Executor()
             downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, response, error) in
                 if let response = response, response.isOK || response.isNotModified, let url = url {
-                    if storeType == .cache {
+                    switch storeType {
+                    case .cache:
                         var pathURL: URL? = nil
                         var entityId: String? = nil
                         executor.executeAndWait {
@@ -879,7 +880,7 @@ open class FileStore<FileType: File> {
                                 resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
                             }
                         }
-                    } else {
+                    default:
                         resolver.fulfill(url)
                     }
                 } else {
@@ -960,10 +961,27 @@ open class FileStore<FileType: File> {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
+    @available(*, deprecated: 3.21.0, message: "Please use `download(file:storeType:options:completionHandler:)` instead")
     @discardableResult
     open func download(
         _ file: FileType,
         storeType: StoreType = .cache,
+        options: Options? = nil,
+        completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
+        return download(
+            file: file,
+            storeType: storeType,
+            options: options,
+            completionHandler: completionHandler
+        )
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    @discardableResult
+    open func download(
+        file: FileType,
+        storeType: StoreType,
         options: Options? = nil,
         completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
@@ -973,17 +991,22 @@ open class FileStore<FileType: File> {
             return errorRequest(error: error, completionHandler: completionHandler)
         }
         
-        if storeType == .sync || storeType == .cache,
-            let entityId = file.fileId,
-            let cachedFile = cachedFile(entityId),
-            let pathURL = file.pathURL
-        {
-            DispatchQueue.main.async {
-                completionHandler?(.success((cachedFile, pathURL)))
+        switch storeType {
+        case .sync, .cache:
+            if let entityId = file.fileId,
+                let cachedFile = cachedFile(entityId),
+                let pathURL = file.pathURL
+            {
+                DispatchQueue.main.async {
+                    completionHandler?(.success((cachedFile, pathURL)))
+                }
             }
+        default:
+            break
         }
         
-        if storeType == .cache || storeType == .network {
+        switch storeType {
+        case .cache, .network, .auto:
             let multiRequest = MultiRequest<Result<(FileType, URL), Swift.Error>>()
             Promise<(FileType, URL)> { resolver in
                 if let downloadURL = file.downloadURL,
@@ -1021,6 +1044,18 @@ open class FileStore<FileType: File> {
                 return promise.then { localUrl in
                     return Promise<(FileType, URL)>.value((file, localUrl))
                 }
+            }.recover { (error) -> Promise<(FileType, URL)> in
+                if storeType == .auto,
+                    let entityId = file.fileId,
+                    let cachedFile = self.cachedFile(entityId),
+                    let pathURL = file.pathURL
+                {
+                    return Promise(Guarantee { seal in
+                        seal((cachedFile, pathURL))
+                    })
+                } else {
+                    return Promise(error: error)
+                }
             }.done { (args) -> Void in
                 let result: Result<(FileType, URL), Swift.Error> = .success(args)
                 multiRequest.result = result
@@ -1031,7 +1066,7 @@ open class FileStore<FileType: File> {
                 completionHandler?(result)
             }
             return AnyRequest(multiRequest)
-        } else {
+        default:
             return AnyRequest(LocalRequest<Result<(FileType, URL), Swift.Error>>())
         }
     }
