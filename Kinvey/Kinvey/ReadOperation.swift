@@ -63,6 +63,17 @@ extension ReadOperationType {
                 request.addRequest(self.executeNetwork(completionHandler))
             }
             return AnyRequest(request)
+        case .networkOtherwiseLocal:
+            let request = MultiRequest<Result<SuccessType, FailureType>>()
+            executeNetwork() {
+                switch $0 {
+                case .success:
+                    completionHandler?($0)
+                case .failure:
+                    request.addRequest(self.executeLocal(completionHandler))
+                }
+            }
+            return AnyRequest(request)
         }
     }
     
