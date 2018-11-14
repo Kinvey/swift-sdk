@@ -924,6 +924,7 @@
 		5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveAllMemoryLeakTests.swift; sourceTree = "<group>"; };
 		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
 		57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoStoreTests.swift; sourceTree = "<group>"; };
+		57882EC3219CA574005ECCA3 /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
 		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		578870921DD52EC80087FE78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		578870941DD52EC80087FE78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Sources/ViewController.swift; sourceTree = "<group>"; };
@@ -1561,6 +1562,7 @@
 			isa = PBXGroup;
 			children = (
 				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
+				57882EC3219CA574005ECCA3 /* Tests.xcconfig */,
 				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
@@ -3672,6 +3674,7 @@
 		};
 		5705B1DB1EDF82400006980A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3711,6 +3714,7 @@
 		};
 		5705B1DE1EDF82400006980A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -4626,6 +4630,7 @@
 		};
 		57CCBCD420D2CD3F00197CC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
