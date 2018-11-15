@@ -97,8 +97,8 @@ class AclTestCase: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -218,8 +218,8 @@ class AclTestCase: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -275,8 +275,8 @@ class AclTestCase: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -340,8 +340,8 @@ class AclTestCase: StoreTestCase {
                         "creator" : sharedClient.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }
@@ -405,8 +405,8 @@ class AclTestCase: StoreTestCase {
                         "creator" : UUID().uuidString
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ]
                 ])
             }

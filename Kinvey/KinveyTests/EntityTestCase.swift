@@ -9,6 +9,7 @@
 import XCTest
 @testable import Kinvey
 import Nimble
+import CoreLocation
 
 class EntityTestCase: XCTestCase {
     
@@ -83,6 +84,39 @@ class EntityTestCase: XCTestCase {
         geoPoint <- ("geoPoint", Map(mappingType: .fromJSON, JSON: ["location" : [longitude, latitude]])["location"])
         XCTAssertEqual(geoPoint?.latitude, latitude)
         XCTAssertEqual(geoPoint?.longitude, longitude)
+    }
+    
+    func testGeoPointEncoding() {
+        let geoPoint = GeoPoint(latitude: 42.3133521, longitude: -71.1271963)
+        do {
+            let data = try JSONEncoder().encode(geoPoint)
+            let jsonObject = try JSONSerialization.jsonObject(with: data)
+            guard let array = jsonObject as? [CLLocationDegrees],
+                array.count == 2,
+                let first = array.first,
+                let last = array.last
+            else {
+                throw NSError(domain: "Returned type is not an array", code: 0, userInfo: nil)
+            }
+            XCTAssertEqual(first, geoPoint.longitude, accuracy: CLLocationDegrees(0.00000001))
+            XCTAssertEqual(last, geoPoint.latitude, accuracy: CLLocationDegrees(0.00000001))
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testGeoPointDecoding() {
+        do {
+            let longitude = -71.1271963
+            let latitude = 42.3133521
+            let geoPointArray = [longitude, latitude]
+            let data = try JSONSerialization.data(withJSONObject: geoPointArray)
+            let geoPoint = try JSONDecoder().decode(GeoPoint.self, from: data)
+            XCTAssertEqual(longitude, geoPoint.longitude, accuracy: CLLocationDegrees(0.00000001))
+            XCTAssertEqual(latitude, geoPoint.latitude, accuracy: CLLocationDegrees(0.00000001))
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     func testPropertyType() {

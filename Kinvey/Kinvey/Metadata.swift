@@ -55,7 +55,7 @@ public class Metadata: Object, Codable {
             return self.lmt?.toDate()
         }
         set {
-            lmt = newValue?.toString()
+            lmt = newValue?.toISO8601()
         }
     }
     
@@ -65,7 +65,7 @@ public class Metadata: Object, Codable {
             return self.ect?.toDate()
         }
         set {
-            ect = newValue?.toString()
+            ect = newValue?.toISO8601()
         }
     }
     
@@ -257,7 +257,7 @@ public final class EmailVerification: Object, Codable {
             return self.lsca?.toDate()
         }
         set {
-            lsca = newValue?.toString()
+            lsca = newValue?.toISO8601()
         }
     }
     
@@ -267,7 +267,7 @@ public final class EmailVerification: Object, Codable {
             return self.lca?.toDate()
         }
         set {
-            lca = newValue?.toString()
+            lca = newValue?.toISO8601()
         }
     }
     
@@ -347,7 +347,7 @@ public final class PasswordReset: Object, Codable {
             return self.lsca?.toDate()
         }
         set {
-            lsca = newValue?.toString()
+            lsca = newValue?.toISO8601()
         }
     }
     

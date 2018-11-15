@@ -52,7 +52,7 @@ class DateTestCase: KinveyTestCase {
         let transform = AnyTransform(KinveyDateTransform())
         
         let date = Date()
-        let dateString = date.toString()
+        let dateString = date.toISO8601()
         
         XCTAssertEqual(date.timeIntervalSinceReferenceDate, (transform.transformFromJSON(dateString) as! Date).timeIntervalSinceReferenceDate, accuracy: 0.0009)
         XCTAssertEqual(dateString, transform.transformToJSON(date) as? String)
@@ -73,13 +73,13 @@ class DateTestCase: KinveyTestCase {
         for _ in 1...nEvents {
             if useMockData {
                 let json: JsonDictionary = [
-                    "date" : publishDate.toString(),
+                    "date" : publishDate.toISO8601(),
                     "_acl" : [
                         "creator" : client.activeUser!.userId
                     ],
                     "_kmd" : [
-                        "lmt" : Date().toString(),
-                        "ect" : Date().toString()
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
                     ],
                     "_id" : UUID().uuidString
                 ]

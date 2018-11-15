@@ -24,6 +24,9 @@ build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE'
 
+show-destinations:
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -showdestinations
+
 build-dependencies-ios: checkout-dependencies
 	carthage build --platform iOS
 
@@ -92,7 +95,7 @@ docs:
 				--output docs
 				
 deploy-cocoapods:
-	pod trunk push Kinvey.podspec --verbose --allow-warnings
+	pod trunk push Kinvey.podspec
 
 test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings

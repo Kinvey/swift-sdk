@@ -815,8 +815,8 @@ class NetworkStoreTests: StoreTestCase {
                         "creator": self.client.activeUser?.userId
                     ]
                     json["_kmd"] = [
-                        "lmt": Date().toString(),
-                        "ect": Date().toString()
+                        "lmt": Date().toISO8601(),
+                        "ect": Date().toISO8601()
                     ]
                     json["_id"] = UUID().uuidString
                     mockData.append(json)
@@ -1641,8 +1641,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ],
             [
@@ -1653,8 +1653,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ]
         ]
@@ -1718,15 +1718,15 @@ class NetworkStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -1805,15 +1805,15 @@ class NetworkStoreTests: StoreTestCase {
         let name1 = UUID().uuidString
         let age1 = Int(arc4random())
         let creator1 = UUID().uuidString
-        let lmt1 = Date().toString()
-        let ect1 = Date().toString()
+        let lmt1 = Date().toISO8601()
+        let ect1 = Date().toISO8601()
         
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
-        let lmt2 = Date().toString()
-        let ect2 = Date().toString()
+        let lmt2 = Date().toISO8601()
+        let ect2 = Date().toISO8601()
         
         let mockObjs: [[String : Any]] = [
             [
@@ -1891,8 +1891,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ],
             [
@@ -1903,8 +1903,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ]
         ]
@@ -1973,8 +1973,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ],
             [
@@ -1985,8 +1985,8 @@ class NetworkStoreTests: StoreTestCase {
                     "creator": UUID().uuidString
                 ],
                 "_kmd": [
-                    "lmt": Date().toString(),
-                    "ect": Date().toString()
+                    "lmt": Date().toISO8601(),
+                    "ect": Date().toISO8601()
                 ]
             ]
         ]
@@ -3493,8 +3493,8 @@ class NetworkStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 }
@@ -3556,8 +3556,8 @@ class NetworkStoreTests: StoreTestCase {
                             "creator" : UUID().uuidString
                         ],
                         "_kmd" : [
-                            "lmt" : Date().toString(),
-                            "ect" : Date().toString()
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
                         ]
                     ]
                 }
