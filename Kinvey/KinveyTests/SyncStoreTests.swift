@@ -1729,17 +1729,34 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let query = Query(format: "personId == %@", personId)
-        
-        let request = store.find(query, options: nil)
         do {
-            let results = try request.waitForResult(timeout: defaultTimeout).value()
-            XCTAssertNotNil(results.first)
-            if let result = results.first {
-                XCTAssertEqual(result.personId, personId)
+            let query = Query(format: "personId == %@", personId)
+            
+            let request = store.find(query, options: nil)
+            do {
+                let results = try request.waitForResult(timeout: defaultTimeout).value()
+                XCTAssertNotNil(results.first)
+                if let result = results.first {
+                    XCTAssertEqual(result.personId, personId)
+                }
+            } catch {
+                XCTFail(error.localizedDescription)
             }
-        } catch {
-            XCTFail(error.localizedDescription)
+        }
+        
+        do {
+            let query = Query(\Person.personId == personId)
+            
+            let request = store.find(query, options: nil)
+            do {
+                let results = try request.waitForResult(timeout: defaultTimeout).value()
+                XCTAssertNotNil(results.first)
+                if let result = results.first {
+                    XCTAssertEqual(result.personId, personId)
+                }
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
         }
     }
     
@@ -2017,7 +2034,7 @@ class SyncStoreTests: StoreTestCase {
             let query = Query {
                 $0.skip = skip
                 $0.limit = limit
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2055,7 +2072,7 @@ class SyncStoreTests: StoreTestCase {
             
             let query = Query {
                 $0.limit = 5
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2091,7 +2108,7 @@ class SyncStoreTests: StoreTestCase {
             
             let query = Query {
                 $0.skip = 5
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2128,7 +2145,7 @@ class SyncStoreTests: StoreTestCase {
             let query = Query {
                 $0.skip = 6
                 $0.limit = 6
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2164,7 +2181,7 @@ class SyncStoreTests: StoreTestCase {
             
             let query = Query {
                 $0.skip = 10
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2188,7 +2205,7 @@ class SyncStoreTests: StoreTestCase {
             
             let query = Query {
                 $0.skip = 11
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceLocal)) {
@@ -2266,7 +2283,7 @@ class SyncStoreTests: StoreTestCase {
                 $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
                 $0.skip = skip
                 $0.limit = limit
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.pull(query) { results, error in
