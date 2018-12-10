@@ -17,8 +17,8 @@ before_script:
 - "security set-key-partition-list -S apple-tool:,apple: -s -k travis ios-build.keychain"
 - date
 - brew update
-- brew install swiftlint
-- brew install tree
+- brew install swiftlint || brew upgrade swiftlint
+- brew install tree || brew upgrade tree
 # - brew upgrade carthage
 - tree -L 2 -P '*.framework' -I '*.dSYM' Carthage/Build
 - carthage version
