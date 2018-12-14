@@ -362,7 +362,16 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
-        log.verbose("Detaching \(entities.count) object(s)")
+        #if canImport(os)
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: "Realm Detach Entities", "%d", entities.count)
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: "Realm Detach Entities", "%d", entities.count)
+            }
+        }
+        #endif
         let skip = query?.skip ?? 0
         let limit = query?.limit ?? Int(entities.count)
         var arrayEnumerate: AnyRandomAccessCollection<T>
@@ -395,7 +404,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         executor.executeAndWait {
             try! self.write { realm in
                 if let entityId = entity.entityId, let oldEntity = realm.object(ofType: self.entityType, forPrimaryKey: entityId) {
-                    self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
+                    try self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
                 }
                 newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
             }
@@ -502,7 +511,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     let entityType = type(of: entity) as! Entity.Type
                     let entityTypeClassName = entityType.className()
                     if let entity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
-                        self.cascadeDelete(
+                        try self.cascadeDelete(
                             realm: realm,
                             entityType: entityTypeClassName,
                             entity: entity
@@ -517,7 +526,16 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func remove(entities: AnyRandomAccessCollection<Type>) -> Bool {
-        log.verbose("Removing objects: \(entities)")
+        #if canImport(os)
+        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+            os_signpost(.begin, log: osLog, name: "Remove Entities", "%d", entities.count)
+        }
+        defer {
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.end, log: osLog, name: "Remove Entities", "%d", entities.count)
+            }
+        }
+        #endif
         var result = false
         executor.executeAndWait {
             try! self.write { realm in
@@ -747,7 +765,27 @@ extension RealmCache: DynamicCacheType {
     }
     
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object, deleteItself: Bool = true) {
-        if let schema = realm.schema[entityType] {
+        if let cascadeDeletable = entity as? CascadeDeletable {
+            if let entity = entity as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+            try! cascadeDeletable.cascadeDelete(executor: RealmCascadeDeleteExecutor(realm: realm))
+        } else if let schema = realm.schema[entityType] {
+            #if canImport(os)
+            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                os_signpost(.begin, log: osLog, name: "Cascade Delete", "%s", entityType)
+            }
+            defer {
+                if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                    os_signpost(.end, log: osLog, name: "Cascade Delete", "%s", entityType)
+                }
+            }
+            #endif
             schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
                 case .object:
@@ -1100,6 +1138,50 @@ extension List : Encodable where Element : Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(Array(self))
+    }
+    
+}
+
+class RealmCascadeDeleteExecutor: CascadeDeleteExecutor {
+    
+    let realm: Realm
+    
+    init(realm: Realm) {
+        self.realm = realm
+    }
+    
+    func cascadeDelete<Value>(_ object: Value?) throws where Value : Object {
+        if let object = object {
+            if let cascadeDelete = object as? CascadeDeletable {
+                try cascadeDelete.cascadeDelete(executor: self)
+            }
+            if let entity = object as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+            realm.delete(object)
+        }
+    }
+    
+    func cascadeDelete<Value>(_ list: List<Value>) throws where Value : Object {
+        for object in list {
+            if let cascadeDelete = object as? CascadeDeletable {
+                try cascadeDelete.cascadeDelete(executor: self)
+            }
+            if let entity = object as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+        }
+        realm.delete(list)
     }
     
 }

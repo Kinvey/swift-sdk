@@ -8,6 +8,10 @@
 
 import Foundation
 
+#if canImport(os)
+import os
+#endif
+
 class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationType where T: NSObject {
     
     let query: Query
@@ -41,10 +45,21 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
                 count = Int(realmObjects.count)
+                let detachedObjects = cache.detach(entities: realmObjects, query: self.query)
+                #if canImport(os)
+                if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                    os_signpost(.begin, log: osLog, name: "Map Detached Object IDs", "%d", detachedObjects.count)
+                }
+                #endif
                 let idKey = try! T.entityIdProperty()
-                let objectIds = cache.detach(entities: realmObjects, query: self.query).compactMap {
+                let objectIds = detachedObjects.lazy.compactMap {
                     $0[idKey] as? String
                 }
+                #if canImport(os)
+                if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+                    os_signpost(.end, log: osLog, name: "Map Detached Object IDs", "%d", detachedObjects.count)
+                }
+                #endif
                 if cache.remove(entities: realmObjects), let sync = self.sync {
                     objectIds.forEachAutoreleasepool { objectId in
                         if objectId.hasPrefix(ObjectIdTmpPrefix) {
