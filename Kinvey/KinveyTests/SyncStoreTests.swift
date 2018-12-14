@@ -7993,23 +7993,54 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
-        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
-        XCTAssertEqual(mockObjs.count, items.count)
-        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
-        XCTAssertEqual(1, realm.objects(Reference.self).count)
-        
-        if let person = items.first {
-            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
-            XCTAssertEqual(1, count)
+        do {
+            let store = try DataStore<PersonCodable>.collection(.sync)
+            let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
+            let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(mockObjs.count, items.count)
+            XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
             XCTAssertEqual(1, realm.objects(Reference.self).count)
+            
+            if let person = items.first {
+                let count = try store.remove(person).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(1, count)
+                XCTAssertEqual(1, realm.objects(Reference.self).count)
+            }
+            
+            if let person = items.last {
+                XCTAssertEqual(person.reference?.entityId, referenceId)
+                let refreshedInstance = try store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
+            }
+            
+            store.clearCache()
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
-        if let person = items.last {
-            XCTAssertEqual(person.reference?.entityId, referenceId)
-            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
-            XCTAssertEqual(refreshedInstance.reference?.entityId, referenceId)
+        do {
+            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync)
+            let realm = (store.cache!.cache as! RealmCache<PersonCodableCascadeDeletable>).newRealm
+            let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(mockObjs.count, items.count)
+            XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+            
+            if let person = items.first {
+                let count = try store.remove(person).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(1, count)
+                XCTAssertEqual(0, realm.objects(Reference.self).count)
+            }
+            
+            if let person = items.last {
+                XCTAssertEqual(person.reference?.entityId, referenceId)
+                let refreshedInstance = try store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertNil(refreshedInstance.reference?.entityId)
+            }
+            
+            store.clearCache()
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
     
@@ -8076,23 +8107,54 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
-        let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
-        let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
-        XCTAssertEqual(mockObjs.count, items.count)
-        XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
-        XCTAssertEqual(1, realm.objects(Reference.self).count)
-        
-        if let person = items.first {
-            let count = try! store.remove(person).waitForResult(timeout: defaultTimeout).value()
-            XCTAssertEqual(1, count)
+        do {
+            let store = try DataStore<PersonCodable>.collection(.sync)
+            let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
+            let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(mockObjs.count, items.count)
+            XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
             XCTAssertEqual(1, realm.objects(Reference.self).count)
+            
+            if let person = items.first {
+                let count = try store.remove(person).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(1, count)
+                XCTAssertEqual(1, realm.objects(Reference.self).count)
+            }
+            
+            if let person = items.last {
+                XCTAssertEqual(person.references.first?.entityId, referenceId)
+                let refreshedInstance = try store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(refreshedInstance.references.first?.entityId, referenceId)
+            }
+            
+            store.clearCache()
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
-        if let person = items.last {
-            XCTAssertEqual(person.references.first?.entityId, referenceId)
-            let refreshedInstance = try! store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
-            XCTAssertEqual(refreshedInstance.references.first?.entityId, referenceId)
+        do {
+            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync)
+            let realm = (store.cache!.cache as! RealmCache<PersonCodableCascadeDeletable>).newRealm
+            let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
+            XCTAssertEqual(mockObjs.count, items.count)
+            XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
+            XCTAssertEqual(1, realm.objects(Reference.self).count)
+            
+            if let person = items.first {
+                let count = try store.remove(person).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertEqual(1, count)
+                XCTAssertEqual(0, realm.objects(Reference.self).count)
+            }
+            
+            if let person = items.last {
+                XCTAssertEqual(person.references.first?.entityId, referenceId)
+                let refreshedInstance = try store.find(person.entityId!).waitForResult(timeout: defaultTimeout).value()
+                XCTAssertNil(refreshedInstance.references.first?.entityId)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+            
+            store.clearCache()
         }
     }
     

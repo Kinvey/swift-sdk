@@ -52,7 +52,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                 }
                 #endif
                 let idKey = try! T.entityIdProperty()
-                let objectIds = detachedObjects.lazy.compactMap {
+                let objectIds = detachedObjects.compactMap {
                     $0[idKey] as? String
                 }
                 #if canImport(os)
