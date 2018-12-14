@@ -404,7 +404,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         executor.executeAndWait {
             try! self.write { realm in
                 if let entityId = entity.entityId, let oldEntity = realm.object(ofType: self.entityType, forPrimaryKey: entityId) {
-                    try self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
+                    self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
                 }
                 newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
             }
@@ -511,7 +511,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     let entityType = type(of: entity) as! Entity.Type
                     let entityTypeClassName = entityType.className()
                     if let entity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
-                        try self.cascadeDelete(
+                        self.cascadeDelete(
                             realm: realm,
                             entityType: entityTypeClassName,
                             entity: entity
