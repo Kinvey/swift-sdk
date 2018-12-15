@@ -9,10 +9,6 @@
 import Foundation
 import RealmSwift
 
-#if canImport(os)
-import os
-#endif
-
 class RealmSync<T: Persistable>: SyncType where T: NSObject {
     
     let realm: Realm
@@ -49,16 +45,10 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationType) {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
-        }
+        signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
-            }
+            signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
         }
-        #endif
         executor.executeAndWait {
             try! self.realm.write {
                 if !pendingOperation.collectionName.isEmpty,
@@ -94,16 +84,10 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
-        }
+        signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
-            }
+            signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
         }
-        #endif
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName)

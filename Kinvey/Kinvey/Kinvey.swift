@@ -8,9 +8,43 @@
 
 import Foundation
 import SwiftyBeaver
+
 #if canImport(os)
 import os
 #endif
+
+enum SignpostType {
+    
+    case event
+    case begin
+    case end
+    
+    @available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *)
+    var osSignpostType: OSSignpostType {
+        switch self {
+        case .event:
+            return .event
+        case .begin:
+            return .begin
+        case .end:
+            return .end
+        }
+    }
+}
+
+@inline(__always)
+func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSLog, name: StaticString) {
+    if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+        os_signpost(type.osSignpostType, log: log, name: name)
+    }
+}
+
+@inline(__always)
+func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSLog, name: StaticString, _ format: StaticString, _ arguments: CVarArg...) {
+    if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+        os_signpost(type.osSignpostType, log: log, name: name, format, arguments)
+    }
+}
 
 let ObjectIdTmpPrefix = "tmp_"
 
