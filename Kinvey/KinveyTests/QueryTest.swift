@@ -107,6 +107,7 @@ class QueryTest: XCTestCase {
     
     func testQueryNotGt() {
         XCTAssertEqual(encodeQuery(Query(format: "NOT age > %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$gt" : 30]]]))")
+        XCTAssertEqual(encodeQuery(Query(format: "NOT (age > %@ AND age < %@)", 30, 40)), "query=\(encodeURL(["$not" : [["$and" : [["age" : ["$gt" : 30]], ["age" : ["$lt" : 40]]]]]]))")
     }
     
     func testQueryGte() {
