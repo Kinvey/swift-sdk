@@ -150,6 +150,23 @@ class EntityWithRefenceCodable: Entity, Codable {
     
 }
 
+class PersonCodableCascadeDeletable: PersonCodable, CascadeDeletable {
+    
+    func cascadeDelete(executor: CascadeDeleteExecutor) throws {
+        try executor.cascadeDelete(geolocation)
+        try executor.cascadeDelete(reference)
+        try executor.cascadeDelete(references)
+        try executor.cascadeDelete(address)
+        try executor.cascadeDelete(addresses)
+        try executor.cascadeDelete(stringValues)
+        try executor.cascadeDelete(intValues)
+        try executor.cascadeDelete(floatValues)
+        try executor.cascadeDelete(doubleValues)
+        try executor.cascadeDelete(boolValues)
+    }
+    
+}
+
 class PersonCodable: Entity, Codable {
     
     @objc

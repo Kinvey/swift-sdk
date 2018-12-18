@@ -8,10 +8,6 @@
 
 import Foundation
 
-#if canImport(os)
-import os
-#endif
-
 class ObjectMapperJSONParser: JSONParser {
     
     let client: Client
@@ -28,16 +24,10 @@ class ObjectMapperJSONParser: JSONParser {
     }
     
     func parseDictionaries(from data: Data) throws -> [JsonDictionary] {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Parse Dictionaries")
-        }
+        signpost(.begin, log: osLog, name: "Parse Dictionaries")
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Parse Dictionaries")
-            }
+            signpost(.end, log: osLog, name: "Parse Dictionaries")
         }
-        #endif
         guard let dictionaries = try JSONSerialization.jsonObject(with: data) as? [JsonDictionary] else {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Parser Error"))
         }

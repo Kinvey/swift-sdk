@@ -11,10 +11,6 @@ import Realm
 import RealmSwift
 import MapKit
 
-#if canImport(os)
-import os
-#endif
-
 fileprivate let typeStringValue = StringValue.self.className()
 fileprivate let typeIntValue = IntValue.self.className()
 fileprivate let typeFloatValue = FloatValue.self.className()
@@ -362,7 +358,10 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func detach(entities: AnyRandomAccessCollection<T>, query: Query?) -> AnyRandomAccessCollection<T> {
-        log.verbose("Detaching \(entities.count) object(s)")
+        signpost(.begin, log: osLog, name: "Realm Detach Entities", "%d", entities.count)
+        defer {
+            signpost(.end, log: osLog, name: "Realm Detach Entities", "%d", entities.count)
+        }
         let skip = query?.skip ?? 0
         let limit = query?.limit ?? Int(entities.count)
         var arrayEnumerate: AnyRandomAccessCollection<T>
@@ -407,16 +406,10 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Save Entities (Generics)")
-        }
+        signpost(.begin, log: osLog, name: "Save Entities (Generics)")
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Save Entities (Generics)")
-            }
+            signpost(.end, log: osLog, name: "Save Entities (Generics)")
         }
-        #endif
         log.debug("Saving \(entities.count) object(s)")
         executor.executeAndWait {
             let entityType = self.entityType
@@ -517,7 +510,10 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func remove(entities: AnyRandomAccessCollection<Type>) -> Bool {
-        log.verbose("Removing objects: \(entities)")
+        signpost(.begin, log: osLog, name: "Remove Entities", "%d", entities.count)
+        defer {
+            signpost(.end, log: osLog, name: "Remove Entities", "%d", entities.count)
+        }
         var result = false
         executor.executeAndWait {
             try! self.write { realm in
@@ -747,7 +743,21 @@ extension RealmCache: DynamicCacheType {
     }
     
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object, deleteItself: Bool = true) {
-        if let schema = realm.schema[entityType] {
+        if let cascadeDeletable = entity as? CascadeDeletable {
+            if let entity = entity as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+            try! cascadeDeletable.cascadeDelete(executor: RealmCascadeDeleteExecutor(realm: realm))
+        } else if let schema = realm.schema[entityType] {
+            signpost(.begin, log: osLog, name: "Cascade Delete", "%s", entityType)
+            defer {
+                signpost(.end, log: osLog, name: "Cascade Delete", "%s", entityType)
+            }
             schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
                 case .object:
@@ -828,16 +838,10 @@ extension RealmCache: DynamicCacheType {
     }
     
     func save(entities: AnyRandomAccessCollection<JsonDictionary>, syncQuery: SyncQuery?) {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Save Entities (JsonDictionary)")
-        }
+        signpost(.begin, log: osLog, name: "Save Entities (JsonDictionary)")
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Save Entities (JsonDictionary)")
-            }
+            signpost(.end, log: osLog, name: "Save Entities (JsonDictionary)")
         }
-        #endif
         log.debug("Saving \(entities.count) object(s)")
         let propertyMapping = T.propertyMapping()
         try! write { realm in
@@ -1100,6 +1104,50 @@ extension List : Encodable where Element : Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(Array(self))
+    }
+    
+}
+
+class RealmCascadeDeleteExecutor: CascadeDeleteExecutor {
+    
+    let realm: Realm
+    
+    init(realm: Realm) {
+        self.realm = realm
+    }
+    
+    func cascadeDelete<Value>(_ object: Value?) throws where Value : Object {
+        if let object = object {
+            if let cascadeDelete = object as? CascadeDeletable {
+                try cascadeDelete.cascadeDelete(executor: self)
+            }
+            if let entity = object as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+            realm.delete(object)
+        }
+    }
+    
+    func cascadeDelete<Value>(_ list: List<Value>) throws where Value : Object {
+        for object in list {
+            if let cascadeDelete = object as? CascadeDeletable {
+                try cascadeDelete.cascadeDelete(executor: self)
+            }
+            if let entity = object as? Entity {
+                if let acl = entity.acl {
+                    realm.delete(acl)
+                }
+                if let metadata = entity.metadata {
+                    realm.delete(metadata)
+                }
+            }
+        }
+        realm.delete(list)
     }
     
 }
