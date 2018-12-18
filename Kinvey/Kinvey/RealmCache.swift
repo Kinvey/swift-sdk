@@ -94,7 +94,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             realm = try Realm(configuration: configuration)
         } catch {
             configuration.deleteRealmIfMigrationNeeded = true
-            realm = try! Realm(configuration: configuration)
+            realm = try Realm(configuration: configuration)
         }
         self.configuration = configuration
         
