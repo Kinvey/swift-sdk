@@ -212,7 +212,7 @@ func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = 
 /// Level of logging used to log messages inside the Kinvey library
 public var logLevel: LogLevel = LogLevel.defaultLevel {
     didSet {
-        for destination in SwiftyBeaver.destinations {
+        for destination in log.destinations {
             destination.minLevel = logLevel.outputLevel
         }
     }

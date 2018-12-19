@@ -46,6 +46,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     
     override func setUp() {
         let zipDataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData", withExtension: "zip")!
+        let zip2DataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData2", withExtension: "zip")!
         var destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
         #if os(macOS)
         if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
@@ -55,6 +56,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         removeItemIfExists(at: destination.appendingPathComponent("__MACOSX"))
         removeItemIfExists(at: destination.appendingPathComponent("appKey"))
         try! FileManager.default.unzipItem(at: zipDataPath, to: destination)
+        try! FileManager.default.unzipItem(at: zip2DataPath, to: destination)
         
         clearCache = true
         
@@ -256,6 +258,36 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 XCTFail("Exception is expected")
             }
         }.to(raiseException(named: "RLMException", reason: "Cannot migrate Realms that are already open."))
+    }
+    
+    func testRealmFileDecryptionFailed() {
+        let appKey = "w12GADaufTzqoq+qlmhFzjQWppZZ0s3Rd4pbLNosL6WupD0qB7ye+nUsRVo1PVV8tr1zavgjjVFFsJWJWvAOFQ=="
+        
+        let numberOfBytes = 64
+        var bytes = [UInt8](repeating: 0, count: numberOfBytes)
+        let result = SecRandomCopyBytes(kSecRandomDefault, numberOfBytes, &bytes)
+        guard result == 0 else {
+            XCTFail("Result: \(result)")
+            return
+        }
+        let key = Data(bytes: bytes)
+        
+        let expectationInitialize = expectation(description: "Initialize")
+        
+        let client = Client()
+        client.initialize(appKey: appKey, appSecret: "appSecret", encryptionKey: key) {
+            switch $0 {
+            case .success:
+                XCTFail("Error is expected")
+            case .failure(let error):
+                let error = error as NSError
+                XCTAssertEqual(error.code, 2)
+                XCTAssertEqual(error.userInfo["Underlying"] as? String, "Realm file decryption failed")
+            }
+            expectationInitialize.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout)
     }
     
 }
