@@ -55,6 +55,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         #endif
         removeItemIfExists(at: destination.appendingPathComponent("__MACOSX"))
         removeItemIfExists(at: destination.appendingPathComponent("appKey"))
+        removeItemIfExists(at: destination.appendingPathComponent("w12GADaufTzqoq+qlmhFzjQWppZZ0s3Rd4pbLNosL6WupD0qB7ye+nUsRVo1PVV8tr1zavgjjVFFsJWJWvAOFQ=="))
         try! FileManager.default.unzipItem(at: zipDataPath, to: destination)
         try! FileManager.default.unzipItem(at: zip2DataPath, to: destination)
         
