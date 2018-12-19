@@ -592,7 +592,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "collectionName == %@", self.collectionName),
-            query.predicateAsString.map({ NSPredicate(format: "query == %@", $0) }) ?? NSPredicate(format: "query == nil"),
+            (query.predicate?.asString).map({ NSPredicate(format: "query == %@", $0) }) ?? NSPredicate(format: "query == nil"),
             query.fieldsAsString.map({ NSPredicate(format: "fields == %@", $0) }) ?? NSPredicate(format: "fields == nil")
         ])
         results = results.filter(predicate)
@@ -906,7 +906,7 @@ extension RealmCache: DynamicCacheType {
         let block: (String) -> Void = { entityTypeCollectionName in
             let realmSyncQuery = _QueryCache()
             realmSyncQuery.collectionName = entityTypeCollectionName
-            realmSyncQuery.query = syncQuery.query.predicateAsString
+            realmSyncQuery.query = syncQuery.query.predicate?.asString
             realmSyncQuery.fields = syncQuery.query.fieldsAsString
             realmSyncQuery.lastSync = syncQuery.lastSync
             realmSyncQuery.generateKey()
