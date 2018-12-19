@@ -8,6 +8,19 @@
 
 import Foundation
 
+public protocol CascadeDeletable {
+    
+    func cascadeDelete(executor: CascadeDeleteExecutor) throws
+    
+}
+
+public protocol CascadeDeleteExecutor {
+    
+    func cascadeDelete<Value>(_ object: Value?) throws where Value: Object
+    func cascadeDelete<Value>(_ list: List<Value>) throws where Value: Object
+    
+}
+
 internal protocol CacheType: class {
     
     var ttl: TimeInterval? { get set }

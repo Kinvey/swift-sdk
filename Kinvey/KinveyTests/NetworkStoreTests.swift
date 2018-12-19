@@ -895,7 +895,7 @@ class NetworkStoreTests: StoreTestCase {
                 $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
                 $0.skip = skip
                 $0.limit = limit
-                $0.ascending("name")
+                $0.ascending(\Person.name)
             }
             
             store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
