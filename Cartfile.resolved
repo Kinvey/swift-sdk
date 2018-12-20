@@ -1,4 +1,4 @@
-github "Hearst-DD/ObjectMapper" "3.4.1"
+github "Hearst-DD/ObjectMapper" "3.4.2"
 github "Quick/Nimble" "v7.3.1"
 github "SwiftyBeaver/SwiftyBeaver" "1.6.1"
 github "httpswift/swifter" "294dc8eaa7aed12f8695f43a5749b5c8f0f175b7"
