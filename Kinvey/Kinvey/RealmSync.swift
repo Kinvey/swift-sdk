@@ -45,7 +45,10 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationType) {
-        log.verbose("Saving pending operation: \(pendingOperation)")
+        signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
+        defer {
+            signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %s", pendingOperation.collectionName)
+        }
         executor.executeAndWait {
             try! self.realm.write {
                 if !pendingOperation.collectionName.isEmpty,
@@ -81,7 +84,10 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        log.verbose("Removing pending operations by object id: \(String(describing: objectId))")
+        signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
+        defer {
+            signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %s", String(describing: objectId))
+        }
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName)

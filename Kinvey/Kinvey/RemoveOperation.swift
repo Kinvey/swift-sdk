@@ -41,10 +41,13 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
             if let cache = self.cache {
                 let realmObjects = cache.find(byQuery: self.query)
                 count = Int(realmObjects.count)
+                let detachedObjects = cache.detach(entities: realmObjects, query: self.query)
+                signpost(.begin, log: osLog, name: "Map Detached Object IDs", "%d", detachedObjects.count)
                 let idKey = try! T.entityIdProperty()
-                let objectIds = cache.detach(entities: realmObjects, query: self.query).compactMap {
+                let objectIds = detachedObjects.compactMap {
                     $0[idKey] as? String
                 }
+                signpost(.end, log: osLog, name: "Map Detached Object IDs", "%d", detachedObjects.count)
                 if cache.remove(entities: realmObjects), let sync = self.sync {
                     objectIds.forEachAutoreleasepool { objectId in
                         if objectId.hasPrefix(ObjectIdTmpPrefix) {

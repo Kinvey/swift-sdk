@@ -224,7 +224,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -424,7 +424,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -595,7 +595,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -759,7 +759,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = try! DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -1068,7 +1068,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = try! DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = self.expectation(description: "Read")

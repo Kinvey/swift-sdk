@@ -8,9 +8,43 @@
 
 import Foundation
 import SwiftyBeaver
+
 #if canImport(os)
 import os
 #endif
+
+enum SignpostType {
+    
+    case event
+    case begin
+    case end
+    
+    @available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *)
+    var osSignpostType: OSSignpostType {
+        switch self {
+        case .event:
+            return .event
+        case .begin:
+            return .begin
+        case .end:
+            return .end
+        }
+    }
+}
+
+@inline(__always)
+func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSLog, name: StaticString) {
+    if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+        os_signpost(type.osSignpostType, log: log, name: name)
+    }
+}
+
+@inline(__always)
+func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSLog, name: StaticString, _ format: StaticString, _ arguments: CVarArg...) {
+    if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
+        os_signpost(type.osSignpostType, log: log, name: name, format, arguments)
+    }
+}
 
 let ObjectIdTmpPrefix = "tmp_"
 
@@ -178,7 +212,7 @@ func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = 
 /// Level of logging used to log messages inside the Kinvey library
 public var logLevel: LogLevel = LogLevel.defaultLevel {
     didSet {
-        for destination in SwiftyBeaver.destinations {
+        for destination in log.destinations {
             destination.minLevel = logLevel.outputLevel
         }
     }
@@ -189,8 +223,12 @@ let groupId = "_group_"
 
 #if swift(>=5)
     let swiftVersion = "5 or above"
+#elseif swift(>=4.2.1)
+    let swiftVersion = "4.2.1 or above"
+#elseif swift(>=4.2)
+    let swiftVersion = "4.2"
 #elseif swift(>=4.1.3)
-    let swiftVersion = "4.1.3 or above"
+    let swiftVersion = "4.1.3"
 #elseif swift(>=4.1.2)
     let swiftVersion = "4.1.2"
 #elseif swift(>=4.1.1)

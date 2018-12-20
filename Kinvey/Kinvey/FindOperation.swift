@@ -8,9 +8,6 @@
 
 import Foundation
 import PromiseKit
-#if canImport(os)
-import os
-#endif
 
 private let MaxIdsPerQuery = 200
 private let MaxSizePerResultSet = 10_000
@@ -185,16 +182,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     }
     
     func convertToEntities(fromJsonArray jsonArray: [JsonDictionary]) throws -> AnyRandomAccessCollection<T> {
-        #if canImport(os)
-        if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-            os_signpost(.begin, log: osLog, name: "Convert Entities")
-        }
+        signpost(.begin, log: osLog, name: "Convert Entities")
         defer {
-            if #available(iOS 12.0, OSX 10.14, tvOS 12.0, watchOS 5.0, *) {
-                os_signpost(.end, log: osLog, name: "Convert Entities")
-            }
+            signpost(.end, log: osLog, name: "Convert Entities")
         }
-        #endif
         let client = options?.client ?? self.client
         let entities = AnyRandomAccessCollection(try jsonArray.lazy.map { (json) throws -> T in
             if let validationStrategy = self.validationStrategy {
