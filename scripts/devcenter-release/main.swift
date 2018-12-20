@@ -8,8 +8,7 @@
 
 import Foundation
 
-let githubToken = ProcessInfo.processInfo.environment["GITHUB_TOKEN"]
-guard githubToken != nil else {
+guard let githubToken = ProcessInfo.processInfo.environment["GITHUB_TOKEN"] else {
     fatalError("GITHUB_TOKEN environment variable missing")
 }
 
@@ -57,7 +56,8 @@ let versionTuple: (major: Int, minor: Int, patch: Int) = {
 let session = URLSession.shared
 
 func latestRelease(completionHandler: @escaping ([String : Any]) -> Void) {
-    let request = URLRequest(url: URL(string: "https://api.github.com/repos/Kinvey/swift-sdk/releases/latest")!)
+    var request = URLRequest(url: URL(string: "https://api.github.com/repos/Kinvey/swift-sdk/releases/latest")!)
+    request.setValue("token \(githubToken)", forHTTPHeaderField: "Authorization")
     
     let task = session.dataTask(with: request) { (data, response, error) -> Void in
         if let httpResponse = response as? HTTPURLResponse,
