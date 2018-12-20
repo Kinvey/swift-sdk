@@ -451,13 +451,18 @@ open class Client: Credential {
         self.schemaVersion = schemaVersion
         self.options = options
         
-        Migration.performMigration(
-            persistenceId: appKey,
-            encryptionKey: encryptionKey,
-            schemaVersion: schemaVersion,
-            migrationHandler: schema?.migrationHandler,
-            compactCacheOnLaunch: compactCacheOnLaunch
-        )
+        do {
+            try Migration.performMigration(
+                persistenceId: appKey,
+                encryptionKey: encryptionKey,
+                schemaVersion: schemaVersion,
+                migrationHandler: schema?.migrationHandler,
+                compactCacheOnLaunch: compactCacheOnLaunch
+            )
+        } catch {
+            completionHandler(.failure(error))
+            return
+        }
         
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)

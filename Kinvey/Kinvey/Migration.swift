@@ -30,7 +30,7 @@ open class Migration: NSObject {
         schemaVersion: CUnsignedLongLong = 0,
         migrationHandler: Migration.MigrationHandler? = nil,
         compactCacheOnLaunch: Bool = true
-    ) {
+    ) throws {
         var realmBaseConfiguration = Realm.Configuration.defaultConfiguration
         if let encryptionKey = encryptionKey {
             realmBaseConfiguration.encryptionKey = encryptionKey
@@ -54,19 +54,19 @@ open class Migration: NSObject {
             for realmFileURL in allFilesURL.filter({ $0.lastPathComponent.hasSuffix(".realm") }) {
                 var realmConfiguration = realmBaseConfiguration //copy
                 realmConfiguration.fileURL = realmFileURL
-                performMigration(realmConfiguration: realmConfiguration)
+                try performMigration(realmConfiguration: realmConfiguration)
             }
         }
     }
     
-    private class func performMigration(realmConfiguration: Realm.Configuration) {
+    private class func performMigration(realmConfiguration: Realm.Configuration) throws {
         var realmConfiguration = realmConfiguration //copy
         do {
             try Realm.performMigration(for: realmConfiguration)
         } catch {
             log.error("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
             realmConfiguration.deleteRealmIfMigrationNeeded = true
-            try! Realm.performMigration(for: realmConfiguration)
+            try Realm.performMigration(for: realmConfiguration)
         }
     }
     
