@@ -449,9 +449,12 @@ public indirect enum Expression {
     case uuid(UUID)
     case date(Date)
     case url(URL)
+    case null
+    
+    #if canImport(MapKit) && !os(watchOS)
     case circle(MKCircle)
     case polygon(MKPolygon)
-    case null
+    #endif
     
 }
 
@@ -492,10 +495,13 @@ extension Expression {
              .bool(let value as Any),
              .uuid(let value as Any),
              .date(let value as Any),
-             .url(let value as Any),
-             .circle(let value as Any),
+             .url(let value as Any):
+            return value
+        #if canImport(MapKit) && !os(watchOS)
+        case .circle(let value as Any),
              .polygon(let value as Any):
             return value
+        #endif
         case .null:
             return NSNull()
         default:
@@ -634,6 +640,7 @@ extension Expression {
                     MongoDBOperator.geoIn.rawValue : transform(expression: rhs, optimize: optimize)
                 ]
             ]
+        #if canImport(MapKit) && !os(watchOS)
         case .circle(let circle):
             return [
                 "$centerSphere" : [
@@ -652,6 +659,7 @@ extension Expression {
             return [
                 "$polygon" : coordinatesArray
             ]
+        #endif
         default:
             return [:]
         }
@@ -689,10 +697,13 @@ extension Expression {
              .bool(let value as Any),
              .uuid(let value as Any),
              .date(let value as Any),
-             .url(let value as Any),
-             .circle(let value as Any),
+             .url(let value as Any):
+            return NSExpression(forConstantValue: value)
+        #if canImport(MapKit) && !os(watchOS)
+        case .circle(let value as Any),
              .polygon(let value as Any):
             return NSExpression(forConstantValue: value)
+        #endif
         case .null:
             return NSExpression(forConstantValue: nil)
         default:
@@ -1145,6 +1156,7 @@ extension URL: ValueExpressionType {
     
 }
 
+#if canImport(MapKit) && !os(watchOS)
 extension MKCircle: GeoValueExpressionType {
     
     public var expression: Expression {
@@ -1160,6 +1172,7 @@ extension MKPolygon: GeoValueExpressionType {
     }
     
 }
+#endif
 
 // MARK: - Optional Expression
 
