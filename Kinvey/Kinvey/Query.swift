@@ -503,6 +503,25 @@ extension Expression {
         }
     }
     
+    var lhsMongoDBOperatorRhs: (lhs: Expression, `operator`: MongoDBOperator, rhs: Expression)? {
+        switch self {
+        case .equality(let lhs, let rhs):
+            return (lhs: lhs, operator: .equalTo, rhs: rhs)
+        case .inequality(let lhs, let rhs):
+            return (lhs: lhs, operator: .notEqualTo, rhs: rhs)
+        case .greaterThan(let lhs, let rhs):
+            return (lhs: lhs, operator: .greaterThan, rhs: rhs)
+        case .greaterThanEqual(let lhs, let rhs):
+            return (lhs: lhs, operator: .greaterThanOrEqualTo, rhs: rhs)
+        case .lessThan(let lhs, let rhs):
+            return (lhs: lhs, operator: .lessThan, rhs: rhs)
+        case .lessThanEqual(let lhs, let rhs):
+            return (lhs: lhs, operator: .lessThanOrEqualTo, rhs: rhs)
+        default:
+            return nil
+        }
+    }
+    
     private func transform(lhs: Expression, operator: MongoDBOperator, rhs: Expression, optimize: Bool) -> [String : Any]? {
         let keyPath = lhs.keyPath!
         let value = rhs.value!
@@ -551,6 +570,18 @@ extension Expression {
                 ]
             ]
         case .not(let rhs):
+            if let (lhs, `operator`, rhs) = rhs.lhsMongoDBOperatorRhs,
+                let keyPath = lhs.keyPath,
+                let value = rhs.value
+            {
+                return [
+                    keyPath : [
+                        MongoDBOperator.not.rawValue : [
+                            `operator`.rawValue : value
+                        ]
+                    ]
+                ]
+            }
             return [MongoDBOperator.not.rawValue : [transform(expression:rhs, optimize: optimize)]]
         case .like(let lhs, let wild1, let value, let wild2):
             let keyPath: String
