@@ -56,7 +56,7 @@ open class Migration: NSObject {
         schemaVersion: CUnsignedLongLong = 0,
         migrationHandler: Migration.MigrationHandler? = nil,
         compactCacheOnLaunch: Bool = true
-    ) {
+    ) throws {
         let realmBaseConfiguration = buildRealmBaseConfiguration(
             encryptionKey: encryptionKey,
             schemaVersion: schemaVersion,
