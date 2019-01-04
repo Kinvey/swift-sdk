@@ -1282,8 +1282,8 @@ open class DataStore<T: Persistable> where T: NSObject {
 
 extension DataStore: Hashable {
     
-    public var hashValue: Int {
-        return uuid.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
     }
     
     public static func ==(lhs: DataStore<T>, rhs: DataStore<T>) -> Bool {
