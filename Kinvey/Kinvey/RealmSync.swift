@@ -45,9 +45,9 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func savePendingOperation(_ pendingOperation: PendingOperationType) {
-        signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %{public}s", pendingOperation.collectionName)
+        signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %@", pendingOperation.collectionName)
         defer {
-            signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %{public}s", pendingOperation.collectionName)
+            signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %@", pendingOperation.collectionName)
         }
         executor.executeAndWait {
             try! self.realm.write {
@@ -84,9 +84,9 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     }
     
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
-        signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %{public}s", String(describing: objectId))
+        signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %@", String(describing: objectId))
         defer {
-            signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %{public}s", String(describing: objectId))
+            signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %@", String(describing: objectId))
         }
         executor.executeAndWait {
             try! self.realm.write {
