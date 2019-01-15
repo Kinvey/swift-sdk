@@ -3750,6 +3750,16 @@ class NetworkStoreTests: StoreTestCase {
         let addr1 = Unmanaged.passUnretained(ds1).toOpaque()
         let addr2 = Unmanaged.passUnretained(ds2).toOpaque()
         XCTAssertNotEqual(addr1, addr2)
+        XCTAssertNotEqual(ds1, ds2)
+        XCTAssertNotEqual(ds1.hashValue, ds2.hashValue)
+        
+        var h1 = Hasher()
+        ds1.hash(into: &h1)
+        
+        var h2 = Hasher()
+        ds2.hash(into: &h2)
+        
+        XCTAssertNotEqual(h1.finalize(), h2.finalize())
     }
     
     func testFindCancel() {
