@@ -754,9 +754,9 @@ extension RealmCache: DynamicCacheType {
             }
             try! cascadeDeletable.cascadeDelete(executor: RealmCascadeDeleteExecutor(realm: realm))
         } else if let schema = realm.schema[entityType] {
-            signpost(.begin, log: osLog, name: "Cascade Delete", "%s", entityType)
+            signpost(.begin, log: osLog, name: "Cascade Delete", "%@", entityType)
             defer {
-                signpost(.end, log: osLog, name: "Cascade Delete", "%s", entityType)
+                signpost(.end, log: osLog, name: "Cascade Delete", "%@", entityType)
             }
             schema.properties.forEachAutoreleasepool { property in
                 switch property.type {
