@@ -1,14 +1,38 @@
 import Foundation
 import SourceKittenFramework
 
-guard CommandLine.arguments.count == 3 else {
+guard 3 <= CommandLine.arguments.count && CommandLine.arguments.count <= 4 else {
     print("Usage:")
-    print("  api-diff <old path> <new path>")
+    print("  api-diff <old path> <new path> <optional output format>")
     exit(EXIT_FAILURE)
 }
 
 let oldPath = CommandLine.arguments[1]
 let newPath = CommandLine.arguments[2]
+let outputFormat = CommandLine.arguments.count > 3 ? CommandLine.arguments[3].lowercased() : ""
+
+func infoPlist(path: String) throws -> [String : Any] {
+    return try PropertyListSerialization.propertyList(
+        from: try Data(contentsOf: URL(fileURLWithPath: "\(path)/Kinvey/Kinvey/Info.plist".replacingOccurrences(of: "~", with: NSHomeDirectory()))),
+        options: .mutableContainersAndLeaves,
+        format: nil
+    ) as! [String : Any]
+}
+
+let oldInfoPlist = try infoPlist(path: oldPath)
+let newInfoPlist = try infoPlist(path: newPath)
+
+extension Dictionary where Key == String {
+    
+    subscript<Key: RawRepresentable>(key: Key) -> Value? where Key.RawValue == String {
+        return self[key.rawValue]
+    }
+    
+}
+
+let versionKey = "CFBundleShortVersionString"
+let oldVersion = oldInfoPlist[versionKey] as! String
+let newVersion = newInfoPlist[versionKey] as! String
 
 let operationQueue = OperationQueue()
 operationQueue.maxConcurrentOperationCount = 2
@@ -68,6 +92,7 @@ enum Kind: String {
     case `func`           = "source.lang.swift.decl.function.method.instance"
     case classFunc        = "source.lang.swift.decl.function.method.class"
     case staticFunc       = "source.lang.swift.decl.function.method.static"
+    case `subscript`      = "source.lang.swift.decl.function.subscript"
     case `typealias`      = "source.lang.swift.decl.typealias"
     case `associatedtype` = "source.lang.swift.decl.associatedtype"
     case `class`          = "source.lang.swift.decl.class"
@@ -103,18 +128,6 @@ enum Attribute: String {
     
 }
 
-extension Dictionary where Key == String, Value == SourceKitRepresentable {
-    
-    subscript<Key: RawRepresentable>(key: Key) -> SourceKitRepresentable? where Key.RawValue == String {
-        return self[key.rawValue]
-    }
-    
-    func get<Key: RawRepresentable>(key: Key) -> SourceKitRepresentable? where Key.RawValue == String {
-        return self[key.rawValue]
-    }
-    
-}
-
 let regexDeprecated = try! NSRegularExpression(pattern: "\\,\\s*deprecated\\s*\\:\\s*(\\d)+.(\\d)+.(\\d)+")
 
 func isDeprecated(_ symbol: [String : SourceKitRepresentable]) -> Bool {
@@ -129,10 +142,21 @@ func format(_ names: String...) -> String {
 }
 
 func convert(_ symbol: [String : SourceKitRepresentable]) -> (names: Set<String>, deprecations: Set<String>)? {
-    guard
-        let accessibilityString = symbol[Key.accessibility] as? String,
-        let accessibility = Accessibility(rawValue: accessibilityString),
-        accessibility == .public || accessibility == .open,
+    let accessibility: Accessibility?
+    if let accessibilityString = symbol[Key.accessibility] as? String {
+        accessibility = Accessibility(rawValue: accessibilityString)
+    } else {
+        accessibility = nil
+    }
+    
+    let kind: Kind?
+    if let kindString = symbol[Key.kind] as? String {
+        kind = Kind(rawValue: kindString)
+    } else {
+        kind = nil
+    }
+    
+    guard accessibility == .public || accessibility == .open || kind == .extension,
         let name = symbol[Key.moduleName] as? String ?? symbol[Key.name] as? String,
         let substructures = symbol[Key.substructure] as? Array<Dictionary<String, SourceKitRepresentable>>
     else {
@@ -166,7 +190,14 @@ func convert(_ symbol: [String : SourceKitRepresentable]) -> (names: Set<String>
                     }
                 }
             }
-        case .var, .staticVar, .func, .staticFunc, .classFunc, .typealias, .associatedtype:
+        case .var,
+             .staticVar,
+             .func,
+             .staticFunc,
+             .subscript,
+             .classFunc,
+             .typealias,
+             .associatedtype:
             if let name2 = substructure[Key.name] as? String {
                 let formattedName = format(name, name2)
                 names.append(formattedName)
@@ -174,7 +205,9 @@ func convert(_ symbol: [String : SourceKitRepresentable]) -> (names: Set<String>
                     deprecations.append(formattedName)
                 }
             }
-        case .class, .struct, .enum:
+        case .class,
+             .struct,
+             .enum:
             if let (names2, deprecations2) = convert(substructure) {
                 for name2 in names2 {
                     let formattedName = format(name, name2)
@@ -216,28 +249,42 @@ let additions = newSymbols.subtracting(oldSymbols).sorted()
 let deprecations = newDeprecations.subtracting(oldDeprecations).sorted()
 let breakingChanges = oldDeprecations.subtracting(newDeprecations).sorted()
 
-print("")
-print("  ### \(deletions.count) Deletions:")
-for deletion in deletions {
-    print("  * `\(deletion)`")
+func toMarkdown(title: String, symbols: [String]) -> String {
+    return """
+      ### \(symbols.count) \(title):
+    \(symbols.map { "  * `\($0)`" }.joined(separator: "\n"))
+    """
 }
 
-print("")
-print("  ### \(additions.count) Additions:")
-for addition in additions {
-    print("  * `\(addition)`")
+func toHTML(title: String, symbols: [String]) -> String {
+    guard symbols.count > 0 else {
+        return ""
+    }
+    return """
+    <h3>\(title)</h3>
+    <ul>
+    \(symbols.map { "  <li><code>\($0)</code></li>" }.joined(separator: "\n"))
+    </ul>
+    """
 }
 
-print("")
-print("  ### \(deprecations.count) Deprecations:")
-for deprecation in deprecations {
-    print("  * `\(deprecation)`")
+switch outputFormat {
+case "html":
+    print("""
+    <h2 id="\(oldVersion)-\(newVersion)"><a href="#\(oldVersion)-\(newVersion)">\(oldVersion) to \(newVersion) API Differences</a></h2>
+    \(toHTML(title: "Deletions", symbols: deletions))
+    \(toHTML(title: "Additions", symbols: additions))
+    \(toHTML(title: "Deprecations", symbols: deprecations))
+    \(toHTML(title: "Breaking Changes", symbols: breakingChanges))
+    """)
+default:
+    print("""
+    \(toMarkdown(title: "Deletions", symbols: deletions))
+    
+    \(toMarkdown(title: "Additions", symbols: additions))
+    
+    \(toMarkdown(title: "Deprecations", symbols: deprecations))
+    
+    \(toMarkdown(title: "Breaking Changes", symbols: breakingChanges))
+    """)
 }
-
-print("")
-print("  ### \(breakingChanges.count) Breaking Changes:")
-for breakingChange in breakingChanges {
-    print("  * `\(breakingChange)`")
-}
-
-print("")
