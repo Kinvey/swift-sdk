@@ -315,8 +315,6 @@ class CacheStoreTests: StoreTestCase {
             let expectationSave = expectation(description: "Save")
             expectationSave.expectedFulfillmentCount = 2
             
-            print((store.cache!.cache as! RealmCache<PersonCodable>).configuration.fileURL!.path)
-            
             store.save(person, options: nil) {
                 switch $0 {
                 case .success(let person):
