@@ -320,26 +320,48 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             return AnyRandomAccessCollection([])
         }
     }
+    
+    private func detach<T>(_ list: List<T>, schema: RealmSwift.Schema) -> List<T> where T: Object {
+        let result = List<T>()
+        let objSchema = schema[T.className()]!
+        let properties = objSchema.properties.map { $0.name }
+        for item in list {
+            result.append(detach(item, props: properties))
+        }
+        return result
+    }
 
-    fileprivate func detach(_ entity: Object, props: [String]) -> Object {
+    fileprivate func detach<T>(_ entity: T, props: [String]) -> T where T: Object {
         log.verbose("Detaching object: \(entity)")
         
         var json: Dictionary<String, Any>
-        let obj = type(of:entity).init()
+        let obj = type(of: entity).init()
         
         json = entity.dictionaryWithValues(forKeys: props)
         
         let realm = newRealm
         json.keys.forEachAutoreleasepool { property in
             let value = json[property]
-                
-            if let value = value as? Object {
-                
+            
+            switch value {
+            case let value as Object:
                 let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
                 let nestedObjectSchema = realm.schema[nestedClassName]
                 let nestedProperties = nestedObjectSchema?.properties.map { $0.name }
-                    
+                
                 json[property] = self.detach(value, props: nestedProperties!)
+            case let list as List<StringValue>:
+                json[property] = self.detach(list, schema: realm.schema)
+            case let list as List<IntValue>:
+                json[property] = self.detach(list, schema: realm.schema)
+            case let list as List<FloatValue>:
+                json[property] = self.detach(list, schema: realm.schema)
+            case let list as List<DoubleValue>:
+                json[property] = self.detach(list, schema: realm.schema)
+            case let list as List<BoolValue>:
+                json[property] = self.detach(list, schema: realm.schema)
+            default:
+                break
             }
         }
             
