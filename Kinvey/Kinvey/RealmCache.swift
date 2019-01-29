@@ -549,6 +549,14 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func clear(query: Query? = nil) {
+        _clear(query: query)
+    }
+    
+    func clear(query: Query? = nil, cascadeDelete: Bool = false) {
+        _clear(query: query, cascadeDelete: cascadeDelete)
+    }
+    
+    func _clear(query: Query? = nil, cascadeDelete: Bool = false) {
         log.verbose("Clearing cache")
         executor.executeAndWait {
             try! self.write { realm in
@@ -562,7 +570,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     let pendingOperations = realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
                     let syncedQueries = realm.objects(_QueryCache.self).filter("collectionName == %@", self.collectionName)
                     
-                    realm.delete(results)
+                    if cascadeDelete {
+                        for entity in results {
+                            self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: entity, deleteItself: true)
+                        }
+                    } else {
+                        realm.delete(results)
+                    }
                     realm.delete(pendingOperations)
                     realm.delete(syncedQueries)
                 } else {

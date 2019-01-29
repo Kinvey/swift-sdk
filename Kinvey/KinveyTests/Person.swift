@@ -36,7 +36,11 @@ enum PersonObjCEnum: Int {
 class Person: Entity {
     
     @objc
-    dynamic var personId: String?
+    dynamic var personId: String? {
+        didSet {
+            entityId = personId
+        }
+    }
     
     @objc
     dynamic var name: String?

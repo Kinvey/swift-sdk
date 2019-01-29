@@ -70,6 +70,9 @@ class SyncStoreTests: StoreTestCase {
     
     func testCreate() {
         let person = self.person
+        let address = Address()
+        address.city = "Boston"
+        person.address = address
         
         weak var expectationCreate = expectation(description: "Create")
         
@@ -92,6 +95,55 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationCreate = nil
         }
+        
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
+        
+        XCTAssertEqual(realm.objects(Person.self).count, 1)
+        XCTAssertEqual(realm.objects(Address.self).count, 1)
+        
+        store.clearCache(query: Query())
+        
+        XCTAssertEqual(realm.objects(Person.self).count, 0)
+        XCTAssertEqual(realm.objects(Address.self).count, 1)
+    }
+    
+    func testCreateClearCacheCascadeDelete() {
+        let person = self.person
+        let address = Address()
+        address.city = "Boston"
+        person.address = address
+        
+        weak var expectationCreate = expectation(description: "Create")
+        
+        store.save(person) {
+            self.assertThread()
+            switch $0 {
+            case .success(let person):
+                XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
+                XCTAssertNotNil(person.age)
+                XCTAssertEqual(person.age, 29)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationCreate?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationCreate = nil
+        }
+        
+        let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
+        
+        XCTAssertEqual(realm.objects(Person.self).count, 1)
+        XCTAssertEqual(realm.objects(Address.self).count, 1)
+        
+        store.clearCache(query: Query(), cascadeDelete: true)
+        
+        XCTAssertEqual(realm.objects(Person.self).count, 0)
+        XCTAssertEqual(realm.objects(Address.self).count, 0)
     }
     
     func testCreateSync() {
