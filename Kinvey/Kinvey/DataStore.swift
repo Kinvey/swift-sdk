@@ -1141,8 +1141,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
 
     /// Clear all data for the collection attached to the DataStore.
-    open func clearCache(query: Query? = nil) {
-        cache?.clear(query: query)
+    open func clearCache(query: Query? = nil, cascadeDelete: Bool = false) {
+        cache?.clear(query: query, cascadeDelete: cascadeDelete)
     }
     
     private lazy var channelName: String = {

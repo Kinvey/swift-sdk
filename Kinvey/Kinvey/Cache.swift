@@ -55,6 +55,8 @@ internal protocol CacheType: class {
     
     func clear(query: Query?)
     
+    func clear(query: Query?, cascadeDelete: Bool)
+    
     func clear(syncQueries: [Query]?)
     
     func detach(entities: AnyRandomAccessCollection<Type>, query: Query?) -> AnyRandomAccessCollection<Type>
@@ -157,6 +159,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _removeEntities: (AnyRandomAccessCollection<Type>) -> Bool
     private let _removeByQuery: (Query) -> Int
     private let _clear: (Query?) -> Void
+    private let _clearCascadeDelete: (Query?, Bool) -> Void
     private let _clearSyncQueries: ([Query]?) -> Void
     private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
     private let _lastSync: (Query) -> Date?
@@ -187,6 +190,7 @@ class AnyCache<T: Persistable>: CacheType {
         _removeEntities = cache.remove(entities:)
         _removeByQuery = cache.remove(byQuery:)
         _clear = cache.clear(query:)
+        _clearCascadeDelete = cache.clear(query: cascadeDelete:)
         _clearSyncQueries = cache.clear(syncQueries:)
         _detach = cache.detach(entities: query:)
         _lastSync = cache.lastSync(query:)
@@ -243,6 +247,10 @@ class AnyCache<T: Persistable>: CacheType {
     
     func clear(query: Query?) {
         _clear(query)
+    }
+    
+    func clear(query: Query?, cascadeDelete: Bool) {
+        _clearCascadeDelete(query, cascadeDelete)
     }
     
     func clear(syncQueries: [Query]?) {
