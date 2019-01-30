@@ -9,14 +9,6 @@
 import Foundation
 import PromiseKit
 
-func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.adding(rhs)
-}
-
-func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.multiplying(by: rhs)
-}
-
 /// Class to interact with a specific collection in the backend.
 open class DataStore<T: Persistable> where T: NSObject {
     
@@ -1282,8 +1274,8 @@ open class DataStore<T: Persistable> where T: NSObject {
 
 extension DataStore: Hashable {
     
-    public var hashValue: Int {
-        return uuid.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
     }
     
     public static func ==(lhs: DataStore<T>, rhs: DataStore<T>) -> Bool {
