@@ -134,6 +134,61 @@ open class MIC {
         return AnyRequest(requests)
     }
     
+    private class func oauthGrantAuthenticate<U: User>(
+        redirectURI: URL,
+        username: String,
+        password: String,
+        options: Options?,
+        requests: MultiRequest<Result<U, Swift.Error>>,
+        tempLoginUrl: URL
+    ) -> Promise<U> {
+        let client = options?.client ?? sharedClient
+        return Promise<U> { resolver in
+            let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
+                redirectURI: redirectURI,
+                tempLoginUri: tempLoginUrl,
+                username: username,
+                password: password,
+                options: options
+            )
+            let urlSession = options?.urlSession ?? URLSession(
+                configuration: client.urlSession.configuration,
+                delegate: URLSessionDelegateAdapter(),
+                delegateQueue: nil
+            )
+            request.execute(urlSession: urlSession) { (data, response, error) in
+                if let response = response,
+                    let httpResponse = response as? HttpResponse,
+                    httpResponse.response.statusCode == 302,
+                    let location = httpResponse.response.allHeaderFields["Location"] as? String,
+                    let url = URL(string: location)
+                {
+                    switch parseCode(redirectURI: redirectURI, url: url) {
+                    case .success(let code):
+                        requests += login(
+                            redirectURI: redirectURI,
+                            code: code,
+                            options: options
+                        ) { result in
+                            switch result {
+                            case .success(let user):
+                                resolver.fulfill(user as! U)
+                            case .failure(let error):
+                                resolver.reject(error)
+                            }
+                        }
+                    case .failure(let error):
+                        resolver.reject(error ?? buildError(data, response, error, client))
+                    }
+                } else {
+                    resolver.reject(buildError(data, response, error, client))
+                }
+                urlSession.invalidateAndCancel()
+            }
+            requests += request
+        }
+    }
+    
     @discardableResult
     class func login<U: User>(
         redirectURI: URL,
@@ -164,50 +219,14 @@ open class MIC {
             }
             requests += request
         }.then { tempLoginUrl in
-            return Promise<U> { resolver in
-                let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
-                    redirectURI: redirectURI,
-                    tempLoginUri: tempLoginUrl,
-                    username: username,
-                    password: password,
-                    options: options
-                )
-                let urlSession = options?.urlSession ?? URLSession(
-                    configuration: client.urlSession.configuration,
-                    delegate: URLSessionDelegateAdapter(),
-                    delegateQueue: nil
-                )
-                request.execute(urlSession: urlSession) { (data, response, error) in
-                    if let response = response,
-                        let httpResponse = response as? HttpResponse,
-                        httpResponse.response.statusCode == 302,
-                        let location = httpResponse.response.allHeaderFields["Location"] as? String,
-                        let url = URL(string: location)
-                    {
-                        switch parseCode(redirectURI: redirectURI, url: url) {
-                        case .success(let code):
-                            requests += login(
-                                redirectURI: redirectURI,
-                                code: code,
-                                options: options
-                            ) { result in
-                                switch result {
-                                case .success(let user):
-                                    resolver.fulfill(user as! U)
-                                case .failure(let error):
-                                    resolver.reject(error)
-                                }
-                            }
-                        case .failure(let error):
-                            resolver.reject(error ?? buildError(data, response, error, client))
-                        }
-                    } else {
-                        resolver.reject(buildError(data, response, error, client))
-                    }
-                    urlSession.invalidateAndCancel()
-                }
-                requests += request
-            }
+            return oauthGrantAuthenticate(
+                redirectURI: redirectURI,
+                username: username,
+                password: password,
+                options: options,
+                requests: requests,
+                tempLoginUrl: tempLoginUrl
+            )
         }.done { user -> Void in
             completionHandler?(.success(user))
         }.catch { error in
@@ -337,7 +356,17 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     
     typealias UserHandler<U: User> = (Result<U, Swift.Error>) -> Void
     
-    var activityIndicatorView: UIActivityIndicatorView!
+    lazy var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        activityIndicatorView.layer.cornerRadius = 8
+        activityIndicatorView.layer.masksToBounds = true
+        let rect = activityIndicatorView.bounds.insetBy(dx: -8, dy: -8)
+        activityIndicatorView.bounds = CGRect(origin: CGPoint.zero, size: rect.size)
+        return activityIndicatorView
+    }()
     
     var redirectURI: URL!
     var forceUIWebView: Bool!
@@ -345,7 +374,22 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     var completionHandler: UserHandler<User>!
     
     @objc
-    var webView: UIView!
+    lazy var webView: UIView = {
+        let webView: UIView
+        if let _ = NSClassFromString("WKWebView"), !forceUIWebView {
+            let wkWebView = WKWebView()
+            wkWebView.navigationDelegate = self
+            webView = wkWebView
+        } else {
+            let uiWebView = UIWebView()
+            uiWebView.delegate = self
+            webView = uiWebView
+        }
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.accessibilityIdentifier = "Web View"
+        return webView
+    }()
+    
     var timer: Timer? {
         willSet {
             if let timer = timer, timer.isValid {
@@ -375,21 +419,78 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
+    private func addWebView() {
+        view.addSubview(webView)
+        
+        let views = [
+            "webView" : webView
+        ]
+        
+        view.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|[webView]|",
+            metrics: nil,
+            views: views
+        ))
+        
+        view.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|[webView]|",
+            metrics: nil,
+            views: views
+        ))
+    }
+    
+    private lazy var activityIndicatorViewWidthLayoutConstraint = NSLayoutConstraint(
+        item: activityIndicatorView,
+        attribute: .width,
+        relatedBy: .equal,
+        toItem: nil,
+        attribute: .notAnAttribute,
+        multiplier: 1,
+        constant: activityIndicatorView.bounds.size.width
+    )
+    
+    private lazy var activityIndicatorViewHeightLayoutConstraint = NSLayoutConstraint(
+        item: activityIndicatorView,
+        attribute: .height,
+        relatedBy: .equal,
+        toItem: nil,
+        attribute: .notAnAttribute,
+        multiplier: 1,
+        constant: activityIndicatorView.bounds.size.height
+    )
+    
+    private lazy var activityIndicatorViewCenterXLayoutConstraint = NSLayoutConstraint(
+        item: activityIndicatorView,
+        attribute: .centerX,
+        relatedBy: .equal,
+        toItem: view,
+        attribute: .centerX,
+        multiplier: 1,
+        constant: 0
+    )
+    
+    private lazy var activityIndicatorViewCenterYLayoutConstraint = NSLayoutConstraint(
+        item: activityIndicatorView,
+        attribute: .centerY,
+        relatedBy: .equal,
+        toItem: view,
+        attribute: .centerY,
+        multiplier: 1,
+        constant: 0
+    )
+    
+    private func addActivityIndicatorView() {
+        view.insertSubview(activityIndicatorView, aboveSubview: webView)
+        
+        activityIndicatorView.addConstraint(activityIndicatorViewWidthLayoutConstraint)
+        activityIndicatorView.addConstraint(activityIndicatorViewHeightLayoutConstraint)
+        
+        view.addConstraint(activityIndicatorViewCenterXLayoutConstraint)
+        view.addConstraint(activityIndicatorViewCenterYLayoutConstraint)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if let _ = NSClassFromString("WKWebView"), !forceUIWebView {
-            let wkWebView = WKWebView()
-            wkWebView.navigationDelegate = self
-            webView = wkWebView
-        } else {
-            let uiWebView = UIWebView()
-            uiWebView.delegate = self
-            webView = uiWebView
-        }
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.accessibilityIdentifier = "Web View"
-        view.addSubview(webView)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: " X ",
@@ -404,71 +505,8 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
             action: #selector(refreshPage(_:))
         )
         
-        let views = [
-            "webView" : webView!
-        ]
-        
-        view.addConstraints(NSLayoutConstraint.constraints(
-            withVisualFormat: "H:|[webView]|",
-            metrics: nil,
-            views: views
-        ))
-        
-        view.addConstraints(NSLayoutConstraint.constraints(
-            withVisualFormat: "V:|[webView]|",
-            metrics: nil,
-            views: views
-        ))
-        
-        activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicatorView.hidesWhenStopped = true
-        activityIndicatorView.backgroundColor = UIColor(white: 0, alpha: 0.5)
-        activityIndicatorView.layer.cornerRadius = 8
-        activityIndicatorView.layer.masksToBounds = true
-        let rect = activityIndicatorView.bounds.insetBy(dx: -8, dy: -8)
-        activityIndicatorView.bounds = CGRect(origin: CGPoint.zero, size: rect.size)
-        view.insertSubview(activityIndicatorView, aboveSubview: webView)
-        
-        activityIndicatorView.addConstraint(NSLayoutConstraint(
-            item: activityIndicatorView,
-            attribute: .width,
-            relatedBy: .equal,
-            toItem: nil,
-            attribute: .notAnAttribute,
-            multiplier: 1,
-            constant: activityIndicatorView.bounds.size.width
-        ))
-        
-        activityIndicatorView.addConstraint(NSLayoutConstraint(
-            item: activityIndicatorView,
-            attribute: .height,
-            relatedBy: .equal,
-            toItem: nil,
-            attribute: .notAnAttribute,
-            multiplier: 1,
-            constant: activityIndicatorView.bounds.size.height
-        ))
-        
-        view.addConstraint(NSLayoutConstraint(
-            item: activityIndicatorView,
-            attribute: .centerX,
-            relatedBy: .equal,
-            toItem: view,
-            attribute: .centerX,
-            multiplier: 1,
-            constant: 0
-        ))
-        
-        view.addConstraint(NSLayoutConstraint(
-            item: activityIndicatorView,
-            attribute: .centerY,
-            relatedBy: .equal,
-            toItem: view,
-            attribute: .centerY,
-            multiplier: 1,
-            constant: 0
-        ))
+        addWebView()
+        addActivityIndicatorView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
