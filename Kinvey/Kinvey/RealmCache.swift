@@ -321,45 +321,56 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    private func detach<T>(_ list: List<T>, schema: RealmSwift.Schema) -> List<T> where T: Object {
+    private func detach<T>(_ list: List<T>) -> List<T> where T: Object {
         let result = List<T>()
-        let objSchema = schema[T.className()]!
-        let properties = objSchema.properties.map { $0.name }
         for item in list {
-            result.append(detach(item, props: properties))
+            result.append(detach(item))
+        }
+        return result
+    }
+    
+    private func detach(_ list: ListBase) -> [Object] {
+        var result = [Object]()
+        let rlmArray = list._rlmArray
+        for i in 0 ..< rlmArray.count {
+            let item = rlmArray.object(at: i) as! Object
+            let detached = detach(item)
+            result.append(detached)
         }
         return result
     }
 
-    fileprivate func detach<T>(_ entity: T, props: [String]) -> T where T: Object {
+    fileprivate func detach<T>(_ entity: T) -> T where T: Object {
         log.verbose("Detaching object: \(entity)")
         
         var json: Dictionary<String, Any>
         let obj = type(of: entity).init()
         
-        json = entity.dictionaryWithValues(forKeys: props)
+        json = entity.dictionaryWithValues(forKeys: entity.objectSchema.properties.map { $0.name })
         
-        let realm = newRealm
         json.keys.forEachAutoreleasepool { property in
             let value = json[property]
             
             switch value {
             case let value as Object:
-                let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
-                let nestedObjectSchema = realm.schema[nestedClassName]
-                let nestedProperties = nestedObjectSchema?.properties.map { $0.name }
-                
-                json[property] = self.detach(value, props: nestedProperties!)
-            case let list as List<StringValue>:
-                json[property] = self.detach(list, schema: realm.schema)
-            case let list as List<IntValue>:
-                json[property] = self.detach(list, schema: realm.schema)
-            case let list as List<FloatValue>:
-                json[property] = self.detach(list, schema: realm.schema)
-            case let list as List<DoubleValue>:
-                json[property] = self.detach(list, schema: realm.schema)
-            case let list as List<BoolValue>:
-                json[property] = self.detach(list, schema: realm.schema)
+                json[property] = self.detach(value)
+            case var list as List<StringValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<IntValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<FloatValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<DoubleValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<BoolValue>:
+                list = self.detach(list)
+                json[property] = list
+            case let list as ListBase:
+                json[property] = self.detach(list)
             default:
                 break
             }
@@ -395,7 +406,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             arrayEnumerate = entities
         }
         let detachedResults = arrayEnumerate.lazy.map {
-            self.detach($0 as! Object, props: self.propertyNames) as! T
+            self.detach($0 as! Object) as! T
         }
         return AnyRandomAccessCollection(detachedResults)
     }
@@ -464,7 +475,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             result = self.newRealm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
                 if let resultObj = result as? Object {
-                    result = self.detach(resultObj, props: self.propertyNames) as? T
+                    result = self.detach(resultObj) as? T
                 }
             }
         }
