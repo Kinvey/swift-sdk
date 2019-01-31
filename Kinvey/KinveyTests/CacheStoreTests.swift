@@ -182,6 +182,212 @@ class CacheStoreTests: StoreTestCase {
         }
     }
     
+    func testUpdate() {
+        let personId = UUID().uuidString
+        let firstName = UUID().uuidString
+        let intValue = 1
+        let city = "Boston"
+        var persons1: [PersonCodable]?
+        var persons2: [PersonCodable]?
+        let store: DataStore<PersonCodable>
+        
+        do {
+            store = try DataStore<PersonCodable>.collection()
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        XCTContext.runActivity(named: "Find") { (activity) -> Void in
+            if useMockData {
+                mockResponse(json: [
+                    [
+                        "_id" : personId,
+                        "name" : firstName,
+                        "age" : 0,
+                        "intValues" : [intValue],
+                        "addresses" : [
+                            ["city" : city],
+                        ],
+                        "_acl" : [
+                            "creator" : UUID().uuidString
+                        ],
+                        "_kmd" : [
+                            "lmt" : Date().toISO8601(),
+                            "ect" : Date().toISO8601()
+                        ]
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let expectationFind = expectation(description: "Find")
+            expectationFind.expectedFulfillmentCount = 2
+            
+            store.find(options: nil) {
+                switch $0 {
+                case .success(let persons):
+                    if persons1 == nil {
+                        XCTAssertEqual(persons.count, 0)
+                        persons1 = Array(persons)
+                    } else if persons2 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons2 = Array(persons)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+            
+            XCTAssertEqual(persons1?.count, 0)
+            XCTAssertEqual(persons2?.count, 1)
+            XCTAssertEqual(persons2?.first?.name, firstName)
+            XCTAssertEqual(persons2?.first?.intValues.count, 1)
+            XCTAssertEqual(persons2?.first?.intValues.first?.value, intValue)
+            XCTAssertEqual(persons2?.first?.addresses.count, 1)
+            XCTAssertEqual(persons2?.first?.addresses.first?.city, city)
+        }
+        
+        XCTContext.runActivity(named: "Find Local") { (activity) -> Void in
+            do {
+                let expectationFind = expectation(description: "Find")
+                
+                store.find(options: try Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
+                        XCTAssertEqual(persons.count, 1)
+                        persons1 = Array(persons)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationFind.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout)
+                
+                XCTAssertEqual(persons1?.count, 1)
+                XCTAssertEqual(persons1?.first?.name, firstName)
+                XCTAssertEqual(persons1?.first?.intValues.count, 1)
+                XCTAssertEqual(persons1?.first?.intValues.first?.value, intValue)
+                XCTAssertEqual(persons1?.first?.addresses.count, 1)
+                XCTAssertEqual(persons1?.first?.addresses.first?.city, city)
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        let secondName = UUID().uuidString
+        let int2Value = 2
+        let city2 = "New York"
+        
+        XCTContext.runActivity(named: "Update") { (activity) -> Void in
+            if useMockData {
+                mockResponse(json: [
+                    "_id" : personId,
+                    "name" : secondName,
+                    "age" : 0,
+                    "intValues" : [int2Value, int2Value],
+                    "addresses" : [
+                        ["city" : city2],
+                        ["city" : city2],
+                    ],
+                    "_acl" : [
+                        "creator" : UUID().uuidString
+                    ],
+                    "_kmd" : [
+                        "lmt" : Date().toISO8601(),
+                        "ect" : Date().toISO8601()
+                    ]
+                ])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            guard let person = persons1?.first else {
+                XCTAssertNotNil(persons1?.first)
+                return
+            }
+            XCTAssertEqual(person.personId, personId)
+            XCTAssertEqual(person.entityId, personId)
+            XCTAssertEqual(person.name, firstName)
+            XCTAssertEqual(person.intValues.count, 1)
+            person.name = secondName
+            person.intValues.first?.value = int2Value
+            person.intValues.append(IntValue(int2Value))
+            person.addresses.first?.city = city2
+            person.addresses.append({
+                let address = AddressCodable()
+                address.city = city2
+                return address
+            }())
+            
+            let expectationSave = expectation(description: "Save")
+            expectationSave.expectedFulfillmentCount = 2
+            
+            store.save(person, options: nil) {
+                switch $0 {
+                case .success(let person):
+                    XCTAssertEqual(person.name, secondName)
+                    XCTAssertEqual(person.intValues.count, int2Value)
+                    XCTAssertEqual(person.intValues.first?.value, int2Value)
+                    XCTAssertEqual(person.intValues.last?.value, int2Value)
+                    XCTAssertEqual(person.addresses.count, 2)
+                    XCTAssertEqual(person.addresses.first?.city, city2)
+                    XCTAssertEqual(person.addresses.last?.city, city2)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+        }
+        
+        XCTContext.runActivity(named: "Find Local") { (activity) -> Void in
+            do {
+                let expectationFind = expectation(description: "Find")
+                
+                store.find(options: try Options(readPolicy: .forceLocal)) {
+                    switch $0 {
+                    case .success(let persons):
+                        XCTAssertEqual(persons.count, 1)
+                        persons1 = Array(persons)
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+                    
+                    expectationFind.fulfill()
+                }
+                
+                waitForExpectations(timeout: defaultTimeout)
+                
+                XCTAssertEqual(persons1?.count, 1)
+                XCTAssertEqual(persons1?.first?.name, secondName)
+                XCTAssertEqual(persons1?.first?.intValues.count, 2)
+                XCTAssertEqual(persons1?.first?.intValues.first?.value, int2Value)
+                XCTAssertEqual(persons1?.first?.intValues.last?.value, int2Value)
+                XCTAssertEqual(persons1?.first?.addresses.count, 2)
+                XCTAssertEqual(persons1?.first?.addresses.first?.city, city2)
+                XCTAssertEqual(persons1?.first?.addresses.last?.city, city2)
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
     func testArrayProperty() {
         let book = Book()
         book.title = "Swift for the win!"
