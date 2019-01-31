@@ -320,26 +320,59 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             return AnyRandomAccessCollection([])
         }
     }
+    
+    private func detach<T>(_ list: List<T>) -> List<T> where T: Object {
+        let result = List<T>()
+        for item in list {
+            result.append(detach(item))
+        }
+        return result
+    }
+    
+    private func detach(_ list: ListBase) -> [Object] {
+        var result = [Object]()
+        let rlmArray = list._rlmArray
+        for i in 0 ..< rlmArray.count {
+            let item = rlmArray.object(at: i) as! Object
+            let detached = detach(item)
+            result.append(detached)
+        }
+        return result
+    }
 
-    fileprivate func detach(_ entity: Object, props: [String]) -> Object {
+    fileprivate func detach<T>(_ entity: T) -> T where T: Object {
         log.verbose("Detaching object: \(entity)")
         
         var json: Dictionary<String, Any>
-        let obj = type(of:entity).init()
+        let obj = type(of: entity).init()
         
-        json = entity.dictionaryWithValues(forKeys: props)
+        json = entity.dictionaryWithValues(forKeys: entity.objectSchema.properties.map { $0.name })
         
-        let realm = newRealm
         json.keys.forEachAutoreleasepool { property in
             let value = json[property]
-                
-            if let value = value as? Object {
-                
-                let nestedClassName = StringFromClass(cls: type(of:value)).components(separatedBy: ".").last!
-                let nestedObjectSchema = realm.schema[nestedClassName]
-                let nestedProperties = nestedObjectSchema?.properties.map { $0.name }
-                    
-                json[property] = self.detach(value, props: nestedProperties!)
+            
+            switch value {
+            case let value as Object:
+                json[property] = self.detach(value)
+            case var list as List<StringValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<IntValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<FloatValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<DoubleValue>:
+                list = self.detach(list)
+                json[property] = list
+            case var list as List<BoolValue>:
+                list = self.detach(list)
+                json[property] = list
+            case let list as ListBase:
+                json[property] = self.detach(list)
+            default:
+                break
             }
         }
             
@@ -373,7 +406,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             arrayEnumerate = entities
         }
         let detachedResults = arrayEnumerate.lazy.map {
-            self.detach($0 as! Object, props: self.propertyNames) as! T
+            self.detach($0 as! Object) as! T
         }
         return AnyRandomAccessCollection(detachedResults)
     }
@@ -442,7 +475,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             result = self.newRealm.object(ofType: self.entityType, forPrimaryKey: objectId) as? T
             if result != nil {
                 if let resultObj = result as? Object {
-                    result = self.detach(resultObj, props: self.propertyNames) as? T
+                    result = self.detach(resultObj) as? T
                 }
             }
         }
@@ -549,6 +582,14 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func clear(query: Query? = nil) {
+        _clear(query: query)
+    }
+    
+    func clear(query: Query? = nil, cascadeDelete: Bool = false) {
+        _clear(query: query, cascadeDelete: cascadeDelete)
+    }
+    
+    func _clear(query: Query? = nil, cascadeDelete: Bool = false) {
         log.verbose("Clearing cache")
         executor.executeAndWait {
             try! self.write { realm in
@@ -562,7 +603,13 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                     let pendingOperations = realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId IN %@", self.collectionName, ids)
                     let syncedQueries = realm.objects(_QueryCache.self).filter("collectionName == %@", self.collectionName)
                     
-                    realm.delete(results)
+                    if cascadeDelete {
+                        for entity in results {
+                            self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: entity, deleteItself: true)
+                        }
+                    } else {
+                        realm.delete(results)
+                    }
                     realm.delete(pendingOperations)
                     realm.delete(syncedQueries)
                 } else {

@@ -36,7 +36,11 @@ enum PersonObjCEnum: Int {
 class Person: Entity {
     
     @objc
-    dynamic var personId: String?
+    dynamic var personId: String? {
+        didSet {
+            entityId = personId
+        }
+    }
     
     @objc
     dynamic var name: String?
@@ -298,7 +302,7 @@ class PersonCodable: Entity, Codable {
     }
     
     override func encode(to encoder: Encoder) throws {
-        var container = try encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(personId, forKey: .personId)
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(age, forKey: .age)
