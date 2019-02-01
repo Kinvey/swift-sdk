@@ -123,7 +123,7 @@ enum HttpHeader {
         case .userAgent:
             return "Kinvey SDK \(Bundle(for: Client.self).infoDictionary!["CFBundleShortVersionString"]!) (Swift \(swiftVersion))"
         case .deviceInfo:
-            let data = try! JSONEncoder().encode(DeviceInfo())
+            let data = try! jsonEncoder.encode(DeviceInfo())
             return String(data: data, encoding: .utf8)
         }
     }
