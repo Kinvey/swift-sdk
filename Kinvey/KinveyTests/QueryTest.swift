@@ -493,7 +493,7 @@ class QueryTest: XCTestCase {
         let date = Date()
         let result = encodeQuery(Query(format: "date == %@", date))
         let json = [
-            "date" : date.timeIntervalSince1970
+            "date" : date.toISO8601()
         ]
         let expected = "query=\(encodeURL(json))"
         XCTAssertEqual(result, expected)

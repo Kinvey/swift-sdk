@@ -4590,5 +4590,174 @@ class CacheStoreTests: StoreTestCase {
             }
         }
     }
+    
+    func testQueryDate() {
+        let personId = UUID().uuidString
+        let firstName = UUID().uuidString
+        let date = Date()
+        var persons1: [PersonCodable]?
+        var persons2: [PersonCodable]?
+        let store: DataStore<PersonCodable>
+        
+        do {
+            store = try DataStore<PersonCodable>.collection()
+        } catch {
+            XCTFail(error.localizedDescription)
+            return
+        }
+        
+        let mockObject = [
+            "_id" : personId,
+            "name" : firstName,
+            "age" : 0,
+            "date" : date.toISO8601(),
+            "_acl" : [
+                "creator" : UUID().uuidString
+            ],
+            "_kmd" : [
+                "lmt" : date.toISO8601(),
+                "ect" : date.toISO8601()
+            ]
+        ] as [String : Any]
+        
+        XCTContext.runActivity(named: "Find") { (activity) -> Void in
+            if useMockData {
+                mockResponse(json: [mockObject])
+            }
+            defer {
+                if useMockData {
+                    setURLProtocol(nil)
+                }
+            }
+            
+            let expectationFind = expectation(description: "Find")
+            expectationFind.expectedFulfillmentCount = 2
+            
+            store.find(options: nil) {
+                switch $0 {
+                case .success(let persons):
+                    if persons1 == nil {
+                        XCTAssertEqual(persons.count, 0)
+                        persons1 = Array(persons)
+                    } else if persons2 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons2 = Array(persons)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+            
+            XCTAssertEqual(persons1?.count, 0)
+            XCTAssertEqual(persons2?.count, 1)
+            XCTAssertEqual(persons2?.first?.entityId, personId)
+            XCTAssertEqual(persons2?.first?.name, firstName)
+            
+            let data = try! Kinvey.jsonEncoder.encode(persons2!.first)
+            let dict = try! JSONSerialization.jsonObject(with: data) as! [String : Any]
+            XCTAssertEqual(dict["date"] as? String, date.toISO8601())
+        }
+        
+        let queryDate = Date()
+        
+        if useMockData {
+            mockResponse { request in
+                let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
+                let queryString = urlComponents.queryItems!.first { $0.name == "query" }!.value!
+                let query = try! JSONSerialization.jsonObject(with: queryString.data(using: .utf8)!) as! [String : Any]
+                XCTAssertEqual(query.count, 1)
+                XCTAssertNotNil(query["date"])
+                XCTAssertNotNil(query["date"] as? [String : Any])
+                if let date = query["date"] as? [String : Any] {
+                    XCTAssertEqual(date.count, 1)
+                    XCTAssertNotNil(date["$lte"])
+                    XCTAssertNotNil(date["$lte"] as? String)
+                    XCTAssertEqual(date["$lte"] as? String, queryDate.toISO8601())
+                }
+                return HttpResponse(json: [mockObject])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        persons1 = nil
+        persons2 = nil
+        
+        XCTContext.runActivity(named: "Find Query") { (activity) -> Void in
+            let expectationFind = expectation(description: "Find")
+            expectationFind.expectedFulfillmentCount = 2
+            
+            let query = Query(format: "date <= %@", queryDate)
+            
+            store.find(query, options: nil) {
+                switch $0 {
+                case .success(let persons):
+                    if persons1 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons1 = Array(persons)
+                    } else if persons2 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons2 = Array(persons)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+            
+            XCTAssertEqual(persons1?.count, 1)
+            XCTAssertEqual(persons2?.count, 1)
+            XCTAssertEqual(persons1?.first?.entityId, personId)
+            XCTAssertEqual(persons2?.first?.entityId, personId)
+            XCTAssertEqual(persons1?.first?.name, firstName)
+            XCTAssertEqual(persons2?.first?.name, firstName)
+        }
+        
+        persons1 = nil
+        persons2 = nil
+        
+        XCTContext.runActivity(named: "Find Query 2") { (activity) -> Void in
+            let expectationFind = expectation(description: "Find")
+            expectationFind.expectedFulfillmentCount = 2
+            
+            let query = Query(\PersonCodable.date <= queryDate)
+            
+            store.find(query, options: nil) {
+                switch $0 {
+                case .success(let persons):
+                    if persons1 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons1 = Array(persons)
+                    } else if persons2 == nil {
+                        XCTAssertEqual(persons.count, 1)
+                        persons2 = Array(persons)
+                    }
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationFind.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout)
+            
+            XCTAssertEqual(persons1?.count, 1)
+            XCTAssertEqual(persons2?.count, 1)
+            XCTAssertEqual(persons1?.first?.entityId, personId)
+            XCTAssertEqual(persons2?.first?.entityId, personId)
+            XCTAssertEqual(persons1?.first?.name, firstName)
+            XCTAssertEqual(persons2?.first?.name, firstName)
+        }
+    }
 
 }

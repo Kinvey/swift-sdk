@@ -76,16 +76,16 @@ extension JSONDecodable where Self: JSONEncodable {
 extension JSONDecodable where Self: Decodable {
     
     static func decodeDecodable(from data: Data) throws -> Self {
-        return try JSONDecoder().decode(Self.self, from: data)
+        return try jsonDecoder.decode(Self.self, from: data)
     }
     
     static func decodeDecodableArray(from data: Data) throws -> [Any] {
-        return try JSONDecoder().decode([Self].self, from: data)
+        return try jsonDecoder.decode([Self].self, from: data)
     }
     
     static func decodeDecodable(from dictionary: [String : Any]) throws -> Self {
         let data = try JSONSerialization.data(withJSONObject: dictionary)
-        return try JSONDecoder().decode(Self.self, from: data)
+        return try jsonDecoder.decode(Self.self, from: data)
     }
     
 }
@@ -114,7 +114,7 @@ extension JSONEncodable {
 extension JSONEncodable where Self: Encodable {
     
     func encodeEncodable() throws -> [String : Any] {
-        let data = try JSONEncoder().encode(self)
+        let data = try jsonEncoder.encode(self)
         return try JSONSerialization.jsonObject(with: data) as! [String : Any]
     }
     

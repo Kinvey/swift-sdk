@@ -331,6 +331,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     
     private func detach(_ list: ListBase) -> [Object] {
         var result = [Object]()
+        result.reserveCapacity(list.count)
         let rlmArray = list._rlmArray
         for i in 0 ..< rlmArray.count {
             let item = rlmArray.object(at: i) as! Object

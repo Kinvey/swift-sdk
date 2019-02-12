@@ -218,6 +218,27 @@ public var logLevel: LogLevel = LogLevel.defaultLevel {
     }
 }
 
+public var jsonDecoder: JSONDecoder = {
+    let jsonDecoder = JSONDecoder()
+    jsonDecoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
+        let dateString = try decoder.singleValueContainer().decode(String.self)
+        guard let date = dateString.toDate() else {
+            throw Error.invalidOperation(description: "\(dateString) is not date")
+        }
+        return date
+    })
+    return jsonDecoder
+}()
+
+public var jsonEncoder: JSONEncoder = {
+    let jsonEncoder = JSONEncoder()
+    jsonEncoder.dateEncodingStrategy = .custom({ (date, encoder) in
+        var container = encoder.singleValueContainer()
+        try container.encode(date.toISO8601())
+    })
+    return jsonEncoder
+}()
+
 public let defaultTag = "kinvey"
 let groupId = "_group_"
 

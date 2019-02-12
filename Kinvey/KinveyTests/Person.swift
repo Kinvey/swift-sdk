@@ -183,6 +183,9 @@ class PersonCodable: Entity, Codable {
     dynamic var age: Int = 0
     
     @objc
+    dynamic var date: Date?
+    
+    @objc
     dynamic var geolocation: GeoPoint?
     
     @objc
@@ -231,6 +234,7 @@ class PersonCodable: Entity, Codable {
         case personId = "_id"
         case name
         case age
+        case date
         case address
         case addresses
         case geolocation
@@ -251,6 +255,7 @@ class PersonCodable: Entity, Codable {
         personId = try container.decodeIfPresent(String.self, forKey: .personId)
         name = try container.decodeIfPresent(String.self, forKey: .name)
         age = try container.decode(Int.self, forKey: .age)
+        date = try container.decodeIfPresent(Date.self, forKey: .date)
         address = try container.decodeIfPresent(AddressCodable.self, forKey: .address)
         if let addresses = try container.decodeIfPresent(List<AddressCodable>.self, forKey: .addresses) {
             self.addresses.removeAll()
@@ -306,6 +311,7 @@ class PersonCodable: Entity, Codable {
         try container.encodeIfPresent(personId, forKey: .personId)
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(age, forKey: .age)
+        try container.encodeIfPresent(date, forKey: .date)
         try container.encodeIfPresent(address, forKey: .address)
         try container.encodeIfPresent(addresses, forKey: .addresses)
         try container.encodeIfPresent(stringValues, forKey: .stringValues)
