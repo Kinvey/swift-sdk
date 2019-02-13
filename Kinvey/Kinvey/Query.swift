@@ -108,7 +108,14 @@ public final class Query: NSObject, BuilderType {
                     }
                 }
                 keyPath = keyPaths.joined(separator: ".")
-            } else if let persistableType = type as? Persistable.Type, let (translatedKeyPath, _) = persistableType.propertyMapping(keyPath) {
+            } else if let persistableType = type as? Persistable.Type,
+                let (translatedKeyPath, _) = persistableType.propertyMapping(keyPath)
+            {
+                keyPath = translatedKeyPath
+            } else if let persistableType = type as? Persistable.Type,
+                let _translatedKeyPath = try? persistableType.translate(property: keyPath),
+                let translatedKeyPath = _translatedKeyPath
+            {
                 keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
@@ -130,6 +137,9 @@ public final class Query: NSObject, BuilderType {
                     return NSExpression(forConstantValue: transform.transformToJSON(expression.constantValue))
                 }
             #endif
+            if let date = expression.constantValue as? Date {
+                return NSExpression(forConstantValue: date.toISO8601())
+            }
             return expression
         default:
             return expression

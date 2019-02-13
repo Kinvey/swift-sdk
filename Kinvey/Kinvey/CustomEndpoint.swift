@@ -39,7 +39,7 @@ open class CustomEndpoint {
         }
         
         public convenience init<T>(_ object: T) throws where T: Encodable {
-            let data = try JSONEncoder().encode(object)
+            let data = try jsonEncoder.encode(object)
             let json = try JSONSerialization.jsonObject(with: data) as! JsonDictionary
             self.init(json)
         }
@@ -395,7 +395,7 @@ open class CustomEndpoint {
                         response.isOK,
                         let data = data
                     {
-                        let objArray = try JSONDecoder().decode([T].self, from: data)
+                        let objArray = try jsonDecoder.decode([T].self, from: data)
                         resolver.fulfill(objArray)
                     } else {
                         resolver.reject(buildError(data, response, error, client))
