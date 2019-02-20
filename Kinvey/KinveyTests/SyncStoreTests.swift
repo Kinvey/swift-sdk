@@ -7189,7 +7189,7 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationFind = expectation(description: "Find")
             var options = try! Options()
             options.readPolicy = .forceNetwork
-            var query = Query(format: "age == %@", 23)
+            let query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let persons):

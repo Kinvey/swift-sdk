@@ -4758,14 +4758,14 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         XCTAssertNotNil(count)
         
-        guard let count1 = count else {
+        guard count != nil else {
             return
         }
         
         let options = try! Options(maxSizePerResultSet: 1)
         
         do {
-            let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
+            _ = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
             XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)
