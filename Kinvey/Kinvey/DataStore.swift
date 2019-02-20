@@ -52,7 +52,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             return options?.deltaSet ?? false
         }
         set {
-            options = try! Options(self.options, deltaSet: true)
+            options = try! Options(self.options, deltaSet: newValue)
         }
     }
     
