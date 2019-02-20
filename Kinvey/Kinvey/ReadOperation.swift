@@ -69,8 +69,33 @@ extension ReadOperationType {
                 switch $0 {
                 case .success:
                     completionHandler?($0)
-                case .failure:
-                    requests.addRequest(self.executeLocal(completionHandler))
+                case .failure(let error):
+                    guard let error = error as? Kinvey.Error else {
+                        requests.addRequest(self.executeLocal(completionHandler))
+                        return
+                    }
+                    switch error {
+                    case .methodNotAllowed(let httpResponse, _, _, _),
+                         .dataLinkEntityNotFound(let httpResponse, _, _, _),
+                         .missingConfiguration(let httpResponse, _, _, _),
+                         .missingRequestParameter(let httpResponse, _, _, _),
+                         .unknownError(let httpResponse, _, _),
+                         .unknownJsonError(let httpResponse, _, _),
+                         .invalidResponse(let httpResponse, _),
+                         .unauthorized(let httpResponse, _, _, _, _),
+                         .invalidCredentials(let httpResponse, _, _, _):
+                        guard let httpResponse = httpResponse else {
+                            fallthrough
+                        }
+                        switch httpResponse.statusCode {
+                        case 400 ..< 600:
+                            completionHandler?($0)
+                        default:
+                            requests.addRequest(self.executeLocal(completionHandler))
+                        }
+                    default:
+                        requests.addRequest(self.executeLocal(completionHandler))
+                    }
                 }
             }
             requests.addRequest(networkRequest)
