@@ -2701,7 +2701,7 @@ class CacheStoreTests: StoreTestCase {
                 }
             }
             weak var expectationSync = expectation(description: "Sync")
-            var query = Query(format: "age == %@", 23)
+            let query = Query(format: "age == %@", 23)
             store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
                 switch result {
                 case .success(let count, let persons):
@@ -2877,7 +2877,7 @@ class CacheStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Sync")
             
-            var query = Query(format: "age == %@", 23)
+            let query = Query(format: "age == %@", 23)
             store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
                 switch result {
                 case .success(let count, let persons):
@@ -3985,7 +3985,7 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationFind = expectation(description: "Find")
             var options = try! Options()
             options.readPolicy = .forceNetwork
-            var query = Query(format: "age == %@", 23)
+            let query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let persons):
@@ -4177,7 +4177,7 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationFind = expectation(description: "Find")
             var options = try! Options()
             options.readPolicy = .forceNetwork
-            var query = Query(format: "age == %@", 23)
+            let query = Query(format: "age == %@", 23)
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let persons):
@@ -4343,7 +4343,7 @@ class CacheStoreTests: StoreTestCase {
             weak var expectationFind = expectation(description: "Find")
             var options = try! Options()
             options.readPolicy = .forceNetwork
-            var query = Query()
+            let query = Query()
             store.find(query, options: options) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
                 switch result {
                 case .success(let persons):
