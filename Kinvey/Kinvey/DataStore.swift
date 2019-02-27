@@ -47,13 +47,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     internal let sync: AnySync?
     
     @available(*, deprecated: 3.18.2, message: "Please use DataStore.options instead")
-    open fileprivate(set) var deltaSet: Bool {
-        get {
-            return options?.deltaSet ?? false
-        }
-        set {
-            options = try! Options(self.options, deltaSet: true)
-        }
+    open var deltaSet: Bool {
+        return options?.deltaSet ?? false
     }
     
     open var options: Options?

@@ -8,7 +8,6 @@
 
 import Foundation
 @testable import Kinvey
-import Foundation
 
 class MockKinveyBackend: URLProtocol {
     
