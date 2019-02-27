@@ -9,14 +9,6 @@
 import Foundation
 import PromiseKit
 
-func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.adding(rhs)
-}
-
-func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
-    return lhs.multiplying(by: rhs)
-}
-
 /// Class to interact with a specific collection in the backend.
 open class DataStore<T: Persistable> where T: NSObject {
     
@@ -1175,8 +1167,8 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
 
     /// Clear all data for the collection attached to the DataStore.
-    open func clearCache(query: Query? = nil) {
-        cache?.clear(query: query)
+    open func clearCache(query: Query? = nil, cascadeDelete: Bool = false) {
+        cache?.clear(query: query, cascadeDelete: cascadeDelete)
     }
     
     private lazy var channelName: String = {
@@ -1308,8 +1300,8 @@ open class DataStore<T: Persistable> where T: NSObject {
 
 extension DataStore: Hashable {
     
-    public var hashValue: Int {
-        return uuid.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
     }
     
     public static func ==(lhs: DataStore<T>, rhs: DataStore<T>) -> Bool {

@@ -301,6 +301,9 @@
 		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B257B920929621005B329C /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B257B820929621005B329C /* DeviceInfo.swift */; };
+		57B68ACE21CAE712009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */ = {isa = PBXBuildFile; fileRef = 57B68ACC21CAE708009BD7CD /* CacheMigrationTestCaseData2.zip */; };
+		57B68ACF21CAE722009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */ = {isa = PBXBuildFile; fileRef = 57B68ACC21CAE708009BD7CD /* CacheMigrationTestCaseData2.zip */; };
+		57B68AD021CAE723009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */ = {isa = PBXBuildFile; fileRef = 57B68ACC21CAE708009BD7CD /* CacheMigrationTestCaseData2.zip */; };
 		57B768811D10C0C70086AA38 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B768801D10C0C70086AA38 /* Entity.swift */; };
 		57B7C90A20D47DC800BAC060 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
@@ -1009,6 +1012,7 @@
 		57B0C2101CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B257B820929621005B329C /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
+		57B68ACC21CAE708009BD7CD /* CacheMigrationTestCaseData2.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = CacheMigrationTestCaseData2.zip; sourceTree = "<group>"; };
 		57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
 		57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
 		57B7687E1D10C0380086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
@@ -1662,6 +1666,7 @@
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */,
+				57B68ACC21CAE708009BD7CD /* CacheMigrationTestCaseData2.zip */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
@@ -2601,6 +2606,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57B68ACF21CAE722009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */,
 				57CCBCBF20D2C6C400197CC2 /* CacheMigrationTestCaseData.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2699,6 +2705,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57B68AD021CAE723009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */,
 				57CCBCD120D2CD3F00197CC2 /* CacheMigrationTestCaseData.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2715,6 +2722,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57B68ACE21CAE712009BD7CD /* CacheMigrationTestCaseData2.zip in Resources */,
 				57D643321CA3268600F6D16E /* Media.xcassets in Resources */,
 				573CC99D20D19AB900BDF726 /* CacheMigrationTestCaseData.zip in Resources */,
 			);

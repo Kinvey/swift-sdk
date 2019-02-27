@@ -13,9 +13,9 @@ class Executor {
     fileprivate let operationQueue: OperationQueue
     fileprivate let thread: Thread
     
-    init() {
-        operationQueue = OperationQueue.current!
+    init(operationQueue: OperationQueue = OperationQueue.current!) {
         operationQueue.maxConcurrentOperationCount = 1
+        self.operationQueue = operationQueue
         thread = Thread.current
     }
     

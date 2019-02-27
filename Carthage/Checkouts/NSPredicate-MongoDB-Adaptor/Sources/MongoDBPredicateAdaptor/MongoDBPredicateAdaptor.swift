@@ -12,7 +12,7 @@ import Foundation
     import MapKit
 #endif
 
-enum MongoDBOperator: String {
+public enum MongoDBOperator: String {
     
     //logical
     case not = "$not"
@@ -148,12 +148,22 @@ extension NSPredicate {
     }
     
     private func transform(predicates: [NSPredicate], operator: MongoDBOperator) -> [String : Any]? {
-        var subPredicates = [[String : Any]]()
-        for predicate in predicates {
-            if let subResult = predicate.mongoDBQuery {
-                subPredicates.append(subResult)
-            }
+        if predicates.count == 1,
+            `operator` == .not,
+            let predicate = predicates.first as? NSComparisonPredicate,
+            let mongoDBOperator = predicate.mongoDBOperator,
+            let (keyPath, value) = predicate.keyPathConstantTuple
+        {
+            return [
+                keyPath.keyPath : [
+                    `operator`.rawValue : [
+                        mongoDBOperator.rawValue : value.constantValue ?? NSNull()
+                    ]
+                ]
+            ]
         }
+        
+        let subPredicates = predicates.compactMap { $0.mongoDBQuery }
         return [`operator`.rawValue : subPredicates]
     }
     

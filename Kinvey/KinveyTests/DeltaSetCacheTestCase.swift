@@ -224,7 +224,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -424,7 +424,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -595,7 +595,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -759,7 +759,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = try! DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = expectation(description: "Read")
@@ -1068,7 +1068,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = try! DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
-        query.ascending("name")
+        query.ascending(\Person.name)
         
         do {
             weak var expectationRead = self.expectation(description: "Read")
@@ -4758,14 +4758,14 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         XCTAssertNotNil(count)
         
-        guard let count1 = count else {
+        guard count != nil else {
             return
         }
         
         let options = try! Options(maxSizePerResultSet: 1)
         
         do {
-            let results = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
+            _ = try dataStore.pull(options: options).waitForResult(timeout: defaultTimeout).value()
             XCTFail("Error is expected")
         } catch {
             XCTAssertTimeoutError(error)

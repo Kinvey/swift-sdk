@@ -8,6 +8,19 @@
 
 import Foundation
 
+public protocol CascadeDeletable {
+    
+    func cascadeDelete(executor: CascadeDeleteExecutor) throws
+    
+}
+
+public protocol CascadeDeleteExecutor {
+    
+    func cascadeDelete<Value>(_ object: Value?) throws where Value: Object
+    func cascadeDelete<Value>(_ list: List<Value>) throws where Value: Object
+    
+}
+
 internal protocol CacheType: class {
     
     var ttl: TimeInterval? { get set }
@@ -41,6 +54,8 @@ internal protocol CacheType: class {
     func remove(byQuery query: Query) -> Int
     
     func clear(query: Query?)
+    
+    func clear(query: Query?, cascadeDelete: Bool)
     
     func clear(syncQueries: [Query]?)
     
@@ -144,6 +159,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _removeEntities: (AnyRandomAccessCollection<Type>) -> Bool
     private let _removeByQuery: (Query) -> Int
     private let _clear: (Query?) -> Void
+    private let _clearCascadeDelete: (Query?, Bool) -> Void
     private let _clearSyncQueries: ([Query]?) -> Void
     private let _detach: (AnyRandomAccessCollection<Type>, Query?) -> AnyRandomAccessCollection<Type>
     private let _lastSync: (Query) -> Date?
@@ -174,6 +190,7 @@ class AnyCache<T: Persistable>: CacheType {
         _removeEntities = cache.remove(entities:)
         _removeByQuery = cache.remove(byQuery:)
         _clear = cache.clear(query:)
+        _clearCascadeDelete = cache.clear(query: cascadeDelete:)
         _clearSyncQueries = cache.clear(syncQueries:)
         _detach = cache.detach(entities: query:)
         _lastSync = cache.lastSync(query:)
@@ -230,6 +247,10 @@ class AnyCache<T: Persistable>: CacheType {
     
     func clear(query: Query?) {
         _clear(query)
+    }
+    
+    func clear(query: Query?, cascadeDelete: Bool) {
+        _clearCascadeDelete(query, cascadeDelete)
     }
     
     func clear(syncQueries: [Query]?) {

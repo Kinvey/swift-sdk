@@ -24,14 +24,13 @@ open class Migration: NSObject {
         self.realmMigration = realmMigration
     }
     
-    internal class func performMigration(
-        persistenceId: String,
-        encryptionKey: Data? = nil,
-        schemaVersion: CUnsignedLongLong = 0,
-        migrationHandler: Migration.MigrationHandler? = nil,
-        compactCacheOnLaunch: Bool = true
-    ) {
-        var realmBaseConfiguration = Realm.Configuration.defaultConfiguration
+    private class func buildRealmBaseConfiguration(
+        encryptionKey: Data?,
+        schemaVersion: CUnsignedLongLong,
+        migrationHandler: Migration.MigrationHandler?,
+        compactCacheOnLaunch: Bool
+    ) -> Realm.Configuration {
+        var realmBaseConfiguration = Realm.Configuration.defaultConfiguration //copy
         if let encryptionKey = encryptionKey {
             realmBaseConfiguration.encryptionKey = encryptionKey
         }
@@ -48,25 +47,41 @@ open class Migration: NSObject {
             log.debug("Cache: \(usedBytes) bytes used in a total of \(totalBytes) bytes. Compact Cache on Launch: \(compactCacheOnLaunch)")
             return compactCacheOnLaunch
         }
+        return realmBaseConfiguration
+    }
+    
+    internal class func performMigration(
+        persistenceId: String,
+        encryptionKey: Data? = nil,
+        schemaVersion: CUnsignedLongLong = 0,
+        migrationHandler: Migration.MigrationHandler? = nil,
+        compactCacheOnLaunch: Bool = true
+    ) throws {
+        let realmBaseConfiguration = buildRealmBaseConfiguration(
+            encryptionKey: encryptionKey,
+            schemaVersion: schemaVersion,
+            migrationHandler: migrationHandler,
+            compactCacheOnLaunch: compactCacheOnLaunch
+        )
         let baseFolderURL = Client.fileURL(appKey: persistenceId).deletingLastPathComponent()
         let fileManager = FileManager.default
         if let allFilesURL = try? fileManager.contentsOfDirectory(at: baseFolderURL, includingPropertiesForKeys: nil) {
             for realmFileURL in allFilesURL.filter({ $0.lastPathComponent.hasSuffix(".realm") }) {
                 var realmConfiguration = realmBaseConfiguration //copy
                 realmConfiguration.fileURL = realmFileURL
-                performMigration(realmConfiguration: realmConfiguration)
+                try performMigration(realmConfiguration: realmConfiguration)
             }
         }
     }
     
-    private class func performMigration(realmConfiguration: Realm.Configuration) {
+    private class func performMigration(realmConfiguration: Realm.Configuration) throws {
         var realmConfiguration = realmConfiguration //copy
         do {
             try Realm.performMigration(for: realmConfiguration)
         } catch {
             log.error("Database migration failed: deleting local database.\nDetails of the failure: \(error)")
             realmConfiguration.deleteRealmIfMigrationNeeded = true
-            try! Realm.performMigration(for: realmConfiguration)
+            try Realm.performMigration(for: realmConfiguration)
         }
     }
     

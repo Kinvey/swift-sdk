@@ -52,6 +52,8 @@ class QueryTest: XCTestCase {
     }
     
     func testQueryEq() {
+        XCTAssertEqual(encodeQuery(Query(\Person.age == 30)), "query=\(encodeURL(["age" : 30]))")
+        XCTAssertEqual(Query(\Person.age == 30).predicate, NSPredicate(format: "age == %@", argumentArray: [30]))
         XCTAssertEqual(encodeQuery(Query(format: "age == %@", 30)), "query=\(encodeURL(["age" : 30]))")
         XCTAssertEqual(encodeQuery(Query(format: "age = %@", 30)), "query=\(encodeURL(["age" : 30]))")
         XCTAssertEqual(encodeQuery(Query(format: "obj._id == %@", 30)), "query=\(encodeURL(["obj._id" : 30]))")
@@ -103,43 +105,85 @@ class QueryTest: XCTestCase {
     
     func testQueryGt() {
         XCTAssertEqual(encodeQuery(Query(format: "age > %@", 30)), "query=\(encodeURL(["age" : ["$gt" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age > 30)), "query=\(encodeURL(["age" : ["$gt" : 30]]))")
+        XCTAssertEqual(Query(\Person.age > 30).predicate, NSPredicate(format: "age > %@", argumentArray: [30]))
+    }
+    
+    func testQueryNotGt() {
+        XCTAssertEqual(encodeQuery(Query(format: "NOT age > %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$gt" : 30]]]))")
+        XCTAssertEqual(encodeQuery(Query(format: "NOT (age > %@ AND age < %@)", 30, 40)), "query=\(encodeURL(["$not" : [["$and" : [["age" : ["$gt" : 30]], ["age" : ["$lt" : 40]]]]]]))")
     }
     
     func testQueryGte() {
         XCTAssertEqual(encodeQuery(Query(format: "age >= %@", 30)), "query=\(encodeURL(["age" : ["$gte" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age >= 30)), "query=\(encodeURL(["age" : ["$gte" : 30]]))")
+        XCTAssertEqual(Query(\Person.age >= 30).predicate, NSPredicate(format: "age >= %@", argumentArray: [30]))
+    }
+    
+    func testQueryNotGte() {
+        XCTAssertEqual(encodeQuery(Query(format: "NOT age >= %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$gte" : 30]]]))")
     }
     
     func testQueryLt() {
         XCTAssertEqual(encodeQuery(Query(format: "age < %@", 30)), "query=\(encodeURL(["age" : ["$lt" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age < 30)), "query=\(encodeURL(["age" : ["$lt" : 30]]))")
+        XCTAssertEqual(Query(\Person.age < 30).predicate, NSPredicate(format: "age < %@", argumentArray: [30]))
+    }
+    
+    func testQueryNotLt() {
+        XCTAssertEqual(encodeQuery(Query(format: "NOT age < %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$lt" : 30]]]))")
     }
     
     func testQueryLte() {
         XCTAssertEqual(encodeQuery(Query(format: "age <= %@", 30)), "query=\(encodeURL(["age" : ["$lte" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age <= 30)), "query=\(encodeURL(["age" : ["$lte" : 30]]))")
+        XCTAssertEqual(Query(\Person.age <= 30).predicate, NSPredicate(format: "age <= %@", argumentArray: [30]))
+    }
+    
+    func testQueryNotLte() {
+        XCTAssertEqual(encodeQuery(Query(format: "NOT age <= %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$lte" : 30]]]))")
     }
     
     func testQueryNe() {
         XCTAssertEqual(encodeQuery(Query(format: "age != %@", 30)), "query=\(encodeURL(["age" : ["$ne" : 30]]))")
         XCTAssertEqual(encodeQuery(Query(format: "age <> %@", 30)), "query=\(encodeURL(["age" : ["$ne" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age != 30)), "query=\(encodeURL(["age" : ["$ne" : 30]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age <> 30)), "query=\(encodeURL(["age" : ["$ne" : 30]]))")
+        XCTAssertEqual(Query(\Person.age != 30).predicate, NSPredicate(format: "age != %@", argumentArray: [30]))
+        XCTAssertEqual(Query(\Person.age <> 30).predicate, NSPredicate(format: "age != %@", argumentArray: [30]))
     }
     
-    func testQueryIn() {
+    class Rainbow {
+        @objc var colors: String?
+    }
+    
+    func testQueryIn() {   
         XCTAssertEqual(encodeQuery(Query(format: "colors IN %@", ["orange", "black"])), "query=\(encodeURL(["colors" : ["$in" : ["orange", "black"]]]))")
+        XCTAssertEqual(encodeQuery(Query(\Rainbow.colors ~ ["orange", "black"])), "query=\(encodeURL(["colors" : ["$in" : ["orange", "black"]]]))")
+        XCTAssertEqual(Query(\Rainbow.colors ~ ["orange", "black"]).predicate, NSPredicate(format: "colors IN %@", ["orange", "black"]))
     }
     
     func testQueryOr() {
         XCTAssertEqual(encodeQuery(Query(format: "age = %@ OR age = %@", 18, 21)), "query=\(encodeURL(["$or" : [["age" : 18], ["age" : 21]]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age == 18 || \Person.age == 21)), "query=\(encodeURL(["$or" : [["age" : 18], ["age" : 21]]]))")
+        XCTAssertEqual(Query(\Person.age == 18 || \Person.age == 21).predicate, NSPredicate(format: "age = %@ OR age = %@", argumentArray: [18, 21]))
     }
     
     func testQueryAnd() {
         XCTAssertEqual(encodeQuery(Query(format: "age = %@ AND age = %@", 18, 21)), "query=\(encodeURL(["$and" : [["age" : 18], ["age" : 21]]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.age == 18 && \Person.age == 21)), "query=\(encodeURL(["$and" : [["age" : 18], ["age" : 21]]]))")
+        XCTAssertEqual(Query(\Person.age == 18 && \Person.age == 21).predicate, NSPredicate(format: "age = %@ AND age = %@", argumentArray: [18, 21]))
     }
     
     func testQueryAndOptimized() {
         XCTAssertEqual(encodeQuery(Query(format: "name = %@ AND age = %@", "Victor", 21)), "query=\(encodeURL(["name" : "Victor", "age" : 21]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.name == "Victor" && \Person.age == 21)), "query=\(encodeURL(["name" : "Victor", "age" : 21]))")
     }
     
     func testQueryNot() {
-        XCTAssertEqual(encodeQuery(Query(format: "NOT age = %@", 30)), "query=\(encodeURL(["$not" : [["age" : 30]]]))")
+        XCTAssertEqual(encodeQuery(Query(format: "NOT age = %@", 30)), "query=\(encodeURL(["age" : ["$not" : ["$eq" : 30]]]))")
+        XCTAssertEqual(encodeQuery(Query(!(\Person.age == 30))), "query=\(encodeURL(["age" : ["$not" : ["$eq" : 30]]]))")
+        XCTAssertEqual(Query(!(\Person.age == 30)).predicate, NSPredicate(format: "NOT age = %@", argumentArray: [30]))
     }
     
     func testQueryRegex() {
@@ -148,10 +192,58 @@ class QueryTest: XCTestCase {
 
     func testQueryBeginsWith() {
         XCTAssertEqual(encodeQuery(Query(format: "name BEGINSWITH %@", "acme")), "query=\(encodeURL(["name" : ["$regex" : "^acme"]]))")
+        XCTAssertEqual(encodeQuery(Query(\Person.name =% "acme")), "query=\(encodeURL(["name" : ["$regex" : "^acme"]]))")
+        XCTAssertEqual(Query(\Person.name =% "acme").predicate, NSPredicate(format: "name BEGINSWITH %@", argumentArray: ["acme"]))
     }
 
     func testQueryGeoWithinCenterSphere() {
         let result = convert(urlQueryItems: Query(format: "location = %@", MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)).urlQueryItems)!
+        let expect = convert(jsonDictionary: [
+            "query" : [
+                "location" : [
+                    "$geoWithin" : [
+                        "$centerSphere" : [
+                            [-74, 40.74],
+                            10/6378.1
+                        ]
+                    ]
+                ]
+            ]
+        ])
+        
+        XCTAssertEqual(result.count, expect.count)
+        if result.count == expect.count {
+            let resultQuery = try! JSONSerialization.jsonObject(with: result["query"]!.data(using: .utf8)!) as! [String : [String : [String : [Any]]]]
+            let expectQuery = try! JSONSerialization.jsonObject(with: expect["query"]!.data(using: .utf8)!) as! [String : [String : [String : [Any]]]]
+            
+            let centerSphereResult = resultQuery["location"]!["$geoWithin"]!["$centerSphere"]!
+            let centerSphereExpect = expectQuery["location"]!["$geoWithin"]!["$centerSphere"]!
+            
+            XCTAssertEqual(centerSphereResult.count, 2)
+            XCTAssertEqual(centerSphereExpect.count, 2)
+            
+            if centerSphereResult.count == 2 && centerSphereExpect.count == 2 {
+                let coordinatesResult = centerSphereResult[0] as! [Double]
+                let coordinatesExpect = centerSphereExpect[0] as! [Double]
+                
+                XCTAssertEqual(coordinatesResult.count, 2)
+                XCTAssertEqual(coordinatesExpect.count, 2)
+                
+                XCTAssertEqual(coordinatesResult, coordinatesExpect)
+                
+                XCTAssertEqual(centerSphereResult[1] as! Double, centerSphereExpect[1] as! Double, accuracy: 0.00001)
+            }
+        }
+    }
+    
+    class Place {
+        
+        @objc var location: GeoPoint?
+        
+    }
+    
+    func testQueryGeoWithinCenterSphereKeyPath() {
+        let result = convert(urlQueryItems: Query(\Place.location == MKCircle(center: CLLocationCoordinate2D(latitude: 40.74, longitude: -74), radius: 10000)).urlQueryItems)!
         let expect = convert(jsonDictionary: [
             "query" : [
                 "location" : [
@@ -237,12 +329,61 @@ class QueryTest: XCTestCase {
         }
     }
     
+    func testQueryGeoWithinPolygonKeyPath() {
+        var coordinates = [CLLocationCoordinate2D(latitude: 40.74, longitude: -74), CLLocationCoordinate2D(latitude: 50.74, longitude: -74), CLLocationCoordinate2D(latitude: 40.74, longitude: -64)]
+        let result = convert(urlQueryItems: Query(\Place.location == MKPolygon(coordinates: &coordinates, count: 3)).urlQueryItems)!
+        let expect = convert(jsonDictionary: [
+            "query" : [
+                "location" : [
+                    "$geoWithin" : [
+                        "$geometry" : [
+                            "type" : "Polygon",
+                            "coordinates" : [
+                                [-74, 40.74],
+                                [-74, 50.74],
+                                [-64, 40.74]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ])
+        
+        XCTAssertEqual(result.count, expect.count)
+        if result.count == expect.count {
+            let result = try! JSONSerialization.jsonObject(with: result["query"]!.data(using: .utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
+            let expect = try! JSONSerialization.jsonObject(with: expect["query"]!.data(using: .utf8)!) as? [String : [String : [String : [String : AnyObject]]]]
+            
+            if var result = result, var expect = expect {
+                let geometryResult = result["location"]!["$geoWithin"]!["$geometry"]!
+                let geometryExpect = expect["location"]!["$geoWithin"]!["$geometry"]!
+                
+                XCTAssertEqual(geometryResult["type"] as? String, geometryExpect["type"] as? String)
+                
+                let coordinatesResult = geometryResult["coordinates"] as? [[Double]]
+                let coordinatesExpect = geometryExpect["coordinates"] as? [[Double]]
+                
+                XCTAssertNotNil(coordinatesResult)
+                XCTAssertNotNil(coordinatesExpect)
+                
+                if let coordinatesResult = coordinatesResult, let coordinatesExpect = coordinatesExpect {
+                    XCTAssertEqual(coordinatesResult.count, coordinatesExpect.count)
+                    for index in coordinatesResult.indices {
+                        XCTAssertEqual(coordinatesResult[index].count, coordinatesExpect[index].count)
+                    }
+                }
+            }
+        }
+    }
+    
     func testSortAscending() {
         XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])), "sort=\(encodeURL(["name" : 1]))")
+        XCTAssertEqual(encodeQuery(Query().ascending(\Person.name)), "sort=\(encodeURL(["name" : 1]))")
     }
     
     func testSortDescending() {
         XCTAssertEqual(encodeQuery(Query(sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)])), "sort=\(encodeURL(["name" : -1]))")
+        XCTAssertEqual(encodeQuery(Query().descending(\Person.name)), "sort=\(encodeURL(["name" : -1]))")
     }
     
     func testSkip() {
@@ -286,6 +427,19 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(result, expected)
     }
     
+    func testPredicateContainsKeyPath() {
+        let result = encodeQuery(Query(\Person.name %=% "f"))
+        let json = [
+            "name" : [
+                "$regex" : ".*f.*"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+        
+        XCTAssertEqual(Query(\Person.name %=% "f").predicate, NSPredicate(format: "name CONTAINS %@", "f"))
+    }
+    
     func testPredicateEndsWith() {
         let result = encodeQuery(Query(format: "name ENDSWITH %@", "m"))
         let json = [
@@ -295,6 +449,19 @@ class QueryTest: XCTestCase {
         ]
         let expected = "query=\(encodeURL(json))"
         XCTAssertEqual(result, expected)
+    }
+    
+    func testPredicateEndsWithKeyPath() {
+        let result = encodeQuery(Query(\Person.name %= "m"))
+        let json = [
+            "name" : [
+                "$regex" : ".*m"
+            ]
+        ]
+        let expected = "query=\(encodeURL(json))"
+        XCTAssertEqual(result, expected)
+        
+        XCTAssertEqual(Query(\Person.name %= "m").predicate, NSPredicate(format: "name ENDSWITH %@", "m"))
     }
     
     func testPredicateLike() {
@@ -326,7 +493,7 @@ class QueryTest: XCTestCase {
         let date = Date()
         let result = encodeQuery(Query(format: "date == %@", date))
         let json = [
-            "date" : date.timeIntervalSince1970
+            "date" : date.toISO8601()
         ]
         let expected = "query=\(encodeURL(json))"
         XCTAssertEqual(result, expected)
@@ -396,9 +563,29 @@ class QueryTest: XCTestCase {
         XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":1}")
     }
     
+    func testAscendingKeyPath() {
+        let query = Query()
+        query.ascending(\Person.name)
+        let queryItems = query.urlQueryItems
+        
+        XCTAssertNotNil(queryItems)
+        XCTAssertEqual(queryItems?.count, 1)
+        XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":1}")
+    }
+    
     func testDescending() {
         let query = Query()
         query.descending("name")
+        let queryItems = query.urlQueryItems
+        
+        XCTAssertNotNil(queryItems)
+        XCTAssertEqual(queryItems?.count, 1)
+        XCTAssertEqual(queryItems?.filter { $0.name == "sort" }.first?.value, "{\"name\":-1}")
+    }
+    
+    func testDescendingKeyPath() {
+        let query = Query()
+        query.descending(\Person.name)
         let queryItems = query.urlQueryItems
         
         XCTAssertNotNil(queryItems)

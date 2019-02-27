@@ -110,6 +110,10 @@ class MemoryCache<T: Persistable>: Cache<T>, CacheType where T: NSObject {
         memory.removeAll()
     }
     
+    func clear(query: Query?, cascadeDelete: Bool) {
+        memory.removeAll()
+    }
+    
     func clear(syncQueries: [Query]?) {
         memory.removeAll()
     }

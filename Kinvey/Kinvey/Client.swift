@@ -17,8 +17,8 @@ open class Client: Credential {
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
     public static let sharedClient = Client()
     
-    typealias UserChangedListener = (User?) -> Void
-    var userChangedListener: UserChangedListener?
+    public typealias UserChangedListener = (User?) -> Void
+    public var userChangedListener: UserChangedListener?
     
     /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
     open internal(set) var activeUser: User? {
@@ -451,13 +451,18 @@ open class Client: Credential {
         self.schemaVersion = schemaVersion
         self.options = options
         
-        Migration.performMigration(
-            persistenceId: appKey,
-            encryptionKey: encryptionKey,
-            schemaVersion: schemaVersion,
-            migrationHandler: schema?.migrationHandler,
-            compactCacheOnLaunch: compactCacheOnLaunch
-        )
+        do {
+            try Migration.performMigration(
+                persistenceId: appKey,
+                encryptionKey: encryptionKey,
+                schemaVersion: schemaVersion,
+                migrationHandler: schema?.migrationHandler,
+                compactCacheOnLaunch: compactCacheOnLaunch
+            )
+        } catch {
+            completionHandler(.failure(error))
+            return
+        }
         
         cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
         syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey as Data?, schemaVersion: schemaVersion)
