@@ -1,0 +1,12 @@
+//
+//  Tests.xcconfig
+//  Kinvey
+//
+//  Created by Victor Hugo Carvalho Barros on 2018-11-14.
+//  Copyright © 2018 Kinvey. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+SWIFT_SUPPRESS_WARNINGS = YES

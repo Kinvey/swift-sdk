@@ -151,6 +151,8 @@
 		5783BA4820F7240F0090D0BD /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5783BA4920F724370090D0BD /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
+		57882EC0219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
+		57882EC1219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
 		578870931DD52EC80087FE78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870921DD52EC80087FE78 /* AppDelegate.swift */; };
 		578870951DD52EC80087FE78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870941DD52EC80087FE78 /* ViewController.swift */; };
 		578870981DD52EC80087FE78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 578870961DD52EC80087FE78 /* Main.storyboard */; };
@@ -924,6 +926,8 @@
 		5783BA4120F722DC0090D0BD /* KinveyTests RemoveAll Memory Leak.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests RemoveAll Memory Leak.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveAllMemoryLeakTests.swift; sourceTree = "<group>"; };
 		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
+		57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoStoreTests.swift; sourceTree = "<group>"; };
+		57882EC3219CA574005ECCA3 /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
 		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		578870921DD52EC80087FE78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		578870941DD52EC80087FE78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Sources/ViewController.swift; sourceTree = "<group>"; };
@@ -1562,6 +1566,7 @@
 			isa = PBXGroup;
 			children = (
 				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
+				57882EC3219CA574005ECCA3 /* Tests.xcconfig */,
 				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
@@ -1666,6 +1671,7 @@
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
 				576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */,
+				57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
@@ -3036,6 +3042,7 @@
 				578B80671EE74669004D92A6 /* DirectoryEntry.swift in Sources */,
 				578B806B1EE746C1004D92A6 /* NetworkStoreTests.swift in Sources */,
 				578B806D1EE746C8004D92A6 /* PerformanceTestCase.swift in Sources */,
+				57882EC1219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */,
 				578B80621EE7437E004D92A6 /* EntityTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3328,6 +3335,7 @@
 				57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */,
 				572005CA1D342B2800AE9AC5 /* Book.swift in Sources */,
 				572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */,
+				57882EC0219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */,
 				5771F9FF1D301F6300903777 /* Event.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3674,6 +3682,7 @@
 		};
 		5705B1DB1EDF82400006980A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3694,6 +3703,7 @@
 		};
 		5705B1DC1EDF82400006980A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3713,6 +3723,7 @@
 		};
 		5705B1DE1EDF82400006980A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3735,6 +3746,7 @@
 		};
 		5705B1DF1EDF82400006980A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3932,6 +3944,7 @@
 		};
 		5765B85E1C9771BD00080FFA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
@@ -3947,6 +3960,7 @@
 		};
 		5765B85F1C9771BD00080FFA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
@@ -4628,6 +4642,7 @@
 		};
 		57CCBCD420D2CD3F00197CC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -4650,6 +4665,7 @@
 		};
 		57CCBCD520D2CD3F00197CC2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57882EC3219CA574005ECCA3 /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

@@ -72,7 +72,33 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /**
      Factory method that returns a `DataStore`.
-     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `Cache`
+     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `.cache`
+     - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
+     - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
+     - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
+     */
+    @available(*, deprecated: 3.21.0, message: "Please use `collection(type:autoPagination:tag:validationStrategy:options:)` instead")
+    open class func collection(
+        _ type: StoreType = .cache,
+        autoPagination: Bool = false,
+        tag: String = defaultTag,
+        validationStrategy: ValidationStrategy? = nil,
+        options: Options? = nil
+    ) throws -> DataStore {
+        return try collection(
+            type: type,
+            autoPagination: autoPagination,
+            tag: tag,
+            validationStrategy: validationStrategy,
+            options: options
+        )
+    }
+    
+    /**
+     Factory method that returns a `DataStore`.
+     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `.auto`
      - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
      - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
@@ -80,7 +106,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
     open class func collection(
-        _ type: StoreType = .cache,
+        type: StoreType,
         autoPagination: Bool = false,
         tag: String = defaultTag,
         validationStrategy: ValidationStrategy? = nil,

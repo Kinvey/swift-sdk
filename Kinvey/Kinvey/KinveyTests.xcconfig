@@ -6,6 +6,8 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+#include "Tests.xcconfig"
+
 BUNDLE_LOADER[sdk=iphoneos*] = $(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp
 BUNDLE_LOADER[sdk=iphonesimulator*] = $(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp
 TEST_HOST[sdk=iphoneos*] = $(BUNDLE_LOADER)

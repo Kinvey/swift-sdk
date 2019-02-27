@@ -20,4 +20,7 @@ public enum ReadPolicy: UInt {
     /// Read first from the local cache and then try to get data from the network (backend).
     case both
     
+    /// Tries to get the most recent data from the backend first, if it fails and the response is NOT a 4xx/5xx status code, it returns data from the local cache.
+    case networkOtherwiseLocal
+    
 }
