@@ -14,23 +14,23 @@ import RealmSwift
 public class Metadata: Object, Codable {
     
     /// Property names for `Metadata`
-    @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Metadata.CodingKeys instead")
     public struct Key {
         
         /// Last Modification Time Key.
-        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.lastModifiedTime instead")
+        @available(*, deprecated /* 3.17.0 */, message: "Please use Metadata.CodingKeys.lastModifiedTime instead")
         public static let lastModifiedTime = "lmt"
         
         /// Entity Creation Time Key.
-        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.entityCreationTime instead")
+        @available(*, deprecated /* 3.17.0 */, message: "Please use Metadata.CodingKeys.entityCreationTime instead")
         public static let entityCreationTime = "ect"
         
         /// Authentication Token Key.
-        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.authtoken instead")
+        @available(*, deprecated /* 3.17.0 */, message: "Please use Metadata.CodingKeys.authtoken instead")
         public static let authtoken = "authtoken"
         
         /// Last Read Time Key.
-        @available(*, deprecated: 3.17.0, message: "Please use Metadata.CodingKeys.lastReadTime instead")
+        @available(*, deprecated /* 3.17.0 */, message: "Please use Metadata.CodingKeys.lastReadTime instead")
         internal static let lastReadTime = "lrt"
     
     }
@@ -120,13 +120,13 @@ public class Metadata: Object, Codable {
     }
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     public required convenience init?(map: Map) {
         self.init()
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     public func mapping(map: Map) {
         lmt <- (CodingKeys.lastModifiedTime.rawValue, map[CodingKeys.lastModifiedTime])
         ect <- (CodingKeys.entityCreationTime.rawValue, map[CodingKeys.entityCreationTime])
@@ -155,7 +155,7 @@ extension Metadata: JSONDecodable {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension Metadata: Mappable {
 }
 
@@ -228,7 +228,7 @@ public final class UserMetadata: Metadata {
         super.init(value: value, schema: schema)
     }
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     public override func mapping(map: Map) {
         super.mapping(map: map)
         
@@ -314,7 +314,7 @@ public final class EmailVerification: Object, Codable {
 }
 
 /// Allows serialization and deserialization of EmailVerification
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension EmailVerification: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -385,7 +385,7 @@ public final class PasswordReset: Object, Codable {
 }
 
 /// Allows serialization and deserialization of PasswordReset
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension PasswordReset: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.
@@ -441,7 +441,7 @@ extension UserStatus: Encodable {
 }
 
 /// Allows serialization and deserialization of UserStatus
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension UserStatus: Mappable {
     
     /// Constructor that validates if the map can be build a new instance of Metadata.

@@ -120,7 +120,7 @@ open class File: Object {
     
     var resumeDownloadData: Data?
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     public convenience required init?(map: Map) {
         self.init()
     }
@@ -144,7 +144,7 @@ open class File: Object {
         
     }
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     open func mapping(map: Map) {
         fileId <- ("fileId", map[Entity.EntityCodingKeys.entityId])
         acl <- ("acl", map[Entity.EntityCodingKeys.acl])
@@ -177,6 +177,6 @@ open class File: Object {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension File : Mappable {
 }

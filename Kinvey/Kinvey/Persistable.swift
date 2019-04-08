@@ -61,18 +61,18 @@ extension Persistable where Self: Entity {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 internal func kinveyMappingType(left: String, right: String) {
     _kinveyMappingType(left: left, right: right)
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 internal func kinveyMappingType<Transform: TransformType>(left: String, right: String, transform: Transform) {
     _kinveyMappingType(left: left, right: right, transform: AnyTransform(transform))
 }
 
 @inline(__always)
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 fileprivate func _kinveyMappingType(left: String, right: String, transform: AnyTransform? = nil) {
     autoreleasepool {
         let block = {

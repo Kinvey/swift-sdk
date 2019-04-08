@@ -137,7 +137,7 @@ extension Acl: Encodable {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension Acl: Mappable {
     
     /// Constructor that validates if the map contains at least the creator.
@@ -165,7 +165,7 @@ extension Acl: Mappable {
 extension Acl {
     
     /// Property names for Acl
-    @available(*, deprecated: 3.17.0, message: "Please use Acl.CodingKeys instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Acl.CodingKeys instead")
     public struct Key {
         
         static let creator = "creator"

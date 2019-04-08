@@ -12,19 +12,19 @@ import PromiseKit
 /// Class to interact with a specific collection in the backend.
 open class DataStore<T: Persistable> where T: NSObject {
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<AnyRandomAccessCollection<T>, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<AnyRandomAccessCollection<T>, Swift.Error> instead")
     public typealias ArrayCompletionHandler = ([T]?, Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<T, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<T, Swift.Error> instead")
     public typealias ObjectCompletionHandler = (T?, Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<Int, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<Int, Swift.Error> instead")
     public typealias IntCompletionHandler = (Int?, Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<UInt, [Swift.Error]> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<UInt, [Swift.Error]> instead")
     public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [Swift.Error]?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<(Int, AnyRandomAccessCollection<T>), [Swift.Error]> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<(Int, AnyRandomAccessCollection<T>), [Swift.Error]> instead")
     public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [Swift.Error]?) -> Void
     
     fileprivate let readPolicy: ReadPolicy
@@ -46,7 +46,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     internal let cache: AnyCache<T>?
     internal let sync: AnySync?
     
-    @available(*, deprecated: 3.18.2, message: "Please use DataStore.options instead")
+    @available(*, deprecated /* 3.18.2 */, message: "Please use DataStore.options instead")
     open var deltaSet: Bool {
         return options?.deltaSet ?? false
     }
@@ -79,7 +79,7 @@ open class DataStore<T: Persistable> where T: NSObject {
      - parameter validationStrategy: (Optional) Defines a strategy to validate results upfront. Default value: `nil`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
-    @available(*, deprecated: 3.21.0, message: "Please use `collection(type:autoPagination:tag:validationStrategy:options:)` instead")
+    @available(*, deprecated /* 3.21.0 */, message: "Please use `collection(type:autoPagination:tag:validationStrategy:options:)` instead")
     open class func collection(
         _ type: StoreType = .cache,
         autoPagination: Bool = false,
@@ -824,7 +824,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Sends to the backend all the pending records in the local cache.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.push(options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.push(options:completionHandler:) instead")
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: UIntErrorTypeArrayCompletionHandler? = nil
@@ -843,7 +843,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Sends to the backend all the pending records in the local cache.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.push(options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.push(options:completionHandler:) instead")
     open func push(
         timeout: TimeInterval? = nil,
         completionHandler: ((Result<UInt, [Swift.Error]>) -> Void)? = nil
@@ -892,7 +892,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.pull(_:deltaSetCompletionHandler:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.pull(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func pull(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -973,7 +973,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     @discardableResult
     
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func sync(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -996,7 +996,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func sync(
         _ query: Query = Query(),
         deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
@@ -1085,7 +1085,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Deletes all the pending changes in the local cache.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use DataStore.purge(_:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use DataStore.purge(_:options:completionHandler:) instead")
     open func purge(
         _ query: Query = Query(),
         completionHandler: DataStore<T>.IntCompletionHandler? = nil

@@ -17,19 +17,19 @@ import PromiseKit
 open class User: NSObject, Credential {
     
     /// Username Key.
-    @available(*, deprecated: 3.17.0, message: "Please use User.CodingKeys.username instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.CodingKeys.username instead")
     public static let PersistableUsernameKey = "username"
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<U, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<U, Swift.Error> instead")
     public typealias UserHandler<U: User> = (U?, Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<[U], Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<[U], Swift.Error> instead")
     public typealias UsersHandler<U: User> = ([U]?, Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<Void, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<Void, Swift.Error> instead")
     public typealias VoidHandler = (Swift.Error?) -> Void
     
-    @available(*, deprecated: 3.17.0, message: "Please use Result<Bool, Swift.Error> instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use Result<Bool, Swift.Error> instead")
     public typealias BoolHandler = (Bool, Swift.Error?) -> Void
     
     /// `_id` property of the user.
@@ -101,7 +101,7 @@ open class User: NSObject, Credential {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
     open class func signup<U: User>(
         username: String? = nil,
         password: String? = nil,
@@ -126,7 +126,7 @@ open class User: NSObject, Credential {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.signup(username:password:user:options:completionHandler:) instead")
     open class func signup<U: User>(
         username: String? = nil,
         password: String? = nil,
@@ -267,7 +267,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
     open class func login<U: User>(
         authSource: AuthSource,
         _ authData: [String : Any],
@@ -300,7 +300,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.login(authSource:_:createIfNotExists:options:completionHandler:) instead")
     open class func login<U: User>(
         authSource: AuthSource,
         _ authData: [String : Any],
@@ -396,7 +396,7 @@ open class User: NSObject, Credential {
     
     /// Sign in a user and set as a current active user.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.login(username:password:provider:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         username: String,
         password: String,
@@ -427,7 +427,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.sendEmailConfirmation(forUsername:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.sendEmailConfirmation(forUsername:options:completionHandler:) instead")
     open class func sendEmailConfirmation(
         forUsername username: String,
         client: Client = sharedClient,
@@ -515,7 +515,7 @@ open class User: NSObject, Credential {
     
     /// Sends an email to the user with a link to reset the password
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.resetPassword(usernameOrEmail:options:completionHandler:) instead")
     open class func resetPassword(
         usernameOrEmail: String,
         client: Client = sharedClient,
@@ -578,7 +578,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: UserHandler<U>? = nil
@@ -603,7 +603,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.changePassword(newPassword:options:completionHandler:) instead")
     open func changePassword<U: User>(
         newPassword: String,
         completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
@@ -641,7 +641,7 @@ open class User: NSObject, Credential {
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.forgotUsername(email:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.forgotUsername(email:options:completionHandler:) instead")
     open class func forgotUsername(
         email: String,
         client: Client = sharedClient,
@@ -682,7 +682,7 @@ open class User: NSObject, Credential {
     
     /// Checks if a `username` already exists or not.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.exists(username:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.exists(username:options:completionHandler:) instead")
     open class func exists(
         username: String,
         client: Client = sharedClient,
@@ -703,7 +703,7 @@ open class User: NSObject, Credential {
     
     /// Checks if a `username` already exists or not.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.exists(username:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.exists(username:options:completionHandler:) instead")
     open class func exists(
         username: String,
         client: Client = sharedClient,
@@ -752,7 +752,7 @@ open class User: NSObject, Credential {
     
     /// Gets a `User` instance using the `userId` property.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.get(userId:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.get(userId:options:completionHandler:) instead")
     open class func get<U: User>(
         userId: String,
         client: Client = sharedClient,
@@ -773,7 +773,7 @@ open class User: NSObject, Credential {
     
     /// Gets a `User` instance using the `userId` property.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.get(userId:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.get(userId:options:completionHandler:) instead")
     open class func get<U: User>(
         userId: String,
         client: Client = sharedClient,
@@ -903,7 +903,7 @@ open class User: NSObject, Credential {
     }
     
     /// Constructor that validates if the map contains at least the `userId`.
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     public required init?(map: Map) {
         var userId: String?
         var acl: Acl?
@@ -970,7 +970,7 @@ open class User: NSObject, Credential {
     }
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
     open func mapping(map: Map) {
         _userId <- ("_userId", map[Entity.EntityCodingKeys.entityId])
         acl <- ("acl", map[Entity.EntityCodingKeys.acl])
@@ -1015,7 +1015,7 @@ open class User: NSObject, Credential {
     
     /// Creates or updates a `User`.
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.save(newPassword:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.save(newPassword:options:completionHandler:) instead")
     open func save<U: User>(
         newPassword: String? = nil,
         completionHandler: UserHandler<U>? = nil
@@ -1073,7 +1073,7 @@ open class User: NSObject, Credential {
      This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
      */
     @discardableResult
-    @available(*, deprecated: 3.17.0, message: "Please use User.lookup(_:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.lookup(_:options:completionHandler:) instead")
     open func lookup<U: User>(
         _ userQuery: UserQuery,
         completionHandler: UsersHandler<U>? = nil
@@ -1203,7 +1203,7 @@ open class User: NSObject, Credential {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
-    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.16.0 */, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1231,7 +1231,7 @@ open class User: NSObject, Credential {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
-    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.16.0 */, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1255,7 +1255,7 @@ open class User: NSObject, Credential {
     /**
      Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
      */
-    @available(*, deprecated: 3.16.0, message: "Please use login(username:password:provider:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.16.0 */, message: "Please use login(username:password:provider:options:completionHandler:) instead")
     open class func login<U: User>(
         redirectURI: URL,
         username: String,
@@ -1375,7 +1375,7 @@ open class User: NSObject, Credential {
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
@@ -1403,7 +1403,7 @@ open class User: NSObject, Credential {
     }
     
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
-    @available(*, deprecated: 3.17.0, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
+    @available(*, deprecated /* 3.17.0 */, message: "Please use User.presentMICViewController(redirectURI:micUserInterface:currentViewController:options:completionHandler:) instead")
     open class func presentMICViewController<U: User>(
         redirectURI: URL,
         timeout: TimeInterval = 0,
@@ -1625,7 +1625,7 @@ extension User : JSONEncodable {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension User: Mappable {
 }
 
@@ -1844,7 +1844,7 @@ extension KeyedEncodingContainer where Key == UnknownCodingKeys {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
 extension UserSocialIdentity : StaticMappable {
     
     public static func objectForMapping(map: Map) -> BaseMappable? {
