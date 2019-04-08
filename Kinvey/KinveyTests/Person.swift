@@ -66,7 +66,7 @@ class Person: Entity {
     
     override class func collectionName() -> String {
         return "Person"
-    }
+    }    
     
     override func propertyMapping(_ map: Kinvey.Map) {
         super.propertyMapping(map)
@@ -74,7 +74,7 @@ class Person: Entity {
         personId <- ("personId", map[Entity.EntityCodingKeys.entityId])
         name <- ("name", map["name"])
         age <- ("age", map["age"])
-        address <- ("address", map["address"], AddressTransform())
+        address <- ("address", map["address"], AddressTransform.shared)
         geolocation <- ("geolocation", map["geolocation"])
     }
     
@@ -408,7 +408,7 @@ class PersonWithDifferentClassName: Entity {
         personId <- ("personId", map[Entity.EntityCodingKeys.entityId])
         name <- ("name", map["name"])
         age <- ("age", map["age"])
-        address <- ("address", map["address"], AddressTransform())
+        address <- ("address", map["address"], AddressTransform.shared)
         geolocation <- ("geolocation", map["geolocation"])
     }
     
@@ -421,7 +421,9 @@ extension Person {
     }
 }
 
-class AddressTransform: TransformType {
+class AddressTransform: Kinvey.TransformType {
+    
+    static let shared = AddressTransform()
     
     typealias Object = Address
     typealias JSON = [String : Any]

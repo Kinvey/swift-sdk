@@ -84,7 +84,7 @@ extension JSONEncodable where Self: BaseMappable {
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- (left: inout GeoPoint, right: (String, Map)) {
     let (right, map) = right
-    let transform = GeoPointTransform()
+    let transform = GeoPointTransform.shared
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
@@ -93,7 +93,7 @@ public func <- (left: inout GeoPoint, right: (String, Map)) {
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 public func <- (left: inout GeoPoint?, right: (String, Map)) {
     let (right, map) = right
-    let transform = GeoPointTransform()
+    let transform = GeoPointTransform.shared
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
     left <- (map, transform)
 }
@@ -289,6 +289,8 @@ extension NSPredicate: StaticMappable {
 
 @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
 class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
+    
+    static let shared = GeoPointTransform()
     
     init() {
         super.init(fromJSON: { (array) -> GeoPoint? in
