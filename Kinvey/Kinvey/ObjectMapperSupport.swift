@@ -10,30 +10,30 @@ import CoreLocation
 import ObjectMapper
 import RealmSwift
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias Map = ObjectMapper.Map
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias Mappable = ObjectMapper.Mappable
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias StaticMappable = ObjectMapper.StaticMappable
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias TransformType = ObjectMapper.TransformType
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias TransformOf = ObjectMapper.TransformOf
 
 public typealias BaseMappable = ObjectMapper.BaseMappable
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias MapContext = ObjectMapper.MapContext
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension Map {
     
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public subscript<Key: RawRepresentable>(key: Key) -> Map where Key.RawValue == String {
         return self[key.rawValue]
     }
@@ -81,7 +81,7 @@ extension JSONEncodable where Self: BaseMappable {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: inout GeoPoint, right: (String, Map)) {
     let (right, map) = right
     let transform = GeoPointTransform.shared
@@ -90,7 +90,7 @@ public func <- (left: inout GeoPoint, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: inout GeoPoint?, right: (String, Map)) {
     let (right, map) = right
     let transform = GeoPointTransform.shared
@@ -99,7 +99,7 @@ public func <- (left: inout GeoPoint?, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <T>(left: inout T, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -107,7 +107,7 @@ public func <- <T>(left: inout T, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <T>(left: inout T?, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -115,7 +115,7 @@ public func <- <T>(left: inout T?, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -123,7 +123,7 @@ public func <- <T: BaseMappable>(left: inout T, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
     let (right, map) = right
     kinveyMappingType(left: right, right: map.currentKey!)
@@ -131,7 +131,7 @@ public func <- <T: BaseMappable>(left: inout T?, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
     let (right, map, transform) = right
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
@@ -139,7 +139,7 @@ public func <- <Transform: TransformType>(left: inout Transform.Object, right: (
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
     let (right, map, transform) = right
     kinveyMappingType(left: right, right: map.currentKey!, transform: transform)
@@ -149,7 +149,7 @@ public func <- <Transform: TransformType>(left: inout Transform.Object?, right: 
 // MARK: Default Date Transform
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: inout Date, right: (String, Map)) {
     let (right, map) = right
     let transform = KinveyDateTransform()
@@ -158,7 +158,7 @@ public func <- (left: inout Date, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: inout Date?, right: (String, Map)) {
     let (right, map) = right
     let transform = KinveyDateTransform()
@@ -167,7 +167,7 @@ public func <- (left: inout Date?, right: (String, Map)) {
 }
 
 /// Overload operator for `List` values
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <-<T: Object & BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
     let (right, map) = rhs
     var list = lhs
@@ -177,7 +177,7 @@ public func <-<T: Object & BaseMappable>(lhs: List<T>, rhs: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: List<StringValue>, right: (String, Map)) {
     let (right, map) = right
     let transform = StringValueTransform()
@@ -194,7 +194,7 @@ public func <- (left: List<StringValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: List<IntValue>, right: (String, Map)) {
     let (right, map) = right
     let transform = IntValueTransform()
@@ -211,14 +211,14 @@ public func <- (left: List<IntValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- <T>(left: KinveyOptional<T>, right: (query: String, map: Map)) {
     kinveyMappingType(left: right.query, right: right.map.currentKey!)
     left.value <- right.map
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: List<FloatValue>, right: (String, Map)) {
     let (right, map) = right
     let transform = FloatValueTransform()
@@ -235,7 +235,7 @@ public func <- (left: List<FloatValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: List<DoubleValue>, right: (String, Map)) {
     let (right, map) = right
     let transform = DoubleValueTransform()
@@ -252,7 +252,7 @@ public func <- (left: List<DoubleValue>, right: (String, Map)) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public func <- (left: List<BoolValue>, right: (String, Map)) {
     let (right, map) = right
     let transform = BoolValueTransform()
@@ -268,15 +268,15 @@ public func <- (left: List<BoolValue>, right: (String, Map)) {
     }
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension NSPredicate: StaticMappable {
     
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return nil
     }
     
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public func mapping(map: Map) {
         if let json = mongoDBQuery {
             for (key, var value) in json {
@@ -287,7 +287,7 @@ extension NSPredicate: StaticMappable {
     
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
     
     static let shared = GeoPointTransform()
@@ -308,7 +308,7 @@ class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
     
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictionary]> where T: BaseMappable {
     
     init(_ list: List<T>) {
@@ -335,7 +335,7 @@ class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictio
 
 // MARK: String Value Transform
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class StringValueTransform: TransformOf<List<StringValue>, [String]> {
     init() {
         super.init(fromJSON: { (array: [String]?) -> List<StringValue>? in
@@ -358,7 +358,7 @@ class StringValueTransform: TransformOf<List<StringValue>, [String]> {
 
 // MARK: Int Value Transform
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class IntValueTransform: TransformOf<List<IntValue>, [Int]> {
     init() {
         super.init(fromJSON: { (array: [Int]?) -> List<IntValue>? in
@@ -381,7 +381,7 @@ class IntValueTransform: TransformOf<List<IntValue>, [Int]> {
 
 // MARK: Float Value Transform
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class FloatValueTransform: TransformOf<List<FloatValue>, [Float]> {
     init() {
         super.init(fromJSON: { (array: [Float]?) -> List<FloatValue>? in
@@ -404,7 +404,7 @@ class FloatValueTransform: TransformOf<List<FloatValue>, [Float]> {
 
 // MARK: Double Value Transform
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class DoubleValueTransform: TransformOf<List<DoubleValue>, [Double]> {
     init() {
         super.init(fromJSON: { (array: [Double]?) -> List<DoubleValue>? in
@@ -427,7 +427,7 @@ class DoubleValueTransform: TransformOf<List<DoubleValue>, [Double]> {
 
 // MARK: Bool Value Transform
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class BoolValueTransform: TransformOf<List<BoolValue>, [Bool]> {
     init() {
         super.init(fromJSON: { (array: [Bool]?) -> List<BoolValue>? in

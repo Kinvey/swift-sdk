@@ -200,7 +200,7 @@ open class Client: Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters and requires a boolean to encrypt or not any store created using this client instance.
-    @available(*, deprecated /* 3.17.0 */, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:(Result<User?, Swift.Error>) -> Void")
+    @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encrypted:schema:completionHandler:(Result<User?, Swift.Error>) -> Void")
     open func initialize<U: User>(
         appKey: String,
         appSecret: String,
@@ -288,7 +288,7 @@ open class Client: Credential {
     }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    @available(*, deprecated /* 3.17.0 */, message: "Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:(Result<U?, Swift.Error>) -> Void) instead")
+    @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Client.initialize(appKey:appSecret:accessGroup:apiHostName:authHostName:encryptionKey:schema:completionHandler:(Result<U?, Swift.Error>) -> Void) instead")
     open func initialize<U: User>(
         appKey: String,
         appSecret: String,
@@ -546,7 +546,7 @@ open class Client: Credential {
      call to the server.
      */
     @discardableResult
-    @available(*, deprecated /* 3.17.1 */, message: "Please use Client.ping(completionHandler:) instead")
+    @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Client.ping(completionHandler:) instead")
     public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
         return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
             switch result {
@@ -612,7 +612,7 @@ public struct EnvironmentInfo {
     
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension EnvironmentInfo : StaticMappable {
     
     public static func objectForMapping(map: Map) -> BaseMappable? {

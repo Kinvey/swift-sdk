@@ -38,25 +38,25 @@ public enum ObjectChange<T: Entity> {
 open class Entity: Object, Persistable {
     
     /// Property names for the `Entity` class
-    @available(*, deprecated /* 3.17.0 */, message: "Please use Entity.CodingKeys instead")
+    @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Entity.CodingKeys instead")
     public struct Key {
         
         /// Key to map the `_id` column in your Persistable implementation class.
-        @available(*, deprecated /* 3.17.0 */, message: "Please use Entity.CodingKeys.entityId instead")
+        @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Entity.CodingKeys.entityId instead")
         public static let entityId = "_id"
         
         /// Key to map the `_acl` column in your Persistable implementation class.
-        @available(*, deprecated /* 3.17.0 */, message: "Please use Entity.CodingKeys.acl instead")
+        @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Entity.CodingKeys.acl instead")
         public static let acl = "_acl"
         
         /// Key to map the `_kmd` column in your Persistable implementation class.
-        @available(*, deprecated /* 3.17.0 */, message: "Please use Entity.CodingKeys.metadata instead")
+        @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Entity.CodingKeys.metadata instead")
         public static let metadata = "_kmd"
         
     }
     
     /// This function can be used to validate JSON prior to mapping. Return nil to cancel mapping at this point
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public required init?(map: Map) {
         super.init()
     }
@@ -158,7 +158,7 @@ open class Entity: Object, Persistable {
     }
     
     /// Override this method to tell how to map your own objects.
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     open func propertyMapping(_ map: Map) {
         entityId <- ("entityId", map[EntityCodingKeys.entityId])
         metadata <- ("metadata", map[EntityCodingKeys.metadata])
@@ -188,11 +188,11 @@ open class Entity: Object, Persistable {
     
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension Entity: Mappable {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
-    @available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public func mapping(map: Map) {
         let className = StringFromClass(cls: type(of: self))
         if kinveyProperyMapping[className] == nil {

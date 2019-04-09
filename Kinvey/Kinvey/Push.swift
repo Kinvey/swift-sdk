@@ -22,7 +22,7 @@ import ObjectiveC
 /// Class used to register and unregister a device to receive push notifications.
 open class Push {
     
-    @available(*, deprecated /* 3.17.1 */, message: "Please use Result<Bool, Swift.Error> instead")
+    @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Result<Bool, Swift.Error> instead")
     public typealias BoolCompletionHandler = (Bool, Swift.Error?) -> Void
     
     fileprivate let client: Client
@@ -213,7 +213,7 @@ open class Push {
     }
     
     @available(iOS 10.0, *)
-    @available(*, deprecated /* 3.18.0 */, message: "Please use registerForNotifications(authorizationOptions:categories:options:completionHandler:) instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use registerForNotifications(authorizationOptions:categories:options:completionHandler:) instead")
     open func registerForNotifications(
         authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
         categories: Set<UNNotificationCategory>? = nil,
@@ -278,7 +278,7 @@ open class Push {
 #endif
     
     /// Unregister the current device to receive push notifications.
-    @available(*, deprecated /* 3.17.1 */, message: "Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
+    @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
     open func unRegisterDeviceToken(
         _ completionHandler: BoolCompletionHandler? = nil
     ) {
@@ -295,7 +295,7 @@ open class Push {
     }
     
     /// Unregister the current device to receive push notifications.
-    @available(*, deprecated /* 3.17.1 */, message: "Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
+    @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
     open func unRegisterDeviceToken(
         _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
     ) {

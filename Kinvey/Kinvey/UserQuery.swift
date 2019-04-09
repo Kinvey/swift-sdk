@@ -64,7 +64,7 @@ public final class UserQuery: BuilderType {
     
 }
 
-@available(*, deprecated /* 3.18.0 */, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension UserQuery: Mappable {
     
     /// Constructor for object mapping.
