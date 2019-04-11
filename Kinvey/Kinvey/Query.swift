@@ -113,8 +113,7 @@ public final class Query: NSObject, BuilderType {
             {
                 keyPath = translatedKeyPath
             } else if let persistableType = type as? Persistable.Type,
-                let _translatedKeyPath = try? persistableType.translate(property: keyPath),
-                let translatedKeyPath = _translatedKeyPath
+                let translatedKeyPath = try? persistableType.translate(property: keyPath)
             {
                 keyPath = translatedKeyPath
             }

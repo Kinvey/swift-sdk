@@ -158,7 +158,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
             let keyPath = expression.keyPath
             if !keyPath.contains(".") {
-                if let idx = propertyNames.index(of: keyPath),
+                if let idx = propertyNames.firstIndex(of: keyPath),
                     let className = propertyObjectClassNames[idx],
                     typesNeedsTranslation.contains(className)
                 {
@@ -227,7 +227,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         case .keyPath:
             var keyPath = T.self is Codable.Type ? (try! T.translate(property: expression.keyPath) ?? expression.keyPath) : expression.keyPath
             if !keyPath.contains(".") {
-                if let idx = propertyNames.index(of: keyPath),
+                if let idx = propertyNames.firstIndex(of: keyPath),
                     let className = propertyObjectClassNames[idx],
                     typesNeedsTranslation.contains(className)
                 {
@@ -302,7 +302,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             }
         }
         
-        if let ttl = ttl, let _kmdKey = try? T.metadataProperty(), let kmdKey = _kmdKey {
+        if let ttl = ttl, let kmdKey = try? T.metadataProperty() {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", Date().addingTimeInterval(-ttl))
         }
         
@@ -1022,7 +1022,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     func buildRequest() -> URLRequest {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method
-        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers) as! [String : String]
+        request.allHTTPHeaderFields = try? JSONSerialization.jsonObject(with: headers) as? [String : String]
         if let body = body {
             request.httpBody = body
         }

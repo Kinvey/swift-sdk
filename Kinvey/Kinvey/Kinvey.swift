@@ -242,10 +242,18 @@ public var jsonEncoder: JSONEncoder = {
 public let defaultTag = "kinvey"
 let groupId = "_group_"
 
-#if swift(>=5)
-    let swiftVersion = "5 or above"
+#if swift(>=6)
+    let swiftVersion = "6 or above"
+#elseif swift(>=5.0)
+    let swiftVersion = "5.0"
+#elseif swift(>=4.2.4)
+    let swiftVersion = "4.2.4"
+#elseif swift(>=4.2.3)
+    let swiftVersion = "4.2.3"
+#elseif swift(>=4.2.2)
+    let swiftVersion = "4.2.2"
 #elseif swift(>=4.2.1)
-    let swiftVersion = "4.2.1 or above"
+    let swiftVersion = "4.2.1"
 #elseif swift(>=4.2)
     let swiftVersion = "4.2"
 #elseif swift(>=4.1.3)
@@ -462,14 +470,8 @@ extension Sequence {
     
 }
 
-fileprivate func autoreleasepool(_ condition: @autoclosure () -> Bool) -> Bool {
-    return autoreleasepool {
-        return condition()
-    }
-}
-
 func whileAutoreleasepool(_ condition: @autoclosure () -> Bool, _ block: () throws -> Void) rethrows {
-    while autoreleasepool(condition) {
+    while autoreleasepool(invoking: condition) {
         try autoreleasepool {
             try block()
         }

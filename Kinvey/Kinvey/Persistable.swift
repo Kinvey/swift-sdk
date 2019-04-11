@@ -233,13 +233,13 @@ extension Persistable where Self: NSObject {
     
     internal var acl: Acl? {
         get {
-            if let _aclKey = try? type(of: self).aclProperty(), let aclKey = _aclKey {
+            if let aclKey = try? type(of: self).aclProperty() {
                 return self[aclKey] as? Acl
             }
             return nil
         }
         set {
-            if let _aclKey = try? type(of: self).aclProperty(), let aclKey = _aclKey {
+            if let aclKey = try? type(of: self).aclProperty() {
                 self[aclKey] = newValue
             }
         }
@@ -247,13 +247,13 @@ extension Persistable where Self: NSObject {
     
     internal var metadata: Metadata? {
         get {
-            if let _kmdKey = try? type(of: self).metadataProperty(), let kmdKey = _kmdKey {
+            if let kmdKey = try? type(of: self).metadataProperty() {
                 return self[kmdKey] as? Metadata
             }
             return nil
         }
         set {
-            if let _kmdKey = try? type(of: self).metadataProperty(), let kmdKey = _kmdKey {
+            if let kmdKey = try? type(of: self).metadataProperty() {
                 self[kmdKey] = newValue
             }
         }

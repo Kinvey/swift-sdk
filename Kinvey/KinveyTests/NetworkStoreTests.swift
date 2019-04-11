@@ -862,7 +862,7 @@ class NetworkStoreTests: StoreTestCase {
             mockResponse { request in
                 let regex = try! NSRegularExpression(pattern: "([^&=]*)=([^&]*)")
                 let query = request.url!.query!
-                let matches = regex.matches(in: query, range: NSRange(location: 0, length: query.characters.count))
+                let matches = regex.matches(in: query, range: NSRange(location: 0, length: query.count))
                 var skip: Int?
                 var limit: Int?
                 for match in matches {
@@ -2301,7 +2301,7 @@ class NetworkStoreTests: StoreTestCase {
                             XCTAssertLessThanOrEqual(textCheckingResult.numberOfRanges, 4)
                             if textCheckingResult.numberOfRanges > 1 {
                                 let majorVersion = swiftVersion.substring(with: textCheckingResult.range(at: 1))
-                                XCTAssertEqual(majorVersion, "4")
+                                XCTAssertEqual(majorVersion, "5")
                             }
                         }
                     }
