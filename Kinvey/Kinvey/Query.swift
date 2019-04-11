@@ -335,7 +335,7 @@ public final class Query: NSObject, BuilderType {
         block(self)
     }
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public init?(map: Map) {
         return nil
     }
@@ -408,7 +408,7 @@ extension KeyPath {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension Query: Mappable {
     
     public func mapping(map: Map) {

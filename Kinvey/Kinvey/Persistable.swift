@@ -61,28 +61,38 @@ extension Persistable where Self: Entity {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 internal func kinveyMappingType(left: String, right: String) {
     _kinveyMappingType(left: left, right: right)
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 internal func kinveyMappingType<Transform: TransformType>(left: String, right: String, transform: Transform) {
     _kinveyMappingType(left: left, right: right, transform: AnyTransform(transform))
 }
 
 @inline(__always)
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 fileprivate func _kinveyMappingType(left: String, right: String, transform: AnyTransform? = nil) {
-    if let className = currentMappingClass,
-        var classMapping = kinveyProperyMapping[className]
-    {
-        if let transform = transform {
-            classMapping[left] = (right, transform)
-        } else {
-            classMapping[left] = (right, nil)
+    autoreleasepool {
+        let block = {
+            if let className = currentMappingClass,
+                var classMapping = kinveyProperyMapping[className]
+            {
+                if let transform = transform {
+                    classMapping[left] = (right, transform)
+                } else {
+                    classMapping[left] = (right, nil)
+                }
+                kinveyProperyMapping[className] = classMapping
+            }
         }
-        kinveyProperyMapping[className] = classMapping
+        if mappingOperationQueue == OperationQueue.current {
+            block()
+        } else {
+            mappingOperationQueue.addOperation(block)
+            mappingOperationQueue.waitUntilAllOperationsAreFinished()
+        }
     }
 }
 
@@ -156,9 +166,18 @@ extension Persistable {
         return results
     }
     
+    static func newInstance<T: Persistable>(type: T.Type) -> T {
+        return type.init()
+    }
+    
     static func propertyMapping() -> PropertyMap {
         let className = StringFromClass(cls: self as! AnyClass)
-        let obj = self.init()
+        let obj: Any
+        if let objType = self as? NSObject.Type {
+            obj = objType.init()
+        } else {
+            obj = self.init()
+        }
         if let obj = obj as? BaseMappable {
             let _ = obj.toJSON()
         }

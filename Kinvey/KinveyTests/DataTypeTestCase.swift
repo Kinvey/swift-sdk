@@ -520,7 +520,7 @@ class FullName2TransformType: TransformType {
     
 }
 
-class FullName2: NSObject, Mappable {
+class FullName2: NSObject, Kinvey.Mappable {
     
     @objc
     dynamic var firstName: String?

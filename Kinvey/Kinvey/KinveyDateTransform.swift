@@ -94,6 +94,6 @@ open class KinveyDateTransform {
     
 }
 
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension KinveyDateTransform : TransformType {
 }

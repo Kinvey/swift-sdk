@@ -283,7 +283,10 @@ class CacheMigrationTestCaseStep2: XCTestCase {
             case .failure(let error):
                 let error = error as NSError
                 XCTAssertEqual(error.code, 2)
-                XCTAssertEqual(error.userInfo["Underlying"] as? String, "Realm file decryption failed")
+                XCTAssertTrue(error.userInfo["Underlying"] is String)
+                if let underlyingError =  error.userInfo["Underlying"] as? String {
+                    XCTAssertTrue(underlyingError.hasPrefix("Realm file decryption failed"))
+                }
             }
             expectationInitialize.fulfill()
         }

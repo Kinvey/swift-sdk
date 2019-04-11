@@ -78,10 +78,10 @@ extension GeoPoint: Decodable {
  Make the GeoPoint implement Mappable, so we can serialize and deserialize
  GeoPoint
  */
-@available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+@available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension GeoPoint: Mappable {
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public convenience init?(map: Map) {
         guard let _: Double = map["latitude"].value(), let _: Double = map["longitude"].value() else {
             return nil
@@ -89,7 +89,7 @@ extension GeoPoint: Mappable {
         self.init()
     }
     
-    @available(*, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
+    @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public func mapping(map: Map) {
         latitude <- ("latitude", map["latitude"])
         longitude <- ("longitude", map["longitude"])
