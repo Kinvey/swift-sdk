@@ -62,13 +62,15 @@ class RemoveAllMemoryLeakTests: StoreTestCase {
         
         let count = 10_000
         let range = 1 ... count
-        let json = range.map { i in
-            Person {
-                $0.personId = UUID().uuidString
-                $0.age = i
-            }.toJSON()
+        autoreleasepool {
+            let json = range.map { i in
+                Person {
+                    $0.personId = UUID().uuidString
+                    $0.age = i
+                }.toJSON()
+            }
+            mockResponse(json: json)
         }
-        mockResponse(json: json)
         defer {
             setURLProtocol(nil)
         }

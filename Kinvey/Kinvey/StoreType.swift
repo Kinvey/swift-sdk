@@ -15,7 +15,7 @@ public enum StoreType {
     case sync
     
     /// Callbacks will be called twice, the 1st call will return data from the local cache in the device and the 2nd call will return the most recent data from the backend.
-    @available(*, deprecated: 3.21.0, message: "Please use `.auto` instead")
+    @available(*, deprecated, message: "Deprecated in version 3.21.0. Please use `.auto` instead")
     case cache
     
     /// Guaranteed that all the data returned will be the most recent data from the backend.

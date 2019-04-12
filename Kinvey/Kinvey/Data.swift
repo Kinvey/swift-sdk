@@ -12,7 +12,7 @@ extension Data {
     
     func hexString() -> String {
         return withUnsafeBytes {
-            [UInt8](UnsafeBufferPointer(start: $0, count: count))
+            [UInt8]($0)
         }.map {
             String(format: "%02hhx", $0)
         }.joined()

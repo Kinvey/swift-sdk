@@ -641,9 +641,9 @@ class QueryTest: XCTestCase {
     }
     
     func testInvalidGeoPointParse() {
-        XCTAssertNil(GeoPointTransform().transformFromJSON([-74.56]))
-        XCTAssertNil(GeoPointTransform().transformFromJSON([]))
-        XCTAssertNil(GeoPointTransform().transformFromJSON([-74.56, 40.74, 5.22]))
+        XCTAssertNil(GeoPointTransform.shared.transformFromJSON([-74.56]))
+        XCTAssertNil(GeoPointTransform.shared.transformFromJSON([]))
+        XCTAssertNil(GeoPointTransform.shared.transformFromJSON([-74.56, 40.74, 5.22]))
     }
     
 }
