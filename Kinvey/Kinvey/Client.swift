@@ -241,7 +241,7 @@ open class Client: Credential {
             var bytes = [UInt8](repeating: 0, count: numberOfBytes)
             let result = SecRandomCopyBytes(kSecRandomDefault, numberOfBytes, &bytes)
             if result == 0 {
-                let key = Data(bytes: bytes)
+                let key = Data(bytes)
                 keychain.defaultEncryptionKey = key
                 encryptionKey = key
             }

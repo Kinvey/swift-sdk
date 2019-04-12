@@ -94,8 +94,7 @@ class ObjectMapperJSONParser: JSONParser {
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     func parseUsers<UserType: User>(_ userType: UserType.Type, from data: Data) throws -> [UserType] {
         guard data.count > 0,
-            let result = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary],
-            let jsonArray = result
+            let jsonArray = try? JSONSerialization.jsonObject(with: data) as? [JsonDictionary]
         else {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Parser Error"))
         }
