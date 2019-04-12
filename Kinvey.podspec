@@ -137,7 +137,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  s.pod_target_xcconfig = { "SWIFT_VERSION" => "5.0" }
+  s.swift_version = '5.0'
 	
   s.dependency "PromiseKit", "~> 6.0"
   s.dependency "KeychainAccess", "~> 3.0"
