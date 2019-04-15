@@ -1,3 +1,3 @@
-# api-diff
+# github-release
 
 A description of this package.

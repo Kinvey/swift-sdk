@@ -15,10 +15,10 @@ guard githubToken != nil else {
 
 var arguments = ProcessInfo.processInfo.arguments
 if arguments.contains("-module-name"),
-    let moduleNameIndex = arguments.index(of: "-module-name"),
-    let mainIndex = arguments.index(of: "main"),
+    let moduleNameIndex = arguments.firstIndex(of: "-module-name"),
+    let mainIndex = arguments.firstIndex(of: "main"),
     moduleNameIndex + 1 == mainIndex,
-    let dashDashIndex = arguments.index(of: "--"),
+    let dashDashIndex = arguments.firstIndex(of: "--"),
     mainIndex + 1 == dashDashIndex
 {
     arguments = Array(arguments[dashDashIndex ..< arguments.count])
