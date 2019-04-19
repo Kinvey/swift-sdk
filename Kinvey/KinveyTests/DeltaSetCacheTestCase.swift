@@ -661,7 +661,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             person.name = String(format: "Person %02d", i)
             
             if self.useMockData {
-                self.mockResponse(statusCode: 201, json: [
+                mockResponse(statusCode: 201, json: [
                     "_id" : UUID().uuidString,
                     "name" : person.name!,
                     "age" : 0,
@@ -676,7 +676,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             defer {
                 if self.useMockData {
-                    self.setURLProtocol(nil)
+                    setURLProtocol(nil)
                 }
             }
             
@@ -711,7 +711,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let store = try! DataStore<Person>.collection()
             
             if self.useMockData {
-                self.mockResponse(statusCode: 201, json: [
+                mockResponse(statusCode: 201, json: [
                     "_id" : UUID().uuidString,
                     "name" : person.name!,
                     "age" : 0,
@@ -726,7 +726,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
             defer {
                 if self.useMockData {
-                    self.setURLProtocol(nil)
+                    setURLProtocol(nil)
                 }
             }
             

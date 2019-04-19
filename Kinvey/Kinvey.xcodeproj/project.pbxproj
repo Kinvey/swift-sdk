@@ -55,7 +55,21 @@
 		572B948220D235E300E23F59 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; };
 		572B948320D2A7ED00E23F59 /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
 		572C457B1C86690700A41935 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* Date.swift */; };
+		572E47502267E5AE00C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47512267E5B200C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47522267E5B700C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47532267E5B800C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47542267E5B800C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47552267E5BE00C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47562267E5BF00C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47572267E5C400C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47582267E5D000C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E47592267E5D000C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E475A2267E5D100C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E475B2267E5D900C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
+		572E475C2267E5D900C78BE3 /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
 		572F12E41EDF909B006E5D2B /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		57305B4B22664D9100A6451F /* KinveyURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57305B4922664D3100A6451F /* KinveyURLProtocol.swift */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
 		5736EB93215B5F430071EC51 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57373AB21ECCD8C6002842CE /* EntityTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57373AB11ECCD8C6002842CE /* EntityTestCase.swift */; };
@@ -336,6 +350,11 @@
 		57CCBCCE20D2CD3F00197CC2 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 578B80581EE73B24004D92A6 /* Nimble.framework */; };
 		57CCBCCF20D2CD3F00197CC2 /* PubNub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BD001EC51F80000E5C52 /* PubNub.framework */; };
 		57CCBCD120D2CD3F00197CC2 /* CacheMigrationTestCaseData.zip in Resources */ = {isa = PBXBuildFile; fileRef = 573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */; };
+		57CDF45F22653EBA006596A7 /* AutoDataStoreSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */; };
+		57CDF46122654226006596A7 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CDF46022654226006596A7 /* Quick.framework */; };
+		57CDF462226564A6006596A7 /* AutoDataStoreSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */; };
+		57CDF464226564E1006596A7 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57CDF463226564E1006596A7 /* Quick.framework */; };
+		57CDF46522656539006596A7 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57373AB31ECCE670002842CE /* Nimble.framework */; };
 		57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */; };
@@ -856,6 +875,7 @@
 		572B947D20D1E8FA00E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
 		572B947E20D1E91B00E23F59 /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ZIPFoundation.framework; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		57305B4922664D3100A6451F /* KinveyURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyURLProtocol.swift; sourceTree = "<group>"; };
 		573150971CBD8D910022A05C /* QueryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTest.swift; sourceTree = "<group>"; };
 		57373AB11ECCD8C6002842CE /* EntityTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTestCase.swift; sourceTree = "<group>"; };
 		57373AB31ECCE670002842CE /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Nimble.framework; sourceTree = "<group>"; };
@@ -1028,6 +1048,9 @@
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57C731F91F57721700B67C13 /* MacOSOnlyTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MacOSOnlyTestCase.swift; sourceTree = "<group>"; };
 		57CCBCD620D2CD3F00197CC2 /* KinveyTests Migration Database macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDataStoreSpec.swift; sourceTree = "<group>"; };
+		57CDF46022654226006596A7 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Quick.framework; sourceTree = "<group>"; };
+		57CDF463226564E1006596A7 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Quick.framework; sourceTree = "<group>"; };
 		57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 1.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheMigrationTestCaseStep2.swift; sourceTree = "<group>"; };
@@ -1096,6 +1119,7 @@
 				5705B1E51EDF83DB0006980A /* Kinvey.framework in Frameworks */,
 				5706E3FB1EE0816100938EF6 /* RealmSwift.framework in Frameworks */,
 				578B80591EE73B2E004D92A6 /* Nimble.framework in Frameworks */,
+				57CDF46122654226006596A7 /* Quick.framework in Frameworks */,
 				578B80741EE74E46004D92A6 /* PubNub.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1267,6 +1291,8 @@
 				57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */,
 				57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */,
 				57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */,
+				57CDF46522656539006596A7 /* Nimble.framework in Frameworks */,
+				57CDF464226564E1006596A7 /* Quick.framework in Frameworks */,
 				5756FE891D136CAF0087141E /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1672,6 +1698,7 @@
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
 				576E95AE1C20DC0400258CC3 /* CacheStoreTests.swift */,
 				57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */,
+				57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
@@ -1691,6 +1718,7 @@
 				5754DDBC1EAEBC4A00122A7A /* DateTestCase.swift */,
 				5772C66020D0891E006F2C56 /* DeviceInfoTests.swift */,
 				5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */,
+				57305B4922664D3100A6451F /* KinveyURLProtocol.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -1727,8 +1755,9 @@
 				57B0C1DA1CDCE88900492D6C /* Realm.framework */,
 				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
-				57373AB31ECCE670002842CE /* Nimble.framework */,
 				570424021F832BF000EE5CBD /* Swifter.framework */,
+				57373AB31ECCE670002842CE /* Nimble.framework */,
+				57CDF463226564E1006596A7 /* Quick.framework */,
 			);
 			name = iOS;
 			path = ../Carthage/Build/iOS;
@@ -1746,6 +1775,7 @@
 				57B0C1E71CDCE88900492D6C /* Realm.framework */,
 				57B0C1E91CDCE88900492D6C /* RealmSwift.framework */,
 				578B80581EE73B24004D92A6 /* Nimble.framework */,
+				57CDF46022654226006596A7 /* Quick.framework */,
 			);
 			name = Mac;
 			path = ../Carthage/Build/Mac;
@@ -2831,13 +2861,14 @@
 				"$(SRCROOT)/../Carthage/Build/iOS/KIF.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/Nimble.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/PubNub.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/Quick.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage copy-frameworks";
+			shellScript = "carthage copy-frameworks\n";
 		};
 		577751401DF8BFCB006C98F1 /* Carthage Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2933,6 +2964,7 @@
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/Mac/Nimble.framework",
 				"$(SRCROOT)/../Carthage/Build/Mac/PubNub.framework",
+				"$(SRCROOT)/../Carthage/Build/Mac/Quick.framework",
 			);
 			name = "Carthage Copy Frameworks";
 			outputPaths = (
@@ -3006,6 +3038,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57CDF45F22653EBA006596A7 /* AutoDataStoreSpec.swift in Sources */,
 				578B80551EE73AD3004D92A6 /* Book.swift in Sources */,
 				578B80501EE73A77004D92A6 /* Person.swift in Sources */,
 				578B80511EE73A84004D92A6 /* MockKinveyBackend.swift in Sources */,
@@ -3026,6 +3059,7 @@
 				578B80521EE73A9D004D92A6 /* AclTestCase.swift in Sources */,
 				578B80571EE73AFC004D92A6 /* ClientTestCase.swift in Sources */,
 				578B805D1EE74318004D92A6 /* DateTestCase.swift in Sources */,
+				57305B4B22664D9100A6451F /* KinveyURLProtocol.swift in Sources */,
 				578B80701EE746D2004D92A6 /* QueryTest.swift in Sources */,
 				578B806C1EE746C4004D92A6 /* PerformanceProductTestCase.swift in Sources */,
 				578B805F1EE74347004D92A6 /* DeltaSetCacheTestCase.swift in Sources */,
@@ -3113,6 +3147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57CCBCBE20D2C6B300197CC2 /* CacheMigrationTestCaseStep2.swift in Sources */,
+				572E475C2267E5D900C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57CCBCC120D2CA2600197CC2 /* MockKinveyBackend.swift in Sources */,
 				57CCBCC020D2CA0B00197CC2 /* KinveyTestCase.swift in Sources */,
 			);
@@ -3123,6 +3158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5783BA4920F724370090D0BD /* MockKinveyBackend.swift in Sources */,
+				572E47552267E5BE00C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				5783BA4520F7232F0090D0BD /* RemoveAllMemoryLeakTests.swift in Sources */,
 				5783BA4620F723B90090D0BD /* StoreTestCase.swift in Sources */,
 				5783BA4820F7240F0090D0BD /* Person.swift in Sources */,
@@ -3144,6 +3180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5776EE9C1E300658003B9DF0 /* Person.swift in Sources */,
+				572E47582267E5D000C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				579D30891DDA646B0055C8CF /* KIF.swift in Sources */,
 				578870A81DD52EC80087FE78 /* SSOApp1Tests.swift in Sources */,
 				577751451DF8E901006C98F1 /* MockKinveyBackend.swift in Sources */,
@@ -3165,6 +3202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5776EE9E1E300786003B9DF0 /* Person.swift in Sources */,
+				572E47592267E5D000C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				579D308A1DDA646C0055C8CF /* KIF.swift in Sources */,
 				578870CC1DD52ECF0087FE78 /* SSOApp2Tests.swift in Sources */,
 				577751441DF8E8EC006C98F1 /* MockKinveyBackend.swift in Sources */,
@@ -3177,6 +3215,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				578D9FF61E8DE60A00C2B280 /* Person.swift in Sources */,
+				572E47562267E5BF00C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				578D9FF21E8DE55000C2B280 /* PushMissingConfiguration.swift in Sources */,
 				578D9FF41E8DE5D900C2B280 /* MockKinveyBackend.swift in Sources */,
 				578D9FF51E8DE5F400C2B280 /* KIF.swift in Sources */,
@@ -3189,6 +3228,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				578DA0291E8EC3EB00C2B280 /* UserUpgradeFromOldVersionTestCase.swift in Sources */,
+				572E475A2267E5D100C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				578DA02B1E8EC57D00C2B280 /* MockKinveyBackend.swift in Sources */,
 				578DA02C1E8EC58E00C2B280 /* Person.swift in Sources */,
 				578DA02A1E8EC56A00C2B280 /* KinveyTestCase.swift in Sources */,
@@ -3200,6 +3240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5706D9951DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
+				572E47512267E5B200C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */,
 				5793B89B1D2307220088B5F9 /* StoreTestCase.swift in Sources */,
 				5793B89D1D2307360088B5F9 /* Person.swift in Sources */,
@@ -3299,6 +3340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57CDF462226564A6006596A7 /* AutoDataStoreSpec.swift in Sources */,
 				573150981CBD8D910022A05C /* QueryTest.swift in Sources */,
 				5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
@@ -3319,6 +3361,7 @@
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */,
+				572E47502267E5AE00C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */,
@@ -3345,6 +3388,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5706D9981DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
+				572E47572267E5C400C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57A4658D1CC02AE3009E7384 /* StoreTestCase.swift in Sources */,
 				57A4658F1CC02AEF009E7384 /* Person.swift in Sources */,
 				57A4658E1CC02AE6009E7384 /* KinveyTestCase.swift in Sources */,
@@ -3356,6 +3400,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57CCBCC820D2CD3F00197CC2 /* CacheMigrationTestCaseStep2.swift in Sources */,
+				572E475B2267E5D900C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57CCBCC920D2CD3F00197CC2 /* MockKinveyBackend.swift in Sources */,
 				57CCBCCA20D2CD3F00197CC2 /* KinveyTestCase.swift in Sources */,
 			);
@@ -3366,6 +3411,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5706D9961DDFFC93009836D5 /* MockKinveyBackend.swift in Sources */,
+				572E47522267E5B700C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57D643001CA3268000F6D16E /* CacheMigrationTestCaseStep1.swift in Sources */,
 				57D6433F1CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643411CA32CAF00F6D16E /* KIF.swift in Sources */,
@@ -3377,6 +3423,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5706D9971DDFFC94009836D5 /* MockKinveyBackend.swift in Sources */,
+				572E47532267E5B800C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */,
 				57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */,
 				57D643421CA32CAF00F6D16E /* KIF.swift in Sources */,
@@ -3388,6 +3435,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57E448071DF62E35003D1AFA /* Person.swift in Sources */,
+				572E47542267E5B800C78BE3 /* KinveyURLProtocol.swift in Sources */,
 				57E448061DF62E05003D1AFA /* NoCacheTestCase.swift in Sources */,
 				57711A931F27BF650044C533 /* MockKinveyBackend.swift in Sources */,
 				57711A921F27BD730044C533 /* KinveyTestCase.swift in Sources */,

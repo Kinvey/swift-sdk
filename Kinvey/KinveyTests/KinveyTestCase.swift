@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import Kinvey
+import Nimble
 
 extension XCTestCase {
     
@@ -70,6 +71,19 @@ struct HttpResponse {
         error = nil
     }
     
+    init(response: URLResponse?, data: Data? = nil) {
+        let httpURLResponse = response as? HTTPURLResponse
+        let headerFields: [String : String]?
+        if let allHeaderFields = httpURLResponse?.allHeaderFields {
+            headerFields = [String : String](uniqueKeysWithValues: allHeaderFields.map ({
+                return (($0 as! String), ($1 as! String))
+            }))
+        } else {
+            headerFields = nil
+        }
+        self.init(statusCode: httpURLResponse?.statusCode, headerFields: headerFields, data: data)
+    }
+    
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
         self.init(statusCode: statusCode, headerFields: headerFields, chunks: data != nil ? [ChunkData(data: data!)] : nil)
     }
@@ -92,7 +106,7 @@ struct HttpResponse {
 
 extension JSONSerialization {
     
-    class func jsonObject(with request: URLRequest, options opt: JSONSerialization.ReadingOptions = []) throws -> Any {
+    class func jsonObject(with request: URLRequest, options opt: JSONSerialization.ReadingOptions = []) throws -> Any? {
         if let data = request.httpBody {
             return try jsonObject(with: data, options: opt)
         } else if let inputStream = request.httpBodyStream {
@@ -102,7 +116,7 @@ extension JSONSerialization {
             }
             return try jsonObject(with: inputStream, options: opt)
         } else {
-            Swift.fatalError()
+            return nil
         }
     }
     
@@ -151,153 +165,476 @@ var protocolClasses = [URLProtocol.Type]() {
     }
 }
 
-extension XCTestCase {
-    
-    func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
-        if let type = type {
-            let sessionConfiguration = URLSessionConfiguration.default
-            protocolClasses = [type]
-            sessionConfiguration.protocolClasses = protocolClasses
-            client.urlSession = URLSession(configuration: sessionConfiguration, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
-            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
-        } else {
-            protocolClasses = []
-            client.urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
-            while MockURLProtocol.running {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+func setURLProtocol(_ type: URLProtocol.Type?, client: Client = Kinvey.sharedClient) {
+    if let type = type {
+        let sessionConfiguration = URLSessionConfiguration.default
+        protocolClasses = [type]
+        sessionConfiguration.protocolClasses = protocolClasses
+        client.urlSession = URLSession(configuration: sessionConfiguration, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
+        XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
+    } else {
+        protocolClasses = []
+        client.urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: client.urlSession.delegate, delegateQueue: client.urlSession.delegateQueue)
+        while MockURLProtocol.running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+        }
+    }
+}
+
+func kinveyInitialize() {
+    guard !Kinvey.sharedClient.isInitialized() else {
+        return
+    }
+    let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
+    let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
+    Kinvey.sharedClient.initialize(
+        appKey: appKey ?? KinveyURLProtocol.appKey,
+        appSecret: appSecret ?? KinveyURLProtocol.appSecret
+    ) {
+        switch $0 {
+        case .success:
+            break
+        case .failure(let error):
+            fail(error.localizedDescription)
+        }
+    }
+    expect(Kinvey.sharedClient.isInitialized()).toEventually(beTrue())
+}
+
+func kinveyLogin() {
+    if Kinvey.sharedClient.activeUser == nil {
+        User.signup(options: nil) {
+            switch $0 {
+            case .success(let user):
+                break
+            case .failure(let error):
+                fail(error.localizedDescription)
             }
         }
     }
+    expect(Kinvey.sharedClient.activeUser).toEventuallyNot(beNil())
+}
+
+func kinveyLogout() {
+    guard let user = Kinvey.sharedClient.activeUser else {
+        return
+    }
+    user.logout {
+        switch $0 {
+        case .success:
+            break
+        case .failure(let error):
+            fail(error.localizedDescription)
+        }
+    }
+    expect(Kinvey.sharedClient.activeUser).toEventually(beNil())
+}
+
+func kinveySave<T: Entity>(dataStore: DataStore<T>, entities: T...) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) {
+    return kinveySave(dataStore: dataStore, entities: entities)
+}
+
+func kinveySave<T: Entity, S: Sequence>(dataStore: DataStore<T>, entities: S) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) where S.Element == T {
+    var items = [T?]()
+    var errors = [Swift.Error?]()
+    for entity in entities {
+        let result = kinveySave(dataStore: dataStore, entity: entity)
+        items.append(result.entity)
+        errors.append(result.error)
+    }
+    return (entities: items.count > 0 ? AnyRandomAccessCollection(items.compactMap({ $0 })) : nil, errors: errors.count > 0 ? errors.compactMap({ $0 }) : nil)
+}
+
+func kinveySave<T: Entity>(dataStore: DataStore<T>, numberOfItems: Int) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) {
+    var entities = [T?]()
+    var errors = [Swift.Error?]()
+    for i in 0 ..< numberOfItems {
+        let result = kinveySave(dataStore: dataStore)
+        entities.append(result.entity)
+        errors.append(result.error)
+    }
+    return (entities: entities.count > 0 ? AnyRandomAccessCollection(entities.compactMap({ $0 })) : nil, errors: errors.count > 0 ? errors.compactMap({ $0 }) : nil)
+}
+
+func kinveySave<T: Entity>(dataStore: DataStore<T>, entity: T = T()) -> (entity: T?, error: Swift.Error?) {
+    var entityPostSave: T? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.save(entity) {
+            switch $0 {
+            case .success(let _entity):
+                entityPostSave = _entity
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (entity: entityPostSave, error: error)
+}
+
+func kinveyFind<T: Entity>(dataStore: DataStore<T>, query: Query = Query(), options: Options? = nil) -> (entities: AnyRandomAccessCollection<T>?, error: Swift.Error?) {
+    var entities: AnyRandomAccessCollection<T>? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.find(query, options: options) {
+            switch $0 {
+            case .success(let _entities):
+                entities = _entities
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (entities: entities, error: error)
+}
+
+func kinveyFind<T: Entity>(dataStore: DataStore<T>, id: String, options: Options? = nil) -> (result: T?, error: Swift.Error?) {
+    var result: T? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.find(id, options: options) {
+            switch $0 {
+            case .success(let entity):
+                result = entity
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (result: result, error: error)
+}
+
+func kinveyCount<T: Entity>(dataStore: DataStore<T>, query: Query = Query(), options: Options? = nil) -> (count: Int?, error: Swift.Error?) {
+    var count: Int? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.count(query, options: options) {
+            switch $0 {
+            case .success(let _count):
+                count = _count
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (count: count, error: error)
+}
+
+func kinveySync<T: Entity>(
+    dataStore: DataStore<T>,
+    query: Query = Query(),
+    deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
+    options: Options? = nil
+) -> (result: (count: UInt, entities: AnyRandomAccessCollection<T>)?, errors: [Swift.Error]?) {
+    var result: (count: UInt, entities: AnyRandomAccessCollection<T>)? = nil
+    var errors: [Swift.Error]? = nil
+    waitUntil { done in
+        dataStore.sync(
+            query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let count, let entities):
+                result = (count: count, entities: entities)
+            case .failure(let _errors):
+                errors = _errors
+            }
+            done()
+        }
+    }
+    return (result: result, errors: errors)
+}
+
+func kinveyPush<T: Entity>(
+    dataStore: DataStore<T>,
+    options: Options? = nil
+) -> (count: UInt?, errors: [Swift.Error]?) {
+    var count: UInt? = nil
+    var errors: [Swift.Error]? = nil
+    waitUntil { done in
+        dataStore.push(options: options) {
+            switch $0 {
+            case .success(let _count):
+                count = _count
+            case .failure(let _errors):
+                errors = _errors
+            }
+            done()
+        }
+    }
+    return (count: count, errors: errors)
+}
+
+func kinveyPull<T: Entity>(
+    dataStore: DataStore<T>,
+    query: Query = Query(),
+    deltaSetCompletionHandler: ((AnyRandomAccessCollection<T>, AnyRandomAccessCollection<T>) -> Void)? = nil,
+    options: Options? = nil
+) -> (entities: AnyRandomAccessCollection<T>?, error: Swift.Error?) {
+    var entities: AnyRandomAccessCollection<T>? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.pull(
+            query,
+            deltaSetCompletionHandler: deltaSetCompletionHandler,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let _entities):
+                entities = _entities
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (entities: entities, error: error)
+}
+
+func kinveyRemove<T: Entity>(
+    dataStore: DataStore<T>,
+    query: Query = Query(),
+    options: Options? = nil
+) -> Int? {
+    var count: Int? = nil
+    waitUntil { done in
+        dataStore.remove(
+            query,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let _count):
+                count = _count
+            case .failure(let error):
+                fail(error.localizedDescription)
+            }
+            done()
+        }
+    }
+    return count
+}
+
+func kinveyRemove<T: Entity>(
+    dataStore: DataStore<T>,
+    entity: T,
+    options: Options? = nil
+) -> Int? {
+    var count: Int? = nil
+    waitUntil { done in
+        do {
+            try dataStore.remove(
+                entity,
+                options: options
+            ) {
+                switch $0 {
+                case .success(let _count):
+                    count = _count
+                case .failure(let error):
+                    fail(error.localizedDescription)
+                }
+                done()
+            }
+        } catch {
+            fail(error.localizedDescription)
+        }
+    }
+    return count
+}
+
+func kinveyRemove<T: Entity>(
+    dataStore: DataStore<T>,
+    id: String,
+    options: Options? = nil
+) -> (count: Int?, error: Swift.Error?) {
+    var count: Int? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        do {
+            try dataStore.remove(
+                byId: id,
+                options: options
+            ) {
+                switch $0 {
+                case .success(let _count):
+                    count = _count
+                case .failure(let _error):
+                    error = _error
+                }
+                done()
+            }
+        } catch let _error {
+            error = _error
+            done()
+        }
+    }
+    return (count: count, error: error)
+}
+
+func kinveySave<T: Entity>(
+    dataStore: DataStore<T>,
+    entity: T,
+    options: Options? = nil
+) -> (entity: T?, error: Swift.Error?) {
+    var entityPostSave: T? = nil
+    var error: Swift.Error? = nil
+    waitUntil { done in
+        dataStore.save(
+            entity,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let entity):
+                entityPostSave = entity
+            case .failure(let _error):
+                error = _error
+            }
+            done()
+        }
+    }
+    return (entity: entityPostSave, error: error)
+}
+
+class MockURLProtocol: URLProtocol {
     
-    class MockURLProtocol: URLProtocol {
-        
-        static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
-        static var function: String?
-        static var runLoop: CFRunLoop?
-        static var running = false
-        
-        override class func canInit(with request: URLRequest) -> Bool {
-            while running {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-            var matches = false
-            if let url = request.url,
-                let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                let host = urlComponents.host
-            {
-                matches = host.hasSuffix(".kinvey.com") || host.hasSuffix(".googleapis.com")
-            }
-            log.debug("Mock \(function ?? "") return \(matches) \(request.url!)")
-            return matches
+    static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
+    static var function: String?
+    static var runLoop: CFRunLoop?
+    static var running = false
+    
+    override class func canInit(with request: URLRequest) -> Bool {
+        while running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
         }
-        
-        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-            while running {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-            return request
+        var matches = false
+        if let url = request.url,
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let host = urlComponents.host
+        {
+            matches = host.hasSuffix(".kinvey.com") || host.hasSuffix(".googleapis.com")
         }
-        
-        override class func canInit(with task: URLSessionTask) -> Bool {
-            while running {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-            var matches = false
-            if let request = task.currentRequest {
-                matches = canInit(with: request)
-            }
-            log.debug("Mock \(function ?? "") return \(matches) \(task.currentRequest!.url!)")
-            return matches
+        log.debug("Mock \(function ?? "") return \(matches) \(request.url!)")
+        return matches
+    }
+    
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        while running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
         }
-        
-        override func startLoading() {
-            while MockURLProtocol.running {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-            }
-            MockURLProtocol.running = true
-            log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
-            let responseObj = MockURLProtocol.completionHandler!(self.request)
-            if let error = responseObj.error {
-                self.client!.urlProtocol(self, didFailWithError: error)
-            } else {
-                let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
-                self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
-                if let chunks = responseObj.chunks {
-                    let currentRunLoop = CFRunLoopGetCurrent()
-                    for chunk in chunks {
-                        self.client!.urlProtocol(self, didLoad: chunk.data)
-                        if let delay = chunk.delay {
-                            DispatchQueue.main.async { MockURLProtocol.runLoop = currentRunLoop }
-                            RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
-                            DispatchQueue.main.async { MockURLProtocol.runLoop = nil }
-                        }
+        return request
+    }
+    
+    override class func canInit(with task: URLSessionTask) -> Bool {
+        while running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+        }
+        var matches = false
+        if let request = task.currentRequest {
+            matches = canInit(with: request)
+        }
+        log.debug("Mock \(function ?? "") return \(matches) \(task.currentRequest!.url!)")
+        return matches
+    }
+    
+    override func startLoading() {
+        while MockURLProtocol.running {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+        }
+        MockURLProtocol.running = true
+        log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
+        let responseObj = MockURLProtocol.completionHandler!(self.request)
+        if let error = responseObj.error {
+            self.client!.urlProtocol(self, didFailWithError: error)
+        } else {
+            let response = HTTPURLResponse(url: self.request.url!, statusCode: responseObj.statusCode ?? 200, httpVersion: "HTTP/1.1", headerFields: responseObj.headerFields)
+            self.client!.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+            if let chunks = responseObj.chunks {
+                let currentRunLoop = CFRunLoopGetCurrent()
+                for chunk in chunks {
+                    self.client!.urlProtocol(self, didLoad: chunk.data)
+                    if let delay = chunk.delay {
+                        DispatchQueue.main.async { MockURLProtocol.runLoop = currentRunLoop }
+                        RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
+                        DispatchQueue.main.async { MockURLProtocol.runLoop = nil }
                     }
                 }
-                self.client!.urlProtocolDidFinishLoading(self)
             }
+            self.client!.urlProtocolDidFinishLoading(self)
         }
-        
-        override func stopLoading() {
-            log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
-            MockURLProtocol.running = false
-        }
-        
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary, function: String = #function) {
-        var headerFields = headerFields ?? [:]
-        headerFields["Content-Type"] = "application/json; charset=utf-8"
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+    override func stopLoading() {
+        log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
+        MockURLProtocol.running = false
     }
     
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary], function: String = #function) {
-        var headerFields = headerFields ?? [:]
-        headerFields["Content-Type"] = "application/json; charset=utf-8"
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary, function: String = #function) {
+    var headerFields = headerFields ?? [:]
+    headerFields["Content-Type"] = "application/json; charset=utf-8"
+    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary], function: String = #function) {
+    var headerFields = headerFields ?? [:]
+    headerFields["Content-Type"] = "application/json; charset=utf-8"
+    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String, function: String = #function) {
+    mockResponse(statusCode: statusCode, headerFields: headerFields, data: string.data(using: .utf8), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?, function: String = #function) {
+    mockResponse(httpResponse: HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?, function: String = #function) {
+    mockResponse(httpResponse: HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: chunks), function: function)
+}
+
+func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?, function: String = #function) {
+    mockResponse(httpResponse: HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: data?.map { ChunkData(data: $0) }), function: function)
+}
+
+func mockResponse(error: Swift.Error, function: String = #function) {
+    mockResponse(httpResponse: HttpResponse(error: error), function: function)
+}
+
+func mockResponse(httpResponse: HttpResponse, function: String = #function) {
+    MockURLProtocol.completionHandler = { _ in
+        return httpResponse
     }
-    
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String, function: String = #function) {
-        mockResponse(statusCode: statusCode, headerFields: headerFields, data: string.data(using: .utf8), function: function)
-    }
-    
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data?, function: String = #function) {
-        MockURLProtocol.completionHandler = { _ in
-            return HttpResponse(statusCode: statusCode, headerFields: headerFields, data: data)
-        }
-        MockURLProtocol.function = function
-        setURLProtocol(MockURLProtocol.self)
-    }
-    
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]?, function: String = #function) {
-        MockURLProtocol.completionHandler = { _ in
-            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: chunks)
-        }
-        MockURLProtocol.function = function
-        setURLProtocol(MockURLProtocol.self)
-    }
-    
-    func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: [Data]?, function: String = #function) {
-        MockURLProtocol.completionHandler = { _ in
-            return HttpResponse(statusCode: statusCode, headerFields: headerFields, chunks: data?.map { ChunkData(data: $0) })
-        }
-        MockURLProtocol.function = function
-        setURLProtocol(MockURLProtocol.self)
-    }
-    
-    func mockResponse(error: Swift.Error, function: String = #function) {
-        MockURLProtocol.completionHandler = { _ in
-            return HttpResponse(error: error)
-        }
-        MockURLProtocol.function = function
-        setURLProtocol(MockURLProtocol.self)
-    }
-    
-    func mockResponse(client: Client = sharedClient, function: String = #function, completionHandler: @escaping (URLRequest) -> HttpResponse) {
-        MockURLProtocol.completionHandler = completionHandler
-        MockURLProtocol.function = function
-        setURLProtocol(MockURLProtocol.self, client: client)
-    }
-    
+    MockURLProtocol.function = function
+    setURLProtocol(MockURLProtocol.self)
+}
+
+let insufficientCredentialsErrorDescription = "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials."
+
+let httpResponseInsufficientCredentialsError = HttpResponse(
+    statusCode: 401,
+    json: [
+        "error" : "InsufficientCredentials",
+        "description" : insufficientCredentialsErrorDescription,
+        "debug" : ""
+    ]
+)
+
+func mockResponseInsufficientCredentialsError(function: String = #function) {
+    mockResponse(httpResponse: httpResponseInsufficientCredentialsError, function: function)
+}
+
+let entityNotFoundErrorDescription = "This entity not found in the collection."
+
+func mockResponse(client: Client = sharedClient, function: String = #function, completionHandler: @escaping (URLRequest) -> HttpResponse) {
+    MockURLProtocol.completionHandler = completionHandler
+    MockURLProtocol.function = function
+    setURLProtocol(MockURLProtocol.self, client: client)
 }
 
 @inline(__always)

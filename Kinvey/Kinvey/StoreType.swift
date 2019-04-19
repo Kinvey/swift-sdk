@@ -39,8 +39,10 @@ public enum StoreType {
     
     var writePolicy: WritePolicy {
         switch self {
-        case .cache, .auto:
+        case .cache:
             return .localThenNetwork
+        case .auto:
+            return .silentLocalThenNetwork
         case .network:
             return .forceNetwork
         case .sync:
