@@ -224,7 +224,7 @@ class KinveyURLProtocol: URLProtocol {
                 }
             } else {
                 sendResponse(url: url, statusCode: 404)
-                Swift.fatalError("HTTP Method: \(httpMethod) Path: \(urlComponents.path) not handled")
+                XCTFail("HTTP Method: \(httpMethod) Path: \(urlComponents.path) not handled")
             }
         }
     }

@@ -53,7 +53,11 @@ class DataTypeTestCase: StoreTestCase {
             XCTAssertTrue(savedPersistable.boolValue)
         }
         
-        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        XCTAssertNotNil(client.activeUser?.userId)
+        guard let userId = client.activeUser?.userId else {
+            return
+        }
+        let query = Query(format: "acl.creator == %@", userId)
         
         mockResponse(json: [
             [
@@ -213,7 +217,12 @@ class DataTypeTestCase: StoreTestCase {
         
         weak var expectationPull = expectation(description: "Pull")
         
-        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
+        XCTAssertNotNil(client.activeUser?.userId)
+        guard let userId = client.activeUser?.userId else {
+            return
+        }
+        
+        let query = Query(format: "acl.creator == %@", userId)
         
         store.pull(query) { results, error in
             XCTAssertNotNil(results)

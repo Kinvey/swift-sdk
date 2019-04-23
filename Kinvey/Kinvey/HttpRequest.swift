@@ -430,7 +430,10 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
             }
             if response.statusCode == 401,
                 retry,
-                let user = credential as? User
+                let user = credential as? User,
+                let data = data,
+                let json = try? client.jsonParser.parseDictionary(from: data) as? [String : String],
+                json["error"] != Error.Keys.insufficientCredentials.rawValue
             {
                 DispatchQueue.global(qos: .default).async {
                     self.refreshToken(

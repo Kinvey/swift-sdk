@@ -72,10 +72,11 @@ class DateTestCase: KinveyTestCase {
         
         for _ in 1...nEvents {
             if useMockData {
+                XCTAssertNotNil(client.activeUser?.userId)
                 let json: JsonDictionary = [
                     "date" : publishDate.toISO8601(),
                     "_acl" : [
-                        "creator" : client.activeUser!.userId
+                        "creator" : client.activeUser?.userId ?? ""
                     ],
                     "_kmd" : [
                         "lmt" : Date().toISO8601(),
