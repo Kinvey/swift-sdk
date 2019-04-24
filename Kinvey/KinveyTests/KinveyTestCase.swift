@@ -71,19 +71,6 @@ struct HttpResponse {
         error = nil
     }
     
-    init(response: URLResponse?, data: Data? = nil) {
-        let httpURLResponse = response as? HTTPURLResponse
-        let headerFields: [String : String]?
-        if let allHeaderFields = httpURLResponse?.allHeaderFields {
-            headerFields = [String : String](uniqueKeysWithValues: allHeaderFields.map ({
-                return (($0 as! String), ($1 as! String))
-            }))
-        } else {
-            headerFields = nil
-        }
-        self.init(statusCode: httpURLResponse?.statusCode, headerFields: headerFields, data: data)
-    }
-    
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
         self.init(statusCode: statusCode, headerFields: headerFields, chunks: data != nil ? [ChunkData(data: data!)] : nil)
     }
@@ -100,6 +87,34 @@ struct HttpResponse {
         headerFields["Content-Type"] = "application/json; charset=utf-8"
         let data = try! JSONSerialization.data(withJSONObject: json)
         self.init(statusCode: statusCode, headerFields: headerFields, data: data)
+    }
+    
+    init(request: URLRequest) {
+        self.init(request: request, urlProcotolType: KinveyURLProtocol.self)
+    }
+    
+    init<URLProtocolType>(
+        request: URLRequest,
+        urlProcotolType: URLProtocolType.Type
+    ) where URLProtocolType: URLProtocol {
+        let client = KinveyURLProtocolClient()
+        let urlProtocol = URLProtocolType(request: request, cachedResponse: nil, client: client)
+        urlProtocol.startLoading()
+        urlProtocol.stopLoading()
+        self.init(response: client.response, data: client.data)
+    }
+    
+    init(response: URLResponse?, data: Data? = nil) {
+        let httpURLResponse = response as? HTTPURLResponse
+        let headerFields: [String : String]?
+        if let allHeaderFields = httpURLResponse?.allHeaderFields {
+            headerFields = [String : String](uniqueKeysWithValues: allHeaderFields.map ({
+                return (($0 as! String), ($1 as! String))
+            }))
+        } else {
+            headerFields = nil
+        }
+        self.init(statusCode: httpURLResponse?.statusCode, headerFields: headerFields, data: data)
     }
     
 }
@@ -400,8 +415,9 @@ func kinveyRemove<T: Entity>(
     dataStore: DataStore<T>,
     query: Query = Query(),
     options: Options? = nil
-) -> Int? {
+) -> (count: Int?, error: Swift.Error?) {
     var count: Int? = nil
+    var error: Swift.Error? = nil
     waitUntil { done in
         dataStore.remove(
             query,
@@ -410,21 +426,22 @@ func kinveyRemove<T: Entity>(
             switch $0 {
             case .success(let _count):
                 count = _count
-            case .failure(let error):
-                fail(error.localizedDescription)
+            case .failure(let _error):
+                error = _error
             }
             done()
         }
     }
-    return count
+    return (count: count, error: error)
 }
 
 func kinveyRemove<T: Entity>(
     dataStore: DataStore<T>,
     entity: T,
     options: Options? = nil
-) -> Int? {
+) -> (count: Int?, error: Swift.Error?) {
     var count: Int? = nil
+    var error: Swift.Error? = nil
     waitUntil { done in
         do {
             try dataStore.remove(
@@ -434,16 +451,17 @@ func kinveyRemove<T: Entity>(
                 switch $0 {
                 case .success(let _count):
                     count = _count
-                case .failure(let error):
-                    fail(error.localizedDescription)
+                case .failure(let _error):
+                    error = _error
                 }
                 done()
             }
-        } catch {
-            fail(error.localizedDescription)
+        } catch let _error {
+            error = _error
+            done()
         }
     }
-    return count
+    return (count: count, error: error)
 }
 
 func kinveyRemove<T: Entity>(

@@ -156,6 +156,8 @@ class KinveyURLProtocol: URLProtocol {
                 endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
                 let id = String(urlComponents.path[startIndex ..< endIndex])
                 
+                let now = Date().toISO8601()
+                
                 switch httpMethod {
                 case "POST":
                     var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
@@ -164,21 +166,39 @@ class KinveyURLProtocol: URLProtocol {
                     }
                     let id = json["_id"] as! String
                     var kmd = [String : Any]()
-                    kmd["lmt"] = Date().toISO8601()
-                    kmd["ect"] = Date().toISO8601()
+                    kmd["lmt"] = now
+                    kmd["ect"] = now
                     json["_kmd"] = kmd
                     KinveyURLProtocol.collections[collection]![id] = json
                     sendResponse(url: url, statusCode: 201, body: .jsonObject(json))
                 case "PUT":
                     var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
-                    var kmd = json["_kmd"] as! [String : Any]
-                    kmd["lmt"] = Date().toISO8601()
+                    var kmd = KinveyURLProtocol.collections[collection]![id]?["_kmd"] as? [String : Any] ?? [:]
+                    if kmd["ect"] == nil {
+                        kmd["ect"] = now
+                    }
+                    kmd["lmt"] = now
                     json["_kmd"] = kmd
                     KinveyURLProtocol.collections[collection]![id] = json
                     sendResponse(url: url, statusCode: 200, body: .jsonObject(json))
                 case "DELETE":
-                    let json = KinveyURLProtocol.collections[collection]!.removeValue(forKey: id)
-                    sendResponse(url: url, statusCode: 200, body: .jsonObject(["count" : json != nil ? 1 : 0]))
+                    switch id {
+                    case "":
+                        let results = find(collection: collection, urlComponents: urlComponents)
+                        var removed = 0
+                        for item in results {
+                            if KinveyURLProtocol.collections[collection]!.removeValue(forKey: item["_id"] as! String) != nil {
+                                removed += 1
+                            }
+                        }
+                        sendResponse(url: url, statusCode: 200, body: .jsonObject(["count" : removed]))
+                    default:
+                        if KinveyURLProtocol.collections[collection]!.removeValue(forKey: id) != nil {
+                            sendResponse(url: url, statusCode: 200, body: .jsonObject(["count" : 1]))
+                        } else {
+                            sendResponseEntityNotFound(url: url)
+                        }
+                    }
                 default:
                     switch id {
                     case "":
@@ -210,15 +230,7 @@ class KinveyURLProtocol: URLProtocol {
                         if let result = KinveyURLProtocol.collections[collection]![id] {
                             sendResponse(url: url, body: .jsonObject(result))
                         } else {
-                            sendResponse(
-                                url: url,
-                                statusCode: 404,
-                                body: .jsonObject([
-                                    "error" : "EntityNotFound",
-                                    "description" : "This entity not found in the collection.",
-                                    "debug" : ""
-                                ])
-                            )
+                            sendResponseEntityNotFound(url: url)
                         }
                     }
                 }
@@ -260,7 +272,8 @@ class KinveyURLProtocol: URLProtocol {
             {
                 for (key, value) in query {
                     results = results.filter {
-                        if let operatorValue = value as? [String : Any] {
+                        switch value {
+                        case let operatorValue as [String : Any]:
                             for (op, value) in operatorValue {
                                 switch op {
                                 case "$lt":
@@ -295,6 +308,15 @@ class KinveyURLProtocol: URLProtocol {
                                     return false
                                 }
                             }
+                        case let intValue as Int:
+                            switch ($0[key], intValue) {
+                            case let (intValue1, intValue2) as (Int, Int):
+                                return intValue1 == intValue2
+                            default:
+                                return false
+                            }
+                        default:
+                            return false
                         }
                         return false
                     }
@@ -334,6 +356,18 @@ class KinveyURLProtocol: URLProtocol {
             }
         }
         return results
+    }
+    
+    private func sendResponseEntityNotFound(url: URL) {
+        sendResponse(
+            url: url,
+            statusCode: 404,
+            body: .jsonObject([
+                "error" : "EntityNotFound",
+                "description" : "This entity not found in the collection.",
+                "debug" : ""
+            ])
+        )
     }
     
     private func sendResponse(
