@@ -557,6 +557,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: @escaping (Result<[AggregationMinResult<T, Min>], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[AggregationMinResult<T, Min>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let aggregation: Aggregation = .min(keys: keys, min: min)
         let operation = AggregateOperation<T>(
             aggregation: aggregation,
@@ -571,7 +572,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMinResult<T, Min>(
-                    value: try! self.client.jsonParser.parseObject(T.self, from: json),
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     min: json[try aggregation.resultKey()] as! Min
                 )
             }
@@ -624,6 +625,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         completionHandler: @escaping (Result<[AggregationMaxResult<T, Max>], Swift.Error>) -> Void
     ) -> AnyRequest<Result<[AggregationMaxResult<T, Max>], Swift.Error>> {
         let readPolicy = options?.readPolicy ?? self.readPolicy
+        let client = options?.client ?? self.client
         let aggregation: Aggregation = .max(keys: keys, max: max)
         let operation = AggregateOperation<T>(
             aggregation: aggregation,
@@ -638,7 +640,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                 var json = json
                 json[Entity.EntityCodingKeys.entityId] = groupId
                 return AggregationMaxResult<T, Max>(
-                    value: try! self.client.jsonParser.parseObject(T.self, from: json),
+                    value: try! client.jsonParser.parseObject(T.self, from: json),
                     max: json[try aggregation.resultKey()] as! Max
                 )
             }
