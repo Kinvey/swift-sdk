@@ -965,7 +965,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Returns the number of changes not synced yet.
-    @available(*, deprecated, message: "Deprecated in version 4.0.0. please use DataStore.pendingSyncCount() instead")
+    @available(*, deprecated, message: "Deprecated in version 3.24.0. please use DataStore.pendingSyncCount() instead")
     open func syncCount() -> UInt {
         return UInt(pendingSyncCount())
     }
