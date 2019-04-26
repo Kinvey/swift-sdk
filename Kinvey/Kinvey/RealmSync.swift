@@ -40,11 +40,11 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         log.debug("Sync File: \(self.realm.configuration.fileURL!.path)")
     }
     
-    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType {
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation {
         return RealmPendingOperation(request: request, collectionName: collectionName, objectId: objectId)
     }
     
-    func savePendingOperation(_ pendingOperation: PendingOperationType) {
+    func savePendingOperation(_ pendingOperation: PendingOperation) {
         signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %@", pendingOperation.collectionName)
         defer {
             signpost(.end, log: osLog, name: "Save PendingOperation", "Collection: %@", pendingOperation.collectionName)
@@ -62,18 +62,18 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         }
     }
     
-    func pendingOperations() -> AnyCollection<PendingOperationType> {
+    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
         log.verbose("Fetching pending operations")
-        var results: [PendingOperationType]?
+        var results: [PendingOperation]!
         executor.executeAndWait {
             results = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName).map {
                 return RealmPendingOperationReference($0)
             }
         }
-        return AnyCollection(results!)
+        return AnyRandomAccessCollection(results)
     }
     
-    func removePendingOperation(_ pendingOperation: PendingOperationType) {
+    func removePendingOperation(_ pendingOperation: PendingOperation) {
         log.verbose("Removing pending operation: \(pendingOperation)")
         executor.executeAndWait {
             try! self.realm.write {
@@ -83,11 +83,12 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         }
     }
     
-    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) {
+    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) -> Int {
         signpost(.begin, log: osLog, name: "Remove All PendingOperations", "Object ID: %@", String(describing: objectId))
         defer {
             signpost(.end, log: osLog, name: "Remove All PendingOperations", "Object ID: %@", String(describing: objectId))
         }
+        var count = 0
         executor.executeAndWait {
             try! self.realm.write {
                 var realmResults = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@", self.collectionName)
@@ -97,9 +98,11 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
                 if let methods = methods {
                     realmResults = realmResults.filter("method in %@", methods)
                 }
+                count = realmResults.count
                 self.realm.delete(realmResults)
             }
         }
+        return count
     }
     
 }

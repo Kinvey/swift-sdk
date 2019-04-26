@@ -37,7 +37,7 @@ internal class GetOperation<T: Persistable>: ReadOperation<T, T, Swift.Error>, R
             if let persistable = self.cache?.find(byId: self.id) {
                 result = .success(persistable)
             } else {
-                result = .failure(buildError(client: self.client))
+                result = .failure(Error.entityNotFound(debug: "", description: "This entity not found in the collection."))
             }
             request.result = result
             completionHandler?(result)

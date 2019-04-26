@@ -75,17 +75,19 @@ internal func kinveyMappingType<Transform: TransformType>(left: String, right: S
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 fileprivate func _kinveyMappingType(left: String, right: String, transform: AnyTransform? = nil) {
     autoreleasepool {
+        guard let className = currentMappingClass,
+            var classMapping = kinveyProperyMapping[className],
+            classMapping[left] == nil
+        else {
+            return
+        }
         let block = {
-            if let className = currentMappingClass,
-                var classMapping = kinveyProperyMapping[className]
-            {
-                if let transform = transform {
-                    classMapping[left] = (right, transform)
-                } else {
-                    classMapping[left] = (right, nil)
-                }
-                kinveyProperyMapping[className] = classMapping
+            if let transform = transform {
+                classMapping[left] = (right, transform)
+            } else {
+                classMapping[left] = (right, nil)
             }
+            kinveyProperyMapping[className] = classMapping
         }
         if mappingOperationQueue == OperationQueue.current {
             block()

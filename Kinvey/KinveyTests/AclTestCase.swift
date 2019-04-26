@@ -37,38 +37,42 @@ class AclTestCase: StoreTestCase {
         
         weak var expectationRemove = expectation(description: "Remove")
         
-        try! store.remove(person) {
-            self.assertThread()
-            switch $0 {
-            case .success(let count):
-                XCTFail("A failure result is expected")
-            case .failure(let error):
-                XCTAssertTrue(error is Kinvey.Error)
-                XCTAssertNotNil(error as? Kinvey.Error)
-                if let error = error as? Kinvey.Error {
-                    let result = error.responseBodyJsonDictionary
-                    XCTAssertNotNil(result)
-                    if let result = result {
-                        let expected = [
-                            "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
-                            "debug" : "",
-                            "error" : "InsufficientCredentials"
-                        ]
-                        XCTAssertEqual(result.count, expected.count)
-                        XCTAssertEqual(result["description"] as? String, expected["description"])
-                        XCTAssertEqual(result["debug"] as? String, expected["debug"])
-                        XCTAssertEqual(result["error"] as? String, expected["error"])
-                    }
-                    switch error {
-                    case .unauthorized(_, _, let error, _, _):
-                        XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
-                    default:
-                        XCTFail(error.localizedDescription)
+        do {
+            try store.remove(person) {
+                self.assertThread()
+                switch $0 {
+                case .success(let count):
+                    XCTFail("A failure result is expected")
+                case .failure(let error):
+                    XCTAssertTrue(error is Kinvey.Error)
+                    XCTAssertNotNil(error as? Kinvey.Error)
+                    if let error = error as? Kinvey.Error {
+                        let result = error.responseBodyJsonDictionary
+                        XCTAssertNotNil(result)
+                        if let result = result {
+                            let expected = [
+                                "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                                "debug" : "",
+                                "error" : "InsufficientCredentials"
+                            ]
+                            XCTAssertEqual(result.count, expected.count)
+                            XCTAssertEqual(result["description"] as? String, expected["description"])
+                            XCTAssertEqual(result["debug"] as? String, expected["debug"])
+                            XCTAssertEqual(result["error"] as? String, expected["error"])
+                        }
+                        switch error {
+                        case .unauthorized(_, _, let error, _, _):
+                            XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
+                        default:
+                            XCTFail(error.localizedDescription)
+                        }
                     }
                 }
+                
+                expectationRemove?.fulfill()
             }
-            
-            expectationRemove?.fulfill()
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
         waitForExpectations(timeout: defaultTimeout) { error in
@@ -89,8 +93,9 @@ class AclTestCase: StoreTestCase {
         
         do {
             if useMockData {
+                XCTAssertNotNil(person.entityId)
                 mockResponse(json: [
-                    "_id" : person.entityId!,
+                    "_id" : person.entityId ?? "",
                     "name" : "Victor",
                     "age" : 29,
                     "_acl" : [
@@ -108,9 +113,14 @@ class AclTestCase: StoreTestCase {
                 }
             }
             
+            XCTAssertNotNil(person.personId)
+            guard let personId = person.personId else {
+                return
+            }
+            
             weak var expectationFind = expectation(description: "Find")
             
-            store.find(person.personId!, options: try! Options(readPolicy: .forceNetwork)) {
+            store.find(personId, options: try Options(readPolicy: .forceNetwork)) {
                 self.assertThread()
                 switch $0 {
                 case .success(let person):
@@ -125,6 +135,8 @@ class AclTestCase: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFind = nil
             }
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
         XCTAssertEqual(store.syncCount(), 0)
@@ -132,7 +144,7 @@ class AclTestCase: StoreTestCase {
         do {
             weak var expectationRemove = expectation(description: "Remove")
             
-            try! store.remove(person) {
+            try store.remove(person) {
                 self.assertThread()
                 switch $0 {
                 case .success(let count):
@@ -147,17 +159,22 @@ class AclTestCase: StoreTestCase {
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
+        } catch {
+            XCTFail(error.localizedDescription)
         }
         
         XCTAssertEqual(store.syncCount(), 1)
         
         do {
             if useMockData {
-                mockResponse(statusCode: 401, json: [
-                    "error" : "InsufficientCredentials",
-                    "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
-                    "debug" : ""
-                ])
+                mockResponse(
+                    statusCode: 401,
+                    json: [
+                        "error" : "InsufficientCredentials",
+                        "description" : "The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials",
+                        "debug" : ""
+                    ]
+                )
             }
             defer {
                 if useMockData {
@@ -260,7 +277,11 @@ class AclTestCase: StoreTestCase {
         store = try! DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
-        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalWrite: true)
+        XCTAssertNotNil(sharedClient.activeUser?.userId)
+        guard let userId = sharedClient.activeUser?.userId else {
+            return
+        }
+        newPerson.acl = Acl(creator: userId, globalWrite: true)
         let person = save(newPerson)
         
         XCTAssertNotNil(person.personId)

@@ -9,10 +9,10 @@
 import Foundation
 
 /// Policy that describes how a read operation should perform.
-public enum ReadPolicy: UInt {
+public enum ReadPolicy {
     
     /// Doesn't hit the network, forcing the data to be read only from the local cache.
-    case forceLocal = 0
+    case forceLocal
     
     /// Doesn't hit the local cache, forcing the data to be read only from the network (backend).
     case forceNetwork

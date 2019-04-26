@@ -44,7 +44,7 @@ class PushTestCase: KinveyTestCase {
                 expectaionRegister?.fulfill()
             }
 
-            #if (arch(i386) || arch(x86_64)) && os(iOS)
+            #if targetEnvironment(simulator)
             tester().acknowledgeSystemAlert()
             
             DispatchQueue.main.async {

@@ -930,7 +930,7 @@ open class DataStore<T: Persistable> where T: NSObject {
                 return
             }
             
-            guard self.syncCount() == 0 else {
+            guard self.pendingSyncEntities().count == 0 else {
                 let error = Error.invalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them.")
                 request = AnyRequest(.failure(error))
                 resolver.reject(error)
@@ -963,16 +963,27 @@ open class DataStore<T: Persistable> where T: NSObject {
     }
     
     /// Returns the number of changes not synced yet.
+    @available(*, deprecated, message: "Deprecated in version 4.0.0. please use DataStore.pendingSyncCount() instead")
     open func syncCount() -> UInt {
-        if let sync = sync {
-            return UInt(sync.pendingOperations().count)
-        }
-        return 0
+        return UInt(pendingSyncCount())
+    }
+    
+    /// Returns the number of changes not synced yet.
+    open func pendingSyncCount() -> Int {
+        return pendingSyncEntities().count
+    }
+    
+    /// Returns the changes not synced yet.
+    open func pendingSyncEntities() -> AnyRandomAccessCollection<PendingOperation> {
+        return sync?.pendingOperations() ?? AnyRandomAccessCollection([])
+    }
+    
+    open func clearSync() -> Int {
+        return sync?.removeAllPendingOperations() ?? 0
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     @discardableResult
-    
     @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use DataStore.sync(_:deltaSetCompletionHandler:options:completionHandler:) instead")
     open func sync(
         _ query: Query = Query(),

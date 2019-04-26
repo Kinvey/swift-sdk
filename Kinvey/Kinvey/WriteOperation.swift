@@ -54,6 +54,9 @@ extension WriteOperationType {
         switch writePolicy {
         case .forceLocal:
             return executeLocal(completionHandler)
+        case .silentLocalThenNetwork:
+            executeLocal(nil)
+            return executeNetwork(completionHandler)
         case .localThenNetwork:
             executeLocal(completionHandler)
             fallthrough
