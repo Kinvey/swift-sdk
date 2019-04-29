@@ -104,7 +104,8 @@ deploy-aws-s3:
 	aws s3 cp build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
 
 deploy-github:
-	swift scripts/github-release/main.swift release .
+	cd scripts/github-release; \
+	swift run github-release release ../..
 
 deploy-git:
 	@if [ "$(CURRENT_BRANCH)" = "develop" ]; then \
@@ -140,7 +141,8 @@ deploy-devcenter:
 	git remote add v3yk1n-devcenter $(DEVCENTER_GIT_TEST); \
 	git remote add kinvey-devcenter-prod $(DEVCENTER_GIT_PROD); \
 	git checkout -b feature/Swift_SDK_Release_$(VERSION)
-	swift scripts/devcenter-release/main.swift $(VERSION) build/devcenter
+	cd scripts/devcenter-release; \
+	swift run devcenter-release $(VERSION) ../../build/devcenter
 	cd build/devcenter; \
 	git add content; \
 	git commit -m "Swift SDK Release $(VERSION) - Release Notes"; \
