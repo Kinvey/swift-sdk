@@ -11,27 +11,27 @@ import Foundation
 internal protocol SyncType {
     
     //Create
-    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperationType
+    func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation
     
     //Read
-    func pendingOperations() -> AnyCollection<PendingOperationType>
+    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation>
     
     //Update
-    func savePendingOperation(_ pendingOperation: PendingOperationType)
+    func savePendingOperation(_ pendingOperation: PendingOperation)
     
     //Delete
-    func removePendingOperation(_ pendingOperation: PendingOperationType)
-    func removeAllPendingOperations(_ objectId: String?, methods: [String]?)
+    func removePendingOperation(_ pendingOperation: PendingOperation)
+    func removeAllPendingOperations(_ objectId: String?, methods: [String]?) -> Int
     
 }
 
 internal final class AnySync: SyncType {
     
-    private let _createPendingOperation: (URLRequest, String?) -> PendingOperationType
-    private let _pendingOperations: () -> AnyCollection<PendingOperationType>
-    private let _savePendingOperation: (PendingOperationType) -> Void
-    private let _removePendingOperation: (PendingOperationType) -> Void
-    private let _removeAllPendingOperations: (String?, [String]?) -> Void
+    private let _createPendingOperation: (URLRequest, String?) -> PendingOperation
+    private let _pendingOperations: () -> AnyRandomAccessCollection<PendingOperation>
+    private let _savePendingOperation: (PendingOperation) -> Void
+    private let _removePendingOperation: (PendingOperation) -> Void
+    private let _removeAllPendingOperations: (String?, [String]?) -> Int
     
     init<Sync: SyncType>(_ sync: Sync) {
         _createPendingOperation = sync.createPendingOperation
@@ -41,24 +41,25 @@ internal final class AnySync: SyncType {
         _removeAllPendingOperations = sync.removeAllPendingOperations
     }
     
-    func createPendingOperation(_ request: URLRequest, objectId: String? = nil) -> PendingOperationType {
+    func createPendingOperation(_ request: URLRequest, objectId: String? = nil) -> PendingOperation {
         return _createPendingOperation(request, objectId)
     }
     
-    func pendingOperations() -> AnyCollection<PendingOperationType> {
+    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
         return _pendingOperations()
     }
     
-    func savePendingOperation(_ pendingOperation: PendingOperationType) {
+    func savePendingOperation(_ pendingOperation: PendingOperation) {
         _savePendingOperation(pendingOperation)
     }
     
-    func removePendingOperation(_ pendingOperation: PendingOperationType) {
+    func removePendingOperation(_ pendingOperation: PendingOperation) {
         _removePendingOperation(pendingOperation)
     }
     
-    func removeAllPendingOperations(_ objectId: String? = nil, methods: [String]? = nil) {
-        _removeAllPendingOperations(objectId, methods)
+    @discardableResult
+    func removeAllPendingOperations(_ objectId: String? = nil, methods: [String]? = nil) -> Int {
+        return _removeAllPendingOperations(objectId, methods)
     }
     
 }

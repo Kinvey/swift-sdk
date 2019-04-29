@@ -140,15 +140,11 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
                             }
                         } else if let response = response, response.isUnauthorized,
                             let data = data,
-                            let dictionary = try? self.client.jsonParser.parseDictionary(from: data),
-                            let json = dictionary as? [String : String],
+                            let json = try? self.client.jsonParser.parseDictionary(from: data) as? [String : String],
                             let error = json["error"],
                             let debug = json["debug"],
                             let description = json["description"]
                         {
-                            if error == Error.Keys.insufficientCredentials.rawValue {
-                                self.sync?.removePendingOperation(pendingOperation)
-                            }
                             let error = Error.unauthorized(
                                 httpResponse: response.httpResponse,
                                 data: data,

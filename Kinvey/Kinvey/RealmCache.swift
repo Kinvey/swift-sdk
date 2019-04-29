@@ -561,14 +561,10 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
     }
     
     func clear(query: Query? = nil) {
-        _clear(query: query)
+        clear(query: query, cascadeDelete: false)
     }
     
     func clear(query: Query? = nil, cascadeDelete: Bool = false) {
-        _clear(query: query, cascadeDelete: cascadeDelete)
-    }
-    
-    func _clear(query: Query? = nil, cascadeDelete: Bool = false) {
         log.verbose("Clearing cache")
         try! self.write { realm in
             if let query = query {
@@ -981,7 +977,7 @@ extension AnyRandomAccessCollection where Element: NSObject, Element: Persistabl
     
 }
 
-internal class RealmPendingOperation: Object, PendingOperationType {
+internal class RealmPendingOperation: Object, PendingOperation {
     
     @objc
     dynamic var requestId: String = ""
@@ -1035,7 +1031,7 @@ internal class RealmPendingOperation: Object, PendingOperationType {
     
 }
 
-class RealmPendingOperationReference: PendingOperationType {
+class RealmPendingOperationReference: PendingOperation {
     
     let realmConfig: Realm.Configuration
     let requestId: String

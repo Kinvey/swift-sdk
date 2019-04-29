@@ -64,6 +64,17 @@
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5752980C226FB12A002FA614"
+               BuildableName = "KinveyMacApp Specs.xctest"
+               BlueprintName = "KinveyMacApp Specs"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

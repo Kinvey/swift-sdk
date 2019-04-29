@@ -2090,7 +2090,12 @@ class UserTests: KinveyTestCase {
         weak var expectationUserMetadata = expectation(description: "Email Confirmation Status")
         let user = Client.sharedClient.activeUser
         
-        User.get(userId: (user?.userId)!) { newUser, error in
+        XCTAssertNotNil(user?.userId)
+        guard let userId = user?.userId else {
+            return
+        }
+        
+        User.get(userId: userId) { newUser, error in
             XCTAssertNotNil(newUser)
             
             XCTAssertNotNil(newUser?.metadata)

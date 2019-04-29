@@ -9,10 +9,13 @@
 import Foundation
 
 /// Policy that describes how a write operation should perform.
-public enum WritePolicy: UInt {
+public enum WritePolicy {
     
     /// Writes in the local cache first and then try to write trought the network (backend).
-    case localThenNetwork = 0
+    case localThenNetwork
+    
+    /// Writes in the local cache first but does not call the callback and then try to write trought the network (backend).
+    case silentLocalThenNetwork
     
     /// Doesn't hit the network, forcing to write the data only in the local cache.
     case forceLocal
