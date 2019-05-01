@@ -228,10 +228,76 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     
 }
 
+protocol FailureError: Swift.Error {
+    
+    associatedtype Failure
+    
+    var failure: Failure { get }
+    
+}
+
 /// Wrapper able to hold an array of `Swift.Error` objects.
-public struct MultipleErrors: Swift.Error {
+public struct MultipleErrors {
     
     public let errors: [Swift.Error]
+    
+}
+
+extension MultipleErrors: FailureError {
+    
+    typealias Failure = [Element]
+    
+    var failure: [Element] {
+        return errors
+    }
+    
+}
+
+extension MultipleErrors: RandomAccessCollection {
+    
+    public typealias Element = Swift.Error
+    
+    public typealias Index = Array<Element>.Index
+    
+    public typealias Indices = Array<Element>.Indices
+    
+    public typealias SubSequence = Array<Element>.SubSequence
+    
+    public subscript(position: Index) -> Element {
+        return errors[position]
+    }
+    
+    public var startIndex: Index {
+        return errors.startIndex
+    }
+    
+    public var endIndex: Index {
+        return errors.endIndex
+    }
+    
+}
+
+extension MultipleErrors: CustomStringConvertible, CustomDebugStringConvertible {
+    
+    public var description: String {
+        return localizedDescription
+    }
+    
+    public var debugDescription: String {
+        return localizedDescription
+    }
+    
+    public var localizedDescription: String {
+        return errors.map { $0.localizedDescription }.joined(separator: "\n")
+    }
+    
+}
+
+struct NilError: FailureError {
+    
+    typealias Failure = Any?
+    
+    let failure: Any?
     
 }
 

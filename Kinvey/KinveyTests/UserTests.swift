@@ -3873,7 +3873,7 @@ class UserTests: KinveyTestCase {
         case .success(let code):
             XCTFail(code)
         case .failure(let error):
-            XCTAssertNil(error)
+            XCTAssertTrue(error is NilError)
         }
     }
     

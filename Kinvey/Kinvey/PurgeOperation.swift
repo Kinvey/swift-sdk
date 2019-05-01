@@ -11,7 +11,7 @@ import PromiseKit
 
 internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error> where T: NSObject {
     
-    typealias ResultType = Result<Int, Swift.Error>
+    typealias ResultType = Swift.Result<Int, Swift.Error>
     
     internal override init(
         sync: AnySync?,

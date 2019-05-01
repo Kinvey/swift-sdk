@@ -9,7 +9,7 @@
 import Foundation
 
 /**
- Enumeration that represents the result of an operation.
+ Swift.Result is a Enumeration that represents the result of an operation.
  Here's a sample code how to handle a `Result`
  ```
 switch result {
@@ -20,40 +20,12 @@ case .failure(let failureObject):
 }
  ```
  */
-public enum Result<SuccessType, FailureType> {
-    
-    /// Case when the result is a success result holding the succeed type value
-    case success(SuccessType)
-    
-    /// Case when the result is a failure result holding the failure type value
-    case failure(FailureType)
-    
-}
+extension Result {
 
-extension Result where FailureType == Swift.Error {
-    
     /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` error
-    public func value() throws -> SuccessType {
-        switch self {
-        case .success(let successType):
-            return successType
-        case .failure(let error):
-            throw error
-        }
+    @available(*, deprecated, message: "Deprecated in version 3.25.0. Please use get() instead")
+    public func value() throws -> Success {
+        return try get()
     }
-    
-}
 
-extension Result where FailureType == [Swift.Error] {
-    
-    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` errors wrapped in a `MultipleErrors`
-    public func value() throws -> SuccessType {
-        switch self {
-        case .success(let successType):
-            return successType
-        case .failure(let errors):
-            throw MultipleErrors(errors: errors)
-        }
-    }
-    
 }

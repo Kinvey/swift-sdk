@@ -34,7 +34,7 @@ internal class WriteOperation<T: Persistable, R>: Operation<T> where T: NSObject
 protocol WriteOperationType {
     
     associatedtype SuccessType
-    associatedtype FailureType
+    associatedtype FailureType: Swift.Error
     typealias CompletionHandler = (Result<SuccessType, FailureType>) -> Void
     
     var writePolicy: WritePolicy { get }

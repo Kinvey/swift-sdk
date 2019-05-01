@@ -3125,8 +3125,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int(persons.count), initialCount + 1)
@@ -3189,8 +3189,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int(persons.count), initialCount + 2)
@@ -3252,8 +3252,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -3308,8 +3308,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -3368,8 +3368,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -3414,8 +3414,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 0)
@@ -3493,8 +3493,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 3)
@@ -3580,8 +3580,8 @@ class SyncStoreTests: StoreTestCase {
                     XCTAssertEqual($1.count, 2)
                 },
                 options: nil
-            ) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            ) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 3)
@@ -3647,8 +3647,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -3718,8 +3718,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 2)
@@ -3789,8 +3789,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 2)
@@ -3855,8 +3855,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -3927,8 +3927,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 2)
@@ -3997,8 +3997,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 2)
@@ -4062,8 +4062,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -4093,8 +4093,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success:
                     XCTFail("A failure result is expected")
                 case .failure(let errors):
@@ -4173,8 +4173,8 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -4192,8 +4192,8 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -4249,8 +4249,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -4311,8 +4311,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, 1)
@@ -5646,8 +5646,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, initialCount + 2)
@@ -5718,8 +5718,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(persons.count, initialCount + 2)
@@ -5799,8 +5799,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -5866,8 +5866,8 @@ class SyncStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Pull")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -5946,8 +5946,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -5992,8 +5992,8 @@ class SyncStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -6087,8 +6087,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6159,8 +6159,8 @@ class SyncStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6215,8 +6215,8 @@ class SyncStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -6316,8 +6316,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             var query = Query(format: "age == %@", 23)
-            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(query, options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6373,8 +6373,8 @@ class SyncStoreTests: StoreTestCase {
             }
             weak var expectationSync = expectation(description: "Sync")
             var query = Query(format: "age == %@", 23)
-            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(query, options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -6474,8 +6474,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Sync")
             var query = Query(format: "age == %@", 23)
-            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(query, options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6549,8 +6549,8 @@ class SyncStoreTests: StoreTestCase {
             weak var expectationSync = expectation(description: "Sync")
             
             var query = Query(format: "age == %@", 23)
-            store.sync(query, options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(query, options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6630,8 +6630,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Pull")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 1)
@@ -6698,8 +6698,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Pull")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
@@ -6769,8 +6769,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationSync = expectation(description: "Pull")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let persons):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(Int64(persons.count), initialCount + 2)
