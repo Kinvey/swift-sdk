@@ -17,7 +17,7 @@ class PushBlockOperation: PendingBlockOperation {
 
 fileprivate class PushRequest: NSObject, Request {
     
-    typealias ResultType = Result<UInt, [Swift.Error]>
+    typealias ResultType = Swift.Result<UInt, MultipleErrors>
     
     var result: ResultType?
     
@@ -65,9 +65,9 @@ fileprivate class PushRequest: NSObject, Request {
     
 }
 
-internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Error]> where T: NSObject {
+internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErrors> where T: NSObject {
     
-    typealias ResultType = Result<UInt, [Swift.Error]>
+    typealias ResultType = Swift.Result<UInt, MultipleErrors>
     
     internal override init(
         sync: AnySync?,
@@ -92,7 +92,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
             if errors.isEmpty {
                 result = .success(count)
             } else {
-                result = .failure(errors)
+                result = .failure(MultipleErrors(errors: errors))
             }
             pushOperation.result = result
             completionHandler?(result)
@@ -102,7 +102,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, [Swift.Erro
         
         if let sync = sync {
             for pendingOperation in sync.pendingOperations() {
-                let request = HttpRequest<Result<UInt, Swift.Error>>(
+                let request = HttpRequest<Swift.Result<UInt, Swift.Error>>(
                     request: pendingOperation.buildRequest(),
                     options: options
                 )

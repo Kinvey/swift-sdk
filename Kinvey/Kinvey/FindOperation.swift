@@ -23,7 +23,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     let mustSetRequestResult: Bool
     let mustSaveQueryLastSync: Bool?
     
-    typealias ResultType = Result<AnyRandomAccessCollection<T>, Swift.Error>
+    typealias ResultType = Swift.Result<AnyRandomAccessCollection<T>, Swift.Error>
     
     lazy var isEmptyQuery: Bool = {
         return (self.query.predicate == nil || self.query.predicate == NSPredicate()) && self.query.skip == nil && self.query.limit == nil
@@ -263,7 +263,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                             }
                         case .parameterValueOutOfRange:
                             self.cache?.invalidateLastSync(query: self.query)
-                            self.executeNetwork { (result: Result<AnyRandomAccessCollection<T>, Swift.Error>) in
+                            self.executeNetwork { (result: Swift.Result<AnyRandomAccessCollection<T>, Swift.Error>) in
                                 switch result {
                                 case .success(let entities):
                                     resolver.fulfill(entities)

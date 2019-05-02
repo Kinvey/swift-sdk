@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObject {
+internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObject, E: Swift.Error {
     
     typealias CompletionHandler = (Result<R, E>) -> Void
     
@@ -34,7 +34,7 @@ internal class ReadOperation<T: Persistable, R, E>: Operation<T> where T: NSObje
 protocol ReadOperationType {
     
     associatedtype SuccessType
-    associatedtype FailureType
+    associatedtype FailureType: Swift.Error
     typealias CompletionHandler = (Result<SuccessType, FailureType>) -> Void
     
     var readPolicy: ReadPolicy { get }

@@ -71,9 +71,9 @@ open class Push {
     
     private func replaceAppDelegateMethods(
         options: Options?,
-        completionHandler: ((Result<Bool, Swift.Error>) -> Void)?
+        completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)?
     ) {
-        func replaceAppDelegateMethods(_ completionHandler: ((Result<Bool, Swift.Error>) -> Void)?) {
+        func replaceAppDelegateMethods(_ completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)?) {
             let app = UIApplication.shared
             let appDelegate = app.delegate!
             let appDelegateType = type(of: appDelegate)
@@ -172,7 +172,7 @@ open class Push {
         registerForPush(
             forTypes: types,
             categories: categories
-        ) { (result: Result<Bool, Swift.Error>) in
+        ) { (result: Swift.Result<Bool, Swift.Error>) in
             switch result {
             case .success(let granted):
                 completionHandler?(granted, nil)
@@ -196,7 +196,7 @@ open class Push {
     open func registerForPush(
         forTypes types: UIUserNotificationType = [.alert, .badge, .sound],
         categories: Set<UIUserNotificationCategory>? = nil,
-        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         replaceAppDelegateMethods(
             options: try! Options(client: client),
@@ -223,7 +223,7 @@ open class Push {
             authorizationOptions: authorizationOptions,
             categories: categories,
             options: try! Options(client: client)
-        ) { (result: Result<Bool, Swift.Error>) in
+        ) { (result: Swift.Result<Bool, Swift.Error>) in
             switch result {
             case .success(let granted):
                 completionHandler?(granted, nil)
@@ -237,7 +237,7 @@ open class Push {
     open func registerForNotifications(
         authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
         categories: Set<UNNotificationCategory>? = nil,
-        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         return registerForNotifications(
             authorizationOptions: authorizationOptions,
@@ -252,7 +252,7 @@ open class Push {
         authorizationOptions: UNAuthorizationOptions = [.badge, .sound, .alert, .carPlay],
         categories: Set<UNNotificationCategory>? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         UNUserNotificationCenter.current().requestAuthorization(options: authorizationOptions) { granted, error in
             if granted {
@@ -284,7 +284,7 @@ open class Push {
     ) {
         unRegisterDeviceToken(
             options: try! Options(client: client)
-        ) { (result: Result<Void, Swift.Error>) in
+        ) { (result: Swift.Result<Void, Swift.Error>) in
             switch result {
             case .success:
                 completionHandler?(true, nil)
@@ -297,7 +297,7 @@ open class Push {
     /// Unregister the current device to receive push notifications.
     @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Push.unRegisterDeviceToken(options:completionHandler:) -> Void")
     open func unRegisterDeviceToken(
-        _ completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+        _ completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) {
         return unRegisterDeviceToken(
             options: try! Options(client: client),
@@ -308,7 +308,7 @@ open class Push {
     /// Unregister the current device to receive push notifications.
     open func unRegisterDeviceToken(
         options: Options? = nil,
-        completionHandler: ((Result<Void, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) {
         Promise<Void> { resolver in
             guard let deviceToken = deviceToken else {
@@ -343,7 +343,7 @@ open class Push {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data,
         options: Options?,
-        completionHandler: ((Result<Bool, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)? = nil
     ) {
         self.deviceToken = deviceToken
         let block: () -> Void = {

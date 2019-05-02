@@ -42,7 +42,7 @@ protocol RealtimeRouter {
     func publish(
         channel: String,
         message: Any,
-        completionHandler: ((Result<Void, Swift.Error>) -> Void)?
+        completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)?
     )
 
 }
