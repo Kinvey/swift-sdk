@@ -193,13 +193,11 @@ open class MIC {
                                 resolver.reject(error)
                             }
                         }
-                    case .failure(let error):
-                        switch error {
-                        case let error as NilError:
-                            resolver.reject(buildError(data, response, error, client))
-                        default:
-                            resolver.reject(error)
+                    case .failure(var error):
+                        if error is NilError {
+                            error = buildError(data, response, error, client)
                         }
+                        resolver.reject(error)
                     }
                 } else {
                     resolver.reject(buildError(data, response, error, client))

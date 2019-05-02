@@ -1365,10 +1365,13 @@ open class User: NSObject, Credential {
                 }
             }
             return true
-        case .failure(let error):
+        case .failure(var error):
+            if error is NilError {
+                error = buildError(nil, nil, error, options?.client ?? sharedClient)
+            }
             NotificationCenter.default.post(
                 name: MICSafariViewControllerFailureNotificationName,
-                object: error ?? buildError(nil, nil, error, options?.client ?? sharedClient)
+                object: error
             )
             return false
         }
@@ -1520,13 +1523,11 @@ open class User: NSObject, Credential {
                                         resolver.reject(error)
                                     }
                                 }
-                            case .failure(let error):
-                                switch error {
-                                case let error as NilError:
-                                    resolver.reject(buildError(nil, nil, error, client))
-                                default:
-                                    resolver.reject(error)
+                            case .failure(var error):
+                                if error is NilError {
+                                    error = buildError(nil, nil, error, client)
                                 }
+                                resolver.reject(error)
                             }
                         } else {
                             resolver.reject(buildError(nil, nil, error, client))

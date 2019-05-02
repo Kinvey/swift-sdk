@@ -5360,8 +5360,8 @@ extension UserTests {
             
             weak var expectationLogout = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success(let count, let results):
                     XCTAssertEqual(count, 0)
                     XCTAssertEqual(results.count, 1)
@@ -5394,8 +5394,8 @@ extension UserTests {
             
             weak var expectationLogout = expectation(description: "Sync")
             
-            store.sync(options: nil) { (result: Result<(UInt, AnyRandomAccessCollection<Person>), [Swift.Error]>) in
-                switch result {
+            store.sync(options: nil) {
+                switch $0 {
                 case .success:
                     XCTFail("A failure result is expected")
                 case .failure(let errors):
