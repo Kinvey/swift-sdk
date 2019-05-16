@@ -113,5 +113,14 @@ class ObjectMapperJSONParser: JSONParser {
         }
         return object.toJSON()
     }
+    
+    func toJSON<S, T>(_ sequence: S) throws -> [[String : Any]] where S : Sequence, T : JSONEncodable, T == S.Element {
+        return sequence.compactMap {
+            guard let object = $0 as? BaseMappable else {
+                return nil
+            }
+            return object.toJSON()
+        }
+    }
 
 }

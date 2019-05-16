@@ -149,6 +149,12 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
+    func buildAppDataSave<S: Sequence, T: Persistable, Result>(
+        _ persistable: S,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> where S.Element == T
+    
     func buildAppDataRemoveByQuery<Result>(
         collectionName: String,
         query: Query,

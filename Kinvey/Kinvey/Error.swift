@@ -312,3 +312,17 @@ extension NSException {
     }
     
 }
+
+public struct MultiSaveError: Swift.Error, Codable {
+    
+    let index: Int
+    let code: Int
+    let message: String
+    
+    enum CodingKeys: String, CodingKey {
+        case index
+        case code
+        case message = "errmsg"
+    }
+    
+}

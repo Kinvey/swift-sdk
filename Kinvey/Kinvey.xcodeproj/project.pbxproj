@@ -179,6 +179,7 @@
 		5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */; };
 		5781D1341CE3B0FB00369F40 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5781D12E1CE3ACA000369F40 /* Localizable.strings */; };
 		5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1351CE3D0BA00369F40 /* FileTestCase.swift */; };
+		57833531228A220800949231 /* SaveMultiOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57833530228A220700949231 /* SaveMultiOperation.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783BA3520F722DC0090D0BD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		5783BA3620F722DC0090D0BD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -365,6 +366,7 @@
 		57C6F70C20E30ADF0090935C /* ObjectMapperSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57C731FA1F57721700B67C13 /* MacOSOnlyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C731F91F57721700B67C13 /* MacOSOnlyTestCase.swift */; };
+		57CA7A64228CE24000479E49 /* MultipleRandomAccessCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CA7A63228CE24000479E49 /* MultipleRandomAccessCollection.swift */; };
 		57CCBCBE20D2C6B300197CC2 /* CacheMigrationTestCaseStep2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */; };
 		57CCBCBF20D2C6C400197CC2 /* CacheMigrationTestCaseData.zip in Resources */ = {isa = PBXBuildFile; fileRef = 573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */; };
 		57CCBCC020D2CA0B00197CC2 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -1000,6 +1002,7 @@
 		5781D12E1CE3ACA000369F40 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTestCase.swift; sourceTree = "<group>"; };
 		5781D1351CE3D0BA00369F40 /* FileTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTestCase.swift; sourceTree = "<group>"; };
+		57833530228A220700949231 /* SaveMultiOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveMultiOperation.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783BA4120F722DC0090D0BD /* KinveyTests RemoveAll Memory Leak.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests RemoveAll Memory Leak.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveAllMemoryLeakTests.swift; sourceTree = "<group>"; };
@@ -1105,6 +1108,7 @@
 		57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMapperSupport.swift; sourceTree = "<group>"; };
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57C731F91F57721700B67C13 /* MacOSOnlyTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MacOSOnlyTestCase.swift; sourceTree = "<group>"; };
+		57CA7A63228CE24000479E49 /* MultipleRandomAccessCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleRandomAccessCollection.swift; sourceTree = "<group>"; };
 		57CCBCD620D2CD3F00197CC2 /* KinveyTests Migration Database macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDataStoreSpec.swift; sourceTree = "<group>"; };
 		57CDF46022654226006596A7 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Quick.framework; sourceTree = "<group>"; };
@@ -1528,6 +1532,7 @@
 				57F91C281D6E2C020012850A /* CountOperation.swift */,
 				570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */,
 				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
+				57833530228A220700949231 /* SaveMultiOperation.swift */,
 				57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */,
 				574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */,
 				5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */,
@@ -1745,6 +1750,7 @@
 				57B257B820929621005B329C /* DeviceInfo.swift */,
 				57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */,
 				57E853A320FECE6500042C14 /* RealmSupport.swift */,
+				57CA7A63228CE24000479E49 /* MultipleRandomAccessCollection.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -3466,6 +3472,7 @@
 				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				570BD2FD1E845E7A000341C9 /* AggregateOperation.swift in Sources */,
+				57CA7A64228CE24000479E49 /* MultipleRandomAccessCollection.swift in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */,
@@ -3505,6 +3512,7 @@
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
 				57B768811D10C0C70086AA38 /* Entity.swift in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
+				57833531228A220800949231 /* SaveMultiOperation.swift in Sources */,
 				57DB87E81C62B0F6002BA684 /* Data.swift in Sources */,
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
 				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,

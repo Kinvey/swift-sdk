@@ -706,6 +706,29 @@ open class DataStore<T: Persistable> where T: NSObject {
         return request
     }
     
+    /// Creates or updates a record.
+    @discardableResult
+    open func save<C: RandomAccessCollection>(
+        _ persistable: C,
+        options: Options? = nil,
+        completionHandler: ((Swift.Result<MultiSaveResultTuple<T>, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<MultiSaveResultTuple<T>, Swift.Error>> where C.Element == T {
+        let writePolicy = options?.writePolicy ?? self.writePolicy
+        let operation = SaveMultiOperation<T>(
+            persistable: persistable,
+            writePolicy: writePolicy,
+            sync: sync,
+            cache: cache,
+            options: options
+        )
+        let request = operation.execute { result in
+            DispatchQueue.main.async {
+                completionHandler?(result)
+            }
+        }
+        return request
+    }
+    
     /// Deletes a record.
     @discardableResult
     open func remove(

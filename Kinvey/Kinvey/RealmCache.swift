@@ -435,7 +435,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
         }
     }
     
-    func save(entities: AnyRandomAccessCollection<T>, syncQuery: SyncQuery?) {
+    func save<C>(entities: C, syncQuery: SyncQuery?) where C : Collection, C.Element == T {
         signpost(.begin, log: osLog, name: "Save Entities (Generics)")
         defer {
             signpost(.end, log: osLog, name: "Save Entities (Generics)")
