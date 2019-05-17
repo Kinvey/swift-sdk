@@ -568,7 +568,7 @@ open class Client: Credential {
         guard let _ = appKey, let _ = appSecret else {
             return errorRequest(error: Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()"), completionHandler: completionHandler)
         }
-        let request = networkRequestFactory.buildAppDataPing(
+        let request = networkRequestFactory.appData.buildAppDataPing(
             options: options,
             resultType: Swift.Result<EnvironmentInfo, Swift.Error>.self
         )

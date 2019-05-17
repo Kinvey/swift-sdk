@@ -208,9 +208,18 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
         return entities
     }
     
+    private func notifyDeltaSetCompletionHandler(changedEntities: AnyRandomAccessCollection<T>, deletedEntities: AnyRandomAccessCollection<T>) {
+        guard let deltaSetCompletionHandler = self.deltaSetCompletionHandler else {
+            return
+        }
+        DispatchQueue.main.async {
+            deltaSetCompletionHandler(changedEntities, deletedEntities)
+        }
+    }
+    
     private func fetchDelta(multiRequest: MultiRequest<ResultType>, sinceDate: Date) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { resolver in
-            let request = client.networkRequestFactory.buildAppDataFindByQueryDeltaSet(
+            let request = client.networkRequestFactory.appData.buildAppDataFindByQueryDeltaSet(
                 collectionName: try! T.collectionName(),
                 query: query,
                 sinceDate: sinceDate,
@@ -228,53 +237,41 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                     let deleted = results["deleted"],
                     let requestStart = response.requestStartHeader
                 {
+                    let deletedEntities: AnyRandomAccessCollection<T>
+                    let changedEntities: AnyRandomAccessCollection<T>
                     do {
-                        let deletedEntities = try self.convertToEntities(fromJsonArray: deleted)
-                        let changedEntities = try self.convertToEntities(fromJsonArray: changed)
-                        cache.remove(entities: deletedEntities)
-                        cache.save(entities: changedEntities, syncQuery: (query: self.query, lastSync: requestStart))
-                        if let deltaSetCompletionHandler = self.deltaSetCompletionHandler {
-                            DispatchQueue.main.async {
-                                deltaSetCompletionHandler(changedEntities, deletedEntities)
-                            }
-                        }
-                        executor.executeAndWait {
-                            self.executeLocal {
-                                switch $0 {
-                                case .success(let results):
-                                    resolver.fulfill(results)
-                                case .failure(let error):
-                                    resolver.reject(error)
-                                }
-                            }
-                        }
+                        deletedEntities = try self.convertToEntities(fromJsonArray: deleted)
+                        changedEntities = try self.convertToEntities(fromJsonArray: changed)
                     } catch {
                         resolver.reject(error)
+                        return
+                    }
+                    cache.remove(entities: deletedEntities)
+                    cache.save(entities: changedEntities, syncQuery: (query: self.query, lastSync: requestStart))
+                    self.notifyDeltaSetCompletionHandler(
+                        changedEntities: changedEntities,
+                        deletedEntities: deletedEntities
+                    )
+                    executor.executeAndWait {
+                        self.executeLocal(resolver.completionHandler())
                     }
                 } else {
                     let error = buildError(data, response, error, self.client)
-                    if let error = error as? Kinvey.Error {
-                        switch error {
-                        case .resultSetSizeExceeded:
-                            if self.autoPagination {
-                                fallthrough
-                            } else {
-                                resolver.reject(error)
-                            }
-                        case .parameterValueOutOfRange:
-                            self.cache?.invalidateLastSync(query: self.query)
-                            self.executeNetwork { (result: Swift.Result<AnyRandomAccessCollection<T>, Swift.Error>) in
-                                switch result {
-                                case .success(let entities):
-                                    resolver.fulfill(entities)
-                                case .failure(let error):
-                                    resolver.reject(error)
-                                }
-                            }
-                        default:
+                    guard let kinveyError = error as? Kinvey.Error else {
+                        resolver.reject(error)
+                        return
+                    }
+                    switch kinveyError {
+                    case .resultSetSizeExceeded:
+                        guard self.autoPagination else {
                             resolver.reject(error)
+                            return
                         }
-                    } else {
+                        fallthrough
+                    case .parameterValueOutOfRange:
+                        self.cache?.invalidateLastSync(query: self.query)
+                        self.executeNetwork(resolver.completionHandler())
+                    default:
                         resolver.reject(error)
                     }
                 }
@@ -300,7 +297,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
     
     private func fetchAll(multiRequest: MultiRequest<ResultType>) -> Promise<AnyRandomAccessCollection<T>> {
         return Promise<AnyRandomAccessCollection<T>> { resolver in
-            let request = client.networkRequestFactory.buildAppDataFindByQuery(
+            let request = client.networkRequestFactory.appData.buildAppDataFindByQuery(
                 collectionName: try! T.collectionName(),
                 query: query,
                 options: options
@@ -374,14 +371,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T, AnyRandomAccessCo
                 ) { _requestStart in
                     requestStart = _requestStart
                 }
-                let request = countOperation.execute { result in
-                    switch result {
-                    case .success(let count):
-                        resolver.fulfill(count)
-                    case .failure(let error):
-                        resolver.reject(error)
-                    }
-                }
+                let request = countOperation.execute(resolver.completionHandler())
                 multiRequest.progress.addChild(request.progress, withPendingUnitCount: 1)
                 multiRequest += request
             }.then {

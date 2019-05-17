@@ -302,7 +302,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         options: Options?
     ) {
         self.httpMethod = HttpMethod.parse(request.httpMethod!)
-        self.endpoint = Endpoint.url(url: request.url!)
+        self.endpoint = URLEndpoint(url: request.url!)
         self.options = options
         let client = options?.client ?? sharedClient
         self.client = client

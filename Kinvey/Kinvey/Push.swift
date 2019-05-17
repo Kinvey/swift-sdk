@@ -316,7 +316,7 @@ open class Push {
                 return
             }
             
-            let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(
+            let request = self.client.networkRequestFactory.push.buildPushUnRegisterDevice(
                 deviceToken,
                 options: options
             )
@@ -348,7 +348,7 @@ open class Push {
         self.deviceToken = deviceToken
         let block: () -> Void = {
             Promise<Bool> { resolver in
-                let request = self.client.networkRequestFactory.buildPushRegisterDevice(
+                let request = self.client.networkRequestFactory.push.buildPushRegisterDevice(
                     deviceToken,
                     options: options
                 )

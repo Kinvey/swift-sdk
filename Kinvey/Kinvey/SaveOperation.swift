@@ -49,7 +49,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
     func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = LocalRequest<Result<T, Swift.Error>>()
         request.execute { () -> Void in
-            let networkRequest = self.client.networkRequestFactory.buildAppDataSave(
+            let networkRequest = self.client.networkRequestFactory.appData.buildAppDataSave(
                 self.persistable,
                 options: options,
                 resultType: ResultType.self
@@ -72,7 +72,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
-        let request = client.networkRequestFactory.buildAppDataSave(
+        let request = client.networkRequestFactory.appData.buildAppDataSave(
             persistable,
             options: options,
             resultType: ResultType.self

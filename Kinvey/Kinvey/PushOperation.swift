@@ -82,94 +82,87 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
     }
     
     func execute(completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
-        var count = UInt(0)
-        var errors: [Swift.Error] = []
-        
-        let collectionName = try! T.collectionName()
-        var pushOperation: PushRequest!
-        pushOperation = PushRequest(collectionName: collectionName) {
-            let result: ResultType
-            if errors.isEmpty {
-                result = .success(count)
-            } else {
-                result = .failure(MultipleErrors(errors: errors))
-            }
-            pushOperation.result = result
-            completionHandler?(result)
+        guard let sync = sync else {
+            return AnyRequest(.success(0))
         }
         
-        let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
+        let requests = MultiRequest<ResultType>()
         
-        if let sync = sync {
-            for pendingOperation in sync.pendingOperations() {
-                let request = HttpRequest<Swift.Result<UInt, Swift.Error>>(
-                    request: pendingOperation.buildRequest(),
-                    options: options
-                )
-                let objectId = pendingOperation.objectId
-                let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
-                    request.execute() { data, response, error in
-                        if let response = response,
-                            response.isOK,
-                            let data = data
+        let promises = sync.pendingOperations().map({ push(pendingOperation: $0, requests: requests) })
+        when(resolved: promises).done {
+            var count = UInt(0)
+            var errors: [Swift.Error] = []
+            for result in $0 {
+                switch result {
+                case .fulfilled(let _count):
+                    count += _count
+                case .rejected(let error):
+                    errors.append(error)
+                }
+            }
+            completionHandler?(errors.isEmpty ? .success(count) : .failure(MultipleErrors(errors: errors)))
+        }
+        
+        return AnyRequest(requests)
+    }
+    
+    private func push(pendingOperation: PendingOperation, requests: MultiRequest<ResultType>) -> Promise<UInt> {
+        return Promise<UInt> { resolver in
+            let request = HttpRequest<Swift.Result<UInt, Swift.Error>>(
+                request: pendingOperation.buildRequest(),
+                options: options
+            )
+            let objectId = pendingOperation.objectId
+            requests += request
+            request.execute() { data, response, error in
+                if let response = response,
+                    response.isOK,
+                    let data = data
+                {
+                    let json = try? self.client.jsonParser.parseDictionary(from: data)
+                    if let cache = self.cache,
+                        let json = json,
+                        request.request.httpMethod != "DELETE"
+                    {
+                        if let objectId = objectId,
+                            objectId.starts(with: ObjectIdTmpPrefix),
+                            let entity = cache.find(byId: objectId)
                         {
-                            let json = try? self.client.jsonParser.parseDictionary(from: data)
-                            if let cache = self.cache,
-                                let json = json,
-                                request.request.httpMethod != "DELETE"
-                            {
-                                if let objectId = objectId,
-                                    objectId.starts(with: ObjectIdTmpPrefix),
-                                    let entity = cache.find(byId: objectId)
-                                {
-                                    cache.remove(entity: entity)
-                                }
-                                
-                                if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
-                                    cache.save(entity: persistable)
-                                }
-                            }
-                            if request.request.httpMethod != "DELETE" {
-                                self.sync?.removePendingOperation(pendingOperation)
-                                count += 1
-                            } else if let json = json, let _count = json["count"] as? UInt {
-                                self.sync?.removePendingOperation(pendingOperation)
-                                count += _count
-                            } else {
-                                errors.append(buildError(data, response, error, self.client))
-                            }
-                        } else if let response = response, response.isUnauthorized,
-                            let data = data,
-                            let json = try? self.client.jsonParser.parseDictionary(from: data) as? [String : String],
-                            let error = json["error"],
-                            let debug = json["debug"],
-                            let description = json["description"]
-                        {
-                            let error = Error.unauthorized(
-                                httpResponse: response.httpResponse,
-                                data: data,
-                                error: error,
-                                debug: debug,
-                                description: description
-                            )
-                            errors.append(error)
-                        } else {
-                            errors.append(buildError(data, response, error, self.client))
+                            cache.remove(entity: entity)
                         }
-                        operation.state = .finished
+                        
+                        if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
+                            cache.save(entity: persistable)
+                        }
                     }
+                    if request.request.httpMethod != "DELETE" {
+                        self.sync?.removePendingOperation(pendingOperation)
+                        resolver.fulfill(1)
+                    } else if let json = json, let count = json["count"] as? UInt {
+                        self.sync?.removePendingOperation(pendingOperation)
+                        resolver.fulfill(count)
+                    } else {
+                        resolver.reject(buildError(data, response, error, self.client))
+                    }
+                } else if let response = response, response.isUnauthorized,
+                    let data = data,
+                    let json = try? self.client.jsonParser.parseDictionary(from: data) as? [String : String],
+                    let error = json["error"],
+                    let debug = json["debug"],
+                    let description = json["description"]
+                {
+                    resolver.reject(Error.unauthorized(
+                        httpResponse: response.httpResponse,
+                        data: data,
+                        error: error,
+                        debug: debug,
+                        description: description
+                    ))
+                } else {
+                    resolver.reject(buildError(data, response, error, self.client))
                 }
-                
-                for pendingBlockOperation in pendingBlockOperations {
-                    operation.addDependency(pendingBlockOperation)
-                }
-                
-                pushOperation.addOperation(operation: operation)
             }
         }
-        
-        pushOperation.execute(pendingBlockOperations: pendingBlockOperations)
-        return AnyRequest(pushOperation)
     }
     
 }

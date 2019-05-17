@@ -745,19 +745,17 @@ class AutoDataStoreSpec: QuickSpec {
 
                 expect(autoDataStore.syncCount()).to(equal(2))
 
-                do {
-                    mockResponse(error: timeoutError)
-                    defer {
-                        setURLProtocol(nil)
-                    }
-
-                    let errors = kinveyPush(dataStore: autoDataStore).errors
-                    expect(errors?.count).to(equal(2))
-                    for error in errors ?? [] {
-                        expect((error as NSError).domain).to(equal(NSURLErrorDomain))
-                        expect((error as NSError).code).to(equal(NSURLErrorTimedOut))
-                        expect(error.localizedDescription).to(equal("The operation couldn’t be completed. (\(NSURLErrorDomain) error \(NSURLErrorTimedOut).)"))
-                    }
+                mockResponse(error: timeoutError)
+                defer {
+                    setURLProtocol(nil)
+                }
+                
+                let errors = kinveyPush(dataStore: autoDataStore).errors
+                expect(errors?.count).to(equal(2))
+                for error in errors ?? [] {
+                    expect((error as NSError).domain).to(equal(NSURLErrorDomain))
+                    expect((error as NSError).code).to(equal(NSURLErrorTimedOut))
+                    expect(error.localizedDescription).to(equal("The operation couldn’t be completed. (\(NSURLErrorDomain) error \(NSURLErrorTimedOut).)"))
                 }
 
                 expect(autoDataStore.syncCount()).to(equal(2))
