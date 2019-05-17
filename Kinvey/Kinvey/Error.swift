@@ -31,6 +31,12 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
         /// Constant for 400 response where the parameter value is a BL runtime error
         case blRuntimeError = "BLRuntimeError"
         
+        /// Constant for 400 response where the feature is not available
+        case featureUnavailable = "FeatureUnavailable"
+        
+        /// Constant for 500 response where an internal error happened and another request should be made to retry
+        case kinveyInternalErrorRetry = "KinveyInternalErrorRetry"
+        
     }
     
     /// Error where Object ID is required.
@@ -104,6 +110,11 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     /// Error when a BL (Business Logic) Runtime Error occurs
     case blRuntime(debug: String, description: String, stack: String)
     
+    /// Error when a feature is not available
+    case featureUnavailable(debug: String, description: String)
+    
+    case kinveyInternalErrorRetry(debug: String, description: String)
+    
     /// Error localized description.
     public var description: String {
         let bundle = Bundle(for: Client.self)
@@ -122,7 +133,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .parameterValueOutOfRange(_, let description),
              .invalidCredentials(_, _, _, let description),
              .micAuth(_, let description),
-             .blRuntime(_, let description, _):
+             .blRuntime(_, let description, _),
+             .featureUnavailable(_, let description),
+             .kinveyInternalErrorRetry(_, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -164,7 +177,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .entityNotFound(let debug, _),
              .parameterValueOutOfRange(let debug, _),
              .invalidCredentials(_, _, let debug, _),
-             .blRuntime(let debug, _, _):
+             .blRuntime(let debug, _, _),
+             .featureUnavailable(let debug, _),
+             .kinveyInternalErrorRetry(let debug, _):
             return debug
         default:
             return description

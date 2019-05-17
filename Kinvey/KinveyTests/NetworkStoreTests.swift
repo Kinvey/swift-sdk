@@ -361,6 +361,164 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveArrayIdsAlreadyExists() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        let id = UUID().uuidString
+        var requestCount = 0
+        if useMockData {
+            mockResponse { request in
+                requestCount += 1
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request)
+                switch json {
+                case let json as [String : Any]:
+                    return HttpResponse(json: json)
+                case let json as [[String : Any]]:
+                    return HttpResponse(
+                        statusCode: 500,
+                        json: [
+                            "error": "KinveyInternalErrorRetry",
+                            "description": "The Kinvey server encountered an unexpected error. Please retry your request.",
+                            "debug": "An entity with that _id already exists in this collection"
+                        ]
+                    )
+                default:
+                    XCTFail("Request not expected")
+                    fatalError()
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            let person = Person { $0.entityId = id; $0.name = "Victor" }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let person):
+                    XCTAssertEqual(person.name, "Victor")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(requestCount, useMockData ? 1 : 0)
+        
+        do {
+            let persons = [
+                Person { $0.entityId = id; $0.name = "Hugo" },
+                Person { $0.entityId = id; $0.name = "Barros" }
+            ]
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let result):
+                    XCTFail("Should throw an error")
+                case .failure(let error):
+                    let error = error as? Kinvey.Error
+                    XCTAssertNotNil(error)
+                    if let error = error {
+                        switch error {
+                        case .kinveyInternalErrorRetry(let debug, let description):
+                            XCTAssertEqual(debug, "An entity with that _id already exists in this collection")
+                            XCTAssertEqual(description, "The Kinvey server encountered an unexpected error. Please retry your request.")
+                        default:
+                            XCTFail(error.localizedDescription)
+                        }
+                    }
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(requestCount, useMockData ? 2 : 0)
+    }
+    
+    func testSaveArrayFeatureUnavailableError() {
+        var requestCount = 0
+        defer {
+            XCTAssertEqual(requestCount, useMockData ? 1 : 0)
+        }
+        if useMockData {
+            mockResponse { request in
+                requestCount += 1
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertNotEqual(apiVersion, "5")
+                return HttpResponse(
+                    statusCode: 400,
+                    json: [
+                        "error": "FeatureUnavailable",
+                        "description": "Requested functionality is unavailable in this API version.",
+                        "debug": "Inserting multiple entities is not available in this Kinvey API version"
+                    ]
+                )
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = [
+            Person { $0.name = "Victor" },
+            Person { $0.name = "Hugo" }
+        ]
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail("Should throw an FeatureUnavailable error")
+            case .failure(let error):
+                let _error = error as? Kinvey.Error
+                guard let error = _error else {
+                    XCTAssertNotNil(_error)
+                    return
+                }
+                switch error {
+                case .featureUnavailable(let debug, let description):
+                    XCTAssertEqual(description, "Requested functionality is unavailable in this API version.")
+                    XCTAssertEqual(debug, "Inserting multiple entities is not available in this Kinvey API version")
+                default:
+                    XCTFail(error.localizedDescription)
+                }
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
     func testSaveArrayEmpty() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
