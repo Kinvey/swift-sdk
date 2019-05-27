@@ -61,7 +61,7 @@ class AggregateOperation<T: Persistable>: ReadOperation<T, [JsonDictionary], Swi
             completionHandler?(result)
             return AnyRequest(request)
         }
-        let request = client.networkRequestFactory.buildAppDataGroup(
+        let request = client.networkRequestFactory.appData.buildAppDataGroup(
             collectionName: try! T.collectionName(),
             keys: aggregation.keys,
             initialObject: initialObject,

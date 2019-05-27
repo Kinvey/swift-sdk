@@ -346,7 +346,7 @@ open class FileStore<FileType: File> {
         options: Options?,
         requests: MultiRequest<ResultType>?
     ) -> (request: AnyRequest<Swift.Result<FileType, Swift.Error>>, promise: Promise<FileType>) {
-        let request = self.client.networkRequestFactory.buildBlobDownloadFile(
+        let request = self.client.networkRequestFactory.blob.buildBlobDownloadFile(
             file,
             options: options,
             resultType: Swift.Result<FileType, Swift.Error>.self
@@ -538,7 +538,7 @@ open class FileStore<FileType: File> {
             }
             
             let createUpdateFileEntry = {
-                let request = self.client.networkRequestFactory.buildBlobUploadFile(file, options: options)
+                let request = self.client.networkRequestFactory.blob.buildBlobUploadFile(file, options: options)
                 requests += request
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK,
@@ -553,74 +553,75 @@ open class FileStore<FileType: File> {
                 }
             }
             
-            if let _ = file.fileId,
+            guard let _ = file.fileId,
                 let uploadURL = file.uploadURL
-            {
-                var request = URLRequest(url: uploadURL)
-                request.httpMethod = "PUT"
-                if let uploadHeaders = file.uploadHeaders {
-                    for (headerField, value) in uploadHeaders {
-                        request.setValue(value, forHTTPHeaderField: headerField)
-                    }
+            else {
+                createUpdateFileEntry()
+                return
+            }
+            
+            var request = URLRequest(url: uploadURL)
+            request.httpMethod = "PUT"
+            if let uploadHeaders = file.uploadHeaders {
+                for (headerField, value) in uploadHeaders {
+                    request.setValue(value, forHTTPHeaderField: headerField)
                 }
-                request.setValue("0", forHTTPHeaderField: "Content-Length")
-                switch source {
-                case let .data(data):
-                    request.setValue("bytes */\(data.count)", forHTTPHeaderField: "Content-Range")
-                case let .url(url):
-                    if let attrs = try? FileManager.default.attributesOfItem(atPath: (url.path as NSString).expandingTildeInPath),
-                        let fileSize = attrs[FileAttributeKey.size] as? UInt64
-                    {
-                        request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
-                    }
-                case .stream:
-                    request.setValue("bytes */*", forHTTPHeaderField: "Content-Range")
+            }
+            request.setValue("0", forHTTPHeaderField: "Content-Length")
+            switch source {
+            case let .data(data):
+                request.setValue("bytes */\(data.count)", forHTTPHeaderField: "Content-Range")
+            case let .url(url):
+                if let attrs = try? FileManager.default.attributesOfItem(atPath: (url.path as NSString).expandingTildeInPath),
+                    let fileSize = attrs[FileAttributeKey.size] as? UInt64
+                {
+                    request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
                 }
-                
-                if self.client.logNetworkEnabled {
+            case .stream:
+                request.setValue("bytes */*", forHTTPHeaderField: "Content-Range")
+            }
+            
+            if self.client.logNetworkEnabled {
+                do {
+                    log.debug("\(request.description)")
+                }
+            }
+            
+            let urlSession = options?.urlSession ?? client.urlSession
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
                     do {
-                        log.debug("\(request.description)")
+                        log.debug("\(response.description(data))")
                     }
                 }
                 
-                let urlSession = options?.urlSession ?? client.urlSession
-                let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-                    if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
-                        do {
-                            log.debug("\(response.description(data))")
-                        }
-                    }
-                    
-                    let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)")
-                    if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
-                        createUpdateFileEntry()
-                    } else if let response = response as? HTTPURLResponse,
-                        response.statusCode == 308
+                let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)")
+                if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
+                    createUpdateFileEntry()
+                } else if let response = response as? HTTPURLResponse,
+                    response.statusCode == 308
+                {
+                    if let rangeString = response.allHeaderFields["Range"] as? String,
+                        let textCheckingResult = regexRange.matches(in: rangeString, range: NSRange(location: 0, length: rangeString.count)).first,
+                        textCheckingResult.numberOfRanges == 3
                     {
-                        if let rangeString = response.allHeaderFields["Range"] as? String,
-                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSRange(location: 0, length: rangeString.count)).first,
-                            textCheckingResult.numberOfRanges == 3
-                        {
-                            let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
-                            if let endRange = Int(endRangeString) {
-                                resolver.fulfill((file: file, skip: endRange))
-                            } else {
-                                resolver.reject(Error.invalidResponse(httpResponse: response, data: data))
-                            }
+                        let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
+                        if let endRange = Int(endRangeString) {
+                            resolver.fulfill((file: file, skip: endRange))
                         } else {
-                            resolver.fulfill((file: file, skip: nil))
+                            resolver.reject(Error.invalidResponse(httpResponse: response, data: data))
                         }
                     } else {
-                        resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
+                        resolver.fulfill((file: file, skip: nil))
                     }
+                } else {
+                    resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
                 }
-                let urlSessionTaskRequest = URLSessionTaskRequest<ResultType>(client: client, options: options, task: dataTask)
-                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 1)
-                requests += urlSessionTaskRequest
-                dataTask.resume()
-            } else {
-                createUpdateFileEntry()
             }
+            let urlSessionTaskRequest = URLSessionTaskRequest<ResultType>(client: client, options: options, task: dataTask)
+            requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 1)
+            requests += urlSessionTaskRequest
+            dataTask.resume()
         }
     }
     
@@ -831,60 +832,69 @@ open class FileStore<FileType: File> {
         request: URLSessionTaskRequest<Swift.Result<URL, Swift.Error>>,
         promise: Promise<URL>
     ) {
-        let downloadTaskRequest = URLSessionTaskRequest<Swift.Result<URL, Swift.Error>>(client: client, options: options, url: downloadURL)
+        let downloadTaskRequest = URLSessionTaskRequest<Swift.Result<URL, Swift.Error>>(
+            client: client,
+            options: options,
+            url: downloadURL
+        )
         let promise = Promise<URL> { resolver in
             let executor = Executor()
-            downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, response, error) in
-                if let response = response, response.isOK || response.isNotModified, let url = url {
-                    switch storeType {
-                    case .cache:
-                        var pathURL: URL? = nil
-                        var entityId: String? = nil
-                        executor.executeAndWait {
-                            entityId = file.fileId
-                            pathURL = file.pathURL
+            downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, _response, error) in
+                guard let response = _response,
+                    response.isOK || response.isNotModified,
+                    let url = url
+                else {
+                    resolver.reject(buildError(nil, _response, error, self.client))
+                    return
+                }
+                
+                switch storeType {
+                case .cache:
+                    var pathURL: URL? = nil
+                    var _entityId: String? = nil
+                    executor.executeAndWait {
+                        _entityId = file.fileId
+                        pathURL = file.pathURL
+                    }
+                    if let pathURL = pathURL, response.isNotModified {
+                        resolver.fulfill(pathURL)
+                        return
+                    }
+                    
+                    let fileManager = FileManager()
+                    guard let entityId = _entityId else {
+                        resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
+                        return
+                    }
+                    
+                    let baseFolder = cacheBasePath
+                    do {
+                        var baseFolderURL = URL(fileURLWithPath: baseFolder)
+                        baseFolderURL = baseFolderURL.appendingPathComponent(self.client.appKey!).appendingPathComponent("files")
+                        if !fileManager.fileExists(atPath: baseFolderURL.path) {
+                            try fileManager.createDirectory(at: baseFolderURL, withIntermediateDirectories: true, attributes: nil)
                         }
-                        if let pathURL = pathURL, response.isNotModified {
-                            resolver.fulfill(pathURL)
-                        } else {
-                            let fileManager = FileManager()
-                            if let entityId = entityId
-                            {
-                                let baseFolder = cacheBasePath
-                                do {
-                                    var baseFolderURL = URL(fileURLWithPath: baseFolder)
-                                    baseFolderURL = baseFolderURL.appendingPathComponent(self.client.appKey!).appendingPathComponent("files")
-                                    if !fileManager.fileExists(atPath: baseFolderURL.path) {
-                                        try fileManager.createDirectory(at: baseFolderURL, withIntermediateDirectories: true, attributes: nil)
-                                    }
-                                    let toURL = baseFolderURL.appendingPathComponent(entityId)
-                                    if fileManager.fileExists(atPath: toURL.path) {
-                                        do {
-                                            try fileManager.removeItem(atPath: toURL.path)
-                                        }
-                                    }
-                                    try fileManager.moveItem(at: url, to: toURL)
-                                    
-                                    if let cache = self.cache {
-                                        cache.save(file) {
-                                            file.path = NSString(string: toURL.path).abbreviatingWithTildeInPath
-                                            file.etag = response.etag
-                                        }
-                                    }
-                                    
-                                    resolver.fulfill(toURL)
-                                } catch let error {
-                                    resolver.reject(error)
-                                }
-                            } else {
-                                resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
+                        let toURL = baseFolderURL.appendingPathComponent(entityId)
+                        if fileManager.fileExists(atPath: toURL.path) {
+                            do {
+                                try fileManager.removeItem(atPath: toURL.path)
                             }
                         }
-                    default:
-                        resolver.fulfill(url)
+                        try fileManager.moveItem(at: url, to: toURL)
+                        
+                        if let cache = self.cache {
+                            cache.save(file) {
+                                file.path = NSString(string: toURL.path).abbreviatingWithTildeInPath
+                                file.etag = response.etag
+                            }
+                        }
+                        
+                        resolver.fulfill(toURL)
+                    } catch let error {
+                        resolver.reject(error)
                     }
-                } else {
-                    resolver.reject(buildError(nil, response, error, self.client))
+                default:
+                    resolver.fulfill(url)
                 }
             }
         }
@@ -1240,7 +1250,7 @@ open class FileStore<FileType: File> {
         options: Options? = nil,
         completionHandler: ((Swift.Result<UInt, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<UInt, Swift.Error>> {
-        let request = client.networkRequestFactory.buildBlobDeleteFile(
+        let request = client.networkRequestFactory.blob.buildBlobDeleteFile(
             file,
             options: options,
             resultType: Swift.Result<UInt, Swift.Error>.self
@@ -1312,7 +1322,7 @@ open class FileStore<FileType: File> {
         options: Options? = nil,
         completionHandler: ((Swift.Result<[FileType], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<[FileType], Swift.Error>> {
-        let request = client.networkRequestFactory.buildBlobQueryFile(
+        let request = client.networkRequestFactory.blob.buildBlobQueryFile(
             query,
             options: options,
             resultType: Swift.Result<[FileType], Swift.Error>.self

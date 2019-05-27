@@ -581,8 +581,8 @@ class MockURLProtocol: URLProtocol {
                     }
                 }
             }
-            self.client!.urlProtocolDidFinishLoading(self)
         }
+        self.client!.urlProtocolDidFinishLoading(self)
     }
     
     override func stopLoading() {

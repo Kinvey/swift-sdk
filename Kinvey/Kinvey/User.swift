@@ -192,7 +192,7 @@ open class User: NSObject, Credential {
             return errorRequest(error: error, completionHandler: completionHandler)
         }
 
-        let request = client.networkRequestFactory.buildUserSignUp(
+        let request = client.networkRequestFactory.user.buildUserSignUp(
             username: username,
             password: password,
             user: user,
@@ -217,7 +217,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserDelete(
+        let request = client.networkRequestFactory.user.buildUserDelete(
             userId: userId,
             hard: hard,
             options: options,
@@ -225,16 +225,16 @@ open class User: NSObject, Credential {
         )
         Promise<Void> { resolver in
             request.execute() { (data, response, error) in
-                if let response = response, response.isOK {
-                    if let activeUser = client.activeUser,
-                        activeUser.userId == userId
-                    {
-                        client.activeUser = nil
-                    }
-                    resolver.fulfill(())
-                } else {
+                guard let responseUnwrapped = response, responseUnwrapped.isOK else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
+                if let activeUser = client.activeUser,
+                    activeUser.userId == userId
+                {
+                    client.activeUser = nil
+                }
+                resolver.fulfill(())
             }
         }.done {
             completionHandler?(.success($0))
@@ -345,7 +345,7 @@ open class User: NSObject, Credential {
         
         let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
         Promise<U> { resolver in
-            let request = client.networkRequestFactory.buildUserSocialLogin(
+            let request = client.networkRequestFactory.user.buildUserSocialLogin(
                 authSource,
                 authData: authData,
                 options: options
@@ -361,7 +361,7 @@ open class User: NSObject, Credential {
                     response.isNotFound,
                     createIfNotExists
                 {
-                    let request = client.networkRequestFactory.buildUserSocialCreate(
+                    let request = client.networkRequestFactory.user.buildUserSocialCreate(
                         authSource,
                         authData: authData,
                         options: options
@@ -476,7 +476,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildSendEmailConfirmation(
+        let request = client.networkRequestFactory.user.buildSendEmailConfirmation(
             forUsername: username,
             options: options,
             resultType: Swift.Result<Void, Swift.Error>.self
@@ -536,7 +536,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserResetPassword(
+        let request = client.networkRequestFactory.user.buildUserResetPassword(
             usernameOrEmail: usernameOrEmail,
             options: options,
             resultType: Swift.Result<Void, Swift.Error>.self
@@ -667,7 +667,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserForgotUsername(
+        let request = client.networkRequestFactory.user.buildUserForgotUsername(
             email: email,
             options: options,
             resultType: Swift.Result<Void, Swift.Error>.self
@@ -724,23 +724,23 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Bool, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Bool, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserExists(
+        let request = client.networkRequestFactory.user.buildUserExists(
             username: username,
             options: options,
             resultType: Swift.Result<Bool, Swift.Error>.self
         )
         Promise<Bool> { resolver in
             request.execute() { (data, response, error) in
-                if let response = response,
-                    response.isOK,
-                    let data = data,
-                    let json = try? client.jsonParser.parseDictionary(from: data),
+                guard let responseUnwrapped = response,
+                    responseUnwrapped.isOK,
+                    let dataUnwrapped = data,
+                    let json = try? client.jsonParser.parseDictionary(from: dataUnwrapped),
                     let usernameExists = json["usernameExists"] as? Bool
-                {
-                    resolver.fulfill(usernameExists)
-                } else {
+                else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
+                resolver.fulfill(usernameExists)
             }
         }.done { exists in
             completionHandler?(.success(exists))
@@ -796,22 +796,22 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserGet(
+        let request = client.networkRequestFactory.user.buildUserGet(
             userId: userId,
             options: options,
             resultType: Swift.Result<U, Swift.Error>.self
         )
         Promise<U> { resolver in
             request.execute() { (data, response, error) in
-                if let response = response,
-                    response.isOK,
-                    let data = data,
-                    let user = try? client.jsonParser.parseUser(U.self, from: data)
-                {
-                    resolver.fulfill(user)
-                } else {
+                guard let responseUnwrapped = response,
+                    responseUnwrapped.isOK,
+                    let dataUnwrapped = data,
+                    let user = try? client.jsonParser.parseUser(U.self, from: dataUnwrapped)
+                else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
+                resolver.fulfill(user)
             }
         }.done { user in
             completionHandler?(.success(user))
@@ -829,22 +829,22 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<[U], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<[U], Swift.Error>> {
         let client = options?.client ?? self.client
-        let request = client.networkRequestFactory.buildUserFind(
+        let request = client.networkRequestFactory.user.buildUserFind(
             query: query,
             options: options,
             resultType: Swift.Result<[U], Swift.Error>.self
         )
         Promise<[U]> { resolver in
             request.execute() { (data, response, error) in
-                if let response = response,
-                    response.isOK,
-                    let data = data,
-                    let user = try? client.jsonParser.parseUsers(U.self, from: data)
-                {
-                    resolver.fulfill(user)
-                } else {
+                guard let responseUnwrapped = response,
+                    responseUnwrapped.isOK,
+                    let dataUnwrapped = data,
+                    let user = try? client.jsonParser.parseUsers(U.self, from: dataUnwrapped)
+                else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
+                resolver.fulfill(user)
             }
         }.done { users in
             completionHandler?(.success(users))
@@ -861,7 +861,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
         let client = options?.client ?? self.client
-        let request = client.networkRequestFactory.buildUserMe(
+        let request = client.networkRequestFactory.user.buildUserMe(
             options: options,
             resultType: Swift.Result<Void, Swift.Error>.self
         )
@@ -987,7 +987,7 @@ open class User: NSObject, Credential {
         options: Options? = nil,
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
-        let request = client.networkRequestFactory.buildUserLogout(
+        let request = client.networkRequestFactory.user.buildUserLogout(
             user: self,
             options: options,
             resultType: Swift.Result<Void, Swift.Error>.self
@@ -1040,7 +1040,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserSave(
+        let request = client.networkRequestFactory.user.buildUserSave(
             user: self,
             newPassword: newPassword,
             options: options,
@@ -1098,7 +1098,7 @@ open class User: NSObject, Credential {
         completionHandler: ((Swift.Result<[U], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<[U], Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildUserLookup(
+        let request = client.networkRequestFactory.user.buildUserLookup(
             user: self,
             userQuery: userQuery,
             options: options,
@@ -1130,7 +1130,7 @@ open class User: NSObject, Credential {
         options: Options? = nil,
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
-        let request = client.networkRequestFactory.buildUserRegisterRealtime(
+        let request = client.networkRequestFactory.stream.buildUserRegisterRealtime(
             user: self,
             deviceId: deviceId,
             options: options,
@@ -1166,7 +1166,7 @@ open class User: NSObject, Credential {
         options: Options? = nil,
         completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<Void, Swift.Error>> {
-        let request = client.networkRequestFactory.buildUserUnregisterRealtime(
+        let request = client.networkRequestFactory.stream.buildUserUnregisterRealtime(
             user: self,
             deviceId: deviceId,
             options: options,
@@ -1292,7 +1292,7 @@ open class User: NSObject, Credential {
                 return errorRequest(error: error, completionHandler: completionHandler)
             }
             
-            let request = client.networkRequestFactory.buildUserLogin(
+            let request = client.networkRequestFactory.user.buildUserLogin(
                 username: username,
                 password: password,
                 options: options,
@@ -1514,15 +1514,9 @@ open class User: NSObject, Credential {
                                     redirectURI: redirectURI,
                                     code: code,
                                     userType: U.self,
-                                    options: options
-                                ) {
-                                    switch $0 {
-                                    case .success(let user):
-                                        resolver.fulfill(user)
-                                    case .failure(let error):
-                                        resolver.reject(error)
-                                    }
-                                }
+                                    options: options,
+                                    completionHandler: resolver.completionHandler()
+                                )
                             case .failure(var error):
                                 if error is NilError {
                                     error = buildError(nil, nil, error, client)
@@ -1558,8 +1552,8 @@ open class User: NSObject, Credential {
                     userType: client.userType,
                     forceUIWebView: forceUIWebView,
                     options: options
-                ) { (result) in
-                    switch result {
+                ) {
+                    switch $0 {
                     case .success(let user):
                         resolver.fulfill(user as! U)
                     case .failure(let error):

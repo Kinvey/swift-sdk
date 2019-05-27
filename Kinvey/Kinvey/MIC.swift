@@ -80,7 +80,7 @@ open class MIC {
         options: Options? = nil
     ) -> URL {
         let client = options?.client ?? sharedClient
-        return Endpoint.oauthAuth(
+        return OAuthEndpoint.oauthAuth(
             client: client,
             clientId: options?.authServiceId,
             redirectURI: redirectURI,
@@ -114,7 +114,7 @@ open class MIC {
         let client = options?.client ?? sharedClient
         let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
         Promise<U> { resolver in
-            let request = client.networkRequestFactory.buildOAuthToken(
+            let request = client.networkRequestFactory.oauth.buildOAuthToken(
                 redirectURI: redirectURI,
                 code: code,
                 options: options
@@ -128,15 +128,9 @@ open class MIC {
                     requests += User.login(
                         authSource: .kinvey,
                         authData,
-                        options: options
-                    ) { (result: Swift.Result<U, Swift.Error>) in
-                        switch result {
-                        case .success(let user):
-                            resolver.fulfill(user)
-                        case .failure(let error):
-                            resolver.reject(error)
-                        }
-                    }
+                        options: options,
+                        completionHandler: resolver.completionHandler()
+                    )
                 } else {
                     resolver.reject(buildError(data, response, error, client))
                 }
@@ -160,7 +154,7 @@ open class MIC {
     ) -> Promise<U> {
         let client = options?.client ?? sharedClient
         return Promise<U> { resolver in
-            let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
+            let request = client.networkRequestFactory.oauth.buildOAuthGrantAuthenticate(
                 redirectURI: redirectURI,
                 tempLoginUri: tempLoginUrl,
                 username: username,
@@ -173,36 +167,32 @@ open class MIC {
                 delegateQueue: nil
             )
             request.execute(urlSession: urlSession) { (data, response, error) in
-                if let response = response,
-                    let httpResponse = response as? HttpResponse,
+                defer {
+                    urlSession.invalidateAndCancel()
+                }
+                guard let httpResponse = response as? HttpResponse,
                     httpResponse.response.statusCode == 302,
                     let location = httpResponse.response.allHeaderFields["Location"] as? String,
                     let url = URL(string: location)
-                {
-                    switch parseCode(redirectURI: redirectURI, url: url) {
-                    case .success(let code):
-                        requests += login(
-                            redirectURI: redirectURI,
-                            code: code,
-                            options: options
-                        ) { result in
-                            switch result {
-                            case .success(let user):
-                                resolver.fulfill(user as! U)
-                            case .failure(let error):
-                                resolver.reject(error)
-                            }
-                        }
-                    case .failure(var error):
-                        if error is NilError {
-                            error = buildError(data, response, error, client)
-                        }
-                        resolver.reject(error)
-                    }
-                } else {
+                else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
-                urlSession.invalidateAndCancel()
+                switch parseCode(redirectURI: redirectURI, url: url) {
+                case .success(let code):
+                    requests += login(
+                        redirectURI: redirectURI,
+                        code: code,
+                        userType: U.self,
+                        options: options,
+                        completionHandler: resolver.completionHandler()
+                    )
+                case .failure(var error):
+                    if error is NilError {
+                        error = buildError(data, response, error, client)
+                    }
+                    resolver.reject(error)
+                }
             }
             requests += request
         }
@@ -218,7 +208,7 @@ open class MIC {
     ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
-        let request = client.networkRequestFactory.buildOAuthGrantAuth(
+        let request = client.networkRequestFactory.oauth.buildOAuthGrantAuth(
             redirectURI: redirectURI,
             options: options
         )
@@ -263,7 +253,7 @@ open class MIC {
     ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
         let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
-        let request = client.networkRequestFactory.buildOAuthToken(
+        let request = client.networkRequestFactory.oauth.buildOAuthToken(
             username: username,
             password: password,
             options: options
@@ -311,7 +301,7 @@ open class MIC {
     ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
+        let request = client.networkRequestFactory.oauth.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: options
         )

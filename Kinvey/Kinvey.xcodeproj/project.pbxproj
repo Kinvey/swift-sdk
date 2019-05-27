@@ -192,6 +192,7 @@
 		5783BA4820F7240F0090D0BD /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5783BA4920F724370090D0BD /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
+		5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */; };
 		57882EC0219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
 		57882EC1219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
 		578870931DD52EC80087FE78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870921DD52EC80087FE78 /* AppDelegate.swift */; };
@@ -1004,6 +1005,7 @@
 		5783BA4120F722DC0090D0BD /* KinveyTests RemoveAll Memory Leak.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests RemoveAll Memory Leak.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveAllMemoryLeakTests.swift; sourceTree = "<group>"; };
 		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
+		5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEndpointParams.swift; sourceTree = "<group>"; };
 		57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoStoreTests.swift; sourceTree = "<group>"; };
 		57882EC3219CA574005ECCA3 /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
 		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1734,6 +1736,7 @@
 				573851AD1D47C7F800E4712A /* RealmFileCache.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
+				5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */,
 				5781D1261CE29AA600369F40 /* ObjCRuntime.swift */,
 				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
 				57C2F1721D5E5A68005A214B /* BuilderType.swift */,
@@ -3500,6 +3503,7 @@
 				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
+				5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */,
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,

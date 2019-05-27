@@ -22,7 +22,7 @@ internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> where T: 
         self.objectId = objectId
         let query = Query(format: "\(try! T.entityIdProperty()) == %@", objectId as Any)
         let client = options?.client ?? sharedClient
-        let httpRequest = client.networkRequestFactory.buildAppDataRemoveById(
+        let httpRequest = client.networkRequestFactory.appData.buildAppDataRemoveById(
             collectionName: try! T.collectionName(),
             objectId: objectId,
             options: options,

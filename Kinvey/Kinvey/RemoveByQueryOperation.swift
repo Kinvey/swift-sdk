@@ -18,7 +18,7 @@ internal class RemoveByQueryOperation<T: Persistable>: RemoveOperation<T> where 
         options: Options?
     ) {
         let client = options?.client ?? sharedClient
-        let httpRequest = client.networkRequestFactory.buildAppDataRemoveByQuery(
+        let httpRequest = client.networkRequestFactory.appData.buildAppDataRemoveByQuery(
             collectionName: try! T.collectionName(),
             query: query,
             options: options,
