@@ -50,7 +50,7 @@ class CountOperation<T: Persistable>: ReadOperation<T, Int, Swift.Error>, ReadOp
     }
     
     func executeNetwork(_ completionHandler: CompletionHandler? = nil) -> AnyRequest<ResultType> {
-        let request = client.networkRequestFactory.buildAppDataCountByQuery(
+        let request = client.networkRequestFactory.appData.buildAppDataCountByQuery(
             collectionName: try! T.collectionName(),
             query: query,
             options: options,

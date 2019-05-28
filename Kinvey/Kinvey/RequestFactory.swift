@@ -10,6 +10,23 @@ import Foundation
 
 protocol RequestFactory {
     
+    var user: UserRequestFactory { get }
+    var appData: AppDataRequestFactory { get }
+    var push: PushRequestFactory { get }
+    var blob: BlobRequestFactory { get }
+    var stream: StreamRequestFactory { get }
+    var oauth: OAuthRequestFactory { get }
+    
+    func buildCustomEndpoint<Result>(
+        _ name: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+}
+
+protocol UserRequestFactory {
+    
     func buildUserSignUp<Result>(
         username: String?,
         password: String?,
@@ -25,8 +42,17 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildUserSocialLogin(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest<Any>
-    func buildUserSocialCreate(_ authSource: AuthSource, authData: [String : Any], options: Options?) -> HttpRequest<Any>
+    func buildUserSocialLogin(
+        _ authSource: AuthSource,
+        authData: [String : Any],
+        options: Options?
+    ) -> HttpRequest<Any>
+    
+    func buildUserSocialCreate(
+        _ authSource: AuthSource,
+        authData: [String : Any],
+        options: Options?
+    ) -> HttpRequest<Any>
     
     func buildUserLogin<Result>(
         username: String,
@@ -96,19 +122,9 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildUserRegisterRealtime<Result>(
-        user: User,
-        deviceId: String,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
-    
-    func buildUserUnregisterRealtime<Result>(
-        user: User,
-        deviceId: String,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
+}
+
+protocol AppDataRequestFactory {
     
     func buildAppDataPing<Result>(
         options: Options?,
@@ -122,9 +138,18 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildAppDataFindByQuery(collectionName: String, query: Query, options: Options?) -> HttpRequest<Any>
+    func buildAppDataFindByQuery(
+        collectionName: String,
+        query: Query,
+        options: Options?
+    ) -> HttpRequest<Any>
     
-    func buildAppDataFindByQueryDeltaSet(collectionName: String, query: Query, sinceDate: Date, options: Options?) -> HttpRequest<Any>
+    func buildAppDataFindByQueryDeltaSet(
+        collectionName: String,
+        query: Query,
+        sinceDate: Date,
+        options: Options?
+    ) -> HttpRequest<Any>
     
     func buildAppDataCountByQuery<Result>(
         collectionName: String,
@@ -149,6 +174,12 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
+    func buildAppDataSave<S: Sequence, T: Persistable, Result>(
+        _ persistable: S,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> where S.Element == T
+    
     func buildAppDataRemoveByQuery<Result>(
         collectionName: String,
         query: Query,
@@ -163,24 +194,28 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildAppDataSubscribe<Result>(
-        collectionName: String,
-        deviceId: String,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
+}
+
+protocol PushRequestFactory {
     
-    func buildAppDataUnSubscribe<Result>(
-        collectionName: String,
-        deviceId: String,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
+    func buildPushRegisterDevice(
+        _ deviceToken: Data,
+        options: Options?
+    ) -> HttpRequest<Any>
     
-    func buildPushRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest<Any>
-    func buildPushUnRegisterDevice(_ deviceToken: Data, options: Options?) -> HttpRequest<Any>
+    func buildPushUnRegisterDevice(
+        _ deviceToken: Data,
+        options: Options?
+    ) -> HttpRequest<Any>
     
-    func buildBlobUploadFile(_ file: File, options: Options?) -> HttpRequest<Any>
+}
+
+protocol BlobRequestFactory {
+    
+    func buildBlobUploadFile(
+        _ file: File,
+        options: Options?
+    ) -> HttpRequest<Any>
     
     func buildBlobDownloadFile<Result>(
         _ file: File,
@@ -200,18 +235,9 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildCustomEndpoint<Result>(
-        _ name: String,
-        options: Options?,
-        resultType: Result.Type
-    ) -> HttpRequest<Result>
-    
-    func buildOAuthToken(redirectURI: URL, code: String, options: Options?) -> HttpRequest<Any>
-    func buildOAuthToken(username: String, password: String, options: Options?) -> HttpRequest<Any>
-    
-    func buildOAuthGrantAuth(redirectURI: URL, options: Options?) -> HttpRequest<Any>
-    func buildOAuthGrantAuthenticate(redirectURI: URL, tempLoginUri: URL, username: String, password: String, options: Options?) -> HttpRequest<Any>
-    func buildOAuthGrantRefreshToken(refreshToken: String, options: Options?) -> HttpRequest<Any>
+}
+
+protocol StreamRequestFactory {
     
     func buildLiveStreamAccess<Result>(
         streamName: String,
@@ -220,7 +246,11 @@ protocol RequestFactory {
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
-    func buildLiveStreamPublish(streamName: String, userId: String, options: Options?) -> HttpRequest<Any>
+    func buildLiveStreamPublish(
+        streamName: String,
+        userId: String,
+        options: Options?
+    ) -> HttpRequest<Any>
     
     func buildLiveStreamSubscribe<Result>(
         streamName: String,
@@ -237,5 +267,67 @@ protocol RequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result>
+    
+    func buildUserRegisterRealtime<Result>(
+        user: User,
+        deviceId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildUserUnregisterRealtime<Result>(
+        user: User,
+        deviceId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildAppDataSubscribe<Result>(
+        collectionName: String,
+        deviceId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+    func buildAppDataUnSubscribe<Result>(
+        collectionName: String,
+        deviceId: String,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result>
+    
+}
+
+protocol OAuthRequestFactory {
+    
+    func buildOAuthToken(
+        redirectURI: URL,
+        code: String,
+        options: Options?
+    ) -> HttpRequest<Any>
+    
+    func buildOAuthToken(
+        username: String,
+        password: String,
+        options: Options?
+    ) -> HttpRequest<Any>
+    
+    func buildOAuthGrantAuth(
+        redirectURI: URL,
+        options: Options?
+    ) -> HttpRequest<Any>
+    
+    func buildOAuthGrantAuthenticate(
+        redirectURI: URL,
+        tempLoginUri: URL,
+        username: String,
+        password: String,
+        options: Options?
+    ) -> HttpRequest<Any>
+    
+    func buildOAuthGrantRefreshToken(
+        refreshToken: String,
+        options: Options?
+    ) -> HttpRequest<Any>
     
 }

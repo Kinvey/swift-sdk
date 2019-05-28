@@ -46,8 +46,6 @@ func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSL
     }
 }
 
-let ObjectIdTmpPrefix = "tmp_"
-
 /**
  Shared client instance for simplicity. All methods that use a client will
  default to this instance. If you intend to use multiple backend apps or
@@ -435,6 +433,17 @@ func buildError(
             stack: stack.replacingOccurrences(of: "\\n", with: "\n")
         )
     } else if let response = response,
+        response.isBadRequest,
+        let json = json,
+        json["error"] == Error.Keys.featureUnavailable.rawValue,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.featureUnavailable(
+            debug: debug,
+            description: description
+        )
+    } else if let response = response,
         response.isNotFound,
         let json = json,
         json["error"] == Error.Keys.entityNotFound.rawValue,
@@ -442,6 +451,14 @@ func buildError(
         let description = json["description"]
     {
         return Error.entityNotFound(debug: debug, description: description)
+    } else if let response = response,
+        response.isInternalServerError,
+        let json = json,
+        json["error"] == Error.Keys.kinveyInternalErrorRetry.rawValue,
+        let debug = json["debug"],
+        let description = json["description"]
+    {
+        return Error.kinveyInternalErrorRetry(debug: debug, description: description)
     } else if let response = response,
         let data = data,
         let json = try? client.jsonParser.parseDictionary(from: data)

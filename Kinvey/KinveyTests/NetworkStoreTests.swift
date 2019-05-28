@@ -243,6 +243,415 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveArray() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        if useMockData {
+            mockResponse { request in
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                XCTAssertEqual(json.count, 2)
+                XCTAssertEqual(json.first?["name"] as? String, "Victor")
+                XCTAssertEqual(json.last?["name"] as? String, "Hugo")
+                return HttpResponse(json: [
+                    "entities": json,
+                    "errors": []
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = [
+            Person { $0.name = "Victor" },
+            Person { $0.name = "Hugo" }
+        ]
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let result):
+                XCTAssertEqual(result.entities.count, 2)
+                XCTAssertEqual(result.entities.first??.name, "Victor")
+                XCTAssertEqual(result.entities.last??.name, "Hugo")
+                XCTAssertEqual(result.errors.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
+    func testSaveArraySameId() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        let id = UUID().uuidString
+        if useMockData {
+            mockResponse { request in
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                XCTAssertEqual(json.count, 2)
+                XCTAssertEqual(json.first?["name"] as? String, "Victor")
+                XCTAssertEqual(json.last?["name"] as? String, "Hugo")
+                return HttpResponse(json: [
+                    "entities": [json.first!, nil],
+                    "errors": [
+                        [
+                            "index": 1,
+                            "code": 11000,
+                            "errmsg": "E11000 duplicate key error index: kdb1923.\(self.client.appKey!).Person.$_id_ dup key: { : \"\(id)\" }"
+                        ]
+                    ]
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = [
+            Person { $0.entityId = id; $0.name = "Victor" },
+            Person { $0.entityId = id; $0.name = "Hugo" }
+        ]
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let result):
+                XCTAssertEqual(result.entities.count, 2)
+                XCTAssertEqual(result.entities.first??.name, "Victor")
+                XCTAssertNil(result.entities.last!)
+                XCTAssertEqual(result.errors.count, 1)
+                let error = result.errors.first as? MultiSaveError
+                XCTAssertNotNil(error)
+                if let error = error {
+                    XCTAssertEqual(error.index, 1)
+                    XCTAssertEqual(error.code, 11000)
+                    XCTAssertEqual(error.message, "E11000 duplicate key error index: kdb1923.\(self.client.appKey!).Person.$_id_ dup key: { : \"\(id)\" }")
+                }
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
+    func testSaveArrayIdsAlreadyExists() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        let id = UUID().uuidString
+        XCTAssertFalse(isNew(entityId: id))
+        var requests = [URLRequest]()
+        if useMockData {
+            mockResponse { request in
+                requests.append(request)
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                switch requests.count {
+                case 1 ... 3 :
+                    XCTAssertEqual(request.httpMethod, "PUT")
+                    let json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
+                    return HttpResponse(json: json)
+                default:
+                    XCTFail(request.url!.absoluteString)
+                    return HttpResponse(statusCode: 404, data: Data())
+                }
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        do {
+            let person = Person { $0.entityId = id; $0.name = "Victor" }
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let person):
+                    XCTAssertEqual(person.name, "Victor")
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(requests.count, useMockData ? 1 : 0)
+        
+        do {
+            let persons = [
+                Person { $0.personId = id; $0.name = "Hugo" },
+                Person { $0.personId = id; $0.name = "Barros" }
+            ]
+            
+            weak var expectationSave = expectation(description: "Save")
+            
+            store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+                switch $0 {
+                case .success(let result):
+                    XCTAssertEqual(result.entities.count, 2)
+                    XCTAssertEqual(result.errors.count, 0)
+                    XCTAssertNotNil(result.entities.first!)
+                    XCTAssertNotNil(result.entities.last!)
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationSave = nil
+            }
+        }
+        
+        XCTAssertEqual(requests.count, useMockData ? 3 : 0)
+    }
+    
+    func testSaveArrayFeatureUnavailableError() {
+        var requestCount = 0
+        defer {
+            XCTAssertEqual(requestCount, useMockData ? 1 : 0)
+        }
+        if useMockData {
+            mockResponse { request in
+                requestCount += 1
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertNotEqual(apiVersion, "5")
+                return HttpResponse(
+                    statusCode: 400,
+                    json: [
+                        "error": "FeatureUnavailable",
+                        "description": "Requested functionality is unavailable in this API version.",
+                        "debug": "Inserting multiple entities is not available in this Kinvey API version"
+                    ]
+                )
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = [
+            Person { $0.name = "Victor" },
+            Person { $0.name = "Hugo" }
+        ]
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success:
+                XCTFail("Should throw an FeatureUnavailable error")
+            case .failure(let error):
+                let _error = error as? Kinvey.Error
+                guard let error = _error else {
+                    XCTAssertNotNil(_error)
+                    return
+                }
+                switch error {
+                case .featureUnavailable(let debug, let description):
+                    XCTAssertEqual(description, "Requested functionality is unavailable in this API version.")
+                    XCTAssertEqual(debug, "Inserting multiple entities is not available in this Kinvey API version")
+                default:
+                    XCTFail(error.localizedDescription)
+                }
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
+    func testSaveArrayEmpty() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        if useMockData {
+            mockResponse { request in
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                XCTAssertEqual(json.count, 2)
+                XCTAssertEqual(json.first?["name"] as? String, "Victor")
+                XCTAssertEqual(json.last?["name"] as? String, "Hugo")
+                return HttpResponse(json: [
+                    "entities": json,
+                    "errors": []
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save([], options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let result):
+                XCTAssertEqual(result.entities.count, 0)
+                XCTAssertEqual(result.errors.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
+    func testSaveArrayLimitSingleRequest() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        var requests = 0
+        if useMockData {
+            mockResponse { request in
+                requests += 1
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                XCTAssertEqual(json.count, 100)
+                return HttpResponse(json: [
+                    "entities": json,
+                    "errors": []
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = (0 ..< 100).map { _ in
+            return Person { $0.name = UUID().uuidString }
+        }
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let result):
+                XCTAssertEqual(result.entities.count, 100)
+                XCTAssertEqual(result.errors.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+        
+        XCTAssertEqual(requests, useMockData ? 1 : 0)
+    }
+    
+    func testSaveArrayMultiRequest() {
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 5
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
+        var requests = 0
+        if useMockData {
+            mockResponse { request in
+                requests += 1
+                let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
+                XCTAssertEqual(apiVersion, "5")
+                var json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                XCTAssertEqual(json.count, requests == 1 ? 100 : 1)
+                return HttpResponse(json: [
+                    "entities": json,
+                    "errors": []
+                ])
+            }
+        }
+        defer {
+            if useMockData {
+                setURLProtocol(nil)
+            }
+        }
+        
+        let persons = (0 ... 100).map { _ in
+            return Person { $0.name = UUID().uuidString }
+        }
+        
+        weak var expectationSave = expectation(description: "Save")
+        
+        store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
+            switch $0 {
+            case .success(let result):
+                XCTAssertEqual(result.entities.count, 101)
+                XCTAssertEqual(result.errors.count, 0)
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationSave = nil
+        }
+        
+        XCTAssertEqual(requests, useMockData ? 2 : 0)
+    }
+    
     func testSaveAddressCodable() {
         let person = PersonCodable()
         person.name = "Victor Barros"

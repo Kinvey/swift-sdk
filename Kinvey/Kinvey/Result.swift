@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import PromiseKit
 
 /**
- Enumeration that represents the result of an operation.
+ Swift.Result is a Enumeration that represents the result of an operation.
  Here's a sample code how to handle a `Result`
  ```
 switch result {
@@ -20,39 +21,51 @@ case .failure(let failureObject):
 }
  ```
  */
-public enum Result<SuccessType, FailureType> {
-    
-    /// Case when the result is a success result holding the succeed type value
-    case success(SuccessType)
-    
-    /// Case when the result is a failure result holding the failure type value
-    case failure(FailureType)
-    
+extension Swift.Result {
+
+    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` error
+    @available(*, deprecated, message: "Deprecated in version 3.25.0. Please use get() instead")
+    public func value() throws -> Success {
+        return try get()
+    }
+
 }
 
-extension Result where FailureType == Swift.Error {
+extension Swift.Result where Failure == Swift.Error {
     
-    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` error
-    public func value() throws -> SuccessType {
-        switch self {
-        case .success(let successType):
-            return successType
-        case .failure(let error):
-            throw error
+    init(_ result: PromiseKit.Result<Success>) {
+        switch result {
+        case .fulfilled(let result):
+            self = .success(result)
+        case .rejected(let error):
+            self = .failure(error)
         }
     }
     
 }
 
-extension Result where FailureType == [Swift.Error] {
+extension PromiseKit.Result {
     
-    /// Returns the `SuccessType` if the result is a `.success`, otherwise throws the `.failure` errors wrapped in a `MultipleErrors`
-    public func value() throws -> SuccessType {
-        switch self {
-        case .success(let successType):
-            return successType
-        case .failure(let errors):
-            throw MultipleErrors(errors: errors)
+    init(_ result: Swift.Result<T, Swift.Error>) {
+        switch result {
+        case .success(let result):
+            self = .fulfilled(result)
+        case .failure(let error):
+            self = .rejected(error)
+        }
+    }
+    
+}
+
+extension Resolver {
+
+    func resolve(_ result: Swift.Result<T, Swift.Error>) {
+        resolve(PromiseKit.Result(result))
+    }
+    
+    func completionHandler() -> (Swift.Result<T, Swift.Error>) -> Void {
+        return {
+            self.resolve($0)
         }
     }
     

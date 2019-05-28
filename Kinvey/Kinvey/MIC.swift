@@ -35,13 +35,13 @@ open class MIC {
         }
     }
     
-    class func parseCode(redirectURI: URL, url: URL) -> Result<String, Swift.Error?> {
+    class func parseCode(redirectURI: URL, url: URL) -> Swift.Result<String, Swift.Error> {
         guard redirectURI.scheme?.lowercased() == url.scheme?.lowercased(),
             redirectURI.host?.lowercased() == url.host?.lowercased(),
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             let queryItems = urlComponents.queryItems
         else {
-            return .failure(nil)
+            return .failure(NilError(failure: nil))
         }
         
         var code: String? = nil
@@ -70,7 +70,7 @@ open class MIC {
         {
             return .failure(Error.micAuth(error: error, description: errorDescription))
         }
-        return .failure(nil)
+        return .failure(NilError(failure: nil))
     }
     
     /// Returns a URL that must be used for login with MIC
@@ -80,7 +80,7 @@ open class MIC {
         options: Options? = nil
     ) -> URL {
         let client = options?.client ?? sharedClient
-        return Endpoint.oauthAuth(
+        return OAuthEndpoint.oauthAuth(
             client: client,
             clientId: options?.authServiceId,
             redirectURI: redirectURI,
@@ -92,13 +92,29 @@ open class MIC {
     class func login<U: User>(
         redirectURI: URL,
         code: String,
+        userType: U.Type,
         options: Options? = nil,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
+        completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
+        return login(
+            redirectURI: redirectURI,
+            code: code,
+            options: options,
+            completionHandler: completionHandler
+        )
+    }
+    
+    @discardableResult
+    class func login<U: User>(
+        redirectURI: URL,
+        code: String,
+        options: Options? = nil,
+        completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest<Result<U, Swift.Error>>()
+        let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
         Promise<U> { resolver in
-            let request = client.networkRequestFactory.buildOAuthToken(
+            let request = client.networkRequestFactory.oauth.buildOAuthToken(
                 redirectURI: redirectURI,
                 code: code,
                 options: options
@@ -112,15 +128,9 @@ open class MIC {
                     requests += User.login(
                         authSource: .kinvey,
                         authData,
-                        options: options
-                    ) { (result: Result<U, Swift.Error>) in
-                        switch result {
-                        case .success(let user):
-                            resolver.fulfill(user)
-                        case .failure(let error):
-                            resolver.reject(error)
-                        }
-                    }
+                        options: options,
+                        completionHandler: resolver.completionHandler()
+                    )
                 } else {
                     resolver.reject(buildError(data, response, error, client))
                 }
@@ -139,12 +149,12 @@ open class MIC {
         username: String,
         password: String,
         options: Options?,
-        requests: MultiRequest<Result<U, Swift.Error>>,
+        requests: MultiRequest<Swift.Result<U, Swift.Error>>,
         tempLoginUrl: URL
     ) -> Promise<U> {
         let client = options?.client ?? sharedClient
         return Promise<U> { resolver in
-            let request = client.networkRequestFactory.buildOAuthGrantAuthenticate(
+            let request = client.networkRequestFactory.oauth.buildOAuthGrantAuthenticate(
                 redirectURI: redirectURI,
                 tempLoginUri: tempLoginUrl,
                 username: username,
@@ -157,33 +167,32 @@ open class MIC {
                 delegateQueue: nil
             )
             request.execute(urlSession: urlSession) { (data, response, error) in
-                if let response = response,
-                    let httpResponse = response as? HttpResponse,
+                defer {
+                    urlSession.invalidateAndCancel()
+                }
+                guard let httpResponse = response as? HttpResponse,
                     httpResponse.response.statusCode == 302,
                     let location = httpResponse.response.allHeaderFields["Location"] as? String,
                     let url = URL(string: location)
-                {
-                    switch parseCode(redirectURI: redirectURI, url: url) {
-                    case .success(let code):
-                        requests += login(
-                            redirectURI: redirectURI,
-                            code: code,
-                            options: options
-                        ) { result in
-                            switch result {
-                            case .success(let user):
-                                resolver.fulfill(user as! U)
-                            case .failure(let error):
-                                resolver.reject(error)
-                            }
-                        }
-                    case .failure(let error):
-                        resolver.reject(error ?? buildError(data, response, error, client))
-                    }
-                } else {
+                else {
                     resolver.reject(buildError(data, response, error, client))
+                    return
                 }
-                urlSession.invalidateAndCancel()
+                switch parseCode(redirectURI: redirectURI, url: url) {
+                case .success(let code):
+                    requests += login(
+                        redirectURI: redirectURI,
+                        code: code,
+                        userType: U.self,
+                        options: options,
+                        completionHandler: resolver.completionHandler()
+                    )
+                case .failure(var error):
+                    if error is NilError {
+                        error = buildError(data, response, error, client)
+                    }
+                    resolver.reject(error)
+                }
             }
             requests += request
         }
@@ -195,11 +204,11 @@ open class MIC {
         username: String,
         password: String,
         options: Options? = nil,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
+        completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest<Result<U, Swift.Error>>()
-        let request = client.networkRequestFactory.buildOAuthGrantAuth(
+        let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
+        let request = client.networkRequestFactory.oauth.buildOAuthGrantAuth(
             redirectURI: redirectURI,
             options: options
         )
@@ -240,11 +249,11 @@ open class MIC {
         username: String,
         password: String,
         options: Options? = nil,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
+        completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        let requests = MultiRequest<Result<U, Swift.Error>>()
-        let request = client.networkRequestFactory.buildOAuthToken(
+        let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
+        let request = client.networkRequestFactory.oauth.buildOAuthToken(
             username: username,
             password: password,
             options: options
@@ -288,11 +297,11 @@ open class MIC {
     class func login<U: User>(
         refreshToken: String,
         options: Options?,
-        completionHandler: ((Result<U, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<U, Swift.Error>> {
-        let requests = MultiRequest<Result<U, Swift.Error>>()
+        completionHandler: ((Swift.Result<U, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<U, Swift.Error>> {
+        let requests = MultiRequest<Swift.Result<U, Swift.Error>>()
         let client = options?.client ?? sharedClient
-        let request = client.networkRequestFactory.buildOAuthGrantRefreshToken(
+        let request = client.networkRequestFactory.oauth.buildOAuthGrantRefreshToken(
             refreshToken: refreshToken,
             options: options
         )
@@ -354,7 +363,7 @@ import WebKit
 
 class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewDelegate {
     
-    typealias UserHandler<U: User> = (Result<U, Swift.Error>) -> Void
+    typealias UserHandler<U: User> = (Swift.Result<U, Swift.Error>) -> Void
     
     lazy var activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
@@ -548,7 +557,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         closeViewControllerUserInteraction(.failure(Error.requestTimeout))
     }
     
-    func closeViewControllerUserInteraction(_ result: Result<User, Swift.Error>) {
+    func closeViewControllerUserInteraction(_ result: Swift.Result<User, Swift.Error>) {
         timer = nil
         dismiss(animated: true) {
             self.completionHandler(result)
@@ -607,7 +616,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 
                 navigationActionPolicy = .cancel
             case .failure(let error):
-                if let error = error {
+                if !(error is NilError) {
                     failure(error: error)
                     
                     navigationActionPolicy = .cancel
@@ -648,7 +657,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 success(code: code)
                 return false
             case .failure(let error):
-                if let error = error {
+                if !(error is NilError) {
                     failure(error: error)
                     return false
                 }

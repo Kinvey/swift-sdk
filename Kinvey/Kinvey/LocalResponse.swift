@@ -17,6 +17,7 @@ class LocalResponse: Response {
     var isForbidden = false
     var isNotFound = false
     var isMethodNotAllowed = false
+    var isInternalServerError = false
     
     var etag: String? = nil
     var contentTypeIsJson: Bool = false

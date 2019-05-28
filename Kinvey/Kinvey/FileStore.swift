@@ -108,13 +108,13 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
             imageRepresentation: imageRepresentation,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -132,8 +132,8 @@ open class FileStore<FileType: File> {
         image: NSImage,
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -150,8 +150,8 @@ open class FileStore<FileType: File> {
         image: NSImage,
         imageRepresentation: ImageRepresentation = .png,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(
@@ -173,13 +173,13 @@ open class FileStore<FileType: File> {
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
             imageRepresentation: imageRepresentation,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -197,8 +197,8 @@ open class FileStore<FileType: File> {
         image: UIImage,
         imageRepresentation: ImageRepresentation = .png,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             image: image,
@@ -215,8 +215,8 @@ open class FileStore<FileType: File> {
         image: UIImage,
         imageRepresentation: ImageRepresentation = .png,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         let data = imageRepresentation.data(image: image)!
         file.mimeType = imageRepresentation.mimeType
         return upload(
@@ -237,12 +237,12 @@ open class FileStore<FileType: File> {
         path: String,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             path: path,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -259,8 +259,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         path: String,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             path: path,
@@ -275,8 +275,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         path: String,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
@@ -293,12 +293,12 @@ open class FileStore<FileType: File> {
         stream: InputStream,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             stream: stream,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -315,8 +315,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         stream: InputStream,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             stream: stream,
@@ -331,8 +331,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         stream: InputStream,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .stream(stream),
@@ -345,11 +345,11 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         options: Options?,
         requests: MultiRequest<ResultType>?
-    ) -> (request: AnyRequest<Result<FileType, Swift.Error>>, promise: Promise<FileType>) {
-        let request = self.client.networkRequestFactory.buildBlobDownloadFile(
+    ) -> (request: AnyRequest<Swift.Result<FileType, Swift.Error>>, promise: Promise<FileType>) {
+        let request = self.client.networkRequestFactory.blob.buildBlobDownloadFile(
             file,
             options: options,
-            resultType: Result<FileType, Swift.Error>.self
+            resultType: Swift.Result<FileType, Swift.Error>.self
         )
         let promise = Promise<FileType> { resolver in
             request.execute() { (data, response, error) -> Void in
@@ -383,12 +383,12 @@ open class FileStore<FileType: File> {
         data: Data,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             data: data,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -405,8 +405,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         data: Data,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             data: data,
@@ -421,8 +421,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         data: Data,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return upload(
             file,
             fromSource: .data(data),
@@ -444,20 +444,20 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         data: Data,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        let requests = MultiRequest<Result<FileType, Swift.Error>>()
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
+        let requests = MultiRequest<Swift.Result<FileType, Swift.Error>>()
         createBucket(
             file,
             fromSource: .data(data),
             options: options,
             requests: requests
         ).done { (file, skip) -> Void in
-            let result: Result<FileType, Swift.Error> = .success(file)
+            let result: Swift.Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
         }.catch {
-            let result: Result<FileType, Swift.Error> = .failure($0)
+            let result: Swift.Result<FileType, Swift.Error> = .failure($0)
             requests.result = result
             completionHandler?(result)
         }
@@ -469,20 +469,20 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         path: String,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        let requests = MultiRequest<Result<FileType, Swift.Error>>()
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
+        let requests = MultiRequest<Swift.Result<FileType, Swift.Error>>()
         createBucket(
             file,
             fromSource: .url(URL(fileURLWithPath: (path as NSString).expandingTildeInPath)),
             options: options,
             requests: requests
         ).done { (file, skip) -> Void in
-            let result: Result<FileType, Swift.Error> = .success(file)
+            let result: Swift.Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
         }.catch {
-            let result: Result<FileType, Swift.Error> = .failure($0)
+            let result: Swift.Result<FileType, Swift.Error> = .failure($0)
             requests.result = result
             completionHandler?(result)
         }
@@ -494,9 +494,9 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         stream: InputStream,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        let requests = MultiRequest<Result<FileType, Swift.Error>>()
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
+        let requests = MultiRequest<Swift.Result<FileType, Swift.Error>>()
         createBucket(
             file,
             fromSource: .stream(stream),
@@ -504,11 +504,11 @@ open class FileStore<FileType: File> {
             requests: requests
         ).done { (arg) -> Void in
             let (file, _) = arg
-            let result: Result<FileType, Swift.Error> = .success(file)
+            let result: Swift.Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
         }.catch {
-            let result: Result<FileType, Swift.Error> = .failure($0)
+            let result: Swift.Result<FileType, Swift.Error> = .failure($0)
             requests.result = result
             completionHandler?(result)
         }
@@ -538,7 +538,7 @@ open class FileStore<FileType: File> {
             }
             
             let createUpdateFileEntry = {
-                let request = self.client.networkRequestFactory.buildBlobUploadFile(file, options: options)
+                let request = self.client.networkRequestFactory.blob.buildBlobUploadFile(file, options: options)
                 requests += request
                 request.execute { (data, response, error) -> Void in
                     if let response = response, response.isOK,
@@ -553,74 +553,75 @@ open class FileStore<FileType: File> {
                 }
             }
             
-            if let _ = file.fileId,
+            guard let _ = file.fileId,
                 let uploadURL = file.uploadURL
-            {
-                var request = URLRequest(url: uploadURL)
-                request.httpMethod = "PUT"
-                if let uploadHeaders = file.uploadHeaders {
-                    for (headerField, value) in uploadHeaders {
-                        request.setValue(value, forHTTPHeaderField: headerField)
-                    }
+            else {
+                createUpdateFileEntry()
+                return
+            }
+            
+            var request = URLRequest(url: uploadURL)
+            request.httpMethod = "PUT"
+            if let uploadHeaders = file.uploadHeaders {
+                for (headerField, value) in uploadHeaders {
+                    request.setValue(value, forHTTPHeaderField: headerField)
                 }
-                request.setValue("0", forHTTPHeaderField: "Content-Length")
-                switch source {
-                case let .data(data):
-                    request.setValue("bytes */\(data.count)", forHTTPHeaderField: "Content-Range")
-                case let .url(url):
-                    if let attrs = try? FileManager.default.attributesOfItem(atPath: (url.path as NSString).expandingTildeInPath),
-                        let fileSize = attrs[FileAttributeKey.size] as? UInt64
-                    {
-                        request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
-                    }
-                case .stream:
-                    request.setValue("bytes */*", forHTTPHeaderField: "Content-Range")
+            }
+            request.setValue("0", forHTTPHeaderField: "Content-Length")
+            switch source {
+            case let .data(data):
+                request.setValue("bytes */\(data.count)", forHTTPHeaderField: "Content-Range")
+            case let .url(url):
+                if let attrs = try? FileManager.default.attributesOfItem(atPath: (url.path as NSString).expandingTildeInPath),
+                    let fileSize = attrs[FileAttributeKey.size] as? UInt64
+                {
+                    request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
                 }
-                
-                if self.client.logNetworkEnabled {
+            case .stream:
+                request.setValue("bytes */*", forHTTPHeaderField: "Content-Range")
+            }
+            
+            if self.client.logNetworkEnabled {
+                do {
+                    log.debug("\(request.description)")
+                }
+            }
+            
+            let urlSession = options?.urlSession ?? client.urlSession
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
                     do {
-                        log.debug("\(request.description)")
+                        log.debug("\(response.description(data))")
                     }
                 }
                 
-                let urlSession = options?.urlSession ?? client.urlSession
-                let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-                    if self.client.logNetworkEnabled, let response = response as? HTTPURLResponse {
-                        do {
-                            log.debug("\(response.description(data))")
-                        }
-                    }
-                    
-                    let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)")
-                    if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
-                        createUpdateFileEntry()
-                    } else if let response = response as? HTTPURLResponse,
-                        response.statusCode == 308
+                let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)")
+                if let response = response as? HTTPURLResponse, 200 <= response.statusCode && response.statusCode < 300 {
+                    createUpdateFileEntry()
+                } else if let response = response as? HTTPURLResponse,
+                    response.statusCode == 308
+                {
+                    if let rangeString = response.allHeaderFields["Range"] as? String,
+                        let textCheckingResult = regexRange.matches(in: rangeString, range: NSRange(location: 0, length: rangeString.count)).first,
+                        textCheckingResult.numberOfRanges == 3
                     {
-                        if let rangeString = response.allHeaderFields["Range"] as? String,
-                            let textCheckingResult = regexRange.matches(in: rangeString, range: NSRange(location: 0, length: rangeString.count)).first,
-                            textCheckingResult.numberOfRanges == 3
-                        {
-                            let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
-                            if let endRange = Int(endRangeString) {
-                                resolver.fulfill((file: file, skip: endRange))
-                            } else {
-                                resolver.reject(Error.invalidResponse(httpResponse: response, data: data))
-                            }
+                        let endRangeString = rangeString.substring(with: textCheckingResult.range(at: 2))
+                        if let endRange = Int(endRangeString) {
+                            resolver.fulfill((file: file, skip: endRange))
                         } else {
-                            resolver.fulfill((file: file, skip: nil))
+                            resolver.reject(Error.invalidResponse(httpResponse: response, data: data))
                         }
                     } else {
-                        resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
+                        resolver.fulfill((file: file, skip: nil))
                     }
+                } else {
+                    resolver.reject(buildError(data, HttpResponse(response: response), error, self.client))
                 }
-                let urlSessionTaskRequest = URLSessionTaskRequest<ResultType>(client: client, options: options, task: dataTask)
-                requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 1)
-                requests += urlSessionTaskRequest
-                dataTask.resume()
-            } else {
-                createUpdateFileEntry()
             }
+            let urlSessionTaskRequest = URLSessionTaskRequest<ResultType>(client: client, options: options, task: dataTask)
+            requests.progress.addChild(urlSessionTaskRequest.progress, withPendingUnitCount: 1)
+            requests += urlSessionTaskRequest
+            dataTask.resume()
         }
     }
     
@@ -726,9 +727,9 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         fromSource source: InputSource,
         options: Options?,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        let requests = MultiRequest<Result<FileType, Swift.Error>>()
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
+        let requests = MultiRequest<Swift.Result<FileType, Swift.Error>>()
         requests.progress = Progress(totalUnitCount: 100)
         createBucket(
             file,
@@ -753,11 +754,11 @@ open class FileStore<FileType: File> {
             return promise
         }.done { file -> Void in
             requests.progress.completedUnitCount = requests.progress.totalUnitCount
-            let result: Result<FileType, Swift.Error> = .success(file)
+            let result: Swift.Result<FileType, Swift.Error> = .success(file)
             requests.result = result
             completionHandler?(result)
         }.catch { error in
-            let result: Result<FileType, Swift.Error> = .failure(error)
+            let result: Swift.Result<FileType, Swift.Error> = .failure(error)
             requests.result = result
             completionHandler?(result)
         }
@@ -771,11 +772,11 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         ttl: TTL? = nil,
         completionHandler: FileCompletionHandler? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return refresh(
             file,
             ttl: ttl
-        ) { (result: Result<FileType, Swift.Error>) in
+        ) { (result: Swift.Result<FileType, Swift.Error>) in
             switch result {
             case .success(let file):
                 completionHandler?(file, nil)
@@ -791,8 +792,8 @@ open class FileStore<FileType: File> {
     open func refresh(
         _ file: FileType,
         ttl: TTL? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
         return refresh(
             file,
             options: try! Options(ttl: ttl),
@@ -805,9 +806,9 @@ open class FileStore<FileType: File> {
     open func refresh(
         _ file: FileType,
         options: Options? = nil,
-        completionHandler: ((Result<FileType, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<FileType, Swift.Error>> {
-        let requests: MultiRequest<Result<FileType, Swift.Error>>? = nil
+        completionHandler: ((Swift.Result<FileType, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<FileType, Swift.Error>> {
+        let requests: MultiRequest<Swift.Result<FileType, Swift.Error>>? = nil
         let (request, promise) = getFileMetadata(
             file,
             options: options,
@@ -828,63 +829,72 @@ open class FileStore<FileType: File> {
         downloadURL: URL,
         options: Options?
     ) -> (
-        request: URLSessionTaskRequest<Result<URL, Swift.Error>>,
+        request: URLSessionTaskRequest<Swift.Result<URL, Swift.Error>>,
         promise: Promise<URL>
     ) {
-        let downloadTaskRequest = URLSessionTaskRequest<Result<URL, Swift.Error>>(client: client, options: options, url: downloadURL)
+        let downloadTaskRequest = URLSessionTaskRequest<Swift.Result<URL, Swift.Error>>(
+            client: client,
+            options: options,
+            url: downloadURL
+        )
         let promise = Promise<URL> { resolver in
             let executor = Executor()
-            downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, response, error) in
-                if let response = response, response.isOK || response.isNotModified, let url = url {
-                    switch storeType {
-                    case .cache:
-                        var pathURL: URL? = nil
-                        var entityId: String? = nil
-                        executor.executeAndWait {
-                            entityId = file.fileId
-                            pathURL = file.pathURL
+            downloadTaskRequest.downloadTaskWithURL(file) { (url: URL?, _response, error) in
+                guard let response = _response,
+                    response.isOK || response.isNotModified,
+                    let url = url
+                else {
+                    resolver.reject(buildError(nil, _response, error, self.client))
+                    return
+                }
+                
+                switch storeType {
+                case .cache:
+                    var pathURL: URL? = nil
+                    var _entityId: String? = nil
+                    executor.executeAndWait {
+                        _entityId = file.fileId
+                        pathURL = file.pathURL
+                    }
+                    if let pathURL = pathURL, response.isNotModified {
+                        resolver.fulfill(pathURL)
+                        return
+                    }
+                    
+                    let fileManager = FileManager()
+                    guard let entityId = _entityId else {
+                        resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
+                        return
+                    }
+                    
+                    let baseFolder = cacheBasePath
+                    do {
+                        var baseFolderURL = URL(fileURLWithPath: baseFolder)
+                        baseFolderURL = baseFolderURL.appendingPathComponent(self.client.appKey!).appendingPathComponent("files")
+                        if !fileManager.fileExists(atPath: baseFolderURL.path) {
+                            try fileManager.createDirectory(at: baseFolderURL, withIntermediateDirectories: true, attributes: nil)
                         }
-                        if let pathURL = pathURL, response.isNotModified {
-                            resolver.fulfill(pathURL)
-                        } else {
-                            let fileManager = FileManager()
-                            if let entityId = entityId
-                            {
-                                let baseFolder = cacheBasePath
-                                do {
-                                    var baseFolderURL = URL(fileURLWithPath: baseFolder)
-                                    baseFolderURL = baseFolderURL.appendingPathComponent(self.client.appKey!).appendingPathComponent("files")
-                                    if !fileManager.fileExists(atPath: baseFolderURL.path) {
-                                        try fileManager.createDirectory(at: baseFolderURL, withIntermediateDirectories: true, attributes: nil)
-                                    }
-                                    let toURL = baseFolderURL.appendingPathComponent(entityId)
-                                    if fileManager.fileExists(atPath: toURL.path) {
-                                        do {
-                                            try fileManager.removeItem(atPath: toURL.path)
-                                        }
-                                    }
-                                    try fileManager.moveItem(at: url, to: toURL)
-                                    
-                                    if let cache = self.cache {
-                                        cache.save(file) {
-                                            file.path = NSString(string: toURL.path).abbreviatingWithTildeInPath
-                                            file.etag = response.etag
-                                        }
-                                    }
-                                    
-                                    resolver.fulfill(toURL)
-                                } catch let error {
-                                    resolver.reject(error)
-                                }
-                            } else {
-                                resolver.reject(Error.invalidResponse(httpResponse: response.httpResponse, data: nil))
+                        let toURL = baseFolderURL.appendingPathComponent(entityId)
+                        if fileManager.fileExists(atPath: toURL.path) {
+                            do {
+                                try fileManager.removeItem(atPath: toURL.path)
                             }
                         }
-                    default:
-                        resolver.fulfill(url)
+                        try fileManager.moveItem(at: url, to: toURL)
+                        
+                        if let cache = self.cache {
+                            cache.save(file) {
+                                file.path = NSString(string: toURL.path).abbreviatingWithTildeInPath
+                                file.etag = response.etag
+                            }
+                        }
+                        
+                        resolver.fulfill(toURL)
+                    } catch let error {
+                        resolver.reject(error)
                     }
-                } else {
-                    resolver.reject(buildError(nil, response, error, self.client))
+                default:
+                    resolver.fulfill(url)
                 }
             }
         }
@@ -928,12 +938,12 @@ open class FileStore<FileType: File> {
         storeType: StoreType = .cache,
         ttl: TTL? = nil,
         completionHandler: FilePathCompletionHandler? = nil
-    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<(FileType, URL), Swift.Error>> {
         return download(
             file,
             storeType: storeType,
             ttl: ttl
-        ) { (result: Result<(FileType, URL), Swift.Error>) in
+        ) { (result: Swift.Result<(FileType, URL), Swift.Error>) in
             switch result {
             case .success(let file, let url):
                 completionHandler?(file, url, nil)
@@ -950,8 +960,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         storeType: StoreType = .cache,
         ttl: TTL? = nil,
-        completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
+        completionHandler: ((Swift.Result<(FileType, URL), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<(FileType, URL), Swift.Error>> {
         return download(
             file,
             storeType: storeType,
@@ -967,8 +977,8 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         storeType: StoreType = .cache,
         options: Options? = nil,
-        completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
+        completionHandler: ((Swift.Result<(FileType, URL), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<(FileType, URL), Swift.Error>> {
         return download(
             file: file,
             storeType: storeType,
@@ -983,8 +993,8 @@ open class FileStore<FileType: File> {
         file: FileType,
         storeType: StoreType,
         options: Options? = nil,
-        completionHandler: ((Result<(FileType, URL), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<(FileType, URL), Swift.Error>> {
+        completionHandler: ((Swift.Result<(FileType, URL), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<(FileType, URL), Swift.Error>> {
         do {
             try crashIfInvalid(file: file)
         } catch {
@@ -1007,7 +1017,7 @@ open class FileStore<FileType: File> {
         
         switch storeType {
         case .cache, .network, .auto:
-            let multiRequest = MultiRequest<Result<(FileType, URL), Swift.Error>>()
+            let multiRequest = MultiRequest<Swift.Result<(FileType, URL), Swift.Error>>()
             Promise<(FileType, URL)> { resolver in
                 if let downloadURL = file.downloadURL,
                     file.publicAccessible ||
@@ -1057,17 +1067,17 @@ open class FileStore<FileType: File> {
                     return Promise(error: error)
                 }
             }.done { (args) -> Void in
-                let result: Result<(FileType, URL), Swift.Error> = .success(args)
+                let result: Swift.Result<(FileType, URL), Swift.Error> = .success(args)
                 multiRequest.result = result
                 completionHandler?(result)
             }.catch { (error) -> Void in
-                let result: Result<(FileType, URL), Swift.Error> = .failure(error)
+                let result: Swift.Result<(FileType, URL), Swift.Error> = .failure(error)
                 multiRequest.result = result
                 completionHandler?(result)
             }
             return AnyRequest(multiRequest)
         default:
-            return AnyRequest(LocalRequest<Result<(FileType, URL), Swift.Error>>())
+            return AnyRequest(LocalRequest<Swift.Result<(FileType, URL), Swift.Error>>())
         }
     }
     
@@ -1078,11 +1088,11 @@ open class FileStore<FileType: File> {
         _ file: FileType,
         ttl: TTL? = nil,
         completionHandler: FileDataCompletionHandler? = nil
-    ) -> AnyRequest<Result<(FileType, Data), Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<(FileType, Data), Swift.Error>> {
         return download(
             file,
             ttl: ttl
-        ) { (result: Result<(FileType, Data), Swift.Error>) in
+        ) { (result: Swift.Result<(FileType, Data), Swift.Error>) in
             switch result {
             case .success(let file, let data):
                 completionHandler?(file, data, nil)
@@ -1105,8 +1115,8 @@ open class FileStore<FileType: File> {
     open func download(
         _ file: FileType,
         ttl: TTL? = nil,
-        completionHandler: ((Result<(FileType, Data), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<(FileType, Data), Swift.Error>> {
+        completionHandler: ((Swift.Result<(FileType, Data), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<(FileType, Data), Swift.Error>> {
         return download(
             file,
             options: try! Options(ttl: ttl),
@@ -1119,15 +1129,15 @@ open class FileStore<FileType: File> {
     open func download(
         _ file: FileType,
         options: Options? = nil,
-        completionHandler: ((Result<(FileType, Data), Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<(FileType, Data), Swift.Error>> {
+        completionHandler: ((Swift.Result<(FileType, Data), Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<(FileType, Data), Swift.Error>> {
         do {
             try crashIfInvalid(file: file)
         } catch {
             return errorRequest(error: error, completionHandler: completionHandler)
         }
         
-        let multiRequest = MultiRequest<Result<(FileType, Data), Swift.Error>>()
+        let multiRequest = MultiRequest<Swift.Result<(FileType, Data), Swift.Error>>()
         multiRequest.progress = Progress(totalUnitCount: 100)
         Promise<(FileType, DownloadStage)> { resolver in
             if let entityId = file.fileId,
@@ -1188,11 +1198,11 @@ open class FileStore<FileType: File> {
             }
         }.done { data in
             multiRequest.progress.completedUnitCount = multiRequest.progress.totalUnitCount
-            let result: Result<(FileType, Data), Swift.Error> = .success((file, data))
+            let result: Swift.Result<(FileType, Data), Swift.Error> = .success((file, data))
             multiRequest.result = result
             completionHandler?(result)
         }.catch { error in
-            let result: Result<(FileType, Data), Swift.Error> = .failure(error)
+            let result: Swift.Result<(FileType, Data), Swift.Error> = .failure(error)
             multiRequest.result = result
             completionHandler?(result)
         }
@@ -1205,11 +1215,11 @@ open class FileStore<FileType: File> {
     open func remove(
         _ file: FileType,
         completionHandler: UIntCompletionHandler? = nil
-    ) -> AnyRequest<Result<UInt, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<UInt, Swift.Error>> {
         return remove(
             file,
             options: nil
-        ) { (result: Result<UInt, Swift.Error>) in
+        ) { (result: Swift.Result<UInt, Swift.Error>) in
             switch result {
             case .success(let count):
                 completionHandler?(count, nil)
@@ -1224,8 +1234,8 @@ open class FileStore<FileType: File> {
     @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use FileStore.remove(_:options:completionHandler:) instead")
     open func remove(
         _ file: FileType,
-        completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<UInt, Swift.Error>> {
+        completionHandler: ((Swift.Result<UInt, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<UInt, Swift.Error>> {
         return remove(
             file,
             options: nil,
@@ -1238,12 +1248,12 @@ open class FileStore<FileType: File> {
     open func remove(
         _ file: FileType,
         options: Options? = nil,
-        completionHandler: ((Result<UInt, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<UInt, Swift.Error>> {
-        let request = client.networkRequestFactory.buildBlobDeleteFile(
+        completionHandler: ((Swift.Result<UInt, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<UInt, Swift.Error>> {
+        let request = client.networkRequestFactory.blob.buildBlobDeleteFile(
             file,
             options: options,
-            resultType: Result<UInt, Swift.Error>.self
+            resultType: Swift.Result<UInt, Swift.Error>.self
         )
         Promise<UInt> { resolver in
             request.execute({ (data, response, error) -> Void in
@@ -1276,11 +1286,11 @@ open class FileStore<FileType: File> {
         _ query: Query = Query(),
         ttl: TTL? = nil,
         completionHandler: FileArrayCompletionHandler? = nil
-    ) -> AnyRequest<Result<[FileType], Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<[FileType], Swift.Error>> {
         return find(
             query,
             ttl: ttl
-        ) { (result: Result<[FileType], Swift.Error>) in
+        ) { (result: Swift.Result<[FileType], Swift.Error>) in
             switch result {
             case .success(let files):
                 completionHandler?(files, nil)
@@ -1296,8 +1306,8 @@ open class FileStore<FileType: File> {
     open func find(
         _ query: Query = Query(),
         ttl: TTL? = nil,
-        completionHandler: ((Result<[FileType], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[FileType], Swift.Error>> {
+        completionHandler: ((Swift.Result<[FileType], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[FileType], Swift.Error>> {
         return find(
             query,
             options: try! Options(ttl: ttl),
@@ -1310,12 +1320,12 @@ open class FileStore<FileType: File> {
     open func find(
         _ query: Query = Query(),
         options: Options? = nil,
-        completionHandler: ((Result<[FileType], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[FileType], Swift.Error>> {
-        let request = client.networkRequestFactory.buildBlobQueryFile(
+        completionHandler: ((Swift.Result<[FileType], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[FileType], Swift.Error>> {
+        let request = client.networkRequestFactory.blob.buildBlobQueryFile(
             query,
             options: options,
-            resultType: Result<[FileType], Swift.Error>.self
+            resultType: Swift.Result<[FileType], Swift.Error>.self
         )
         Promise<[FileType]> { resolver in
             request.execute { (data, response, error) -> Void in

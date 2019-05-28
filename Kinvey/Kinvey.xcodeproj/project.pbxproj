@@ -179,6 +179,7 @@
 		5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */; };
 		5781D1341CE3B0FB00369F40 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5781D12E1CE3ACA000369F40 /* Localizable.strings */; };
 		5781D1361CE3D0BA00369F40 /* FileTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1351CE3D0BA00369F40 /* FileTestCase.swift */; };
+		57833531228A220800949231 /* SaveMultiOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57833530228A220700949231 /* SaveMultiOperation.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783BA3520F722DC0090D0BD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		5783BA3620F722DC0090D0BD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -192,6 +193,7 @@
 		5783BA4820F7240F0090D0BD /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5783BA4920F724370090D0BD /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		57873DEC1DFF3FDC002C87BF /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
+		5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */; };
 		57882EC0219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
 		57882EC1219BF5CA005ECCA3 /* AutoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */; };
 		578870931DD52EC80087FE78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578870921DD52EC80087FE78 /* AppDelegate.swift */; };
@@ -1000,10 +1002,12 @@
 		5781D12E1CE3ACA000369F40 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTestCase.swift; sourceTree = "<group>"; };
 		5781D1351CE3D0BA00369F40 /* FileTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileTestCase.swift; sourceTree = "<group>"; };
+		57833530228A220700949231 /* SaveMultiOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveMultiOperation.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783BA4120F722DC0090D0BD /* KinveyTests RemoveAll Memory Leak.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests RemoveAll Memory Leak.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5783BA4320F723270090D0BD /* RemoveAllMemoryLeakTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveAllMemoryLeakTests.swift; sourceTree = "<group>"; };
 		57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushTestCase.swift; sourceTree = "<group>"; };
+		5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEndpointParams.swift; sourceTree = "<group>"; };
 		57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoStoreTests.swift; sourceTree = "<group>"; };
 		57882EC3219CA574005ECCA3 /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
 		578870901DD52EC70087FE78 /* SSOApp1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSOApp1.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1528,6 +1532,7 @@
 				57F91C281D6E2C020012850A /* CountOperation.swift */,
 				570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */,
 				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
+				57833530228A220700949231 /* SaveMultiOperation.swift */,
 				57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */,
 				574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */,
 				5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */,
@@ -1734,6 +1739,7 @@
 				573851AD1D47C7F800E4712A /* RealmFileCache.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
+				5787A12D228F999D00F72D73 /* CustomEndpointParams.swift */,
 				5781D1261CE29AA600369F40 /* ObjCRuntime.swift */,
 				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
 				57C2F1721D5E5A68005A214B /* BuilderType.swift */,
@@ -3500,11 +3506,13 @@
 				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
+				5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */,
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
 				57B768811D10C0C70086AA38 /* Entity.swift in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
+				57833531228A220800949231 /* SaveMultiOperation.swift in Sources */,
 				57DB87E81C62B0F6002BA684 /* Data.swift in Sources */,
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
 				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,

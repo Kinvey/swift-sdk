@@ -357,7 +357,7 @@ func kinveySync<T: Entity>(
             case .success(let count, let entities):
                 result = (count: count, entities: entities)
             case .failure(let _errors):
-                errors = _errors
+                errors = Array(_errors)
             }
             done()
         }
@@ -377,7 +377,7 @@ func kinveyPush<T: Entity>(
             case .success(let _count):
                 count = _count
             case .failure(let _errors):
-                errors = _errors
+                errors = Array(_errors)
             }
             done()
         }
@@ -581,8 +581,8 @@ class MockURLProtocol: URLProtocol {
                     }
                 }
             }
-            self.client!.urlProtocolDidFinishLoading(self)
         }
+        self.client!.urlProtocolDidFinishLoading(self)
     }
     
     override func stopLoading() {

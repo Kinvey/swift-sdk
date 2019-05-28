@@ -283,3 +283,20 @@ extension Dictionary where Key == String {
     }
     
 }
+
+let EntityIdTmpPrefix = "tmp_"
+
+func isNew(entityId: String?) -> Bool {
+    guard let entityId = entityId else {
+        return true
+    }
+    return entityId.hasPrefix(EntityIdTmpPrefix)
+}
+
+extension Persistable where Self: NSObject {
+    
+    var isNew: Bool {
+        return Kinvey.isNew(entityId: entityId)
+    }
+    
+}

@@ -104,7 +104,7 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
     func publish(
         channel: String,
         message: Any,
-        completionHandler: ((Result<Void, Swift.Error>) -> Void)?
+        completionHandler: ((Swift.Result<Void, Swift.Error>) -> Void)?
     ) {
         Promise<Void> { resolver in
             pubNub.publish(message, toChannel: channel) { (publishStatus) in

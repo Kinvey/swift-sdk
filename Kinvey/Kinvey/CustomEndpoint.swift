@@ -12,40 +12,6 @@ import PromiseKit
 /// Class to interact with a custom endpoint in the backend.
 open class CustomEndpoint {
     
-    /// Parameter Wrapper
-    open class Params {
-        
-        internal let value: JsonDictionary
-        
-        /**
-         Sets the `value` enumeration to a JSON dictionary.
-         - parameter json: JSON dictionary to be used as a parameter value
-         */
-        public init(_ json: JsonDictionary) {
-            value = json.toJson()
-        }
-        
-        /**
-         Sets the `value` enumeration to any Mappable object or StaticMappable struct.
-         - parameter object: Mappable object or StaticMappable struct to be used as a parameter value
-         */
-        @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
-        public convenience init<T>(_ object: T) where T: BaseMappable {
-            self.init(object.toJSON())
-        }
-        
-        public convenience init(_ object: JSONEncodable) throws {
-            self.init(try object.encode())
-        }
-        
-        public convenience init<T>(_ object: T) throws where T: Encodable {
-            let data = try jsonEncoder.encode(object)
-            let json = try JSONSerialization.jsonObject(with: data) as! JsonDictionary
-            self.init(json)
-        }
-        
-    }
-    
     /// Completion handler block for execute custom endpoints.
     @available(*, deprecated, message: "Deprecated in version 3.17.0. Please use Result<T, Swift.Error> instead")
     public typealias CompletionHandler<T> = (T?, Swift.Error?) -> Void
@@ -79,12 +45,12 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<JsonDictionary>? = nil
-    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<JsonDictionary, Swift.Error>> {
         return execute(
             name,
             params: params,
             client: client
-        ) { (result: Result<JsonDictionary, Swift.Error>) in
+        ) { (result: Swift.Result<JsonDictionary, Swift.Error>) in
             switch result {
             case .success(let json):
                 completionHandler?(json, nil)
@@ -101,8 +67,8 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
-        completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
+        completionHandler: ((Swift.Result<JsonDictionary, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<JsonDictionary, Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -117,16 +83,16 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<JsonDictionary, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<JsonDictionary, Swift.Error>> {
+        completionHandler: ((Swift.Result<JsonDictionary, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<JsonDictionary, Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: AnyRequest<Result<JsonDictionary, Swift.Error>>!
+        var request: AnyRequest<Swift.Result<JsonDictionary, Swift.Error>>!
         Promise<JsonDictionary> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
                 options: options,
-                resultType: Result<JsonDictionary, Swift.Error>.self
+                resultType: Swift.Result<JsonDictionary, Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -154,12 +120,12 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[JsonDictionary]>? = nil
-    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
+    ) -> AnyRequest<Swift.Result<[JsonDictionary], Swift.Error>> {
         return execute(
             name,
             params: params,
             client: client
-        ) { (result: Result<[JsonDictionary], Swift.Error>) in
+        ) { (result: Swift.Result<[JsonDictionary], Swift.Error>) in
             switch result {
             case .success(let json):
                 completionHandler?(json, nil)
@@ -176,8 +142,8 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
-        completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
+        completionHandler: ((Swift.Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[JsonDictionary], Swift.Error>> {
         return execute(
             name,
             params: params,
@@ -192,16 +158,16 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[JsonDictionary], Swift.Error>> {
+        completionHandler: ((Swift.Result<[JsonDictionary], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[JsonDictionary], Swift.Error>> {
         let client = options?.client ?? sharedClient
-        var request: AnyRequest<Result<[JsonDictionary], Swift.Error>>!
+        var request: AnyRequest<Swift.Result<[JsonDictionary], Swift.Error>>!
         Promise<[JsonDictionary]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
                 options: options,
-                resultType: Result<[JsonDictionary], Swift.Error>.self
+                resultType: Swift.Result<[JsonDictionary], Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -231,12 +197,12 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<T>? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> where T: JSONDecodable {
+    ) -> AnyRequest<Swift.Result<T, Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
             client: client
-        ) { (result: Result<T, Swift.Error>) in
+        ) { (result: Swift.Result<T, Swift.Error>) in
             switch result {
             case .success(let obj):
                 completionHandler?(obj, nil)
@@ -253,8 +219,8 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
-        completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> where T: JSONDecodable {
+        completionHandler: ((Swift.Result<T, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<T, Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -269,16 +235,16 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<T, Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<T, Swift.Error>> where T : JSONDecodable {
+        completionHandler: ((Swift.Result<T, Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<T, Swift.Error>> where T : JSONDecodable {
         let client = options?.client ?? sharedClient
-        var request: AnyRequest<Result<T, Swift.Error>>!
+        var request: AnyRequest<Swift.Result<T, Swift.Error>>!
         Promise<T> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
                 options: options,
-                resultType: Result<T, Swift.Error>.self
+                resultType: Swift.Result<T, Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -306,12 +272,12 @@ open class CustomEndpoint {
         params: Params? = nil,
         client: Client = sharedClient,
         completionHandler: CompletionHandler<[T]>? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
+    ) -> AnyRequest<Swift.Result<[T], Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
             client: client
-        ) { (result: Result<[T], Swift.Error>) in
+        ) { (result: Swift.Result<[T], Swift.Error>) in
             switch result {
             case .success(let objArray):
                 completionHandler?(objArray, nil)
@@ -328,8 +294,8 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         client: Client = sharedClient,
-        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
+        completionHandler: ((Swift.Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[T], Swift.Error>> where T: JSONDecodable {
         return execute(
             name,
             params: params,
@@ -344,16 +310,16 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> where T: JSONDecodable {
+        completionHandler: ((Swift.Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[T], Swift.Error>> where T: JSONDecodable {
         let client = options?.client ?? sharedClient
-        var request: AnyRequest<Result<[T], Swift.Error>>!
+        var request: AnyRequest<Swift.Result<[T], Swift.Error>>!
         Promise<[T]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
                 options: options,
-                resultType: Result<[T], Swift.Error>.self
+                resultType: Swift.Result<[T], Swift.Error>.self
             ) { data, response, error in
                 if let response = response,
                     response.isOK,
@@ -379,16 +345,16 @@ open class CustomEndpoint {
         _ name: String,
         params: Params? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<[T], Swift.Error>) -> Void)? = nil
-    ) -> AnyRequest<Result<[T], Swift.Error>> where T: Decodable {
+        completionHandler: ((Swift.Result<[T], Swift.Error>) -> Void)? = nil
+    ) -> AnyRequest<Swift.Result<[T], Swift.Error>> where T: Decodable {
         let client = options?.client ?? sharedClient
-        var request: AnyRequest<Result<[T], Swift.Error>>!
+        var request: AnyRequest<Swift.Result<[T], Swift.Error>>!
         Promise<[T]> { resolver in
             request = callEndpoint(
                 name,
                 params: params,
                 options: options,
-                resultType: Result<[T], Swift.Error>.self
+                resultType: Swift.Result<[T], Swift.Error>.self
             ) { data, response, error in
                 do {
                     if let response = response,

@@ -145,7 +145,7 @@ open class Client: Credential {
         accessGroup: String? = nil,
         schema: Schema? = nil,
         options: Options? = nil,
-        completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<U?, Swift.Error>) -> Void)? = nil
     ) {
         self.init()
         initialize(
@@ -155,7 +155,7 @@ open class Client: Credential {
             accessGroup: accessGroup,
             schema: schema,
             options: options
-        ) { (result: Result<U?, Swift.Error>) in
+        ) { (result: Swift.Result<U?, Swift.Error>) in
             completionHandler?(result)
         }
     }
@@ -170,7 +170,7 @@ open class Client: Credential {
         schema: Schema? = nil,
         compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
-        completionHandler: ((Result<U?, Swift.Error>) -> Void)? = nil
+        completionHandler: ((Swift.Result<U?, Swift.Error>) -> Void)? = nil
     ) {
         self.init()
         initialize(
@@ -182,7 +182,7 @@ open class Client: Credential {
             schema: schema,
             compactCacheOnLaunch: compactCacheOnLaunch,
             options: options
-        ) { (result: Result<U?, Swift.Error>) in
+        ) { (result: Swift.Result<U?, Swift.Error>) in
             completionHandler?(result)
         }
     }
@@ -219,7 +219,7 @@ open class Client: Credential {
             authHostName: authHostName,
             encrypted: encrypted,
             schema: schema
-        ) { (result: Result<U?, Swift.Error>) in
+        ) { (result: Swift.Result<U?, Swift.Error>) in
             switch result {
             case .success(let user):
                 completionHandler(user, nil)
@@ -262,7 +262,7 @@ open class Client: Credential {
         schema: Schema? = nil,
         compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
-        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+        completionHandler: @escaping (Swift.Result<U?, Swift.Error>) -> Void
     ) {
         do {
             try validateInitialize(appKey: appKey, appSecret: appSecret)
@@ -309,7 +309,7 @@ open class Client: Credential {
             encryptionKey: encryptionKey,
             schema: schema,
             compactCacheOnLaunch: compactCacheOnLaunch
-        ) { (result: Result<U?, Swift.Error>) in
+        ) { (result: Swift.Result<U?, Swift.Error>) in
             switch result {
             case .success(let user):
                 completionHandler(user, nil)
@@ -340,7 +340,7 @@ open class Client: Credential {
         schema: Schema? = nil,
         compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
-        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+        completionHandler: @escaping (Swift.Result<U?, Swift.Error>) -> Void
     ) {
         do {
             try validateInitialize(appKey: appKey, appSecret: appSecret)
@@ -396,7 +396,7 @@ open class Client: Credential {
         schema: Schema? = nil,
         compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
-        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+        completionHandler: @escaping (Swift.Result<U?, Swift.Error>) -> Void
     ) {
         let (apiHostNameString, authHostNameString) = hostNames(instanceId: instanceId)
         guard let apiHostName = URL(string: apiHostNameString) else {
@@ -437,7 +437,7 @@ open class Client: Credential {
         schema: Schema? = nil,
         compactCacheOnLaunch: Bool = true,
         options: Options? = nil,
-        completionHandler: @escaping (Result<U?, Swift.Error>) -> Void
+        completionHandler: @escaping (Swift.Result<U?, Swift.Error>) -> Void
     ) {
         do {
             try validateInitialize(appKey: appKey, appSecret: appSecret)
@@ -495,7 +495,7 @@ open class Client: Credential {
             let customUser = user as! U
             completionHandler(.success(customUser))
         } else if let kinveyAuth = sharedKeychain?.kinveyAuth {
-            User.login(authSource: .kinvey, kinveyAuth, options: try! Options(client: self)) { (result: Result<U, Swift.Error>) in
+            User.login(authSource: .kinvey, kinveyAuth, options: try! Options(client: self)) { (result: Swift.Result<U, Swift.Error>) in
                 switch result {
                 case .success(let user):
                     completionHandler(.success(user))
@@ -547,8 +547,8 @@ open class Client: Credential {
      */
     @discardableResult
     @available(*, deprecated, message: "Deprecated in version 3.17.1. Please use Client.ping(completionHandler:) instead")
-    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
-        return ping() { (result: Result<EnvironmentInfo, Swift.Error>) in
+    public func ping(completionHandler: @escaping (EnvironmentInfo?, Swift.Error?) -> Void) -> AnyRequest<Swift.Result<EnvironmentInfo, Swift.Error>> {
+        return ping() { (result: Swift.Result<EnvironmentInfo, Swift.Error>) in
             switch result {
             case .success(let envInfo):
                 completionHandler(envInfo, nil)
@@ -564,13 +564,13 @@ open class Client: Credential {
      the backend.
      */
     @discardableResult
-    public func ping(completionHandler: @escaping (Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Result<EnvironmentInfo, Swift.Error>> {
+    public func ping(completionHandler: @escaping (Swift.Result<EnvironmentInfo, Swift.Error>) -> Void) -> AnyRequest<Swift.Result<EnvironmentInfo, Swift.Error>> {
         guard let _ = appKey, let _ = appSecret else {
             return errorRequest(error: Error.invalidOperation(description: "Please initialize your client calling the initialize() method before call ping()"), completionHandler: completionHandler)
         }
-        let request = networkRequestFactory.buildAppDataPing(
+        let request = networkRequestFactory.appData.buildAppDataPing(
             options: options,
-            resultType: Result<EnvironmentInfo, Swift.Error>.self
+            resultType: Swift.Result<EnvironmentInfo, Swift.Error>.self
         )
         Promise<EnvironmentInfo> { resolver in
             request.execute() { data, response, error in
