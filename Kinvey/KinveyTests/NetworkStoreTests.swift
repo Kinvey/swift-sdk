@@ -369,28 +369,20 @@ class NetworkStoreTests: StoreTestCase {
         }
         let id = UUID().uuidString
         XCTAssertFalse(isNew(entityId: id))
-        var requestCount = 0
+        var requests = [URLRequest]()
         if useMockData {
             mockResponse { request in
-                requestCount += 1
+                requests.append(request)
                 let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
                 XCTAssertEqual(apiVersion, "5")
-                var json = try! JSONSerialization.jsonObject(with: request)
-                switch json {
-                case let json as [String : Any]:
+                switch requests.count {
+                case 1 ... 3 :
+                    XCTAssertEqual(request.httpMethod, "PUT")
+                    let json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
                     return HttpResponse(json: json)
-                case let json as [[String : Any]]:
-                    return HttpResponse(
-                        statusCode: 500,
-                        json: [
-                            "error": "KinveyInternalErrorRetry",
-                            "description": "The Kinvey server encountered an unexpected error. Please retry your request.",
-                            "debug": "An entity with that _id already exists in this collection"
-                        ]
-                    )
                 default:
-                    XCTFail("Request not expected")
-                    fatalError()
+                    XCTFail(request.url!.absoluteString)
+                    return HttpResponse(statusCode: 404, data: Data())
                 }
             }
         }
@@ -421,7 +413,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
         
-        XCTAssertEqual(requestCount, useMockData ? 1 : 0)
+        XCTAssertEqual(requests.count, useMockData ? 1 : 0)
         
         do {
             let persons = [
@@ -450,7 +442,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
         
-        XCTAssertEqual(requestCount, useMockData ? 2 : 0)
+        XCTAssertEqual(requests.count, useMockData ? 3 : 0)
     }
     
     func testSaveArrayFeatureUnavailableError() {
