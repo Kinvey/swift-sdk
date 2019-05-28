@@ -60,7 +60,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
     func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         let request = LocalRequest<Swift.Result<MultiSaveResultTuple<T>, Swift.Error>>()
         request.execute { () -> Void in
-            let networkRequest = self.client.networkRequestFactory.buildAppDataSave(
+            let networkRequest = self.client.networkRequestFactory.appData.buildAppDataSave(
                 persistable,
                 options: options,
                 resultType: ResultType.self
@@ -177,7 +177,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
     }
     
     private func saveSingleRequest(newItems: AnyRandomAccessCollection<T>, requests: MultiRequest<ResultType>) -> Promise<ResultType> {
-        let request = client.networkRequestFactory.buildAppDataSave(
+        let request = client.networkRequestFactory.appData.buildAppDataSave(
             newItems,
             options: options,
             resultType: ResultType.self

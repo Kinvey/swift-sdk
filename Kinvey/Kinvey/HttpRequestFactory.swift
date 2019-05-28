@@ -458,7 +458,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         let bodyObject = try! client.jsonParser.toJSON(persistable)
         let request = HttpRequest<Result>(
             httpMethod: .post,
-            endpoint: Endpoint.appData(client: client, collectionName: collectionName),
+            endpoint: AppDataEndpoint.appData(client: client, collectionName: collectionName),
             credential: client.activeUser,
             options: options
         )
