@@ -46,8 +46,6 @@ func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSL
     }
 }
 
-let ObjectIdTmpPrefix = "tmp_"
-
 /**
  Shared client instance for simplicity. All methods that use a client will
  default to this instance. If you intend to use multiple backend apps or

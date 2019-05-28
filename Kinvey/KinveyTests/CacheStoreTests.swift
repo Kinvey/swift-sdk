@@ -106,7 +106,7 @@ class CacheStoreTests: StoreTestCase {
                 case .success(let person):
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
-                        XCTAssertTrue(personId.hasPrefix(ObjectIdTmpPrefix))
+                        XCTAssertTrue(personId.hasPrefix(EntityIdTmpPrefix))
                         temporaryObjectId = personId
                     }
                 case .failure(let error):
@@ -119,7 +119,7 @@ class CacheStoreTests: StoreTestCase {
                 case .success(let person):
                     XCTAssertNotNil(person.personId)
                     if let personId = person.personId {
-                        XCTAssertFalse(personId.hasPrefix(ObjectIdTmpPrefix))
+                        XCTAssertFalse(personId.hasPrefix(EntityIdTmpPrefix))
                         finalObjectId = personId
                     }
                 case .failure(let error):

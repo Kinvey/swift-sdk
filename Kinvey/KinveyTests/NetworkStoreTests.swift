@@ -368,28 +368,21 @@ class NetworkStoreTests: StoreTestCase {
             Kinvey.restApiVersion = originalRestApiVersion
         }
         let id = UUID().uuidString
-        var requestCount = 0
+        XCTAssertFalse(isNew(entityId: id))
+        var requests = [URLRequest]()
         if useMockData {
             mockResponse { request in
-                requestCount += 1
+                requests.append(request)
                 let apiVersion = request.allHTTPHeaderFields?[KinveyHeaderField.apiVersion.rawValue]
                 XCTAssertEqual(apiVersion, "5")
-                var json = try! JSONSerialization.jsonObject(with: request)
-                switch json {
-                case let json as [String : Any]:
+                switch requests.count {
+                case 1 ... 3 :
+                    XCTAssertEqual(request.httpMethod, "PUT")
+                    let json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
                     return HttpResponse(json: json)
-                case let json as [[String : Any]]:
-                    return HttpResponse(
-                        statusCode: 500,
-                        json: [
-                            "error": "KinveyInternalErrorRetry",
-                            "description": "The Kinvey server encountered an unexpected error. Please retry your request.",
-                            "debug": "An entity with that _id already exists in this collection"
-                        ]
-                    )
                 default:
-                    XCTFail("Request not expected")
-                    fatalError()
+                    XCTFail(request.url!.absoluteString)
+                    return HttpResponse(statusCode: 404, data: Data())
                 }
             }
         }
@@ -420,12 +413,12 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
         
-        XCTAssertEqual(requestCount, useMockData ? 1 : 0)
+        XCTAssertEqual(requests.count, useMockData ? 1 : 0)
         
         do {
             let persons = [
-                Person { $0.entityId = id; $0.name = "Hugo" },
-                Person { $0.entityId = id; $0.name = "Barros" }
+                Person { $0.personId = id; $0.name = "Hugo" },
+                Person { $0.personId = id; $0.name = "Barros" }
             ]
             
             weak var expectationSave = expectation(description: "Save")
@@ -433,19 +426,12 @@ class NetworkStoreTests: StoreTestCase {
             store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let result):
-                    XCTFail("Should throw an error")
+                    XCTAssertEqual(result.entities.count, 2)
+                    XCTAssertEqual(result.errors.count, 0)
+                    XCTAssertNotNil(result.entities.first!)
+                    XCTAssertNotNil(result.entities.last!)
                 case .failure(let error):
-                    let error = error as? Kinvey.Error
-                    XCTAssertNotNil(error)
-                    if let error = error {
-                        switch error {
-                        case .kinveyInternalErrorRetry(let debug, let description):
-                            XCTAssertEqual(debug, "An entity with that _id already exists in this collection")
-                            XCTAssertEqual(description, "The Kinvey server encountered an unexpected error. Please retry your request.")
-                        default:
-                            XCTFail(error.localizedDescription)
-                        }
-                    }
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
@@ -456,7 +442,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
         
-        XCTAssertEqual(requestCount, useMockData ? 2 : 0)
+        XCTAssertEqual(requests.count, useMockData ? 3 : 0)
     }
     
     func testSaveArrayFeatureUnavailableError() {

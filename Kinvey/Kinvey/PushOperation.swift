@@ -119,7 +119,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                 request.request.httpMethod != "DELETE"
                             {
                                 if let objectId = objectId,
-                                    objectId.starts(with: ObjectIdTmpPrefix),
+                                    objectId.hasPrefix(EntityIdTmpPrefix),
                                     let entity = cache.find(byId: objectId)
                                 {
                                     cache.remove(entity: entity)
