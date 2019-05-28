@@ -32,7 +32,7 @@ internal protocol CacheType: class {
     
     func save(entity: Type)
     
-    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?)
+    func save<C>(entities: C, syncQuery: SyncQuery?) where C : Collection, C.Element == Type
     
     func save(syncQuery: SyncQuery)
     
@@ -149,7 +149,7 @@ class AnyCache<T: Persistable>: CacheType {
     private let _getTTL: () -> TimeInterval?
     private let _setTTL: (TimeInterval?) -> Void
     private let _saveEntity: (T) -> Void
-    private let _saveEntities: (AnyRandomAccessCollection<Type>, SyncQuery?) -> Void
+    private let _saveEntities: (AnyCollection<Type>, SyncQuery?) -> Void
     private let _saveSyncQuery: (SyncQuery) -> Void
     private let _findById: (String) -> T?
     private let _findByQuery: (Query) -> AnyRandomAccessCollection<Type>
@@ -206,8 +206,8 @@ class AnyCache<T: Persistable>: CacheType {
         _saveEntity(entity)
     }
     
-    func save(entities: AnyRandomAccessCollection<Type>, syncQuery: SyncQuery?) {
-        _saveEntities(entities, syncQuery)
+    func save<C>(entities: C, syncQuery: SyncQuery?) where C : Collection, C.Element == Type {
+        _saveEntities(AnyCollection(entities), syncQuery)
     }
     
     func save(syncQuery: SyncQuery) {

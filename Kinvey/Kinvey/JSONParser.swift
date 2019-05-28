@@ -136,6 +136,7 @@ public protocol JSONParser {
     
     func toJSON<UserType: User>(_ user: UserType) throws -> [String : Any]
     func toJSON<T>(_ object: T) throws -> [String : Any] where T: JSONEncodable
+    func toJSON<S: Sequence, T>(_ sequence: S) throws -> [[String : Any]] where T: JSONEncodable, S.Element == T
 
 }
 
@@ -194,6 +195,10 @@ class DefaultJSONParser: JSONParser {
 
     func toJSON<T>(_ object: T) throws -> [String : Any] where T: JSONEncodable {
         return try object.encode()
+    }
+    
+    func toJSON<S, T>(_ sequence: S) throws -> [[String : Any]] where S : Sequence, T : JSONEncodable, T == S.Element {
+        return try sequence.map { try $0.encode() }
     }
 
 }

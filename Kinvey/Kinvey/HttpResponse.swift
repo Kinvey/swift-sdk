@@ -58,6 +58,10 @@ struct HttpResponse: Response {
         return response.statusCode == 405
     }
     
+    var isInternalServerError: Bool {
+        return response.statusCode == 500
+    }
+    
     var etag: String? {
         return allHeaderFields?["etag"] as? String
     }

@@ -432,7 +432,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         let client = options?.client ?? self.client
         var bodyObject = try! client.jsonParser.toJSON(persistable)
         let objId = bodyObject[Entity.EntityCodingKeys.entityId] as? String
-        let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
+        let isNewObj = isNew(entityId: objId)
         let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? AppDataEndpoint.appData(client: client, collectionName: collectionName) : AppDataEndpoint.appDataById(client: client, collectionName: collectionName, id: objId!),
@@ -443,6 +443,25 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         if isNewObj {
             bodyObject[Entity.EntityCodingKeys.entityId] = nil
         }
+        
+        request.setBody(json: bodyObject)
+        return request
+    }
+    
+    func buildAppDataSave<S: Sequence, T: Persistable, Result>(
+        _ persistable: S,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> where S.Element == T {
+        let collectionName = try! T.collectionName()
+        let client = options?.client ?? self.client
+        let bodyObject = try! client.jsonParser.toJSON(persistable)
+        let request = HttpRequest<Result>(
+            httpMethod: .post,
+            endpoint: Endpoint.appData(client: client, collectionName: collectionName),
+            credential: client.activeUser,
+            options: options
+        )
         
         request.setBody(json: bodyObject)
         return request

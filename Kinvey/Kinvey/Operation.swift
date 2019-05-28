@@ -150,7 +150,7 @@ internal class Operation<T: Persistable>: NSObject where T: NSObject {
     
     func fillObject(_ persistable: inout T) -> T {
         if persistable.entityId == nil {
-            persistable.entityId = "\(ObjectIdTmpPrefix)\(UUID().uuidString)"
+            persistable.entityId = "\(EntityIdTmpPrefix)\(UUID().uuidString)"
         }
         
         return persistable

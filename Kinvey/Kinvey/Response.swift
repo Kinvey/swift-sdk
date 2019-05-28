@@ -17,6 +17,7 @@ internal protocol Response {
     var isForbidden: Bool { get }
     var isNotFound: Bool { get }
     var isMethodNotAllowed: Bool { get }
+    var isInternalServerError: Bool { get }
     
     var etag: String? { get }
     var contentTypeIsJson: Bool { get }
