@@ -117,6 +117,8 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                     case .success(let existingItem):
                         entities.append(existingItem)
                     case .failure(let error):
+                        let error = IndexedError(index: entities.count, error: error)
+                        entities.append(nil)
                         errors.append(error)
                     }
                     existingItemsIndex += 1

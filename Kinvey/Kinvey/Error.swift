@@ -341,3 +341,10 @@ public struct MultiSaveError: Swift.Error, Codable {
     }
     
 }
+
+public struct IndexedError: Swift.Error {
+    
+    let index: Int
+    let error: Swift.Error
+    
+}
