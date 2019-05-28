@@ -222,8 +222,11 @@ extension String {
     
 }
 
+/// Default REST API Version used in the REST calls.
+public let defaultRestApiVersion = 4
+
 /// REST API Version used in the REST calls.
-public var restApiVersion = 4
+public var restApiVersion = defaultRestApiVersion
 
 enum Body {
     
