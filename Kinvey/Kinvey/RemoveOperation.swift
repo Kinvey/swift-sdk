@@ -50,7 +50,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                 signpost(.end, log: osLog, name: "Map Detached Object IDs", "%d", detachedObjects.count)
                 if cache.remove(entities: realmObjects), let sync = self.sync {
                     objectIds.forEachAutoreleasepool { objectId in
-                        if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                        if objectId.hasPrefix(EntityIdTmpPrefix) {
                             sync.removeAllPendingOperations(objectId)
                         } else {
                             sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))

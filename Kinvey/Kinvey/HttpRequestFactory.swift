@@ -372,7 +372,7 @@ class HttpRequestFactory: RequestFactory {
         let client = options?.client ?? self.client
         var bodyObject = try! client.jsonParser.toJSON(persistable)
         let objId = bodyObject[Entity.EntityCodingKeys.entityId] as? String
-        let isNewObj = objId == nil || objId!.hasPrefix(ObjectIdTmpPrefix)
+        let isNewObj = isNew(entityId: objId)
         let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? Endpoint.appData(client: client, collectionName: collectionName) : Endpoint.appDataById(client: client, collectionName: collectionName, id: objId!),

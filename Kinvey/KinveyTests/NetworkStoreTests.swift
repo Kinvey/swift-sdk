@@ -368,6 +368,7 @@ class NetworkStoreTests: StoreTestCase {
             Kinvey.restApiVersion = originalRestApiVersion
         }
         let id = UUID().uuidString
+        XCTAssertFalse(isNew(entityId: id))
         var requestCount = 0
         if useMockData {
             mockResponse { request in
@@ -424,8 +425,8 @@ class NetworkStoreTests: StoreTestCase {
         
         do {
             let persons = [
-                Person { $0.entityId = id; $0.name = "Hugo" },
-                Person { $0.entityId = id; $0.name = "Barros" }
+                Person { $0.personId = id; $0.name = "Hugo" },
+                Person { $0.personId = id; $0.name = "Barros" }
             ]
             
             weak var expectationSave = expectation(description: "Save")
@@ -433,19 +434,12 @@ class NetworkStoreTests: StoreTestCase {
             store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let result):
-                    XCTFail("Should throw an error")
+                    XCTAssertEqual(result.entities.count, 2)
+                    XCTAssertEqual(result.errors.count, 0)
+                    XCTAssertNotNil(result.entities.first!)
+                    XCTAssertNotNil(result.entities.last!)
                 case .failure(let error):
-                    let error = error as? Kinvey.Error
-                    XCTAssertNotNil(error)
-                    if let error = error {
-                        switch error {
-                        case .kinveyInternalErrorRetry(let debug, let description):
-                            XCTAssertEqual(debug, "An entity with that _id already exists in this collection")
-                            XCTAssertEqual(description, "The Kinvey server encountered an unexpected error. Please retry your request.")
-                        default:
-                            XCTFail(error.localizedDescription)
-                        }
-                    }
+                    XCTFail(error.localizedDescription)
                 }
                 
                 expectationSave?.fulfill()
