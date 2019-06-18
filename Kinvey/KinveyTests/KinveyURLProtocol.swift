@@ -160,17 +160,52 @@ class KinveyURLProtocol: URLProtocol {
                 
                 switch httpMethod {
                 case "POST":
-                    var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
-                    if json["_id"] == nil {
-                        json["_id"] = UUID().uuidString
+                    let json = try! JSONSerialization.jsonObject(with: request)
+                    let kinveyApiVersion = request.allHTTPHeaderFields?["X-Kinvey-API-Version"]
+                    if var json = json as? [String : Any] {
+                        if json["_id"] == nil {
+                            json["_id"] = UUID().uuidString
+                        }
+                        let id = json["_id"] as! String
+                        var kmd = [String : Any]()
+                        kmd["lmt"] = now
+                        kmd["ect"] = now
+                        json["_kmd"] = kmd
+                        KinveyURLProtocol.collections[collection]![id] = json
+                        sendResponse(url: url, statusCode: 201, body: .jsonObject(json))
+                    } else if var jsonArray = json as? [[String : Any]] {
+                        guard let kinveyApiVersion = kinveyApiVersion, kinveyApiVersion == "5" else {
+                            sendResponse(url: url, statusCode: 400, body: .jsonObject([
+                                "error": "FeatureUnavailable",
+                                "description": "Requested functionality is unavailable in this API version.",
+                                "debug": "Inserting multiple entities is not available in this Kinvey API version"
+                            ]))
+                            return
+                        }
+                        jsonArray = jsonArray.map { json in
+                            var json = json
+                            if json["_id"] == nil {
+                                json["_id"] = UUID().uuidString
+                            }
+                            let id = json["_id"] as! String
+                            var kmd = [String : Any]()
+                            kmd["lmt"] = now
+                            kmd["ect"] = now
+                            json["_kmd"] = kmd
+                            KinveyURLProtocol.collections[collection]![id] = json
+                            return json
+                        }
+                        sendResponse(
+                            url: url,
+                            statusCode: 201,
+                            body: .jsonObject([
+                                "entities": jsonArray,
+                                "errors": []
+                            ])
+                        )
+                    } else {
+                        sendResponseEntityNotFound(url: url)
                     }
-                    let id = json["_id"] as! String
-                    var kmd = [String : Any]()
-                    kmd["lmt"] = now
-                    kmd["ect"] = now
-                    json["_kmd"] = kmd
-                    KinveyURLProtocol.collections[collection]![id] = json
-                    sendResponse(url: url, statusCode: 201, body: .jsonObject(json))
                 case "PUT":
                     var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
                     var kmd = KinveyURLProtocol.collections[collection]![id]?["_kmd"] as? [String : Any] ?? [:]

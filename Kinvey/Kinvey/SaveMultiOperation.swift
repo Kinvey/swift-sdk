@@ -58,6 +58,11 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
     }
     
     func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        guard self.persistable.count > 0 else {
+            let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .success((entities: AnyRandomAccessCollection(EmptyCollection()), errors: AnyRandomAccessCollection(EmptyCollection())))
+            completionHandler?(result)
+            return AnyRequest(result)
+        }
         let request = LocalRequest<Swift.Result<MultiSaveResultTuple<T>, Swift.Error>>()
         request.execute { () -> Void in
             let networkRequest = self.client.networkRequestFactory.appData.buildAppDataSave(
@@ -67,6 +72,10 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             )
             
             if let cache = self.cache {
+                let persistable = self.persistable.map { (entity: T) -> T in
+                    var persistable = entity
+                    return self.fillObject(&persistable)
+                }
                 cache.save(entities: persistable, syncQuery: nil)
             }
             
@@ -98,6 +107,10 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             let newItemsResult = try newItemsResponse.get()
             return self.updateExistingItems(requests: requests).map { (newItemsResult, $0) }
         }.done { newItemsResult, existingItemsResult in
+            guard existingItemsResult.count > 0 else {
+                requests.result = .success(newItemsResult)
+                return
+            }
             var entities = [T?]()
             var errors = [Swift.Error]()
             var newItemsIndex = 0
@@ -189,14 +202,14 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                     response.isOK,
                     let data = _data,
                     let json = try? self.client.jsonParser.parseDictionary(from: data),
-                    let entitiesJson = json["entities"] as? [[String : Any]?],
+                    let entitiesJson = json["entities"] as? [JsonDictionary?],
                     let entities = try? entitiesJson.map({ (item) -> T? in
                         guard let item = item else {
                             return nil
                         }
                         return try self.client.jsonParser.parseObject(T.self, from: item)
                     }),
-                    let errors = json["errors"] as? [[String : Any]]
+                    let errors = json["errors"] as? [JsonDictionary]
                 else {
                     resolver.reject(buildError(_data, _response, error, self.client))
                     return

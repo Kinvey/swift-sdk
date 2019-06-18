@@ -328,11 +328,11 @@ extension NSException {
     
 }
 
-public struct MultiSaveError: Swift.Error, Codable {
+public struct MultiSaveError: Swift.Error, Codable, IndexableError {
     
-    let index: Int
-    let code: Int
-    let message: String
+    public let index: Int
+    public let code: Int
+    public let message: String
     
     enum CodingKeys: String, CodingKey {
         case index
@@ -342,9 +342,15 @@ public struct MultiSaveError: Swift.Error, Codable {
     
 }
 
-public struct IndexedError: Swift.Error {
+public struct IndexedError: Swift.Error, IndexableError {
     
-    let index: Int
-    let error: Swift.Error
+    public let index: Int
+    public let error: Swift.Error
+    
+}
+
+public protocol IndexableError: Swift.Error {
+    
+    var index: Int { get }
     
 }
