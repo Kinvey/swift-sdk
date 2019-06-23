@@ -536,10 +536,20 @@ class NetworkStoreTests: StoreTestCase {
         store.save([], options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
-                XCTAssertEqual(result.entities.count, 0)
-                XCTAssertEqual(result.errors.count, 0)
+                fail("it should fail")
             case .failure(let error):
-                XCTFail(error.localizedDescription)
+                XCTAssertNotNil(error as? Kinvey.Error)
+                guard let kinveyError = error as? Kinvey.Error else {
+                    return
+                }
+                switch kinveyError {
+                case .badRequest(let httpResponse, let data, let description):
+                    XCTAssertNil(httpResponse)
+                    XCTAssertNil(data)
+                    XCTAssertEqual(description, "Request body cannot be an empty array")
+                default:
+                    fail(error.localizedDescription)
+                }
             }
             
             expectationSave?.fulfill()
