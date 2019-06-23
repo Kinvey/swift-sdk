@@ -61,7 +61,7 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
             }
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(networkRequest.request, objectId: persistable.entityId))
+                sync.save(pendingOperation: sync.createPendingOperation(networkRequest.request, objectId: persistable.entityId))
             }
             request.result = .success(self.persistable)
             if let completionHandler = completionHandler, let result = request.result {

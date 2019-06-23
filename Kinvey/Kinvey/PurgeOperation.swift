@@ -39,7 +39,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                     if let promise = updatePromise(pendingOperation: pendingOperation, requests: requests) {
                         promises.append(promise)
                     } else {
-                        sync.removePendingOperation(pendingOperation)
+                        sync.remove(pendingOperation: pendingOperation)
                     }
                 case .delete:
                     promises.append(deletePromise(pendingOperation: pendingOperation, sync: sync))
@@ -69,14 +69,14 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                 let query = Query(format: "\(try T.entityIdProperty()) == %@", objectId)
                 cache?.remove(byQuery: query)
             }
-            sync.removePendingOperation(pendingOperation)
+            sync.remove(pendingOperation: pendingOperation)
             resolver.fulfill(())
         }
     }
     
     private func deletePromise(pendingOperation: PendingOperation, sync: AnySync) -> Promise<Void> {
         return Promise<Void> { resolver in
-            sync.removePendingOperation(pendingOperation)
+            sync.remove(pendingOperation: pendingOperation)
             resolver.fulfill(())
         }
     }
@@ -101,7 +101,7 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T, Int, Swift.Error
                     let persistable = try? client.jsonParser.parseObject(T.self, from: data)
                 {
                     self.cache?.save(entity: persistable)
-                    self.sync?.removePendingOperation(pendingOperation)
+                    self.sync?.remove(pendingOperation: pendingOperation)
                     resolver.fulfill(())
                 } else {
                     resolver.reject(buildError(data, response, error, self.client))

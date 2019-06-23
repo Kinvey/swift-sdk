@@ -426,13 +426,14 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
     func buildAppDataSave<T: Persistable, Result>(
         _ persistable: T,
         options: Options?,
+        isNew: Bool?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
         let collectionName = try! T.collectionName()
         let client = options?.client ?? self.client
         var bodyObject = try! client.jsonParser.toJSON(persistable)
         let objId = bodyObject[Entity.EntityCodingKeys.entityId] as? String
-        let isNewObj = isNew(entityId: objId)
+        let isNewObj = isNew ?? Kinvey.isNew(entityId: objId)
         let request = HttpRequest<Result>(
             httpMethod: isNewObj ? .post : .put,
             endpoint: isNewObj ? AppDataEndpoint.appData(client: client, collectionName: collectionName) : AppDataEndpoint.appDataById(client: client, collectionName: collectionName, id: objId!),
@@ -440,7 +441,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
             options: options
         )
         
-        if isNewObj {
+        if isNewObj || (Kinvey.isNew(entityId: objId)) {
             bodyObject[Entity.EntityCodingKeys.entityId] = nil
         }
         
@@ -455,7 +456,13 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
     ) -> HttpRequest<Result> where S.Element == T {
         let collectionName = try! T.collectionName()
         let client = options?.client ?? self.client
-        let bodyObject = try! client.jsonParser.toJSON(persistable)
+        let bodyObject = try! client.jsonParser.toJSON(persistable).map { (json) -> JsonDictionary in
+            var json = json
+            if isNew(entityId: json[Entity.EntityCodingKeys.entityId.rawValue] as? String) {
+                json.removeValue(forKey: Entity.EntityCodingKeys.entityId.rawValue)
+            }
+            return json
+        }
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: AppDataEndpoint.appData(client: client, collectionName: collectionName),

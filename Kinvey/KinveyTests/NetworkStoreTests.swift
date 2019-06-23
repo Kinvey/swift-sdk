@@ -2847,7 +2847,7 @@ class NetworkStoreTests: StoreTestCase {
         
         let json = person.toJSON()
         
-        let geolocation = json["geolocation"] as? [Double]
+        let geolocation = json[GeoPoint.CodingKey] as? [Double]
         XCTAssertNotNil(geolocation)
         if let geolocation = geolocation {
             XCTAssertEqual(geolocation[1], latitude)
@@ -2939,14 +2939,14 @@ class NetworkStoreTests: StoreTestCase {
                 let queryComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
                 let queryValue = queryComponents.queryItems!.filter { $0.name == "query" }.first!.value!
                 let queryJson = try! JSONSerialization.jsonObject(with: queryValue.data(using: .utf8)!) as! JsonDictionary
-                let geolocation = queryJson["geolocation"] as! JsonDictionary
+                let geolocation = queryJson[GeoPoint.CodingKey] as! JsonDictionary
                 let geoWithin = geolocation["$geoWithin"] as! JsonDictionary
                 let centerSphere = geoWithin["$centerSphere"] as! [Any]
                 let coordinates = centerSphere[0] as! [Double]
                 let location = CLLocation(latitude: coordinates[1], longitude: coordinates[0])
                 let radius = (centerSphere[1] as! Double) * 6371000.0
                 return HttpResponse(json: [mockJson!].filter({ (item) -> Bool in
-                    let itemGeolocation = item["geolocation"] as! [Double]
+                    let itemGeolocation = item[GeoPoint.CodingKey] as! [Double]
                     let itemLocation = CLLocation(latitude: itemGeolocation[1], longitude: itemGeolocation[0])
                     return itemLocation.distance(from: location) <= radius
                 }))
@@ -3065,7 +3065,7 @@ class NetworkStoreTests: StoreTestCase {
                 let queryComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
                 let queryValue = queryComponents.queryItems!.filter { $0.name == "query" }.first!.value!
                 let queryJson = try! JSONSerialization.jsonObject(with: queryValue.data(using: .utf8)!) as! JsonDictionary
-                let geolocation = queryJson["geolocation"] as! JsonDictionary
+                let geolocation = queryJson[GeoPoint.CodingKey] as! JsonDictionary
                 let geoWithin = geolocation["$geoWithin"] as! JsonDictionary
                 let polygonCoordinates = geoWithin["$polygon"] as! [[Double]]
                 let locationCoordinates = polygonCoordinates.map {
@@ -3088,7 +3088,7 @@ class NetworkStoreTests: StoreTestCase {
                 }
                 path.close()
                 return HttpResponse(json: [mockJson!].filter { item in
-                    let itemGeolocation = item["geolocation"] as! [Double]
+                    let itemGeolocation = item[GeoPoint.CodingKey] as! [Double]
                     let itemCoordinate = CLLocationCoordinate2D(latitude: itemGeolocation[1], longitude: itemGeolocation[0])
                     let itemPoint = CGPoint(x: itemCoordinate.latitude, y: itemCoordinate.longitude)
                     return path.contains(itemPoint)

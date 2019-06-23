@@ -103,6 +103,9 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
     case parameterValueOutOfRange(debug: String, description: String)
     
     case invalidCredentials(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
+    case insufficientCredentials(httpResponse: HTTPURLResponse?, data: Data?, debug: String, description: String)
+    
+    case badRequest(httpResponse: HTTPURLResponse?, data: Data?, description: String)
     
     /// Error handling OAuth errors in redirect uri responses
     case micAuth(error: String, description: String)
@@ -132,10 +135,12 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .entityNotFound(_, let description),
              .parameterValueOutOfRange(_, let description),
              .invalidCredentials(_, _, _, let description),
+             .insufficientCredentials(_, _, _, let description),
              .micAuth(_, let description),
              .blRuntime(_, let description, _),
              .featureUnavailable(_, let description),
-             .kinveyInternalErrorRetry(_, let description):
+             .kinveyInternalErrorRetry(_, let description),
+             .badRequest(_, _, let description):
             return description
         case .objectIdMissing:
             return NSLocalizedString("Error.objectIdMissing", bundle: bundle, comment: "")
@@ -177,6 +182,7 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .entityNotFound(let debug, _),
              .parameterValueOutOfRange(let debug, _),
              .invalidCredentials(_, _, let debug, _),
+             .insufficientCredentials(_, _, let debug, _),
              .blRuntime(let debug, _, _),
              .featureUnavailable(let debug, _),
              .kinveyInternalErrorRetry(let debug, _):
@@ -195,7 +201,11 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .methodNotAllowed(let httpResponse, _, _, _),
              .unauthorized(let httpResponse, _, _, _, _),
              .invalidResponse(let httpResponse, _),
-             .invalidCredentials(let httpResponse, _, _, _):
+             .invalidCredentials(let httpResponse, _, _, _),
+             .insufficientCredentials(let httpResponse, _, _, _),
+             .missingConfiguration(let httpResponse, _, _, _),
+             .missingRequestParameter(let httpResponse, _, _, _),
+             .badRequest(let httpResponse, _, _):
             return httpResponse
         default:
             return nil
@@ -217,7 +227,10 @@ public enum Error: Swift.Error, LocalizedError, CustomStringConvertible, CustomD
              .unauthorized(_, let data, _, _, _),
              .invalidResponse(_, let data),
              .missingConfiguration(_, let data, _, _),
-             .invalidCredentials(_, let data, _, _):
+             .missingRequestParameter(_, let data, _, _),
+             .invalidCredentials(_, let data, _, _),
+             .insufficientCredentials(_, let data, _, _),
+             .badRequest(_, let data, _):
             return data
         default:
             return nil
