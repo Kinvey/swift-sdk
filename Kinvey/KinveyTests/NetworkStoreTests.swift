@@ -536,7 +536,7 @@ class NetworkStoreTests: StoreTestCase {
         store.save([], options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
-                fail("it should fail")
+                Nimble.fail("it should fail")
             case .failure(let error):
                 XCTAssertNotNil(error as? Kinvey.Error)
                 guard let kinveyError = error as? Kinvey.Error else {
@@ -548,7 +548,7 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertNil(data)
                     XCTAssertEqual(description, "Request body cannot be an empty array")
                 default:
-                    fail(error.localizedDescription)
+                    Nimble.fail(error.localizedDescription)
                 }
             }
             
