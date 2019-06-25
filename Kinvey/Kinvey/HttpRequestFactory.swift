@@ -441,7 +441,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
             options: options
         )
         
-        if isNewObj || (Kinvey.isNew(entityId: objId)) {
+        if isNewObj {
             bodyObject[Entity.EntityCodingKeys.entityId] = nil
         }
         
