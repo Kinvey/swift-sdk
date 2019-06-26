@@ -225,12 +225,23 @@ class MultiInsertSpec: QuickSpec {
                             expect(entities?.count).to(equal(4))
                         }
                         it("should return an error for an empty array") {
-                            let result = kinveySaveMulti(
+                            let error = kinveySaveMulti(
                                 dataStore: networkDataStore,
                                 entities: []
-                            ).result
-                            expect(result).toNot(beNil())
-                            expect(result?.entities.count).to(equal(0))
+                            ).error
+                            expect(error).toNot(beNil())
+                            expect(error as? Kinvey.Error).toNot(beNil())
+                            guard let kinveyError = error as? Kinvey.Error else {
+                                return
+                            }
+                            switch kinveyError {
+                            case .badRequest(let httpResponse, let data, let description):
+                                expect(httpResponse).to(beNil())
+                                expect(data).to(beNil())
+                                expect(description).to(equal("Request body cannot be an empty array"))
+                            default:
+                                fail(kinveyError.localizedDescription)
+                            }
                         }
                         it("should return an error when all items fail with multi-insert for invalid credentials") {
                             mockResponse(
@@ -528,7 +539,7 @@ class MultiInsertSpec: QuickSpec {
                         expect(resultUnwrapped.entities.count).to(equal(2))
                         expect(resultUnwrapped.errors.count).to(equal(0))
                         
-                        expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                        expect(syncDataStore.pendingSyncCount()).to(equal(2))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -549,7 +560,7 @@ class MultiInsertSpec: QuickSpec {
                         expect(resultUnwrapped.entities.count).to(equal(2))
                         expect(resultUnwrapped.errors.count).to(equal(0))
                         
-                        expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                        expect(syncDataStore.pendingSyncCount()).to(equal(2))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -570,7 +581,7 @@ class MultiInsertSpec: QuickSpec {
                         expect(resultUnwrapped.entities.count).to(equal(2))
                         expect(resultUnwrapped.errors.count).to(equal(0))
                         
-                        expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                        expect(syncDataStore.pendingSyncCount()).to(equal(2))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -612,11 +623,11 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(2))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let count = kinveyPush(dataStore: syncDataStore).count
-                    expect(count).to(equal(1))
+                    expect(count).to(equal(2))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(0))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
@@ -641,11 +652,11 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(4))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(4))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let count = kinveyPush(dataStore: syncDataStore).count
-                    expect(count).to(equal(1))
+                    expect(count).to(equal(4))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(0))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
@@ -683,9 +694,9 @@ class MultiInsertSpec: QuickSpec {
                         dataStore: syncDataStore,
                         entities: [
                             Person { $0.name = "Victor" },
-                            Person { $0.entityId = UUID().uuidString; $0.name = "Hugo" },
+                            Person { $0.personId = UUID().uuidString; $0.name = "Hugo" },
                             Person { $0.name = "Vinay" },
-                            Person { $0.entityId = UUID().uuidString; $0.name = "Thomas" }
+                            Person { $0.personId = UUID().uuidString; $0.name = "Thomas" }
                         ]
                     ).result
                     expect(result).toNot(beNil())
@@ -695,11 +706,11 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(4))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
-                    expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(4))
+                    expect(syncDataStore.pendingSyncEntities().count).to(equal(3))
                     
                     let count = kinveyPush(dataStore: syncDataStore).count
-                    expect(count).to(equal(1))
+                    expect(count).to(equal(4))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(0))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
@@ -740,14 +751,14 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(2))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let errors = kinveyPush(dataStore: syncDataStore).errors
                     expect(errors?.count).to(equal(1))
                     expect(errors?.first?.localizedDescription).to(equal("The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials."))
                     
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                 
                     let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -786,14 +797,14 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(2))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let errors = kinveyPush(dataStore: syncDataStore).errors
                     expect(errors?.count).to(equal(1))
                     expect(errors?.first?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
                     
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                 
                     let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -819,7 +830,7 @@ class MultiInsertSpec: QuickSpec {
                     expect(entities?.count).to(equal(2))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(2))
-                    expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
+                    expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let count = kinveyPush(dataStore: syncDataStore).count
                     expect(count).to(equal(2))
@@ -832,7 +843,7 @@ class MultiInsertSpec: QuickSpec {
                         switch request.httpMethod {
                         case "POST":
                             return HttpResponse(
-                                statusCode: 500,
+                                statusCode: 400,
                                 json: [
                                     "error": "ParameterValueOutOfRange",
                                     "description": "The value specified for one of the request parameters is out of range.",
@@ -860,14 +871,25 @@ class MultiInsertSpec: QuickSpec {
                     expect(resultUnwrapped.entities.count).to(equal(2))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     
                     let errors = kinveySync(dataStore: syncDataStore).errors
                     expect(errors?.count).to(equal(1))
                     expect(errors?.first?.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
+                    let kinveyError = errors?.first as? Kinvey.Error
+                    expect(kinveyError).toNot(beNil())
+                    if let kinveyError = kinveyError {
+                        switch kinveyError {
+                        case .parameterValueOutOfRange(let debug, let description):
+                            expect(debug).to(equal("Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"))
+                            expect(description).to(equal("The value specified for one of the request parameters is out of range."))
+                        default:
+                            fail(kinveyError.localizedDescription)
+                        }
+                    }
                     
-                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                 
                     let entities = kinveyFind(dataStore: syncDataStore).entities
@@ -1000,9 +1022,9 @@ class MultiInsertSpec: QuickSpec {
                     it("should sent PUT requests for an array of items with _id") {
                         let id1 = UUID().uuidString
                         let id2 = UUID().uuidString
-                        let result = kinveySaveMulti(dataStore: autoDataStore, entities: [
-                            Person { $0.entityId = id1 },
-                            Person { $0.entityId = id2 }]
+                        let result = kinveySaveMulti(
+                            dataStore: autoDataStore,
+                            entities: Person { $0.personId = id1 }, Person { $0.personId = id2 }
                         ).result
                         
                         expect(result?.entities.count).to(equal(2))
@@ -1012,12 +1034,15 @@ class MultiInsertSpec: QuickSpec {
                         
                         let entities = kinveyFind(dataStore: networkDataStore).entities
                         
-                        expect(entities?.first?.entityId).to(equal(id1))
-                        expect(entities?.last?.entityId).to(equal(id2))
+                        expect(entities?.count).to(equal(2))
+                        expect(entities?.map({ $0.entityId })).to(contain(id1, id2))
                     }
                     it("should combine POST and PUT requests for items with and without _id") {
                         let id = UUID().uuidString
-                        let result = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person { $0.entityId = id }).result
+                        let result = kinveySaveMulti(
+                            dataStore: autoDataStore,
+                            entities: Person(), Person { $0.personId = id }
+                        ).result
                         
                         expect(result?.entities.count).to(equal(2))
                         expect(result?.errors.count).to(equal(0))
@@ -1038,9 +1063,20 @@ class MultiInsertSpec: QuickSpec {
                         expect(entities?.last?.entityId).to(equal(id))
                     }
                     it("should return an error for an empty array") {
-                        let result = kinveySaveMulti(dataStore: autoDataStore, entities: []).result
-                        expect(result?.entities.count).to(equal(0))
-                        expect(result?.errors.count).to(equal(0))
+                        let error = kinveySaveMulti(dataStore: autoDataStore, entities: []).error
+                        expect(error).toNot(beNil())
+                        expect(error as? Kinvey.Error).toNot(beNil())
+                        guard let kinveyError = error as? Kinvey.Error else {
+                            return
+                        }
+                        switch kinveyError {
+                        case .badRequest(let httpResponse, let data, let description):
+                            expect(httpResponse).to(beNil())
+                            expect(data).to(beNil())
+                            expect(description).to(equal("Request body cannot be an empty array"))
+                        default:
+                            fail(kinveyError.localizedDescription)
+                        }
                         
                         expect(syncDataStore.pendingSyncCount()).to(equal(0))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
@@ -1115,27 +1151,33 @@ class MultiInsertSpec: QuickSpec {
                         mockResponse { request in
                             switch request.httpMethod {
                             case "POST":
+                                let id = UUID().uuidString
+                                let json = [
+                                    "name": "Victor",
+                                    "_acl": [
+                                        "creator": UUID().uuidString
+                                    ],
+                                    "_kmd": [
+                                        "lmt": Date().toISO8601(),
+                                        "ect": Date().toISO8601()
+                                    ],
+                                    "_id": id
+                                ] as JsonDictionary
+                                if KinveyURLProtocol.collections[Person.collectionName()] == nil {
+                                    KinveyURLProtocol.collections[Person.collectionName()] = [:]
+                                }
+                                KinveyURLProtocol.collections[Person.collectionName()]![id] = json
                                 return HttpResponse(
                                     statusCode: 207,
                                     json: [
                                         "entities": [
-                                            [
-                                                "name": "Victor",
-                                                "_acl": [
-                                                    "creator": UUID().uuidString
-                                                ],
-                                                "_kmd": [
-                                                    "lmt": Date().toISO8601(),
-                                                    "ect": Date().toISO8601()
-                                                ],
-                                                "_id": UUID().uuidString
-                                            ],
+                                            json,
                                             nil
                                         ],
                                         "errors" : [
                                             [
                                                 "index" : 1,
-                                                "code": UUID().uuidString,
+                                                "code": 123,
                                                 "errmsg": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
                                             ]
                                         ]
@@ -1148,8 +1190,9 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
+                        print((autoDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
                         let result = kinveySaveMulti(
-                            dataStore: syncDataStore,
+                            dataStore: autoDataStore,
                             entities: [
                                 Person { $0.name = "Victor" },
                                 Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
@@ -1164,13 +1207,14 @@ class MultiInsertSpec: QuickSpec {
                         expect(syncDataStore.pendingSyncCount()).to(equal(1))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                         
-                        var entities = kinveyFind(dataStore: syncDataStore).entities
+                        var entities = kinveyFind(dataStore: syncDataStore, query: Query(predicate: nil, sortDescriptors: [NSSortDescriptor(key: "metadata.lmt", ascending: true)])).entities
                         expect(entities?.count).to(equal(2))
-                        expect(entities?.first!).toNot(beNil())
-                        expect(entities?.first!.metadata).toNot(beNil())
-                        expect(entities?.first!.metadata?.entityCreationTime).toNot(beNil())
-                        expect(entities?.first!.metadata?.lastModifiedTime).toNot(beNil())
-                        expect(entities?.last!).to(beNil())
+                        expect(entities?.first).toNot(beNil())
+                        expect(entities?.first?.metadata).toNot(beNil())
+                        expect(entities?.first?.metadata?.entityCreationTime).toNot(beNil())
+                        expect(entities?.first?.metadata?.lastModifiedTime).toNot(beNil())
+                        expect(entities?.last).toNot(beNil())
+                        expect(entities?.last?.metadata).to(beNil())
                         
                         entities = kinveyFind(dataStore: networkDataStore).entities
                         expect(entities?.count).to(equal(1))
@@ -1180,30 +1224,40 @@ class MultiInsertSpec: QuickSpec {
                         expect(entities?.first?.metadata?.lastModifiedTime).toNot(beNil())
                     }
                     it("should return PUT failures at the matching index") {
+                        var newIds = [String]()
                         mockResponse { request in
                             switch request.httpMethod {
                             case "POST":
+                                var jsonArray = try! JSONSerialization.jsonObject(with: request) as! [JsonDictionary]
+                                jsonArray = jsonArray.map {
+                                    var json = $0
+                                    if json["_id"] == nil {
+                                        let id = UUID().uuidString
+                                        json["_id"] = id
+                                        newIds.append(id)
+                                    }
+                                    var kmd = [String : Any]()
+                                    let now = Date().toISO8601()
+                                    kmd["lmt"] = now
+                                    kmd["ect"] = now
+                                    json["_kmd"] = kmd
+                                    return json
+                                }
+                                if KinveyURLProtocol.collections[Person.collectionName()] == nil {
+                                    KinveyURLProtocol.collections[Person.collectionName()] = [:]
+                                }
+                                KinveyURLProtocol.collections[Person.collectionName()]![newIds.last!] = jsonArray[1]
                                 return HttpResponse(
                                     statusCode: 207,
                                     json: [
                                         "entities": [
-                                            [
-                                                "name": "Victor",
-                                                "_acl": [
-                                                    "creator": UUID().uuidString
-                                                ],
-                                                "_kmd": [
-                                                    "lmt": Date().toISO8601(),
-                                                    "ect": Date().toISO8601()
-                                                ],
-                                                "_id": UUID().uuidString
-                                            ],
-                                            nil
+                                            nil,
+                                            jsonArray[1]
                                         ],
                                         "errors" : [
                                             [
-                                                "index" : 1,
-                                                "code": UUID().uuidString,
+                                                "index" : 0,
+                                                "code": 123,
                                                 "errmsg": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
                                             ]
                                         ]
@@ -1216,36 +1270,62 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
+                        let id1 = UUID().uuidString
+                        let id2 = UUID().uuidString
+                        print((syncDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
                         let result = kinveySaveMulti(
-                            dataStore: syncDataStore,
+                            dataStore: autoDataStore,
                             entities: [
-                                Person { $0.name = "Victor" },
-                                Person { $0.entityId = UUID().uuidString; $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
+                                Person { $0.age = 10; $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
+                                Person { $0.age = 20; $0.personId = id1 },
+                                Person { $0.age = 30; $0.personId = id2; $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
+                                Person { $0.age = 40; $0.name = "Victor" }
                             ]
                         ).result
-                        expect(result?.entities.count).to(equal(2))
-                        expect(result?.entities.first!).toNot(beNil())
-                        expect(result?.entities.last!).to(beNil())
-                        expect(result?.errors.count).to(equal(1))
-                        expect((result?.errors.first as? IndexedError)?.index).to(equal(1))
+                        expect(result?.entities.count).to(equal(4))
+                        guard let resultUnwrapped = result else {
+                            return
+                        }
+                        expect(newIds.count).to(equal(2))
+                        if resultUnwrapped.entities.count == 4 {
+                            let entities = Array(resultUnwrapped.entities)
+                            expect(entities[0]).to(beNil())
+                            expect(entities[1]).toNot(beNil())
+                            expect(entities[1]?.entityId).to(equal(id1))
+                            expect(entities[2]).to(beNil())
+                            expect(entities[3]).toNot(beNil())
+                            expect(entities[3]?.entityId).to(equal(newIds.last))
+                        }
+                        expect(resultUnwrapped.errors.count).to(equal(2))
+                        expect((resultUnwrapped.errors.first as? MultiSaveError)?.index).to(equal(0))
+                        expect((resultUnwrapped.errors.last as? IndexedError)?.index).to(equal(2))
                         
-                        expect(syncDataStore.pendingSyncCount()).to(equal(1))
-                        expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
+                        expect(syncDataStore.pendingSyncCount()).to(equal(2))
+                        expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
                         
-                        var entities = kinveyFind(dataStore: syncDataStore).entities
-                        expect(entities?.count).to(equal(2))
-                        expect(entities?.first!).toNot(beNil())
-                        expect(entities?.first!.metadata).toNot(beNil())
-                        expect(entities?.first!.metadata?.entityCreationTime).toNot(beNil())
-                        expect(entities?.first!.metadata?.lastModifiedTime).toNot(beNil())
-                        expect(entities?.last!).to(beNil())
+                        var entities = kinveyFind(dataStore: syncDataStore, query: Query(sortDescriptors: [NSSortDescriptor(key: "age", ascending: true)])).entities
+                        expect(entities).toNot(beNil())
+                        expect(entities?.count).to(equal(4))
+                        expect(entities?[0].metadata).to(beNil())
+                        expect(entities?[1].metadata).toNot(beNil())
+                        expect(entities?[1].metadata?.entityCreationTime).toNot(beNil())
+                        expect(entities?[1].metadata?.lastModifiedTime).toNot(beNil())
+                        expect(entities?[2].metadata).to(beNil())
+                        expect(entities?[3].entityId).to(equal(newIds.last))
+                        expect(entities?[3].metadata).toNot(beNil())
+                        expect(entities?[3].metadata?.entityCreationTime).toNot(beNil())
+                        expect(entities?[3].metadata?.lastModifiedTime).toNot(beNil())
                         
                         entities = kinveyFind(dataStore: networkDataStore).entities
-                        expect(entities?.count).to(equal(1))
+                        expect(entities?.count).to(equal(2))
                         expect(entities?.first).toNot(beNil())
                         expect(entities?.first?.metadata).toNot(beNil())
                         expect(entities?.first?.metadata?.entityCreationTime).toNot(beNil())
                         expect(entities?.first?.metadata?.lastModifiedTime).toNot(beNil())
+                        expect(entities?.last).toNot(beNil())
+                        expect(entities?.last?.metadata).toNot(beNil())
+                        expect(entities?.last?.metadata?.entityCreationTime).toNot(beNil())
+                        expect(entities?.last?.metadata?.lastModifiedTime).toNot(beNil())
                     }
                 }
                 context("Push()") {
@@ -1263,7 +1343,7 @@ class MultiInsertSpec: QuickSpec {
                             fail(error.localizedDescription)
                         }
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let count = kinveyPush(dataStore: autoDataStore).count
@@ -1289,7 +1369,7 @@ class MultiInsertSpec: QuickSpec {
                             fail(error.localizedDescription)
                         }
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let count = kinveyPush(dataStore: autoDataStore).count
@@ -1315,7 +1395,7 @@ class MultiInsertSpec: QuickSpec {
                             fail(error.localizedDescription)
                         }
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let count = kinveyPush(dataStore: autoDataStore).count
@@ -1346,28 +1426,23 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
-                        let result = kinveySaveMulti(
+                        let error = kinveySaveMulti(
                             dataStore: autoDataStore,
                             entities: [
                                 Person { $0.name = "Victor" },
                                 Person { $0.name = "Hugo" }
                             ]
-                        ).result
-                        expect(result).toNot(beNil())
-                        guard let resultUnwrapped = result else {
-                            return
-                        }
-                        expect(resultUnwrapped.entities.count).to(equal(2))
-                        expect(resultUnwrapped.errors.count).to(equal(0))
+                        ).error
+                        expect(error).toNot(beNil())
                     
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let errors = kinveyPush(dataStore: autoDataStore).errors
                         expect(errors?.count).to(equal(1))
                         expect(errors?.first?.localizedDescription).to(equal("The credentials used to authenticate this request are not authorized to run this operation. Please retry your request with appropriate credentials."))
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                     }
                     it("should return the failure reason in the result for each pushed item when they are different") {
@@ -1375,11 +1450,24 @@ class MultiInsertSpec: QuickSpec {
                             switch request.httpMethod {
                             case "POST":
                                 return HttpResponse(
-                                    statusCode: 500,
+                                    statusCode: 207,
                                     json: [
-                                        "error": "KinveyInternalErrorRetry",
-                                        "description": "The Kinvey server encountered an unexpected error. Please retry your request.",
-                                        "debug": "An entity with that _id already exists in this collection"
+                                        "entities" : [
+                                            nil,
+                                            nil
+                                        ],
+                                        "errors": [
+                                            [
+                                                "index": 0,
+                                                "code": 1,
+                                                "errmsg": "An entity with that name already exists in this collection"
+                                            ],
+                                            [
+                                                "index": 1,
+                                                "code": 2,
+                                                "errmsg": "An entity with that name already exists in this collection"
+                                            ],
+                                        ]
                                     ]
                                 )
                             default:
@@ -1401,16 +1489,17 @@ class MultiInsertSpec: QuickSpec {
                             return
                         }
                         expect(resultUnwrapped.entities.count).to(equal(2))
-                        expect(resultUnwrapped.errors.count).to(equal(0))
+                        expect(resultUnwrapped.entities.first!).to(beNil())
+                        expect(resultUnwrapped.entities.last!).to(beNil())
+                        expect(resultUnwrapped.errors.count).to(equal(2))
                     
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let errors = kinveyPush(dataStore: autoDataStore).errors
-                        expect(errors?.count).to(equal(1))
-                        expect(errors?.first?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
+                        expect(errors?.count).to(equal(2))
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                     }
                     it("should use multi-insert even if the items have not been created in an array") {
@@ -1429,14 +1518,18 @@ class MultiInsertSpec: QuickSpec {
                             expect(postCount).to(equal(1))
                         }
                         
-                        let entities = kinveySave(dataStore: autoDataStore, numberOfItems: 2).entities
+                        let entities = kinveySave(dataStore: syncDataStore, numberOfItems: 2).entities
                         expect(entities?.count).to(equal(2))
                         
+                        expect(postCount).to(equal(0))
+                        
                         expect(autoDataStore.pendingSyncCount()).to(equal(2))
-                        expect(autoDataStore.pendingSyncEntities().count).to(equal(2))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let count = kinveyPush(dataStore: autoDataStore).count
                         expect(count).to(equal(2))
+                        
+                        expect(postCount).to(equal(1))
                         
                         expect(autoDataStore.pendingSyncCount()).to(equal(0))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
@@ -1450,36 +1543,31 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let result = kinveySaveMulti(
+                            let error = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: [
                                     Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
                                     Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
                                     Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
                                 ]
-                            ).result
-                            expect(result).toNot(beNil())
-                            guard let resultUnwrapped = result else {
-                                return
-                            }
-                            expect(resultUnwrapped.entities.count).to(equal(2))
-                            expect(resultUnwrapped.errors.count).to(equal(1))
+                            ).error
+                            expect(error).toNot(beNil())
                         } catch {
                             fail(error.localizedDescription)
                         }
                     
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(3))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         
                         let errors = kinveySync(dataStore: autoDataStore).errors
                         expect(errors?.count).to(equal(1))
                         expect(errors?.first?.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(3))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                     
                         var entities = kinveyFind(dataStore: networkDataStore).entities
-                        expect(entities?.count).to(equal(2))
+                        expect(entities?.count).to(equal(0))
                         
                         entities = kinveyFind(dataStore: syncDataStore).entities
                         expect(entities?.count).to(equal(3))

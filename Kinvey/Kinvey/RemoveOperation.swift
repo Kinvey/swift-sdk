@@ -53,7 +53,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T, Int>, WriteOperationTyp
                         if objectId.hasPrefix(EntityIdTmpPrefix) {
                             sync.removeAllPendingOperations(objectId)
                         } else {
-                            sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
+                            sync.save(pendingOperation: sync.createPendingOperation(self.request.request, objectId: objectId))
                         }
                     }
                 }

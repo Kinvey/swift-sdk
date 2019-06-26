@@ -61,8 +61,8 @@ class AclTestCase: StoreTestCase {
                             XCTAssertEqual(result["error"] as? String, expected["error"])
                         }
                         switch error {
-                        case .unauthorized(_, _, let error, _, _):
-                            XCTAssertEqual(error, Kinvey.Error.Keys.insufficientCredentials.rawValue)
+                        case .insufficientCredentials:
+                            break
                         default:
                             XCTFail(error.localizedDescription)
                         }

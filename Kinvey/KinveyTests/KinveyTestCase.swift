@@ -1075,9 +1075,7 @@ class KinveyTestCase: XCTestCase {
         super.tearDown()
     }
     
-    func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
-        XCTAssertEqual(request.httpMethod, "POST")
-        var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+    func decorate(json: inout JsonDictionary) {
         json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
         json[Entity.EntityCodingKeys.acl] = [
             Acl.Key.creator : self.client.activeUser!.userId
@@ -1086,7 +1084,24 @@ class KinveyTestCase: XCTestCase {
             Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
             Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
         ]
+    }
+    
+    func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
+        XCTAssertEqual(request.httpMethod, "POST")
+        var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
+        decorate(json: &json)
         return json
+    }
+    
+    func decorateJsonArrayFromPostRequest(_ request: URLRequest) -> [JsonDictionary] {
+        XCTAssertEqual(request.httpMethod, "POST")
+        var jsonArray = try! JSONSerialization.jsonObject(with: request) as! [JsonDictionary]
+        jsonArray = jsonArray.map {
+            var json = $0
+            decorate(json: &json)
+            return json
+        }
+        return jsonArray
     }
     
     func startLogPolling(timeInterval: TimeInterval = 30, function: String = #function) -> DispatchSourceTimer {

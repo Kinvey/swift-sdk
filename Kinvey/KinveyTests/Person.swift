@@ -75,7 +75,7 @@ class Person: Entity {
         name <- ("name", map["name"])
         age <- ("age", map["age"])
         address <- ("address", map["address"], AddressTransform.shared)
-        geolocation <- ("geolocation", map["geolocation"])
+        geolocation <- ("geolocation", map[GeoPoint.CodingKey])
     }
     
 }

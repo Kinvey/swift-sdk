@@ -49,15 +49,15 @@ class KinveyURLProtocol: URLProtocol {
     static var appKey = "kid_\(UUID().uuidString)"
     static var appSecret = UUID().uuidString
     
-    private static var users = [
+    static var users = [
         String : [ //_id
             String : Any
         ]
     ]()
     
-    private static var userSessions = [String : String]()
+    static var userSessions = [String : String]()
     
-    private static var collections = [
+    static var collections = [
         String : [ //collection
             String : [ //_id
                 String : Any
@@ -169,6 +169,9 @@ class KinveyURLProtocol: URLProtocol {
                     let json = try! JSONSerialization.jsonObject(with: request)
                     let kinveyApiVersion = request.allHTTPHeaderFields?["X-Kinvey-API-Version"]
                     if var json = json as? [String : Any] {
+                        guard validate(url: url, json: json) else {
+                            return
+                        }
                         if json["_id"] == nil {
                             json["_id"] = UUID().uuidString
                         }
@@ -186,6 +189,9 @@ class KinveyURLProtocol: URLProtocol {
                                 "description": "Requested functionality is unavailable in this API version.",
                                 "debug": "Inserting multiple entities is not available in this Kinvey API version"
                             ]))
+                            return
+                        }
+                        guard validate(url: url, jsonArray: jsonArray) else {
                             return
                         }
                         jsonArray = jsonArray.map { json in
@@ -214,6 +220,9 @@ class KinveyURLProtocol: URLProtocol {
                     }
                 case "PUT":
                     var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
+                    guard validate(url: url, json: json) else {
+                        return
+                    }
                     var kmd = KinveyURLProtocol.collections[collection]![id]?["_kmd"] as? [String : Any] ?? [:]
                     if kmd["ect"] == nil {
                         kmd["ect"] = now
@@ -388,8 +397,45 @@ class KinveyURLProtocol: URLProtocol {
     override func stopLoading() {
     }
     
+    func validate(url: URL, jsonArray: [[String : Any]]) -> Bool {
+        guard jsonArray.count > 0 else {
+            sendResponse(
+                url: url,
+                statusCode: 400,
+                body: .string("Request body cannot be an empty array")
+            )
+            return false
+        }
+        return jsonArray.allSatisfy { validate(url: url, json: $0) }
+    }
+    
+    func validate(url: URL, json: [String : Any]) -> Bool {
+        if let _geoloc = json["_geoloc"] {
+            guard let geoloc = _geoloc as? [Int],
+                geoloc.count == 2,
+                let longitude = geoloc.first,
+                let latitude = geoloc.last,
+                -180...180 ~= longitude,
+                -90...90 ~= latitude
+            else {
+                sendResponse(
+                    url: url,
+                    statusCode: 400,
+                    body: .jsonObject([
+                        "error": "ParameterValueOutOfRange",
+                        "description": "The value specified for one of the request parameters is out of range.",
+                        "debug": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                    ])
+                )
+                return false
+            }
+        }
+        return true
+    }
+    
     enum Body {
         case data(Data)
+        case string(String)
         case jsonObject([String : Any])
         case jsonArray([[String : Any]])
     }
@@ -536,6 +582,9 @@ class KinveyURLProtocol: URLProtocol {
                 client!.urlProtocol(self, didLoad: data)
             case .jsonArray(let jsonArray):
                 let data = try! JSONSerialization.data(withJSONObject: jsonArray)
+                client!.urlProtocol(self, didLoad: data)
+            case .string(let string):
+                let data = string.data(using: .utf8)!
                 client!.urlProtocol(self, didLoad: data)
             case .data(let data):
                 client!.urlProtocol(self, didLoad: data)

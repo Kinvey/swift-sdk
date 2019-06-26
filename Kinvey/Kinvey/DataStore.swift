@@ -989,7 +989,7 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Returns the number of changes not synced yet.
     open func pendingSyncCount() -> Int {
-        return pendingSyncEntities().count
+        return sync?.pendingOperationsCount() ?? 0
     }
     
     /// Returns the changes not synced yet.

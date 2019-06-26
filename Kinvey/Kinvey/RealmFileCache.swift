@@ -45,7 +45,7 @@ class RealmFileCache<T: File>: FileCache {
         executor.executeAndWait {
             try! self.realm.write {
                 beforeSave?()
-                self.realm.create(File.self, value: file, update: true)
+                self.realm.create(File.self, value: file, update: .all)
             }
         }
     }

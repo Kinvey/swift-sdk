@@ -74,26 +74,14 @@ extension ReadOperationType {
                         requests.addRequest(self.executeLocal(completionHandler))
                         return
                     }
-                    switch error {
-                    case .methodNotAllowed(let httpResponse, _, _, _),
-                         .dataLinkEntityNotFound(let httpResponse, _, _, _),
-                         .missingConfiguration(let httpResponse, _, _, _),
-                         .missingRequestParameter(let httpResponse, _, _, _),
-                         .unknownError(let httpResponse, _, _),
-                         .unknownJsonError(let httpResponse, _, _),
-                         .invalidResponse(let httpResponse, _),
-                         .unauthorized(let httpResponse, _, _, _, _),
-                         .invalidCredentials(let httpResponse, _, _, _):
-                        guard let httpResponse = httpResponse else {
-                            fallthrough
-                        }
+                    if let httpResponse = error.httpResponse {
                         switch httpResponse.statusCode {
                         case 400 ..< 600:
                             completionHandler?($0)
                         default:
                             requests.addRequest(self.executeLocal(completionHandler))
                         }
-                    default:
+                    } else {
                         requests.addRequest(self.executeLocal(completionHandler))
                     }
                 }

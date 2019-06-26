@@ -14,6 +14,8 @@ import MapKit
 /// Class that represents a 2D geolocation with latitude and longitude
 public final class GeoPoint: Object {
     
+    public static let CodingKey = "_geoloc"
+    
     /// Specifies the north–south position of a point
     @objc
     public dynamic var latitude: CLLocationDegrees = 0.0
