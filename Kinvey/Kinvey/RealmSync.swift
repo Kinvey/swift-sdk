@@ -48,16 +48,6 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         )
     }
     
-    func saveInTransaction(pendingOperation: PendingOperation) {
-        if !pendingOperation.collectionName.isEmpty,
-            let objectId = pendingOperation.objectId
-        {
-            let previousPendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId == %@", pendingOperation.collectionName, objectId)
-            self.realm.delete(previousPendingOperations)
-        }
-        self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: .all)
-    }
-    
     func save(pendingOperation: PendingOperation) {
         signpost(.begin, log: osLog, name: "Save PendingOperation", "Collection: %@", pendingOperation.collectionName)
         defer {
@@ -65,7 +55,13 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         }
         executor.executeAndWait {
             try! self.realm.write {
-                self.saveInTransaction(pendingOperation: pendingOperation)
+                if !pendingOperation.collectionName.isEmpty,
+                    let objectId = pendingOperation.objectId
+                {
+                    let previousPendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId == %@", pendingOperation.collectionName, objectId)
+                    self.realm.delete(previousPendingOperations)
+                }
+                self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: .all)
             }
         }
     }
@@ -78,7 +74,13 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         executor.executeAndWait {
             try! self.realm.write {
                 pendingOperations.forEachAutoreleasepool { pendingOperation in
-                    self.saveInTransaction(pendingOperation: pendingOperation)
+                    if !pendingOperation.collectionName.isEmpty,
+                        let objectId = pendingOperation.objectId
+                    {
+                        let previousPendingOperations = self.realm.objects(RealmPendingOperation.self).filter("collectionName == %@ AND objectId == %@", pendingOperation.collectionName, objectId)
+                        self.realm.delete(previousPendingOperations)
+                    }
+                    self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: .all)
                 }
             }
         }
@@ -101,83 +103,73 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
     func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
         log.verbose("Fetching pending operations")
         var results: [PendingOperation]!
+        let collectionName = self.collectionName
         executor.executeAndWait {
             let _results = self.pendingOperationsReferences()
             guard restApiVersion >= 5 else {
                 results = Array(_results)
                 return
             }
-            results = self.reducePostRequests(
-                collectionName: self.collectionName,
-                pendingOperations: _results
+            results = [PendingOperation]()
+            results.reserveCapacity(_results.count)
+            var everythingElse = [String : PendingOperation]()
+            defer {
+                results.append(contentsOf: everythingElse.values)
+            }
+            let posts = _results.map {
+                return ($0, $0.buildRequest())
+            }.compactMap { (pendingOperation, urlRequest) -> (pendingOperation: RealmPendingOperationReference, url: URL, objectId: String, json: JsonDictionary)? in
+                guard urlRequest.httpMethod == "POST" else {
+                    everythingElse[pendingOperation.requestId] = pendingOperation
+                    return nil
+                }
+                guard let url = urlRequest.url,
+                    let objectId = pendingOperation.objectId,
+                    let httpBody = urlRequest.httpBody,
+                    let json = try? JSONSerialization.jsonObject(with: httpBody) as? JsonDictionary
+                else {
+                    return nil
+                }
+                return (pendingOperation: pendingOperation, url: url, objectId: objectId, json: json)
+            }
+            guard posts.count > 1 else {
+                if let post = posts.first {
+                    results.append(post.pendingOperation)
+                }
+                return
+            }
+            var result = (requestIds: [String](), urls: [URL](), objectIds: [String](), jsonArray: [JsonDictionary]())
+            result.requestIds.reserveCapacity(_results.count)
+            result.urls.reserveCapacity(_results.count)
+            result.objectIds.reserveCapacity(_results.count)
+            result.jsonArray.reserveCapacity(_results.count)
+            result = posts.reduce(into: result) { (result, value) in
+                result.requestIds.append(value.pendingOperation.requestId)
+                result.urls.append(value.url)
+                result.objectIds.append(value.objectId)
+                result.jsonArray.append(value.json)
+            }
+            let urls = Set(result.urls)
+            guard urls.count == 1,
+                let url = urls.first,
+                let data = try? JSONSerialization.data(withJSONObject: result.jsonArray)
+            else {
+                return
+            }
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "POST"
+            urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
+            urlRequest.httpBody = data
+            results.append(
+                RealmPendingOperation(
+                    request: urlRequest,
+                    collectionName: collectionName,
+                    objectIdKind: ObjectIdKind(result.objectIds),
+                    requestIds: result.requestIds
+                )
             )
         }
         return AnyRandomAccessCollection(results)
-    }
-    
-    private func reducePostRequests(
-        collectionName: String,
-        pendingOperations: AnyRandomAccessCollection<RealmPendingOperationReference>
-    ) -> [PendingOperation] {
-        var results = [PendingOperation]()
-        results.reserveCapacity(pendingOperations.count)
-        var everythingElse = [String : PendingOperation]()
-        defer {
-            results.append(contentsOf: everythingElse.values)
-        }
-        let posts = pendingOperations.map {
-            return ($0, $0.buildRequest())
-        }.compactMap { (pendingOperation, urlRequest) -> (pendingOperation: RealmPendingOperationReference, url: URL, objectId: String, json: JsonDictionary)? in
-            guard urlRequest.httpMethod == "POST" else {
-                everythingElse[pendingOperation.requestId] = pendingOperation
-                return nil
-            }
-            guard let url = urlRequest.url,
-                let objectId = pendingOperation.objectId,
-                let httpBody = urlRequest.httpBody,
-                let json = try? JSONSerialization.jsonObject(with: httpBody) as? JsonDictionary
-            else {
-                return nil
-            }
-            return (pendingOperation: pendingOperation, url: url, objectId: objectId, json: json)
-        }
-        guard posts.count > 1 else {
-            if let post = posts.first {
-                results.append(post.pendingOperation)
-            }
-            return results
-        }
-        var result = (requestIds: [String](), urls: [URL](), objectIds: [String](), jsonArray: [JsonDictionary]())
-        result.requestIds.reserveCapacity(pendingOperations.count)
-        result.urls.reserveCapacity(pendingOperations.count)
-        result.objectIds.reserveCapacity(pendingOperations.count)
-        result.jsonArray.reserveCapacity(pendingOperations.count)
-        result = posts.reduce(into: result) { (result, value) in
-            result.requestIds.append(value.pendingOperation.requestId)
-            result.urls.append(value.url)
-            result.objectIds.append(value.objectId)
-            result.jsonArray.append(value.json)
-        }
-        let urls = Set(result.urls)
-        guard urls.count == 1,
-            let url = urls.first,
-            let data = try? JSONSerialization.data(withJSONObject: result.jsonArray)
-        else {
-            return results
-        }
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "POST"
-        urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
-        urlRequest.httpBody = data
-        results.append(
-            RealmPendingOperation(
-                request: urlRequest,
-                collectionName: collectionName,
-                objectIdKind: ObjectIdKind(result.objectIds),
-                requestIds: result.requestIds
-            )
-        )
-        return results
     }
     
     func remove(pendingOperation: PendingOperation) {
