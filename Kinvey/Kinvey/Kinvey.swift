@@ -52,7 +52,7 @@ func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSL
  environments, you should override this default by providing a separate Client
  instance.
  */
-public let sharedClient = Client.sharedClient
+public let sharedClient = Client.shared
 
 /// A once-per-installation value generated to give an ID for the running device
 public let deviceId = Keychain().deviceId

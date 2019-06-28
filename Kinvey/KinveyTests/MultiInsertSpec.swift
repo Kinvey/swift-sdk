@@ -73,7 +73,7 @@ class MultiInsertSpec: QuickSpec {
                         expect(entity).toNot(beNil())
                         expect(entity?.entityId).toNot(beNil())
                     }
-                    it("should send PUT with a sngle item with _id") {
+                    it("should send PUT with a single item with _id") {
                         var entity = kinveySave(dataStore: networkDataStore, entity: Person { $0.name = "Victor" }).entity
                         expect(entity).toNot(beNil())
                         expect(entity?.entityId).toNot(beNil())
@@ -89,12 +89,12 @@ class MultiInsertSpec: QuickSpec {
                         entityUnwrapped.name = "Hugo"
                         entity = kinveySave(dataStore: networkDataStore, entity: entityUnwrapped).entity
                         expect(entity).toNot(beNil())
-                        expect(entity?.entityId).toNot(beNil())
+                        expect(entity?.entityId).to(equal(entityId))
                         expect(entity?.name).to(equal("Hugo"))
                         
                         entity = kinveyFind(dataStore: networkDataStore, id: entityId).result
                         expect(entity).toNot(beNil())
-                        expect(entity?.entityId).toNot(beNil())
+                        expect(entity?.entityId).to(equal(entityId))
                         expect(entity?.name).to(equal("Hugo"))
                     }
                     it("should accept an array of items") {
@@ -146,7 +146,7 @@ class MultiInsertSpec: QuickSpec {
                             expect(entity?.entityId).toNot(beNil())
                             expect(entity?.entityId).to(equal(entityId))
                         }
-                        it("should send PUT with a sngle item with _id") {
+                        it("should send PUT with a single item with _id") {
                             var entity = kinveySave(dataStore: networkDataStore).entity
                             expect(entity).toNot(beNil())
                             expect(entity?.entityId).toNot(beNil())
@@ -165,10 +165,10 @@ class MultiInsertSpec: QuickSpec {
                             expect(entity?.entityId).to(equal(entityId))
                             expect(entity?.name).to(equal("Victor"))
                             
-                            entity = kinveyFind(dataStore: networkDataStore, id: entityId).result
-                            expect(entity).toNot(beNil())
-                            expect(entity?.entityId).toNot(beNil())
-                            expect(entity?.entityId).to(equal(entityId))
+                            let entities = kinveyFind(dataStore: networkDataStore).entities
+                            expect(entities?.count).to(equal(1))
+                            expect(entities?.first?.entityId).toNot(beNil())
+                            expect(entities?.first?.entityId).to(equal(entityId))
                         }
                     }
                     context("With an array") {
@@ -188,17 +188,19 @@ class MultiInsertSpec: QuickSpec {
                             expect(entities?.map({ $0.name })).to(contain("Hugo"))
                         }
                         it("should sent PUT requests for an array of items with _id") {
-                            let id = UUID().uuidString
+                            let id1 = UUID().uuidString
+                            let id2 = UUID().uuidString
                             let result = kinveySaveMulti(
                                 dataStore: networkDataStore,
                                 entities: [
-                                    Person { $0.entityId = UUID().uuidString },
-                                    Person { $0.entityId = UUID().uuidString }
+                                    Person { $0.entityId = id1 },
+                                    Person { $0.entityId = id2 }
                                 ]
                             ).result
                             
                             expect(result).toNot(beNil())
                             expect(result?.entities.count).to(equal(2))
+                            expect(result?.entities.map({ $0?.entityId })).to(contain([id1, id2]))
                             expect(result?.errors.count).to(equal(0))
                             
                             let entities = kinveyFind(dataStore: networkDataStore).entities
@@ -526,7 +528,7 @@ class MultiInsertSpec: QuickSpec {
                 context("With an array") {
                     it("should send save an array of items with no _id") {
                         let result = kinveySaveMulti(
-                            dataStore: syncDataStore,
+                                dataStore: syncDataStore,
                             entities: [
                                 Person { $0.name = "Victor" },
                                 Person { $0.name = "Hugo" }
@@ -1108,8 +1110,18 @@ class MultiInsertSpec: QuickSpec {
                         default:
                             fail(kinveyError.localizedDescription)
                         }
+                        
+                        expect(Client.shared.activeUser).to(beNil())
+                        
+                        expect(autoDataStore.pendingSyncCount()).to(equal(0))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
+                        
+                        let entities = kinveyFind(dataStore: syncDataStore).entities
+                        expect(entities?.count).to(equal(0))
                     }
                     it("should return an array of errors for all items failing for different reasons") {
+                        let id1 = UUID().uuidString
+                        let id2 = UUID().uuidString
                         mockResponse(
                             statusCode: 207,
                             json: [
@@ -1121,12 +1133,12 @@ class MultiInsertSpec: QuickSpec {
                                     [
                                         "index": 0,
                                         "code": 11000,
-                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(UUID().uuidString)\" }"
+                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"
                                     ],
                                     [
                                         "index": 1,
                                         "code": 11000,
-                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(UUID().uuidString)\" }"
+                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"
                                     ]
                                 ]
                             ]
@@ -1143,9 +1155,17 @@ class MultiInsertSpec: QuickSpec {
                         
                         expect((result?.errors.first as? MultiSaveError)?.index).to(equal(0))
                         expect((result?.errors.first as? MultiSaveError)?.code).to(equal(11000))
+                        expect((result?.errors.first as? MultiSaveError)?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                         
                         expect((result?.errors.last as? MultiSaveError)?.index).to(equal(1))
                         expect((result?.errors.last as? MultiSaveError)?.code).to(equal(11000))
+                        expect((result?.errors.last as? MultiSaveError)?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
+                        
+                        expect(autoDataStore.pendingSyncCount()).to(equal(2))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
+                        
+                        let entities = kinveyFind(dataStore: syncDataStore).entities
+                        expect(entities?.count).to(equal(2))
                     }
                     it("should return an entities and errors when some requests fail and some succeed") {
                         mockResponse { request in
@@ -1190,7 +1210,7 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
-                        print((autoDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
+                        
                         let result = kinveySaveMulti(
                             dataStore: autoDataStore,
                             entities: [
@@ -1272,7 +1292,7 @@ class MultiInsertSpec: QuickSpec {
                         }
                         let id1 = UUID().uuidString
                         let id2 = UUID().uuidString
-                        print((syncDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
+                        
                         let result = kinveySaveMulti(
                             dataStore: autoDataStore,
                             entities: [
