@@ -44,6 +44,34 @@ extension Swift.Result where Failure == Swift.Error {
     
 }
 
+extension Swift.Result {
+    
+    func into(completionHandler: ((Success?, Failure?) -> Void)?) {
+        guard let completionHandler = completionHandler else {
+            return
+        }
+        switch self {
+        case .success(let success):
+            completionHandler(success, nil)
+        case .failure(let failure):
+            completionHandler(nil, failure)
+        }
+    }
+    
+    func into<Arg1, Arg2>(completionHandler: ((Arg1?, Arg2?, Failure?) -> Void)?) where Success == (Arg1, Arg2) {
+        guard let completionHandler = completionHandler else {
+            return
+        }
+        switch self {
+        case .success(let arg1, let arg2):
+            completionHandler(arg1, arg2, nil)
+        case .failure(let failure):
+            completionHandler(nil, nil, failure)
+        }
+    }
+    
+}
+
 extension PromiseKit.Result {
     
     init(_ result: Swift.Result<T, Swift.Error>) {

@@ -115,12 +115,7 @@ open class FileStore<FileType: File> {
             imageRepresentation: imageRepresentation,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -180,12 +175,7 @@ open class FileStore<FileType: File> {
             imageRepresentation: imageRepresentation,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -243,12 +233,7 @@ open class FileStore<FileType: File> {
             path: path,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -299,12 +284,7 @@ open class FileStore<FileType: File> {
             stream: stream,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -389,12 +369,7 @@ open class FileStore<FileType: File> {
             data: data,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -777,12 +752,7 @@ open class FileStore<FileType: File> {
             file,
             ttl: ttl
         ) { (result: Swift.Result<FileType, Swift.Error>) in
-            switch result {
-            case .success(let file):
-                completionHandler?(file, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -944,12 +914,7 @@ open class FileStore<FileType: File> {
             storeType: storeType,
             ttl: ttl
         ) { (result: Swift.Result<(FileType, URL), Swift.Error>) in
-            switch result {
-            case .success(let file, let url):
-                completionHandler?(file, url, nil)
-            case .failure(let error):
-                completionHandler?(nil, nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -1101,12 +1066,7 @@ open class FileStore<FileType: File> {
             file,
             ttl: ttl
         ) { (result: Swift.Result<(FileType, Data), Swift.Error>) in
-            switch result {
-            case .success(let file, let data):
-                completionHandler?(file, data, nil)
-            case .failure(let error):
-                completionHandler?(nil, nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -1228,12 +1188,7 @@ open class FileStore<FileType: File> {
             file,
             options: nil
         ) { (result: Swift.Result<UInt, Swift.Error>) in
-            switch result {
-            case .success(let count):
-                completionHandler?(count, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
@@ -1299,12 +1254,7 @@ open class FileStore<FileType: File> {
             query,
             ttl: ttl
         ) { (result: Swift.Result<[FileType], Swift.Error>) in
-            switch result {
-            case .success(let files):
-                completionHandler?(files, nil)
-            case .failure(let error):
-                completionHandler?(nil, error)
-            }
+            result.into(completionHandler: completionHandler)
         }
     }
     
