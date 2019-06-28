@@ -1589,6 +1589,64 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: try DataStore<Person>.collection(.sync, tag: tag), id: "my_id2").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
         }
+        
+        context("File") {
+            it("download") {
+                let fileId = UUID().uuidString
+                let fileStore = FileStore()
+                let text = "Test"
+                let _data = text.data(using: .utf8)!
+                let timeout: TimeInterval = 5
+                
+                let file = kinveyUpload(
+                    file: File { $0.fileId = fileId },
+                    fileStore: fileStore,
+                    data: _data,
+                    timeout: timeout
+                ).file
+                
+                expect(file?.download).toNot(beNil())
+                expect(file?.downloadURL).toNot(beNil())
+                
+                do {
+                    let _success = kinveyDownload(
+                        file: File { $0.fileId = fileId },
+                        fileStore: fileStore,
+                        storeType: .auto,
+                        timeout: timeout
+                    ).success
+                    
+                    expect(_success).toNot(beNil())
+                    guard let success = _success else {
+                        return
+                    }
+                    let data = try Data(contentsOf: success.url)
+                    expect(data.count).to(equal(4))
+                    expect(data).to(equal(_data))
+                } catch {
+                    fail(error.localizedDescription)
+                }
+                
+                do {
+                    let _success = kinveyDownload(
+                        file: File { $0.fileId = fileId },
+                        fileStore: fileStore,
+                        storeType: .sync,
+                        timeout: timeout
+                    ).success
+                    
+                    expect(_success).toNot(beNil())
+                    guard let success = _success else {
+                        return
+                    }
+                    let data = try Data(contentsOf: success.url)
+                    expect(data.count).to(equal(4))
+                    expect(data).to(equal(_data))
+                } catch {
+                    fail(error.localizedDescription)
+                }
+            }
+        }
     }
 
 }

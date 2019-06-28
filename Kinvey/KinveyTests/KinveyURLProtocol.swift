@@ -46,7 +46,7 @@ class KinveyURLProtocolClient: NSObject, URLProtocolClient {
 
 class KinveyURLProtocol: URLProtocol {
     
-    static var appKey = UUID().uuidString
+    static var appKey = "kid_\(UUID().uuidString)"
     static var appSecret = UUID().uuidString
     
     private static var users = [
@@ -65,10 +65,15 @@ class KinveyURLProtocol: URLProtocol {
         ]
     ]()
     
+    private static var blob = [String : [String : Any]]()
+    private static var blobData = [String : Data]()
+    
     class func reset() {
         users.removeAll()
         userSessions.removeAll()
         collections.removeAll()
+        blob.removeAll()
+        blobData.removeAll()
     }
     
     override class func canInit(with request: URLRequest) -> Bool {
@@ -134,8 +139,9 @@ class KinveyURLProtocol: URLProtocol {
             KinveyURLProtocol.userSessions[authtoken] = id
             sendResponse(url: url, statusCode: 201, body: .jsonObject(json))
         default:
-            let regex = try! NSRegularExpression(pattern: "\\/appdata\\/\(KinveyURLProtocol.appKey)\\/([^/]*)\\/?([^/]*)")
-            if let match = regex.firstMatch(in: urlComponents.path, range: NSRange(location: 0, length: urlComponents.path.count)),
+            let regexAppData = try! NSRegularExpression(pattern: "\\/appdata\\/\(KinveyURLProtocol.appKey)\\/([^/]*)\\/?([^/]*)")
+            let regexBlob = try! NSRegularExpression(pattern: "\\/blob\\/\(KinveyURLProtocol.appKey)\\/([^/]*)\\/?([^/]*)")
+            if let match = regexAppData.firstMatch(in: urlComponents.path, range: NSRange(location: 0, length: urlComponents.path.count)),
                 match.numberOfRanges == 3
             {
                 guard let authtoken = validateUserAuth(url: url), KinveyURLProtocol.userSessions[authtoken] != nil else {
@@ -231,6 +237,109 @@ class KinveyURLProtocol: URLProtocol {
                             sendResponse(url: url, body: .jsonObject(result))
                         } else {
                             sendResponseEntityNotFound(url: url)
+                        }
+                    }
+                }
+            } else if let match = regexBlob.firstMatch(in: urlComponents.path, range: NSRange(location: 0, length: urlComponents.path.count)),
+                match.numberOfRanges >= 2
+            {
+                var range = match.range(at: 1)
+                var startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
+                var endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
+                var id = String(urlComponents.path[startIndex ..< endIndex])
+                
+                range = match.range(at: 2)
+                startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
+                endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
+                let lastUrlComponent = String(urlComponents.path[startIndex ..< endIndex])
+                
+                let now = Date()
+                
+                switch httpMethod {
+                case "PUT":
+                    switch lastUrlComponent {
+                    case "upload":
+                        KinveyURLProtocol.blobData[id] = request.httpBodyData
+                        sendResponse(
+                            url: url,
+                            statusCode: 200,
+                            body: .data("".data(using: .utf8)!)
+                        )
+                    default:
+                        if id.isEmpty {
+                            id = UUID().uuidString
+                        }
+                        var json = try! JSONSerialization.jsonObject(with: request) as! [String : Any]
+                        if json["_id"] == nil || json["_id"] as? String != id {
+                            json["_id"] = id
+                        }
+                        if json["_filename"] == nil {
+                            json["_filename"] = UUID().uuidString
+                        }
+                        json["_acl"] = [
+                            "creator": validateUserAuth(url: url)!
+                        ]
+                        json["_kmd"] = [
+                            "lmt": now.toISO8601(),
+                            "ect": now.toISO8601()
+                        ]
+                        json["_uploadURL"] = "https://baas.kinvey.com/blob/\(KinveyURLProtocol.appKey)/\(id)/upload"
+                        json["_downloadURL"] = "https://baas.kinvey.com/blob/\(KinveyURLProtocol.appKey)/\(id)/download"
+                        json["_expiresAt"] = now.addingTimeInterval(30).toISO8601()
+                        json["_requiredHeaders"] = [:]
+                        KinveyURLProtocol.blob[id] = json
+                        sendResponse(
+                            url: url,
+                            statusCode: 201,
+                            body: .jsonObject(json)
+                        )
+                    }
+                default:
+                    if id.isEmpty {
+                        let metadatas = Array(KinveyURLProtocol.blob.values)
+                        sendResponse(
+                            url: url,
+                            statusCode: 200,
+                            body: .jsonArray(metadatas)
+                        )
+                    } else {
+                        switch lastUrlComponent {
+                        case "download":
+                            if let data = KinveyURLProtocol.blobData[id] {
+                                sendResponse(
+                                    url: url,
+                                    statusCode: 200,
+                                    body: .data(data)
+                                )
+                            } else {
+                                sendResponse(
+                                    url: url,
+                                    statusCode: 404,
+                                    body: .jsonObject([
+                                        "error": "BlobNotFound",
+                                        "description": "This blob not found for this app backend.",
+                                        "debug": ""
+                                    ])
+                                )
+                            }
+                        default:
+                            if let metadata = KinveyURLProtocol.blob[id] {
+                                sendResponse(
+                                    url: url,
+                                    statusCode: 200,
+                                    body: .jsonObject(metadata)
+                                )
+                            } else {
+                                sendResponse(
+                                    url: url,
+                                    statusCode: 404,
+                                    body: .jsonObject([
+                                        "error": "BlobNotFound",
+                                        "description": "This blob not found for this app backend.",
+                                        "debug": ""
+                                        ])
+                                )
+                            }
                         }
                     }
                 }

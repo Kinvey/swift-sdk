@@ -849,7 +849,7 @@ open class FileStore<FileType: File> {
                 }
                 
                 switch storeType {
-                case .cache:
+                case .cache, .auto:
                     var pathURL: URL? = nil
                     var _entityId: String? = nil
                     executor.executeAndWait {
@@ -1005,10 +1005,15 @@ open class FileStore<FileType: File> {
         case .sync, .cache:
             if let entityId = file.fileId,
                 let cachedFile = cachedFile(entityId),
-                let pathURL = file.pathURL
+                let pathURL = cachedFile.pathURL
             {
+                let result: Swift.Result<(FileType, URL), Swift.Error> = .success((cachedFile, pathURL))
                 DispatchQueue.main.async {
-                    completionHandler?(.success((cachedFile, pathURL)))
+                    completionHandler?(result)
+                }
+                
+                if storeType == .sync {
+                    return AnyRequest(LocalRequest(result))
                 }
             }
         default:
@@ -1077,7 +1082,10 @@ open class FileStore<FileType: File> {
             }
             return AnyRequest(multiRequest)
         default:
-            return AnyRequest(LocalRequest<Swift.Result<(FileType, URL), Swift.Error>>())
+            let msg = "File not found"
+            let result: Swift.Result<(FileType, URL), Swift.Error> = .failure(Error.entityNotFound(debug: msg, description: msg))
+            completionHandler?(result)
+            return AnyRequest(LocalRequest(result))
         }
     }
     
