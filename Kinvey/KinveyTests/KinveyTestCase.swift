@@ -517,6 +517,60 @@ func kinveySave<T: Entity>(
     return (entity: entityPostSave, error: error)
 }
 
+func kinveyDownload<FileType>(
+    file: FileType,
+    fileStore: FileStore<FileType>,
+    storeType: StoreType,
+    options: Options? = nil,
+    timeout: TimeInterval = AsyncDefaults.Timeout
+) -> (success: (file: FileType, url: URL)?, error: Swift.Error?) where FileType: File {
+    var _success: (FileType, URL)? = nil
+    var _error: Swift.Error? = nil
+    waitUntil(timeout: timeout) { done in
+        fileStore.download(
+            file: file,
+            storeType: storeType,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let (file, url)):
+                _success = (file: file, url: url)
+            case .failure(let error):
+                _error = error
+            }
+            done()
+        }
+    }
+    return (success: _success, error: _error)
+}
+
+func kinveyUpload<FileType>(
+    file: FileType,
+    fileStore: FileStore<FileType>,
+    data: Data,
+    options: Options? = nil,
+    timeout: TimeInterval = AsyncDefaults.Timeout
+) -> (file: (FileType)?, error: Swift.Error?) where FileType: File {
+    var _file: FileType? = nil
+    var _error: Swift.Error? = nil
+    waitUntil(timeout: timeout) { done in
+        fileStore.upload(
+            file,
+            data: data,
+            options: options
+        ) {
+            switch $0 {
+            case .success(let file):
+                _file = file
+            case .failure(let error):
+                _error = error
+            }
+            done()
+        }
+    }
+    return (file: _file, error: _error)
+}
+
 class MockURLProtocol: URLProtocol {
     
     static var completionHandler: ((URLRequest) -> HttpResponse)? = nil

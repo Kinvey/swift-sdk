@@ -70,7 +70,7 @@ func firstDraft(completionHandler: @escaping ([String : Any]) -> Void) {
 }
 
 func currentVersion() -> (infoPlist: String, podspec: String) {
-    let path = NSString(string: arguments[2]).standardizingPath
+    let path = URL(fileURLWithPath: NSString(string: arguments[2]).standardizingPath).absoluteURL.path
     let process = Process()
     process.environment = ["PWD" : path]
     process.currentDirectoryPath = path
