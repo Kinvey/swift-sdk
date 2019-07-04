@@ -201,6 +201,8 @@ class MultiInsertSpec: QuickSpec {
                             expect(result).toNot(beNil())
                             expect(result?.entities.count).to(equal(2))
                             expect(result?.entities.map({ $0?.entityId })).to(contain([id1, id2]))
+                            expect(result?.entities.first??.entityId).to(equal(id1))
+                            expect(result?.entities.last??.entityId).to(equal(id2))
                             expect(result?.errors.count).to(equal(0))
                             
                             let entities = kinveyFind(dataStore: networkDataStore).entities
