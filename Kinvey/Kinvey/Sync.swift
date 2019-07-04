@@ -14,7 +14,7 @@ internal protocol SyncType {
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation
     
     //Read
-    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation>
+    func pendingOperations(useMultiInsert: Bool) -> AnyRandomAccessCollection<PendingOperation>
     
     //Count
     func pendingOperationsCount() -> Int
@@ -32,10 +32,18 @@ internal protocol SyncType {
     
 }
 
+extension SyncType {
+    
+    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
+        return pendingOperations(useMultiInsert: false)
+    }
+    
+}
+
 internal final class AnySync: SyncType {
     
     private let _createPendingOperation: (URLRequest, String?) -> PendingOperation
-    private let _pendingOperations: () -> AnyRandomAccessCollection<PendingOperation>
+    private let _pendingOperations: (Bool) -> AnyRandomAccessCollection<PendingOperation>
     private let _pendingOperationsCount: () -> Int
     private let _savePendingOperation: (PendingOperation) -> Void
     private let _savePendingOperations: (AnyCollection<PendingOperation>) -> Void
@@ -48,7 +56,7 @@ internal final class AnySync: SyncType {
     init<Sync: SyncType>(_ sync: Sync) {
         self.sync = sync
         _createPendingOperation = sync.createPendingOperation
-        _pendingOperations = sync.pendingOperations
+        _pendingOperations = sync.pendingOperations(useMultiInsert:)
         _pendingOperationsCount = sync.pendingOperationsCount
         _savePendingOperation = sync.save(pendingOperation:)
         _savePendingOperations = sync.save(pendingOperations:)
@@ -61,8 +69,8 @@ internal final class AnySync: SyncType {
         return _createPendingOperation(request, objectId)
     }
     
-    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
-        return _pendingOperations()
+    func pendingOperations(useMultiInsert: Bool) -> AnyRandomAccessCollection<PendingOperation> {
+        return _pendingOperations(useMultiInsert)
     }
     
     func pendingOperationsCount() -> Int {

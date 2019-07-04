@@ -101,7 +101,7 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
         
         if let sync = sync {
-            for pendingOperation in sync.pendingOperations() {
+            for pendingOperation in sync.pendingOperations(useMultiInsert: true) {
                 let request = HttpRequest<Swift.Result<UInt, Swift.Error>>(
                     request: pendingOperation.buildRequest(),
                     options: options

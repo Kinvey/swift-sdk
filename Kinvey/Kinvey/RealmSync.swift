@@ -100,13 +100,13 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
         })
     }
     
-    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
+    func pendingOperations(useMultiInsert: Bool) -> AnyRandomAccessCollection<PendingOperation> {
         log.verbose("Fetching pending operations")
         var results: [PendingOperation]!
         let collectionName = self.collectionName
         executor.executeAndWait {
             let _results = self.pendingOperationsReferences()
-            guard restApiVersion >= 5 else {
+            guard restApiVersion >= 5, useMultiInsert else {
                 results = Array(_results)
                 return
             }
