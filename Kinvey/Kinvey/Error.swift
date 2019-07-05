@@ -353,12 +353,96 @@ public struct MultiSaveError: Swift.Error, Codable, IndexableError {
         case message = "errmsg"
     }
     
+    public var localizedDescription: String {
+        return message
+    }
+    
+}
+
+extension MultiSaveError: LocalizedError {
+    
+    public var errorDescription: String? {
+        return message
+    }
+    
+    public var failureReason: String? {
+        return message
+    }
+    
+    public var recoverySuggestion: String? {
+        return message
+    }
+    
+    public var helpAnchor: String? {
+        return message
+    }
+    
+}
+    
+extension MultiSaveError: CustomStringConvertible {
+    
+    public var description: String {
+        return message
+    }
+    
+}
+    
+extension MultiSaveError: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return message
+    }
+    
 }
 
 public struct IndexedError: Swift.Error, IndexableError {
     
     public let index: Int
     public let error: Swift.Error
+    
+    public var localizedDescription: String {
+        return error.localizedDescription
+    }
+    
+}
+
+extension IndexedError: LocalizedError {
+    
+    private var localizedError: LocalizedError? {
+        return error as? LocalizedError
+    }
+    
+    public var errorDescription: String? {
+        return localizedError?.errorDescription
+    }
+    
+    public var failureReason: String? {
+        return localizedError?.failureReason
+    }
+    
+    public var recoverySuggestion: String? {
+        return localizedError?.recoverySuggestion
+    }
+    
+    public var helpAnchor: String? {
+        return localizedError?.helpAnchor
+    }
+    
+}
+
+extension IndexedError: CustomStringConvertible {
+    
+    public var description: String {
+        return (error as CustomStringConvertible).description
+    }
+    
+}
+
+extension IndexedError: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return (error as CustomDebugStringConvertible).debugDescription
+    }
     
 }
 

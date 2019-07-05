@@ -129,7 +129,8 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                 {
                                     cache.remove(entity: entity)
                                 } else if let objectIds = objectIds {
-                                    cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", Array(objectIds)))
+                                    let objectIdsArray = Array(objectIds)
+                                    cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", objectIdsArray))
                                 }
                                 
                                 if let entitiesJson = json["entities"] as? [JsonDictionary?],

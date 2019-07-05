@@ -863,16 +863,31 @@ class MultiInsertSpec: QuickSpec {
                     expect(syncDataStore.pendingSyncCount()).to(equal(0))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
                 }
-                it("Sync()") {
+                it("should handle multi-insert push error properly") {
+                    let errorCode = 300
+                    let errorMessage = "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
                     mockResponse { request in
                         switch request.httpMethod {
                         case "POST":
                             return HttpResponse(
-                                statusCode: 400,
+                                statusCode: 207,
                                 json: [
-                                    "error": "ParameterValueOutOfRange",
-                                    "description": "The value specified for one of the request parameters is out of range.",
-                                    "debug": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                    "entities" : [
+                                        nil,
+                                        nil
+                                    ],
+                                    "errors" : [
+                                        [
+                                            "index": 0,
+                                            "code": errorCode,
+                                            "errmsg": errorMessage
+                                        ],
+                                        [
+                                            "index": 1,
+                                            "code": errorCode,
+                                            "errmsg": errorMessage
+                                        ]
+                                    ]
                                 ]
                             )
                         default:
@@ -882,6 +897,9 @@ class MultiInsertSpec: QuickSpec {
                     defer {
                         setURLProtocol(nil)
                     }
+                    
+                    print((syncDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
+                    
                     let result = kinveySaveMulti(
                         dataStore: syncDataStore,
                         entities: [
@@ -901,26 +919,31 @@ class MultiInsertSpec: QuickSpec {
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                     
                     let errors = kinveySync(dataStore: syncDataStore).errors
-                    expect(errors?.count).to(equal(1))
-                    expect(errors?.first?.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
-                    let kinveyError = errors?.first as? Kinvey.Error
-                    expect(kinveyError).toNot(beNil())
-                    if let kinveyError = kinveyError {
-                        switch kinveyError {
-                        case .parameterValueOutOfRange(let debug, let description):
-                            expect(debug).to(equal("Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"))
-                            expect(description).to(equal("The value specified for one of the request parameters is out of range."))
-                        default:
-                            fail(kinveyError.localizedDescription)
-                        }
-                    }
+                    expect(errors?.count).to(equal(2))
+                    expect(errors?.first?.localizedDescription).to(equal(errorMessage))
+                    expect(errors?.last?.localizedDescription).to(equal(errorMessage))
+                    
+                    let multiSaveError1 = errors?.first as? MultiSaveError
+                    let multiSaveError2 = errors?.last as? MultiSaveError
+                    
+                    expect(multiSaveError1).toNot(beNil())
+                    expect(multiSaveError2).toNot(beNil())
+                    
+                    expect(multiSaveError1?.index).to(equal(0))
+                    expect(multiSaveError2?.index).to(equal(1))
+                    
+                    expect(multiSaveError1?.code).to(equal(errorCode))
+                    expect(multiSaveError2?.code).to(equal(errorCode))
+                    
+                    expect(multiSaveError1?.message).to(equal(errorMessage))
+                    expect(multiSaveError2?.message).to(equal(errorMessage))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                 
                     let entities = kinveyFind(dataStore: syncDataStore).entities
-                    expect(entities?.count).to(equal(2))
+                    expect(entities?.count).to(equal(0))
                 }
             }
         }
