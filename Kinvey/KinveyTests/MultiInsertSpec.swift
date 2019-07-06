@@ -898,8 +898,6 @@ class MultiInsertSpec: QuickSpec {
                         setURLProtocol(nil)
                     }
                     
-                    print((syncDataStore.sync?.sync as? RealmSync<Person>)?.realm.configuration.fileURL?.path)
-                    
                     let result = kinveySaveMulti(
                         dataStore: syncDataStore,
                         entities: [
