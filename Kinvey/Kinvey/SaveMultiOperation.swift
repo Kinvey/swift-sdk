@@ -57,11 +57,16 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
         )
     }
     
+    private func requestBodyCannotBeAnEmptyArrayError(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let error = Error.badRequest(httpResponse: nil, data: nil, description: "Request body cannot be an empty array")
+        let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .failure(error)
+        completionHandler?(result)
+        return AnyRequest(result)
+    }
+    
     func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
         guard self.persistable.count > 0 else {
-            let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .success((entities: AnyRandomAccessCollection(EmptyCollection()), errors: AnyRandomAccessCollection(EmptyCollection())))
-            completionHandler?(result)
-            return AnyRequest(result)
+            return requestBodyCannotBeAnEmptyArrayError(completionHandler)
         }
         let request = LocalRequest<Swift.Result<MultiSaveResultTuple<T>, Swift.Error>>()
         request.execute { () -> Void in
@@ -103,10 +108,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             return AnyRequest(result)
         }
         guard self.persistable.count > 0 else {
-            let error = Error.badRequest(httpResponse: nil, data: nil, description: "Request body cannot be an empty array")
-            let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .failure(error)
-            completionHandler?(result)
-            return AnyRequest(result)
+            return requestBodyCannotBeAnEmptyArrayError(completionHandler)
         }
         let requests = MultiRequest<ResultType>()
         
