@@ -561,11 +561,13 @@ class MultiInsertSpec: QuickSpec {
                         expect(entities?.count).to(equal(2))
                     }
                     it("should save an array of items with _id") {
+                        let id1 = UUID().uuidString
+                        let id2 = UUID().uuidString
                         let result = kinveySaveMulti(
                             dataStore: syncDataStore,
                             entities: [
-                                Person { $0.entityId = UUID().uuidString; $0.name = "Victor" },
-                                Person { $0.entityId = UUID().uuidString; $0.name = "Hugo" }
+                                Person { $0.personId = id1; $0.name = "Victor" },
+                                Person { $0.personId = id2; $0.name = "Hugo" }
                             ]
                         ).result
                         expect(result).toNot(beNil())
@@ -577,10 +579,12 @@ class MultiInsertSpec: QuickSpec {
                         
                         expect(syncDataStore.pendingSyncCount()).to(equal(2))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
-                        expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
+                        expect(syncDataStore.pendingSyncOperations().count).to(equal(2))
                         
                         let entities = kinveyFind(dataStore: syncDataStore).entities
                         expect(entities?.count).to(equal(2))
+                        expect(entities?.first?.personId).to(equal(id1))
+                        expect(entities?.last?.personId).to(equal(id2))
                     }
                     it("should save and array of items with and without _id") {
                         let result = kinveySaveMulti(
