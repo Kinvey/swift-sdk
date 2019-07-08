@@ -941,7 +941,7 @@ class MultiInsertSpec: QuickSpec {
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                 
                     let entities = kinveyFind(dataStore: syncDataStore).entities
-                    expect(entities?.count).to(equal(0))
+                    expect(entities?.count).to(equal(2))
                 }
             }
         }
@@ -1430,7 +1430,10 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person { $0.entityId = UUID().uuidString }).error
+                            let error = kinveySaveMulti(
+                                dataStore: autoDataStore,
+                                entities: Person(), Person { $0.entityId = UUID().uuidString }
+                            ).error
                             expect(error).toNot(beNil())
                             expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
                         } catch {
@@ -1451,13 +1454,31 @@ class MultiInsertSpec: QuickSpec {
                         expect(entities?.count).to(equal(2))
                     }
                     it("should combine POST and PUT requests for items with and without _id - mocked") {
+                        var postCount = 0
+                        var putCount = 0
                         do {
-                            mockResponse(error: timeoutError)
+                            mockResponse { request in
+                                switch request.httpMethod?.uppercased() {
+                                case "POST":
+                                    postCount += 1
+                                    let json = try? JSONSerialization.jsonObject(with: request) as? [JsonDictionary]
+                                    expect(json).toNot(beNil())
+                                    fallthrough
+                                case "PUT":
+                                    putCount += 1
+                                    fallthrough
+                                default:
+                                    return HttpResponse(error: timeoutError)
+                                }
+                            }
                             defer {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person { $0.entityId = UUID().uuidString }).error
+                            let error = kinveySaveMulti(
+                                dataStore: autoDataStore,
+                                entities: Person(), Person { $0.entityId = UUID().uuidString }
+                            ).error
                             expect(error).toNot(beNil())
                             expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
                         } catch {
@@ -1476,8 +1497,11 @@ class MultiInsertSpec: QuickSpec {
                         
                         let entities = kinveyFind(dataStore: networkDataStore).entities
                         expect(entities?.count).to(equal(2))
+                        
+                        expect(postCount).to(equal(1))
+                        expect(putCount).to(equal(1))
                     }
-                    it("should return the failure reason in the result for each pushed item even if it is the same") {
+                    it("should return a single error if a single error is returned by the backend") {
                         mockResponse { request in
                             switch request.httpMethod {
                             case "POST":
@@ -1613,34 +1637,61 @@ class MultiInsertSpec: QuickSpec {
                 context("Sync()") {
                     it("create an array of 3 items, the second of which has invalid _geoloc parameters") {
                         do {
-                            mockResponse(error: timeoutError)
+                            mockResponse(json: [
+                                "entities" : [
+                                    [
+                                        "_id" : UUID().uuidString,
+                                        "_geoloc" : [0, 0]
+                                    ],
+                                    nil,
+                                    [
+                                        "_id" : UUID().uuidString,
+                                        "_geoloc" : [45, 45]
+                                    ],
+                                ],
+                                "errors" : [
+                                    [
+                                        "index" : 1,
+                                        "code" : 123,
+                                        "errmsg" : "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                    ]
+                                ]
+                            ])
                             defer {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(
+                            let result = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: [
                                     Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
                                     Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
                                     Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
                                 ]
-                            ).error
-                            expect(error).toNot(beNil())
+                            ).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(3))
+                            expect(result?.entities.compactMap({ $0 }).count).to(equal(2))
+                            let iterator = result?.entities.makeIterator()
+                            expect(iterator?.next()!).toNot(beNil())
+                            expect(iterator?.next()!).to(beNil())
+                            expect(iterator?.next()!).toNot(beNil())
+                            expect(result?.errors.count).to(equal(1))
+                            expect((result?.errors.first as? IndexableError)?.index).to(equal(1))
                         } catch {
                             fail(error.localizedDescription)
                         }
                     
-                        expect(autoDataStore.pendingSyncCount()).to(equal(3))
-                        expect(autoDataStore.pendingSyncEntities().count).to(equal(3))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         expect(autoDataStore.pendingSyncOperations().count).to(equal(1))
                         
                         let errors = kinveySync(dataStore: autoDataStore).errors
                         expect(errors?.count).to(equal(1))
                         expect(errors?.first?.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
                         
-                        expect(autoDataStore.pendingSyncCount()).to(equal(3))
-                        expect(autoDataStore.pendingSyncEntities().count).to(equal(3))
+                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         expect(autoDataStore.pendingSyncOperations().count).to(equal(1))
                     
                         var entities = kinveyFind(dataStore: networkDataStore).entities

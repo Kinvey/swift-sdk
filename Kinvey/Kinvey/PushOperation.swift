@@ -128,17 +128,17 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                     let entity = cache.find(byId: objectId)
                                 {
                                     cache.remove(entity: entity)
-                                } else if let objectIds = objectIds {
-                                    let objectIdsArray = Array(objectIds)
-                                    cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", objectIdsArray))
                                 }
                                 
                                 if let entitiesJson = json["entities"] as? [JsonDictionary?],
-                                    let errorsJson = json["errors"] as? [JsonDictionary]
+                                    let errorsJson = json["errors"] as? [JsonDictionary],
+                                    let objectIds = objectIds
                                 {
+                                    var objectIdsRemoved = [Bool](repeating: true, count: objectIds.count)
                                     let _entities = AnyRandomAccessCollection(entitiesJson.enumerated().lazy.map({ (offset, entity) -> T? in
                                         guard let entity = entity else {
                                             requestIdsRemoved?[offset] = false
+                                            objectIdsRemoved[offset] = false
                                             return nil
                                         }
                                         return try? self.client.jsonParser.parseObject(T.self, from: entity)
@@ -152,6 +152,10 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                         }
                                         return MultiSaveError(index: index, code: code, message: message)
                                     }))
+                                    let objectIdsToBeRemoved = zip(objectIds, objectIdsRemoved).compactMap { objectId, removed in
+                                        return removed ? objectId : nil
+                                    }
+                                    cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", objectIdsToBeRemoved))
                                     cache.save(entities: _entities.compactMap({ $0 }), syncQuery: nil)
                                     entities = _entities
                                 } else if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
