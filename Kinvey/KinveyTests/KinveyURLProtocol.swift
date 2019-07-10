@@ -130,7 +130,7 @@ class KinveyURLProtocol: URLProtocol {
             }
             let id = json["_id"] as! String
             var kmd = [String : Any]()
-            kmd["ltm"] = Date().toISO8601()
+            kmd["lmt"] = Date().toISO8601()
             kmd["ect"] = Date().toISO8601()
             let authtoken = UUID().uuidString
             kmd["authtoken"] = authtoken

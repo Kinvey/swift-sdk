@@ -869,24 +869,43 @@ class MultiInsertSpec: QuickSpec {
                     mockResponse { request in
                         switch request.httpMethod {
                         case "POST":
+                            var persons = KinveyURLProtocol.collections["Person"] ?? [:]
+                            let id1 = UUID().uuidString
+                            let id2 = UUID().uuidString
+                            let now = Date()
+                            let json1 = [
+                                "_id" : id1,
+                                "_geoloc" : [0, 0],
+                                "_kmd" : [
+                                    "ect" : now.toISO8601(),
+                                    "lmt" : now.toISO8601(),
+                                ],
+                            ] as JsonDictionary
+                            let json2 = [
+                                "_id" : id2,
+                                "_geoloc" : [45, 45],
+                                "_kmd" : [
+                                    "ect" : now.toISO8601(),
+                                    "lmt" : now.toISO8601(),
+                                ],
+                            ] as JsonDictionary
+                            persons[id1] = json1
+                            persons[id2] = json2
+                            KinveyURLProtocol.collections["Person"] = persons
                             return HttpResponse(
                                 statusCode: 207,
                                 json: [
                                     "entities" : [
+                                        json1,
                                         nil,
-                                        nil
+                                        json2,
                                     ],
                                     "errors" : [
-                                        [
-                                            "index": 0,
-                                            "code": errorCode,
-                                            "errmsg": errorMessage
-                                        ],
                                         [
                                             "index": 1,
                                             "code": errorCode,
                                             "errmsg": errorMessage
-                                        ]
+                                        ],
                                     ]
                                 ]
                             )
@@ -901,47 +920,47 @@ class MultiInsertSpec: QuickSpec {
                     let result = kinveySaveMulti(
                         dataStore: syncDataStore,
                         entities: [
+                            Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
                             Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
-                            Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
+                            Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) },
                         ]
                     ).result
                     expect(result).toNot(beNil())
                     guard let resultUnwrapped = result else {
                         return
                     }
-                    expect(resultUnwrapped.entities.count).to(equal(2))
+                    expect(resultUnwrapped.entities.count).to(equal(3))
                     expect(resultUnwrapped.errors.count).to(equal(0))
                 
-                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
-                    expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(3))
+                    expect(syncDataStore.pendingSyncEntities().count).to(equal(3))
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                     
                     let errors = kinveySync(dataStore: syncDataStore).errors
-                    expect(errors?.count).to(equal(2))
+                    expect(errors?.count).to(equal(1))
                     expect(errors?.first?.localizedDescription).to(equal(errorMessage))
                     expect(errors?.last?.localizedDescription).to(equal(errorMessage))
                     
-                    let multiSaveError1 = errors?.first as? MultiSaveError
-                    let multiSaveError2 = errors?.last as? MultiSaveError
+                    let multiSaveError = errors?.first as? MultiSaveError
                     
-                    expect(multiSaveError1).toNot(beNil())
-                    expect(multiSaveError2).toNot(beNil())
+                    expect(multiSaveError).toNot(beNil())
                     
-                    expect(multiSaveError1?.index).to(equal(0))
-                    expect(multiSaveError2?.index).to(equal(1))
+                    expect(multiSaveError?.index).to(equal(1))
                     
-                    expect(multiSaveError1?.code).to(equal(errorCode))
-                    expect(multiSaveError2?.code).to(equal(errorCode))
+                    expect(multiSaveError?.code).to(equal(errorCode))
                     
-                    expect(multiSaveError1?.message).to(equal(errorMessage))
-                    expect(multiSaveError2?.message).to(equal(errorMessage))
+                    expect(multiSaveError?.message).to(equal(errorMessage))
                     
-                    expect(syncDataStore.pendingSyncCount()).to(equal(2))
-                    expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
+                    expect(syncDataStore.pendingSyncCount()).to(equal(1))
+                    expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
-                
-                    let entities = kinveyFind(dataStore: syncDataStore).entities
+                    
+                    let networkDataStore = try DataStore<Person>.collection(type: .network)
+                    var entities = kinveyFind(dataStore: networkDataStore).entities
                     expect(entities?.count).to(equal(2))
+                
+                    entities = kinveyFind(dataStore: syncDataStore).entities
+                    expect(entities?.count).to(equal(3))
                 }
             }
         }
@@ -1636,66 +1655,91 @@ class MultiInsertSpec: QuickSpec {
                 }
                 context("Sync()") {
                     it("create an array of 3 items, the second of which has invalid _geoloc parameters") {
-                        do {
-                            mockResponse(json: [
-                                "entities" : [
-                                    [
-                                        "_id" : UUID().uuidString,
-                                        "_geoloc" : [0, 0]
-                                    ],
-                                    nil,
-                                    [
-                                        "_id" : UUID().uuidString,
-                                        "_geoloc" : [45, 45]
-                                    ],
-                                ],
-                                "errors" : [
-                                    [
-                                        "index" : 1,
-                                        "code" : 123,
-                                        "errmsg" : "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
-                                    ]
-                                ]
-                            ])
-                            defer {
-                                setURLProtocol(KinveyURLProtocol.self)
+                        var postCount = 0
+                        mockResponse { request in
+                            switch request.httpMethod! {
+                            case "POST":
+                                defer {
+                                    postCount += 1
+                                }
+                                switch postCount {
+                                case 0:
+                                    return HttpResponse(error: timeoutError)
+                                default:
+                                    let id1 = UUID().uuidString
+                                    let id2 = UUID().uuidString
+                                    let now = Date()
+                                    let json1 = [
+                                        "_id" : id1,
+                                        "_geoloc" : [0, 0],
+                                        "_kmd" : [
+                                            "ect" : now.toISO8601(),
+                                            "lmt" : now.toISO8601(),
+                                        ],
+                                    ] as JsonDictionary
+                                    let json2 = [
+                                        "_id" : id2,
+                                        "_geoloc" : [45, 45],
+                                        "_kmd" : [
+                                            "ect" : now.toISO8601(),
+                                            "lmt" : now.toISO8601(),
+                                        ],
+                                    ] as JsonDictionary
+                                    var persons = KinveyURLProtocol.collections["Person"]
+                                    if persons == nil {
+                                        persons = [:]
+                                    }
+                                    persons![id1] = json1
+                                    persons![id2] = json2
+                                    KinveyURLProtocol.collections["Person"] = persons
+                                    return HttpResponse(json: [
+                                        "entities" : [
+                                            json1,
+                                            nil,
+                                            json2,
+                                        ],
+                                        "errors" : [
+                                            [
+                                                "index" : 1,
+                                                "code" : 123,
+                                                "errmsg" : "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                            ]
+                                        ]
+                                    ])
+                                }
+                            default:
+                                return HttpResponse(request: request, urlProcotolType: KinveyURLProtocol.self)
                             }
-                            
-                            let result = kinveySaveMulti(
-                                dataStore: autoDataStore,
-                                entities: [
-                                    Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
-                                    Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
-                                    Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
-                                ]
-                            ).result
-                            expect(result).toNot(beNil())
-                            expect(result?.entities.count).to(equal(3))
-                            expect(result?.entities.compactMap({ $0 }).count).to(equal(2))
-                            let iterator = result?.entities.makeIterator()
-                            expect(iterator?.next()!).toNot(beNil())
-                            expect(iterator?.next()!).to(beNil())
-                            expect(iterator?.next()!).toNot(beNil())
-                            expect(result?.errors.count).to(equal(1))
-                            expect((result?.errors.first as? IndexableError)?.index).to(equal(1))
-                        } catch {
-                            fail(error.localizedDescription)
+                        }
+                        defer {
+                            setURLProtocol(KinveyURLProtocol.self)
+                            expect(postCount).to(equal(2))
                         }
                     
-                        expect(autoDataStore.pendingSyncCount()).to(equal(1))
-                        expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
+                        let error = kinveySaveMulti(
+                            dataStore: autoDataStore,
+                            entities: [
+                                Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
+                                Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
+                                Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
+                            ]
+                        ).error
+                        expect(error).toNot(beNil())
+                    
+                        expect(autoDataStore.pendingSyncCount()).to(equal(3))
+                        expect(autoDataStore.pendingSyncEntities().count).to(equal(3))
                         expect(autoDataStore.pendingSyncOperations().count).to(equal(1))
                         
                         let errors = kinveySync(dataStore: autoDataStore).errors
                         expect(errors?.count).to(equal(1))
-                        expect(errors?.first?.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
+                        expect(errors?.first?.localizedDescription).to(equal("Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"))
                         
                         expect(autoDataStore.pendingSyncCount()).to(equal(1))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(1))
                         expect(autoDataStore.pendingSyncOperations().count).to(equal(1))
                     
                         var entities = kinveyFind(dataStore: networkDataStore).entities
-                        expect(entities?.count).to(equal(0))
+                        expect(entities?.count).to(equal(2))
                         
                         entities = kinveyFind(dataStore: syncDataStore).entities
                         expect(entities?.count).to(equal(3))
