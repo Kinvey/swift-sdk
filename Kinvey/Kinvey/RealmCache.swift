@@ -427,7 +427,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
             if let entityId = entity.entityId, let oldEntity = realm.object(ofType: self.entityType, forPrimaryKey: entityId) {
                 self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
             }
-            newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: true)
+            newEntity = realm.create((type(of: entity) as! Entity.Type), value: entity, update: .all)
         }
         if let entity = entity as? Entity {
             entity.realmConfiguration = self.newRealm.configuration
@@ -449,7 +449,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType where T: NSObject
                 if let entityId = entity.entityId, let oldEntity = realm.object(ofType: entityType, forPrimaryKey: entityId) {
                     self.cascadeDelete(realm: realm, entityType: self.entityTypeClassName, entity: oldEntity, deleteItself: false)
                 }
-                let newEntity = realm.create(entityType, value: entity, update: true)
+                let newEntity = realm.create(entityType, value: entity, update: .all)
                 newEntities.append(newEntity)
             }
             self.saveQuery(syncQuery: syncQuery, realm: realm)
@@ -888,7 +888,7 @@ extension RealmCache: DynamicCacheType {
                     entity: entity,
                     propertyMapping: propertyMapping
                 )
-                realm.dynamicCreate(self.entityTypeClassName, value: translatedEntity, update: true)
+                realm.dynamicCreate(self.entityTypeClassName, value: translatedEntity, update: .all)
             }
             self.saveQuery(syncQuery: syncQuery, realm: realm)
         }
@@ -910,7 +910,7 @@ extension RealmCache: DynamicCacheType {
             realmSyncQuery.fields = syncQuery.query.fieldsAsString
             realmSyncQuery.lastSync = syncQuery.lastSync
             realmSyncQuery.generateKey()
-            realm.add(realmSyncQuery, update: true)
+            realm.add(realmSyncQuery, update: .all)
         }
         if realm.isInWriteTransaction {
             block(entityTypeCollectionName)
@@ -977,6 +977,31 @@ extension AnyRandomAccessCollection where Element: NSObject, Element: Persistabl
     
 }
 
+enum ObjectIdKind {
+    
+    case objectId(String)
+    case objectIds(AnyRandomAccessCollection<String>)
+    
+}
+
+extension ObjectIdKind {
+    
+    init?(_ objectId: String?) {
+        guard let objectId = objectId else {
+            return nil
+        }
+        self = .objectId(objectId)
+    }
+    
+    init?<RAC>(_ objectIds: RAC?) where RAC: RandomAccessCollection, RAC.Element == String {
+        guard let objectIds = objectIds else {
+            return nil
+        }
+        self = .objectIds(AnyRandomAccessCollection(objectIds))
+    }
+    
+}
+
 internal class RealmPendingOperation: Object, PendingOperation {
     
     @objc
@@ -991,6 +1016,9 @@ internal class RealmPendingOperation: Object, PendingOperation {
     @objc
     dynamic var objectId: String?
     
+    var objectIds: AnyRandomAccessCollection<String>?
+    var requestIds: AnyRandomAccessCollection<String>?
+    
     @objc
     dynamic var method: String = ""
     
@@ -1003,12 +1031,37 @@ internal class RealmPendingOperation: Object, PendingOperation {
     @objc
     dynamic var body: Data?
     
-    convenience init(request: URLRequest, collectionName: String, objectId: String?) {
+    convenience init<RequestIds>(
+        request: URLRequest,
+        collectionName: String,
+        objectIdKind: ObjectIdKind? = nil,
+        requestIds: RequestIds
+    ) where RequestIds: RandomAccessCollection, RequestIds.Element == String {
+        self.init(
+            request: request,
+            collectionName: collectionName,
+            objectIdKind: objectIdKind
+        )
+        self.requestIds = AnyRandomAccessCollection(requestIds)
+    }
+    
+    convenience init(
+        request: URLRequest,
+        collectionName: String,
+        objectIdKind: ObjectIdKind? = nil
+    ) {
         self.init()
         
         requestId = request.value(forHTTPHeaderField: KinveyHeaderField.requestId)!
         self.collectionName = collectionName
-        self.objectId = objectId
+        if let objectIdKind = objectIdKind {
+            switch objectIdKind {
+            case .objectId(let objectId):
+                self.objectId = objectId
+            case .objectIds(let objectIds):
+                self.objectIds = objectIds
+            }
+        }
         method = request.httpMethod ?? "GET"
         url = request.url!.absoluteString
         headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!)
@@ -1052,6 +1105,14 @@ class RealmPendingOperationReference: PendingOperation {
     
     var objectId: String? {
         return realmPendingOperation.objectId
+    }
+    
+    var objectIds: AnyRandomAccessCollection<String>? {
+        return realmPendingOperation.objectIds
+    }
+    
+    var requestIds: AnyRandomAccessCollection<String>? {
+        return realmPendingOperation.requestIds
     }
     
     func buildRequest() -> URLRequest {

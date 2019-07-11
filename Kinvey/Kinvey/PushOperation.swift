@@ -101,12 +101,17 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
         let pendingBlockOperations = operationsQueue.pendingBlockOperations(forCollection: collectionName)
         
         if let sync = sync {
-            for pendingOperation in sync.pendingOperations() {
+            for pendingOperation in sync.pendingOperations(useMultiInsert: true) {
                 let request = HttpRequest<Swift.Result<UInt, Swift.Error>>(
                     request: pendingOperation.buildRequest(),
                     options: options
                 )
                 let objectId = pendingOperation.objectId
+                let objectIds = pendingOperation.objectIds
+                let requestIds = pendingOperation.requestIds
+                var requestIdsRemoved = requestIds != nil ? [Bool](repeating: true, count: requestIds?.count ?? 0) : nil
+                var entities: AnyRandomAccessCollection<T?>? = nil
+                var entitiesErrors: AnyRandomAccessCollection<Swift.Error>? = nil
                 let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
                     request.execute() { data, response, error in
                         if let response = response,
@@ -125,15 +130,56 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                     cache.remove(entity: entity)
                                 }
                                 
-                                if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
+                                if let entitiesJson = json["entities"] as? [JsonDictionary?],
+                                    let errorsJson = json["errors"] as? [JsonDictionary],
+                                    let objectIds = objectIds
+                                {
+                                    var objectIdsRemoved = [Bool](repeating: true, count: objectIds.count)
+                                    let _entities = AnyRandomAccessCollection(entitiesJson.enumerated().lazy.map({ (offset, entity) -> T? in
+                                        guard let entity = entity else {
+                                            requestIdsRemoved?[offset] = false
+                                            objectIdsRemoved[offset] = false
+                                            return nil
+                                        }
+                                        return try? self.client.jsonParser.parseObject(T.self, from: entity)
+                                    }))
+                                    entitiesErrors = AnyRandomAccessCollection(errorsJson.lazy.compactMap({ (error) -> MultiSaveError? in
+                                        guard let index = error[MultiSaveError.CodingKeys.index.rawValue] as? Int,
+                                            let code = error[MultiSaveError.CodingKeys.code.rawValue] as? Int,
+                                            let message = error[MultiSaveError.CodingKeys.message.rawValue] as? String
+                                        else {
+                                            return nil
+                                        }
+                                        return MultiSaveError(index: index, code: code, message: message)
+                                    }))
+                                    let objectIdsToBeRemoved = zip(objectIds, objectIdsRemoved).compactMap { objectId, removed in
+                                        return removed ? objectId : nil
+                                    }
+                                    cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", objectIdsToBeRemoved))
+                                    cache.save(entities: _entities.compactMap({ $0 }), syncQuery: nil)
+                                    entities = _entities
+                                } else if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
                                     cache.save(entity: persistable)
                                 }
                             }
                             if request.request.httpMethod != "DELETE" {
-                                self.sync?.removePendingOperation(pendingOperation)
-                                count += 1
+                                if let entities = entities,
+                                    let entitiesErrors = entitiesErrors,
+                                    let requestIds = requestIds,
+                                    let requestIdsRemoved = requestIdsRemoved
+                                {
+                                    errors.append(contentsOf: entitiesErrors)
+                                    let requestIdsToBeRemoved = zip(requestIds, requestIdsRemoved).compactMap { (requestId, removed) in
+                                        return removed ? requestId : nil
+                                    }
+                                    self.sync?.remove(requestIds: requestIdsToBeRemoved)
+                                    count += UInt(entities.count)
+                                } else {
+                                    self.sync?.remove(pendingOperation: pendingOperation)
+                                    count += 1
+                                }
                             } else if let json = json, let _count = json["count"] as? UInt {
-                                self.sync?.removePendingOperation(pendingOperation)
+                                self.sync?.remove(pendingOperation: pendingOperation)
                                 count += _count
                             } else {
                                 errors.append(buildError(data, response, error, self.client))

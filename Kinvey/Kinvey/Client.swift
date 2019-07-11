@@ -15,7 +15,12 @@ private let lockEncryptionKey = NSLock()
 open class Client: Credential {
 
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
-    public static let sharedClient = Client()
+    public static let shared = Client()
+    
+    @available(*, deprecated, message: "Deprecated in version 3.26.0. Please use Client.shared instead")
+    public static var sharedClient: Client {
+        return shared
+    }
     
     public typealias UserChangedListener = (User?) -> Void
     public var userChangedListener: UserChangedListener?

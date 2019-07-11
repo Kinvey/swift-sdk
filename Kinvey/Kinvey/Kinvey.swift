@@ -52,7 +52,7 @@ func signpost(_ type: SignpostType, dso: UnsafeRawPointer = #dsohandle, log: OSL
  environments, you should override this default by providing a separate Client
  instance.
  */
-public let sharedClient = Client.sharedClient
+public let sharedClient = Client.shared
 
 /// A once-per-installation value generated to give an ID for the running device
 public let deviceId = Keychain().deviceId
@@ -327,13 +327,25 @@ func buildError(
         let debug = json["debug"],
         let description = json["description"]
     {
-        let refreshToken = client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String
-        if refreshToken == nil {
-            client.activeUser?.logout()
+        var logoutOnDefer = true
+        defer {
+            if logoutOnDefer,
+                client.activeUser?.socialIdentity?.kinvey?["refresh_token"] as? String == nil
+            {
+                client.activeUser?.logout()
+            }
         }
         switch error {
         case Error.Keys.invalidCredentials.rawValue:
             return Error.invalidCredentials(
+                httpResponse: response.httpResponse,
+                data: data,
+                debug: debug,
+                description: description
+            )
+        case Error.Keys.insufficientCredentials.rawValue:
+            logoutOnDefer = false
+            return Error.insufficientCredentials(
                 httpResponse: response.httpResponse,
                 data: data,
                 debug: debug,
