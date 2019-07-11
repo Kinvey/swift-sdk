@@ -989,12 +989,17 @@ open class DataStore<T: Persistable> where T: NSObject {
     
     /// Returns the number of changes not synced yet.
     open func pendingSyncCount() -> Int {
-        return pendingSyncEntities().count
+        return sync?.pendingOperationsCount() ?? 0
     }
     
     /// Returns the changes not synced yet.
     open func pendingSyncEntities() -> AnyRandomAccessCollection<PendingOperation> {
-        return sync?.pendingOperations() ?? AnyRandomAccessCollection([])
+        return sync?.pendingOperations(useMultiInsert: false) ?? AnyRandomAccessCollection([])
+    }
+    
+    /// Returns the changes not synced yet, but with the POST requests aggregated to use multi-insert.
+    open func pendingSyncOperations() -> AnyRandomAccessCollection<PendingOperation> {
+        return sync?.pendingOperations(useMultiInsert: true) ?? AnyRandomAccessCollection([])
     }
     
     open func clearSync() -> Int {

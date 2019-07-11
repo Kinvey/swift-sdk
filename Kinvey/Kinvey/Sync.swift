@@ -14,30 +14,54 @@ internal protocol SyncType {
     func createPendingOperation(_ request: URLRequest, objectId: String?) -> PendingOperation
     
     //Read
-    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation>
+    func pendingOperations(useMultiInsert: Bool) -> AnyRandomAccessCollection<PendingOperation>
+    
+    //Count
+    func pendingOperationsCount() -> Int
     
     //Update
-    func savePendingOperation(_ pendingOperation: PendingOperation)
+    func save(pendingOperation: PendingOperation)
+    
+    //Update
+    func save<C>(pendingOperations: C) where C: Collection, C.Element == PendingOperation
     
     //Delete
-    func removePendingOperation(_ pendingOperation: PendingOperation)
+    func remove(pendingOperation: PendingOperation)
+    func remove<C>(requestIds: C) where C: Collection, C.Element == String
     func removeAllPendingOperations(_ objectId: String?, methods: [String]?) -> Int
+    
+}
+
+extension SyncType {
+    
+    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
+        return pendingOperations(useMultiInsert: false)
+    }
     
 }
 
 internal final class AnySync: SyncType {
     
     private let _createPendingOperation: (URLRequest, String?) -> PendingOperation
-    private let _pendingOperations: () -> AnyRandomAccessCollection<PendingOperation>
+    private let _pendingOperations: (Bool) -> AnyRandomAccessCollection<PendingOperation>
+    private let _pendingOperationsCount: () -> Int
     private let _savePendingOperation: (PendingOperation) -> Void
+    private let _savePendingOperations: (AnyCollection<PendingOperation>) -> Void
     private let _removePendingOperation: (PendingOperation) -> Void
+    private let _removePendingOperations: (AnyCollection<String>) -> Void
     private let _removeAllPendingOperations: (String?, [String]?) -> Int
     
+    let sync: SyncType
+    
     init<Sync: SyncType>(_ sync: Sync) {
+        self.sync = sync
         _createPendingOperation = sync.createPendingOperation
-        _pendingOperations = sync.pendingOperations
-        _savePendingOperation = sync.savePendingOperation
-        _removePendingOperation = sync.removePendingOperation
+        _pendingOperations = sync.pendingOperations(useMultiInsert:)
+        _pendingOperationsCount = sync.pendingOperationsCount
+        _savePendingOperation = sync.save(pendingOperation:)
+        _savePendingOperations = sync.save(pendingOperations:)
+        _removePendingOperation = sync.remove(pendingOperation:)
+        _removePendingOperations = sync.remove(requestIds:)
         _removeAllPendingOperations = sync.removeAllPendingOperations
     }
     
@@ -45,16 +69,28 @@ internal final class AnySync: SyncType {
         return _createPendingOperation(request, objectId)
     }
     
-    func pendingOperations() -> AnyRandomAccessCollection<PendingOperation> {
-        return _pendingOperations()
+    func pendingOperations(useMultiInsert: Bool) -> AnyRandomAccessCollection<PendingOperation> {
+        return _pendingOperations(useMultiInsert)
     }
     
-    func savePendingOperation(_ pendingOperation: PendingOperation) {
+    func pendingOperationsCount() -> Int {
+        return _pendingOperationsCount()
+    }
+    
+    func save(pendingOperation: PendingOperation) {
         _savePendingOperation(pendingOperation)
     }
     
-    func removePendingOperation(_ pendingOperation: PendingOperation) {
+    func save<C>(pendingOperations: C) where C : Collection, C.Element == PendingOperation {
+        _savePendingOperations(AnyCollection(pendingOperations))
+    }
+    
+    func remove(pendingOperation: PendingOperation) {
         _removePendingOperation(pendingOperation)
+    }
+    
+    func remove<C>(requestIds: C) where C : Collection, C.Element == String {
+        _removePendingOperations(AnyCollection(requestIds))
     }
     
     @discardableResult

@@ -57,21 +57,41 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
         )
     }
     
+    private func requestBodyCannotBeAnEmptyArrayError(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        let error = Error.badRequest(httpResponse: nil, data: nil, description: "Request body cannot be an empty array")
+        let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .failure(error)
+        completionHandler?(result)
+        return AnyRequest(result)
+    }
+    
     func executeLocal(_ completionHandler: CompletionHandler?) -> AnyRequest<ResultType> {
+        guard self.persistable.count > 0 else {
+            return requestBodyCannotBeAnEmptyArrayError(completionHandler)
+        }
         let request = LocalRequest<Swift.Result<MultiSaveResultTuple<T>, Swift.Error>>()
         request.execute { () -> Void in
-            let networkRequest = self.client.networkRequestFactory.appData.buildAppDataSave(
-                persistable,
-                options: options,
-                resultType: ResultType.self
-            )
-            
+            var isNewArray = [Bool]()
             if let cache = self.cache {
+                let persistable = self.persistable.map { (entity: T) -> T in
+                    isNewArray.append(entity.isNew)
+                    var persistable = entity
+                    return self.fillObject(&persistable)
+                }
                 cache.save(entities: persistable, syncQuery: nil)
             }
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(networkRequest.request))
+                let pendingOperations = persistable.enumerated().map { (args) -> PendingOperation in
+                    let (offset, item) = args
+                    let networkRequest = self.client.networkRequestFactory.appData.buildAppDataSave(
+                        item,
+                        options: options,
+                        isNew: isNewArray[offset],
+                        resultType: T.self
+                    )
+                    return sync.createPendingOperation(networkRequest.request, objectId: item.entityId)
+                }
+                sync.save(pendingOperations: pendingOperations)
             }
             request.result = .success((entities: AnyRandomAccessCollection(persistable.map({ Optional($0) })), errors: AnyRandomAccessCollection(EmptyCollection())))
             if let completionHandler = completionHandler, let result = request.result {
@@ -88,9 +108,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             return AnyRequest(result)
         }
         guard self.persistable.count > 0 else {
-            let result: Swift.Result<MultiSaveResultTuple<T>, Swift.Error> = .success((entities: AnyRandomAccessCollection(EmptyCollection()), errors: AnyRandomAccessCollection(EmptyCollection())))
-            completionHandler?(result)
-            return AnyRequest(result)
+            return requestBodyCannotBeAnEmptyArrayError(completionHandler)
         }
         let requests = MultiRequest<ResultType>()
         
@@ -98,21 +116,28 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             let newItemsResult = try newItemsResponse.get()
             return self.updateExistingItems(requests: requests).map { (newItemsResult, $0) }
         }.done { newItemsResult, existingItemsResult in
+            guard existingItemsResult.count > 0 else {
+                requests.result = .success(newItemsResult)
+                return
+            }
             var entities = [T?]()
             var errors = [Swift.Error]()
-            var newItemsIndex = 0
-            var existingItemsIndex = 0
+            let newItemsIterator = newItemsResult.entities.makeIterator()
+            var existingItemsIterator = existingItemsResult.makeIterator()
             let newItemsErrorsIterator = newItemsResult.errors.makeIterator()
             for isNew in self.isNewItems {
                 if isNew {
-                    let newItem = newItemsResult.entities[AnyIndex(newItemsIndex)]
+                    guard let newItem = newItemsIterator.next() else {
+                        continue
+                    }
                     entities.append(newItem)
                     if newItem == nil, let error = newItemsErrorsIterator.next() {
                         errors.append(error)
                     }
-                    newItemsIndex += 1
                 } else {
-                    let existingItem = existingItemsResult[existingItemsIndex]
+                    guard let existingItem = existingItemsIterator.next() else {
+                        continue
+                    }
                     switch existingItem {
                     case .success(let existingItem):
                         entities.append(existingItem)
@@ -121,7 +146,6 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                         entities.append(nil)
                         errors.append(error)
                     }
-                    existingItemsIndex += 1
                 }
             }
             requests.result = .success(
@@ -177,6 +201,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
     }
     
     private func saveSingleRequest(newItems: AnyRandomAccessCollection<T>, requests: MultiRequest<ResultType>) -> Promise<ResultType> {
+        let objectIds = newItems.map({ $0.entityId })
         let request = client.networkRequestFactory.appData.buildAppDataSave(
             newItems,
             options: options,
@@ -189,32 +214,34 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                     response.isOK,
                     let data = _data,
                     let json = try? self.client.jsonParser.parseDictionary(from: data),
-                    let entitiesJson = json["entities"] as? [[String : Any]?],
+                    let entitiesJson = json["entities"] as? [JsonDictionary?],
                     let entities = try? entitiesJson.map({ (item) -> T? in
                         guard let item = item else {
                             return nil
                         }
                         return try self.client.jsonParser.parseObject(T.self, from: item)
                     }),
-                    let errors = json["errors"] as? [[String : Any]]
+                    let errors = json["errors"] as? [JsonDictionary]
                 else {
                     resolver.reject(buildError(_data, _response, error, self.client))
                     return
                 }
-                for entity in entities {
+                for (offset, entity) in entities.enumerated() {
                     guard let entity = entity else {
                         continue
                     }
-                    if let objectId = entity.entityId,
+                    if let objectId = objectIds[offset],
                         let sync = self.sync
                     {
                         sync.removeAllPendingOperations(
                             objectId,
-                            methods: ["POST", "PUT"]
+                            methods: ["POST"]
                         )
                     }
                     if let cache = self.cache {
-                        cache.remove(entity: entity)
+                        if let objectId = objectIds[offset] {
+                            cache.remove(byQuery: Query(format: "entityId == %@", objectId))
+                        }
                         cache.save(entity: entity)
                     }
                 }

@@ -171,6 +171,7 @@ protocol AppDataRequestFactory {
     func buildAppDataSave<T: Persistable, Result>(
         _ persistable: T,
         options: Options?,
+        isNew: Bool?,
         resultType: Result.Type
     ) -> HttpRequest<Result>
     
@@ -193,6 +194,23 @@ protocol AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result>
+    
+}
+
+extension AppDataRequestFactory {
+    
+    func buildAppDataSave<T: Persistable, Result>(
+        _ persistable: T,
+        options: Options?,
+        resultType: Result.Type
+    ) -> HttpRequest<Result> {
+        return buildAppDataSave(
+            persistable,
+            options: options,
+            isNew: nil,
+            resultType: resultType
+        )
+    }
     
 }
 

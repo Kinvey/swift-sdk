@@ -2605,15 +2605,7 @@ class SyncStoreTests: StoreTestCase {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
                     XCTAssertEqual(request.httpMethod, "POST")
-                    var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
-                    json["_id"] = UUID().uuidString
-                    json["_acl"] = [
-                        "creator" : self.client.activeUser!.userId
-                    ]
-                    json["_kmd"] = [
-                        "lmt" : Date().toISO8601(),
-                        "ect" : Date().toISO8601()
-                    ]
+                    let json = self.decorateJsonFromPostRequest(request)
                     mockResponses.append(json)
                     return HttpResponse(statusCode: 201, json: json)
                 }
