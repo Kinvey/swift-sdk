@@ -46,7 +46,6 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
         self.userChannelGroup = userChannelGroup
         
         let configuration = PNConfiguration(publishKey: publishKey, subscribeKey: subscribeKey)
-        configuration.stripMobilePayload = false
         configuration.authKey = user.metadata?.authtoken
         pubNub = pubNubType.clientWithConfiguration(configuration)
         super.init()

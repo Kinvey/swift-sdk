@@ -4,4 +4,4 @@ github "kishikawakatsumi/KeychainAccess" ~> 3.0
 github "realm/realm-cocoa" ~> 3.0
 github "Hearst-DD/ObjectMapper" ~> 3.0
 github "SwiftyBeaver/SwiftyBeaver" ~> 1.0
-github "pubnub/objective-c" ~> 4.0
+github "pubnub/objective-c" ~> 4.9
