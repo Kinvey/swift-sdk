@@ -145,6 +145,6 @@ Pod::Spec.new do |s|
   s.dependency "RealmSwift", "~> 3.0"
   s.dependency "ObjectMapper", "~> 3.0"
   s.dependency "SwiftyBeaver", "~> 1.0"
-  s.dependency "PubNub", "~> 4.0"
+  s.dependency "PubNub", "~> 4.9"
 
 end
