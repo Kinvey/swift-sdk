@@ -492,6 +492,82 @@ class MultiInsertSpec: QuickSpec {
                             expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                         }
                     }
+                    context("more than 100 items") {
+                        it("error indexes are correct") {
+                            let entities = (1 ... 150).map { i in
+                                Person { $0.name = "Person \(i)" }
+                            }
+                            var count = 0
+                            mockResponse { request in
+                                defer {
+                                    count += 1
+                                }
+                                let json = try! JSONSerialization.jsonObject(with: request) as! [[String : Any]]
+                                let response = HttpResponse(request: request, urlProcotolType: KinveyURLProtocol.self)
+                                let data = response.chunks?.reduce(Data()) { (data, chunk) -> Data in
+                                    return data + chunk.data
+                                }
+                                var jsonObject = try! JSONSerialization.jsonObject(with: data!) as! [String : Any]
+                                var entities = jsonObject["entities"] as! [[String : Any]?]
+                                var errors = jsonObject["errors"] as! [[String : Any]]
+                                switch count {
+                                case 0:
+                                    XCTAssertEqual(json.count, 100)
+                                    let index = 10
+                                    let entity = entities[index]
+                                    entities[index] = nil
+                                    errors.append([
+                                        "index" : index,
+                                        "code" : 100,
+                                        "errmsg" : "Entity not saved"
+                                    ])
+                                case 1:
+                                    XCTAssertEqual(json.count, 50)
+                                    let index = 20
+                                    let entity = entities[index]
+                                    entities[index] = nil
+                                    errors.append([
+                                        "index" : index,
+                                        "code" : 200,
+                                        "errmsg" : "Entity not saved"
+                                    ])
+                                default:
+                                    XCTFail("request not expected")
+                                }
+                                jsonObject["entities"] = entities
+                                jsonObject["errors"] = errors
+                                return HttpResponse(statusCode: response.statusCode, headerFields: response.headerFields, json: jsonObject)
+                            }
+                            defer {
+                                setURLProtocol(nil)
+                            }
+                            
+                            let result = kinveySaveMulti(
+                                dataStore: networkDataStore,
+                                entities: entities
+                            ).result
+                            
+                            XCTAssertEqual(count, 2)
+                            XCTAssertNotNil(result)
+                            guard let resultUnwrapped = result else {
+                                return
+                            }
+                            XCTAssertEqual(resultUnwrapped.entities.count, 150)
+                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 != nil }).count, 148)
+                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 == nil }).count, 2)
+                            for (offset, entity) in resultUnwrapped.entities.enumerated() {
+                                switch offset {
+                                case 10, 120:
+                                    XCTAssertNil(entity)
+                                default:
+                                    XCTAssertNotNil(entity)
+                                }
+                            }
+                            XCTAssertEqual(resultUnwrapped.errors.count, 2)
+                            XCTAssertEqual((resultUnwrapped.errors.first as? IndexableError)?.index, 10)
+                            XCTAssertEqual((resultUnwrapped.errors.last as? IndexableError)?.index, 120)
+                        }
+                    }
                 }
             }
         }
