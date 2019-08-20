@@ -744,14 +744,7 @@ extension RealmCache: DynamicCacheType {
     
     internal func cascadeDelete(realm: Realm, entityType: String, entity: Object, deleteItself: Bool = true) {
         if let cascadeDeletable = entity as? CascadeDeletable {
-            if let entity = entity as? Entity {
-                if let acl = entity.acl {
-                    realm.delete(acl)
-                }
-                if let metadata = entity.metadata {
-                    realm.delete(metadata)
-                }
-            }
+            deleteAclAndMetadata(realm: realm, object: entity)
             try! cascadeDeletable.cascadeDelete(executor: RealmCascadeDeleteExecutor(realm: realm))
         } else if let schema = realm.schema[entityType] {
             signpost(.begin, log: osLog, name: "Cascade Delete", "%@", entityType)
@@ -1162,14 +1155,7 @@ class RealmCascadeDeleteExecutor: CascadeDeleteExecutor {
             if let cascadeDelete = object as? CascadeDeletable {
                 try cascadeDelete.cascadeDelete(executor: self)
             }
-            if let entity = object as? Entity {
-                if let acl = entity.acl {
-                    realm.delete(acl)
-                }
-                if let metadata = entity.metadata {
-                    realm.delete(metadata)
-                }
-            }
+            deleteAclAndMetadata(realm: realm, object: object)
             realm.delete(object)
         }
     }
@@ -1179,16 +1165,21 @@ class RealmCascadeDeleteExecutor: CascadeDeleteExecutor {
             if let cascadeDelete = object as? CascadeDeletable {
                 try cascadeDelete.cascadeDelete(executor: self)
             }
-            if let entity = object as? Entity {
-                if let acl = entity.acl {
-                    realm.delete(acl)
-                }
-                if let metadata = entity.metadata {
-                    realm.delete(metadata)
-                }
-            }
+            deleteAclAndMetadata(realm: realm, object: object)
         }
         realm.delete(list)
     }
     
+}
+
+fileprivate func deleteAclAndMetadata<T>(realm: Realm, object: T) where T: Object {
+    guard let entity = object as? Entity else {
+        return
+    }
+    if let acl = entity.acl {
+        realm.delete(acl)
+    }
+    if let metadata = entity.metadata {
+        realm.delete(metadata)
+    }
 }
