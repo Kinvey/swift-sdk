@@ -141,8 +141,8 @@ Pod::Spec.new do |s|
 	
   s.dependency "PromiseKit", "~> 6.0"
   s.dependency "KeychainAccess", "~> 3.0"
-  s.dependency "Realm", "~> 3.0"
-  s.dependency "RealmSwift", "~> 3.0"
+  s.dependency "Realm", "~> 3.17"
+  s.dependency "RealmSwift", "~> 3.17"
   s.dependency "ObjectMapper", "~> 3.0"
   s.dependency "SwiftyBeaver", "~> 1.0"
   s.dependency "PubNub", "~> 4.9"
