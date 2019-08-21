@@ -37,6 +37,7 @@
 		57167C81230DE15D0014BA94 /* ObjectIdKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C80230DE15D0014BA94 /* ObjectIdKind.swift */; };
 		57167C83230DEC180014BA94 /* RealmCascadeDeletable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C82230DEC180014BA94 /* RealmCascadeDeletable.swift */; };
 		57167C85230DEF2B0014BA94 /* RealmDynamicCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */; };
+		57167C87230DF0A90014BA94 /* RealmMapKitSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */; };
 		57182C501F75AF460013A6BD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57182C4F1F75AF460013A6BD /* AppDelegate.swift */; };
 		57182C521F75AF470013A6BD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57182C511F75AF470013A6BD /* ViewController.swift */; };
 		57182C551F75AF470013A6BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 57182C531F75AF470013A6BD /* Main.storyboard */; };
@@ -933,6 +934,7 @@
 		57167C80230DE15D0014BA94 /* ObjectIdKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectIdKind.swift; sourceTree = "<group>"; };
 		57167C82230DEC180014BA94 /* RealmCascadeDeletable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmCascadeDeletable.swift; sourceTree = "<group>"; };
 		57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDynamicCache.swift; sourceTree = "<group>"; };
+		57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmMapKitSupport.swift; sourceTree = "<group>"; };
 		57182C4D1F75AF460013A6BD /* BackgroundFetch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BackgroundFetch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57182C4F1F75AF460013A6BD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		57182C511F75AF470013A6BD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -1755,6 +1757,8 @@
 				57E7C7A61C504B0900848748 /* CacheManager.swift */,
 				573DD9841D11CCD6006ECF1C /* RealmCache.swift */,
 				57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */,
+				57E853A320FECE6500042C14 /* RealmSupport.swift */,
+				57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */,
 				57167C76230DDE910014BA94 /* CollectionChange.swift */,
 				57167C78230DDFCB0014BA94 /* RealmPendingOperationReference.swift */,
 				57167C7A230DE02C0014BA94 /* QueryCache.swift */,
@@ -1784,7 +1788,6 @@
 				570677CF1F8FD6280092CEE3 /* ValidationStrategy.swift */,
 				57B257B820929621005B329C /* DeviceInfo.swift */,
 				57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */,
-				57E853A320FECE6500042C14 /* RealmSupport.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -3548,6 +3551,7 @@
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
 				5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */,
+				57167C87230DF0A90014BA94 /* RealmMapKitSupport.swift in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */,
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
