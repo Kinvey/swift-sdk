@@ -29,6 +29,15 @@
 		57136F631D5D23BF00731DDB /* MockKinveyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */; };
 		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
+		57167C77230DDE910014BA94 /* CollectionChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C76230DDE910014BA94 /* CollectionChange.swift */; };
+		57167C79230DDFCB0014BA94 /* RealmPendingOperationReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C78230DDFCB0014BA94 /* RealmPendingOperationReference.swift */; };
+		57167C7B230DE02C0014BA94 /* QueryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C7A230DE02C0014BA94 /* QueryCache.swift */; };
+		57167C7D230DE0620014BA94 /* RealmPendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C7C230DE0620014BA94 /* RealmPendingOperation.swift */; };
+		57167C7F230DE1310014BA94 /* RealmCascadeDeleteExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C7E230DE1310014BA94 /* RealmCascadeDeleteExecutor.swift */; };
+		57167C81230DE15D0014BA94 /* ObjectIdKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C80230DE15D0014BA94 /* ObjectIdKind.swift */; };
+		57167C83230DEC180014BA94 /* RealmCascadeDeletable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C82230DEC180014BA94 /* RealmCascadeDeletable.swift */; };
+		57167C85230DEF2B0014BA94 /* RealmDynamicCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */; };
+		57167C87230DF0A90014BA94 /* RealmMapKitSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */; };
 		57182C501F75AF460013A6BD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57182C4F1F75AF460013A6BD /* AppDelegate.swift */; };
 		57182C521F75AF470013A6BD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57182C511F75AF470013A6BD /* ViewController.swift */; };
 		57182C551F75AF470013A6BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 57182C531F75AF470013A6BD /* Main.storyboard */; };
@@ -917,6 +926,15 @@
 		57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKinveyBackend.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
+		57167C76230DDE910014BA94 /* CollectionChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionChange.swift; sourceTree = "<group>"; };
+		57167C78230DDFCB0014BA94 /* RealmPendingOperationReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmPendingOperationReference.swift; sourceTree = "<group>"; };
+		57167C7A230DE02C0014BA94 /* QueryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryCache.swift; sourceTree = "<group>"; };
+		57167C7C230DE0620014BA94 /* RealmPendingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmPendingOperation.swift; sourceTree = "<group>"; };
+		57167C7E230DE1310014BA94 /* RealmCascadeDeleteExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmCascadeDeleteExecutor.swift; sourceTree = "<group>"; };
+		57167C80230DE15D0014BA94 /* ObjectIdKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectIdKind.swift; sourceTree = "<group>"; };
+		57167C82230DEC180014BA94 /* RealmCascadeDeletable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmCascadeDeletable.swift; sourceTree = "<group>"; };
+		57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDynamicCache.swift; sourceTree = "<group>"; };
+		57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmMapKitSupport.swift; sourceTree = "<group>"; };
 		57182C4D1F75AF460013A6BD /* BackgroundFetch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BackgroundFetch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57182C4F1F75AF460013A6BD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		57182C511F75AF470013A6BD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -1738,6 +1756,16 @@
 				57E7C7A41C504AC500848748 /* Cache.swift */,
 				57E7C7A61C504B0900848748 /* CacheManager.swift */,
 				573DD9841D11CCD6006ECF1C /* RealmCache.swift */,
+				57167C84230DEF2B0014BA94 /* RealmDynamicCache.swift */,
+				57E853A320FECE6500042C14 /* RealmSupport.swift */,
+				57167C86230DF0A90014BA94 /* RealmMapKitSupport.swift */,
+				57167C76230DDE910014BA94 /* CollectionChange.swift */,
+				57167C78230DDFCB0014BA94 /* RealmPendingOperationReference.swift */,
+				57167C7A230DE02C0014BA94 /* QueryCache.swift */,
+				57167C7C230DE0620014BA94 /* RealmPendingOperation.swift */,
+				57167C7E230DE1310014BA94 /* RealmCascadeDeleteExecutor.swift */,
+				57167C80230DE15D0014BA94 /* ObjectIdKind.swift */,
+				57167C82230DEC180014BA94 /* RealmCascadeDeletable.swift */,
 				57E7C7A81C504E7B00848748 /* PendingOperation.swift */,
 				57E7C7AE1C50539200848748 /* Sync.swift */,
 				57E7C7B01C50539C00848748 /* SyncManager.swift */,
@@ -1760,7 +1788,6 @@
 				570677CF1F8FD6280092CEE3 /* ValidationStrategy.swift */,
 				57B257B820929621005B329C /* DeviceInfo.swift */,
 				57C6F70B20E30ADF0090935C /* ObjectMapperSupport.swift */,
-				57E853A320FECE6500042C14 /* RealmSupport.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -3483,11 +3510,13 @@
 				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
 				573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
+				57167C7D230DE0620014BA94 /* RealmPendingOperation.swift in Sources */,
 				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				570BD2FD1E845E7A000341C9 /* AggregateOperation.swift in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
+				57167C7F230DE1310014BA94 /* RealmCascadeDeleteExecutor.swift in Sources */,
 				573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
@@ -3496,6 +3525,7 @@
 				57A526531E42A07900B33A51 /* Geolocation.swift in Sources */,
 				57FB57D91C86581300AA590F /* String.swift in Sources */,
 				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
+				57167C7B230DE02C0014BA94 /* QueryCache.swift in Sources */,
 				574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */,
 				577155BB1CA21CC200C91B4B /* Migration.swift in Sources */,
 				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
@@ -3521,6 +3551,7 @@
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
 				5787A12E228F999D00F72D73 /* CustomEndpointParams.swift in Sources */,
+				57167C87230DF0A90014BA94 /* RealmMapKitSupport.swift in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */,
 				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
@@ -3531,6 +3562,7 @@
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
 				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,
 				577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */,
+				57167C83230DEC180014BA94 /* RealmCascadeDeletable.swift in Sources */,
 				57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */,
 				57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */,
 				57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */,
@@ -3540,10 +3572,14 @@
 				57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
 				576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */,
+				57167C79230DDFCB0014BA94 /* RealmPendingOperationReference.swift in Sources */,
 				572C457B1C86690700A41935 /* Date.swift in Sources */,
 				57E4DB191C8A26CA0017B406 /* Keychain.swift in Sources */,
 				57E6BD041EC63E68000E5C52 /* Realtime.swift in Sources */,
+				57167C81230DE15D0014BA94 /* ObjectIdKind.swift in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
+				57167C77230DDE910014BA94 /* CollectionChange.swift in Sources */,
+				57167C85230DEF2B0014BA94 /* RealmDynamicCache.swift in Sources */,
 				575792C01D412CD20065CC22 /* UserQuery.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */,
