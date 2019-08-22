@@ -285,8 +285,17 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             for result in results {
                 switch result {
                 case .success(let item):
+                    errors.append(contentsOf: item.errors.map {
+                        guard let multiSaveError = $0 as? MultiSaveError else {
+                            return $0
+                        }
+                        return MultiSaveError(
+                            index: entities.count + multiSaveError.index,
+                            code: multiSaveError.code,
+                            message: multiSaveError.message
+                        )
+                    })
                     entities.append(contentsOf: item.entities)
-                    errors.append(contentsOf: item.errors)
                 case .failure(let error):
                     errors.append(contentsOf: [error])
                 }
