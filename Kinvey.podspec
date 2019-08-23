@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
 	Kinvey iOS SDK #{s.version}
                    DESC
 
-  s.homepage     = "http://devcenter.kinvey.com/ios-v3.0/guides/getting-started"
+  s.homepage     = "https://devcenter.kinvey.com/ios/guides/getting-started"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
