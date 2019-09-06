@@ -360,6 +360,7 @@ public enum MICApiVersion: String {
 #if os(iOS)
 
 import UIKit
+import WebKit
 
 class MICLoginViewController: UIViewController {
     
