@@ -334,7 +334,8 @@ public enum MICUserInterface {
     /// Uses WKWebView
     case wkWebView
     
-    /// Uses UIWebView
+    /// Deprecated in version 3.28.0. The usage of uiWebView is ignored in favor of wkWebView. Please use wkWebView instead
+    @available(*, deprecated, message: "Deprecated in version 3.28.0. The usage of uiWebView is ignored in favor of wkWebView. Please use wkWebView instead")
     case uiWebView
     
     /// Default Value: .safari
@@ -359,9 +360,8 @@ public enum MICApiVersion: String {
 #if os(iOS)
 
 import UIKit
-import WebKit
 
-class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewDelegate {
+class MICLoginViewController: UIViewController {
     
     typealias UserHandler<U: User> = (Swift.Result<U, Swift.Error>) -> Void
     
@@ -378,22 +378,13 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     }()
     
     var redirectURI: URL!
-    var forceUIWebView: Bool!
     var options: Options?
     var completionHandler: UserHandler<User>!
     
     @objc
-    lazy var webView: UIView = {
-        let webView: UIView
-        if let _ = NSClassFromString("WKWebView"), !forceUIWebView {
-            let wkWebView = WKWebView()
-            wkWebView.navigationDelegate = self
-            webView = wkWebView
-        } else {
-            let uiWebView = UIWebView()
-            uiWebView.delegate = self
-            webView = uiWebView
-        }
+    lazy var webView: WKWebView = {
+        let webView = WKWebView()
+        webView.navigationDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.accessibilityIdentifier = "Web View"
         return webView
@@ -410,13 +401,11 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     convenience init<UserType: User>(
         redirectURI: URL,
         userType: UserType.Type,
-        forceUIWebView: Bool = false,
         options: Options?,
         completionHandler: @escaping UserHandler<UserType>
     ) {
         self.init(nibName: nil, bundle: nil)
         self.redirectURI = redirectURI
-        self.forceUIWebView = forceUIWebView
         self.options = options
         self.completionHandler = {
             switch $0 {
@@ -523,10 +512,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         
         let url = MIC.urlForLogin(redirectURI: redirectURI, options: options)
         let request = URLRequest(url: url)
-        webView(
-            wkWebView: { $0.load(request) },
-            uiWebView: { $0.loadRequest(request) }
-        )
+        webView.load(request)
         
         if let timeout = options?.timeout, timeout > 0 {
             timer = Timer.scheduledTimer(
@@ -536,14 +522,6 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 userInfo: nil,
                 repeats: false
             )
-        }
-    }
-    
-    func webView(wkWebView: (WKWebView) -> Void, uiWebView: (UIWebView) -> Void) {
-        if let webView = webView as? WKWebView {
-            wkWebView(webView)
-        } else if let webView = webView as? UIWebView {
-            uiWebView(webView)
         }
     }
     
@@ -566,10 +544,7 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
     
     @objc
     func refreshPage(_ sender: Any) {
-        webView(
-            wkWebView: { $0.reload() },
-            uiWebView: { $0.reload() }
-        )
+        webView.reload()
     }
     
     func success(code: String) {
@@ -605,7 +580,9 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
         }
     }
     
-    // MARK: - WKNavigationDelegate
+}
+
+extension MICLoginViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         var navigationActionPolicy: WKNavigationActionPolicy = .allow
@@ -644,39 +621,6 @@ class MICLoginViewController: UIViewController, WKNavigationDelegate, UIWebViewD
                 self.handleError(body: body)
             }
         }
-        
-        activityIndicatorView.stopAnimating()
-    }
-    
-    // MARK: - UIWebViewDelegate
-    
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
-        if let url = request.url {
-            switch MIC.parseCode(redirectURI: redirectURI, url: url) {
-            case .success(let code):
-                success(code: code)
-                return false
-            case .failure(let error):
-                if !(error is NilError) {
-                    failure(error: error)
-                    return false
-                }
-            }
-        }
-        return true
-    }
-    
-    func webViewDidStartLoad(_ webView: UIWebView) {
-        activityIndicatorView.startAnimating()
-    }
-    
-    func webView(_ webView: UIWebView, didFailLoadWithError error: Swift.Error) {
-        failure(error: error)
-    }
-    
-    func webViewDidFinishLoad(_ webView: UIWebView) {
-        let body = webView.stringByEvaluatingJavaScript(from: "document.body.innerText")
-        handleError(body: body)
         
         activityIndicatorView.stopAnimating()
     }
