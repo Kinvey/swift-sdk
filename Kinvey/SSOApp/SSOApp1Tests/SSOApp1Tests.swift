@@ -170,7 +170,7 @@ class SSOApp1Tests: KinveyTestCase {
             return
         }
         
-        viewController.micUserInterface = .uiWebView
+        viewController.micUserInterface = .wkWebView
         
         let signInButtonIdentifier = "Sign In"
         XCTAssertTrue(waitForCondition(self.tester().tryFindingView(withAccessibilityIdentifier: signInButtonIdentifier), timeout: 30))

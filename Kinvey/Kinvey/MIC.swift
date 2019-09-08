@@ -334,10 +334,6 @@ public enum MICUserInterface {
     /// Uses WKWebView
     case wkWebView
     
-    /// Deprecated in version 3.28.0. The usage of uiWebView is ignored in favor of wkWebView. Please use wkWebView instead
-    @available(*, deprecated, message: "Deprecated in version 3.28.0. The usage of uiWebView is ignored in favor of wkWebView. Please use wkWebView instead")
-    case uiWebView
-    
     /// Default Value: .safari
     public static let `default`: MICUserInterface = .safariAuthenticationSession
     

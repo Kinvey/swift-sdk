@@ -106,8 +106,6 @@ open class MICLoginViewController: UIViewController {
             micUserInterface = .safariAuthenticationSession
         case 2:
             micUserInterface = .wkWebView
-        case 3:
-            micUserInterface = .uiWebView
         default:
             micUserInterface = MICUserInterface.default
         }
