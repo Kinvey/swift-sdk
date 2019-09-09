@@ -251,7 +251,6 @@
                                     <segment title="SafariViewController"/>
                                     <segment title="SFAuthenticationSession"/>
                                     <segment title="WKWebView"/>
-                                    <segment title="UIWebView"/>
                                 </segments>
                                 <connections>
                                     <action selector="micUserInterfaceChanged:" destination="AWA-yI-CjK" eventType="valueChanged" id="Jb5-rJ-EIn"/>
