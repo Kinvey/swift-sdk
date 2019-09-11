@@ -108,7 +108,7 @@ struct HttpResponse {
         let httpURLResponse = response as? HTTPURLResponse
         let headerFields: [String : String]?
         if let allHeaderFields = httpURLResponse?.allHeaderFields {
-            headerFields = [String : String](uniqueKeysWithValues: allHeaderFields.map ({
+            headerFields = [String : String](uniqueKeysWithValues: allHeaderFields.map({
                 return (($0 as! String), ($1 as! String))
             }))
         } else {

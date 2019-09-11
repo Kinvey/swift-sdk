@@ -1546,11 +1546,9 @@ open class User: NSObject, Credential {
                     loginWithSafariViewController(url)
                 }
             default:
-                let forceUIWebView = micUserInterface == .uiWebView
                 let micLoginVC = MICLoginViewController(
                     redirectURI: redirectURI,
                     userType: client.userType,
-                    forceUIWebView: forceUIWebView,
                     options: options
                 ) {
                     switch $0 {

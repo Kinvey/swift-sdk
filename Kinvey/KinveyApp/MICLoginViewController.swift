@@ -17,7 +17,6 @@ open class MICLoginViewController: UIViewController {
     @IBOutlet weak var safariViewControllerSwitch: UISwitch!
     @IBOutlet weak var sfAuthenticationSessionSwitch: UISwitch!
     @IBOutlet weak var wkWebViewSwitch: UISwitch!
-    @IBOutlet weak var uiWebViewSwitch: UISwitch!
     @IBOutlet weak var textFieldDelay: UITextField!
     
     @available(*, deprecated)
@@ -106,8 +105,6 @@ open class MICLoginViewController: UIViewController {
             micUserInterface = .safariAuthenticationSession
         case 2:
             micUserInterface = .wkWebView
-        case 3:
-            micUserInterface = .uiWebView
         default:
             micUserInterface = MICUserInterface.default
         }
@@ -130,7 +127,6 @@ open class MICLoginViewController: UIViewController {
         safariViewControllerSwitch.setOn(sender.selectedSegmentIndex == 0, animated: true)
         sfAuthenticationSessionSwitch.setOn(sender.selectedSegmentIndex == 1, animated: true)
         wkWebViewSwitch.setOn(sender.selectedSegmentIndex == 2, animated: true)
-        uiWebViewSwitch.setOn(sender.selectedSegmentIndex == 3, animated: true)
     }
     
     @IBAction func safariViewControllerSwitchValueChanged(_ sender: UISwitch) {
@@ -145,11 +141,6 @@ open class MICLoginViewController: UIViewController {
     
     @IBAction func wkWebViewSwitchValueChanged(_ sender: UISwitch) {
         micUserInterfaceSegmentedControl.selectedSegmentIndex = 2
-        micUserInterfaceChanged(micUserInterfaceSegmentedControl)
-    }
-    
-    @IBAction func uiWebViewSwitchValueChanged(_ sender: UISwitch) {
-        micUserInterfaceSegmentedControl.selectedSegmentIndex = 3
         micUserInterfaceChanged(micUserInterfaceSegmentedControl)
     }
     
