@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.27.0"
+  s.version      = "4.0.0"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
 	Kinvey iOS SDK #{s.version}
                    DESC
 
-  s.homepage     = "http://devcenter.kinvey.com/ios-v3.0/guides/getting-started"
+  s.homepage     = "https://devcenter.kinvey.com/ios/guides/getting-started"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
