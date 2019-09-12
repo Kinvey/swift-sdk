@@ -159,7 +159,7 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
-            try! urlRequest.setBody(result.jsonArray)
+            try! urlRequest.setBody(json: result.jsonArray)
             results.append(
                 RealmPendingOperation(
                     request: urlRequest,

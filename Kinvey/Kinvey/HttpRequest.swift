@@ -224,14 +224,28 @@ extension URLRequest {
         addValue(mimeType.value, forHTTPHeaderField: HeaderField.contentType)
     }
     
-    mutating func setBody(_ json: JsonDictionary) throws {
+    mutating func setBody(json: JsonDictionary) throws {
         setValue(MimeTypeCharset(.applicationJson))
         httpBody = try JSONSerialization.data(withJSONObject: json)
     }
     
-    mutating func setBody(_ jsonArray: [JsonDictionary]) throws {
+    mutating func setBody(json: [JsonDictionary]) throws {
         setValue(MimeTypeCharset(.applicationJson))
-        httpBody = try JSONSerialization.data(withJSONObject: jsonArray)
+        httpBody = try JSONSerialization.data(withJSONObject: json)
+    }
+    
+    mutating func setBody(xWWWFormURLEncoded: [String : String]) {
+        setValue(MimeTypeCharset(.applicationXWWWFormURLEncoded))
+        var paramsKeyValue = [String]()
+        for (key, value) in xWWWFormURLEncoded {
+            if let key = key.stringByAddingPercentEncodingForFormData(),
+                let value = value.stringByAddingPercentEncodingForFormData()
+            {
+                paramsKeyValue.append("\(key)=\(value)")
+            }
+        }
+        let httpBody = paramsKeyValue.joined(separator: "&")
+        self.httpBody = httpBody.data(using: .utf8)
     }
     
     func value<Header: RawRepresentable>(forHTTPHeaderField header: Header) -> String? where Header.RawValue == String {
@@ -297,23 +311,11 @@ enum Body {
     func attachTo(request: inout URLRequest) {
         switch self {
         case .json(let json):
-            request.setValue(MimeTypeCharset(.applicationJson))
-            request.httpBody = try! JSONSerialization.data(withJSONObject: json)
+            try! request.setBody(json: json)
         case .jsonArray(let jsonArray):
-            request.setValue(MimeTypeCharset(.applicationJson))
-            request.httpBody = try! JSONSerialization.data(withJSONObject: jsonArray)
+            try! request.setBody(json: jsonArray)
         case .formUrlEncoded(let params):
-            request.setValue(MimeTypeCharset(.applicationXWWWFormURLEncoded))
-            var paramsKeyValue = [String]()
-            for (key, value) in params {
-                if let key = key.stringByAddingPercentEncodingForFormData(),
-                    let value = value.stringByAddingPercentEncodingForFormData()
-                {
-                    paramsKeyValue.append("\(key)=\(value)")
-                }
-            }
-            let httpBody = paramsKeyValue.joined(separator: "&")
-            request.httpBody = httpBody.data(using: .utf8)
+            request.setBody(xWWWFormURLEncoded: params)
         }
     }
     
@@ -596,11 +598,11 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     
     func setBody(json: [String : Any]) {
-        try! request.setBody(json)
+        try! request.setBody(json: json)
     }
     
     func setBody(json: [[String : Any]]) {
-        try! request.setBody(json)
+        try! request.setBody(json: json)
     }
 
 }
