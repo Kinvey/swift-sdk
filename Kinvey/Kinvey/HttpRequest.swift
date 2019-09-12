@@ -14,9 +14,43 @@ import Foundation
     import WatchKit
 #endif
 
-struct HeaderField {
+enum Encoding: String {
     
-    static let userAgent = "User-Agent"
+    case utf8 = "utf-8"
+    
+}
+
+enum MimeType: String {
+    
+    case applicationJson = "application/json"
+    case applicationXWWWFormURLEncoded = "application/x-www-form-urlencoded"
+    
+}
+
+struct MimeTypeCharset {
+    
+    let mimeType: MimeType
+    let encoding: Encoding
+    
+    init(_ mimeType: MimeType) {
+        self.init(mimeType: mimeType)
+    }
+    
+    init(mimeType: MimeType, encoding: Encoding = .utf8) {
+        self.mimeType = mimeType
+        self.encoding = encoding
+    }
+    
+    var value: String {
+        return "\(mimeType.rawValue); charset=\(encoding.rawValue)"
+    }
+    
+}
+
+enum HeaderField: String {
+    
+    case userAgent = "User-Agent"
+    case contentType = "Content-Type"
     
 }
 
@@ -106,7 +140,7 @@ enum HttpHeader {
         case .requestId:
             return KinveyHeaderField.requestId.rawValue
         case .userAgent:
-            return HeaderField.userAgent
+            return HeaderField.userAgent.rawValue
         case .deviceInfo:
             return KinveyHeaderField.deviceInfo.rawValue
         }
@@ -174,6 +208,32 @@ extension URLRequest {
         addValue(value, forHTTPHeaderField: header.rawValue)
     }
     
+    mutating func setValue<Header: RawRepresentable, Value: RawRepresentable>(_ value: Value?, forHTTPHeaderField header: Header) where Header.RawValue == String, Value.RawValue == String {
+        setValue(value?.rawValue, forHTTPHeaderField: header.rawValue)
+    }
+    
+    mutating func addValue<Header: RawRepresentable, Value: RawRepresentable>(_ value: Value, forHTTPHeaderField header: Header) where Header.RawValue == String, Value.RawValue == String {
+        addValue(value.rawValue, forHTTPHeaderField: header.rawValue)
+    }
+    
+    mutating func setValue(_ mimeType: MimeTypeCharset?) {
+        setValue(mimeType?.value, forHTTPHeaderField: HeaderField.contentType)
+    }
+    
+    mutating func addValue(_ mimeType: MimeTypeCharset) {
+        addValue(mimeType.value, forHTTPHeaderField: HeaderField.contentType)
+    }
+    
+    mutating func setBody(_ json: JsonDictionary) throws {
+        setValue(MimeTypeCharset(.applicationJson))
+        httpBody = try JSONSerialization.data(withJSONObject: json)
+    }
+    
+    mutating func setBody(_ jsonArray: [JsonDictionary]) throws {
+        setValue(MimeTypeCharset(.applicationJson))
+        httpBody = try JSONSerialization.data(withJSONObject: jsonArray)
+    }
+    
     func value<Header: RawRepresentable>(forHTTPHeaderField header: Header) -> String? where Header.RawValue == String {
         return value(forHTTPHeaderField: header.rawValue)
     }
@@ -231,15 +291,19 @@ public var restApiVersion = defaultRestApiVersion
 enum Body {
     
     case json(json: JsonDictionary)
+    case jsonArray(json: [JsonDictionary])
     case formUrlEncoded(params: [String : String])
     
     func attachTo(request: inout URLRequest) {
         switch self {
         case .json(let json):
-            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.setValue(MimeTypeCharset(.applicationJson))
             request.httpBody = try! JSONSerialization.data(withJSONObject: json)
+        case .jsonArray(let jsonArray):
+            request.setValue(MimeTypeCharset(.applicationJson))
+            request.httpBody = try! JSONSerialization.data(withJSONObject: jsonArray)
         case .formUrlEncoded(let params):
-            request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.setValue(MimeTypeCharset(.applicationXWWWFormURLEncoded))
             var paramsKeyValue = [String]()
             for (key, value) in params {
                 if let key = key.stringByAddingPercentEncodingForFormData(),
@@ -532,13 +596,11 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     
     func setBody(json: [String : Any]) {
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try! JSONSerialization.data(withJSONObject: json)
+        try! request.setBody(json)
     }
     
     func setBody(json: [[String : Any]]) {
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try! JSONSerialization.data(withJSONObject: json)
+        try! request.setBody(json)
     }
 
 }
