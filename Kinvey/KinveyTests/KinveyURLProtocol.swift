@@ -166,6 +166,7 @@ class KinveyURLProtocol: URLProtocol {
                 
                 switch httpMethod {
                 case "POST":
+                    XCTAssertEqual(request.allHTTPHeaderFields?["Content-Type"] as? String, "application/json; charset=utf-8")
                     let json = try! JSONSerialization.jsonObject(with: request)
                     let kinveyApiVersion = request.allHTTPHeaderFields?["X-Kinvey-API-Version"]
                     if var json = json as? [String : Any] {

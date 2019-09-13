@@ -152,14 +152,14 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
             let urls = Set(result.urls)
             guard urls.count == 1,
                 let url = urls.first,
-                let data = try? JSONSerialization.data(withJSONObject: result.jsonArray)
+                JSONSerialization.isValidJSONObject(result.jsonArray)
             else {
                 return
             }
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
-            urlRequest.httpBody = data
+            try! urlRequest.setBody(json: result.jsonArray)
             results.append(
                 RealmPendingOperation(
                     request: urlRequest,

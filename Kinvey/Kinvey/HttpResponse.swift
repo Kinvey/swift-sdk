@@ -67,7 +67,7 @@ struct HttpResponse: Response {
     }
     
     var contentTypeIsJson: Bool {
-        guard let contentType = allHeaderFields?["content-type"] as? String else {
+        guard let contentType = (allHeaderFields?["content-type"] as? String) ?? (allHeaderFields?["Content-Type"] as? String) else {
             return false
         }
         return contentType == "application/json" || contentType.hasPrefix("application/json;")
