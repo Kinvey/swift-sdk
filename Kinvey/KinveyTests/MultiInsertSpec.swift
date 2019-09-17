@@ -1728,7 +1728,7 @@ class MultiInsertSpec: QuickSpec {
                         expect(autoDataStore.pendingSyncCount()).to(equal(0))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
                     }
-                    fit("push 2 new items") {
+                    it("push 2 new items") {
                         let books = [
                             Book { $0.title = "This 1 book" },
                             Book { $0.title = "This 2 book" },
