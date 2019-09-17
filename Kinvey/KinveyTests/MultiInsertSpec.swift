@@ -1728,6 +1728,44 @@ class MultiInsertSpec: QuickSpec {
                         expect(autoDataStore.pendingSyncCount()).to(equal(0))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
                     }
+                    fit("push 2 new items") {
+                        let books = [
+                            Book { $0.title = "This 1 book" },
+                            Book { $0.title = "This 2 book" },
+                        ]
+                        
+                        var postCount = 0
+                        mockResponse { request in
+                            switch request.httpMethod {
+                            case "POST":
+                                postCount += 1
+                                expect(request.allHTTPHeaderFields?["Content-Type"] as? String).to(equal("application/json; charset=utf-8"))
+                                let json = try! JSONSerialization.jsonObject(with: request)
+                                expect(json is [[String : Any]]).to(beTrue())
+                                if let jsonArray = json as? [[String : Any]] {
+                                    expect(jsonArray.count).to(equal(books.count))
+                                    expect(jsonArray.first?["title"] as? String).to(equal(books.first?.title))
+                                    expect(jsonArray.last?["title"] as? String).to(equal(books.last?.title))
+                                }
+                                fallthrough
+                            default:
+                                return HttpResponse(request: request, urlProcotolType: KinveyURLProtocol.self)
+                            }
+                        }
+                        defer {
+                            setURLProtocol(nil)
+                            expect(postCount).to(equal(1))
+                        }
+                        
+                        let syncDataStore = try DataStore<Book>.collection(type: .sync)
+                        let result = kinveySaveMulti(dataStore: syncDataStore, entities: books).result
+                        
+                        expect(result?.entities.count).to(equal(books.count))
+                        expect(result?.errors.count).to(equal(0))
+                        
+                        let pushCount = kinveyPush(dataStore: syncDataStore).count
+                        expect(pushCount).to(equal(UInt(books.count)))
+                    }
                 }
                 context("Sync()") {
                     it("create an array of 3 items, the second of which has invalid _geoloc parameters") {

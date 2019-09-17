@@ -276,6 +276,8 @@
 		578B80721EE746EF004D92A6 /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		578B80741EE74E46004D92A6 /* PubNub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BD001EC51F80000E5C52 /* PubNub.framework */; };
 		578B80761EE876C5004D92A6 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AC1C17EC9500578974 /* UserTests.swift */; };
+		578D9152233190BF0001152E /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
+		578D9153233190C20001152E /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		578D9FE41E8DE53900C2B280 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		578D9FE51E8DE53900C2B280 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		578D9FE61E8DE53900C2B280 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
@@ -3342,6 +3344,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578D9153233190C20001152E /* Book.swift in Sources */,
 				57529845226FB1AD002FA614 /* Person.swift in Sources */,
 				57529847226FB1E4002FA614 /* KinveyTestCase.swift in Sources */,
 				57529846226FB1C6002FA614 /* KinveyURLProtocol.swift in Sources */,
@@ -3356,6 +3359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578D9152233190BF0001152E /* Book.swift in Sources */,
 				5752988E226FBADB002FA614 /* MockKinveyBackend.swift in Sources */,
 				5752988F226FBAFC002FA614 /* KinveyURLProtocol.swift in Sources */,
 				576B08DA22AEEE8800C22C95 /* MultiInsertSpec.swift in Sources */,
