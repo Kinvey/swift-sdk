@@ -268,7 +268,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
     
     private func saveMultiRequests(newItems: AnyRandomAccessCollection<T>, requests: MultiRequest<ResultType>) -> Promise<ResultType> {
         var offsetIterator = stride(from: 0, to: persistable.count, by: maxSizePerRequest).makeIterator()
-        let promisesIterator = AnyIterator<Promise<ResultType>> {
+        let promisesIterator = AnyIterator<Guarantee<ResultType>> {
             guard let offset = offsetIterator.next() else {
                 return nil
             }
@@ -276,7 +276,12 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             let endIndex = newItems.index(newItems.startIndex, offsetBy: offset + maxSizePerRequest, limitedBy: newItems.endIndex) ?? newItems.endIndex
             let range = startIndex ..< endIndex
             let slice = newItems[range]
-            return self.saveSingleRequest(newItems: slice, requests: requests)
+            return self.saveSingleRequest(newItems: slice, requests: requests).recover({ (error) -> Guarantee<ResultType> in
+                return Guarantee<ResultType>.value(.success((
+                    entities: AnyRandomAccessCollection(Array(repeating: nil, count: slice.count)),
+                    errors: AnyRandomAccessCollection((0 ..< slice.count).map({ IndexedError(index: $0, error: error) }))
+                )))
+            })
         }
         let urlSessionConfiguration = options?.urlSession?.configuration ?? client.urlSession.configuration
         return when(fulfilled: promisesIterator, concurrently: urlSessionConfiguration.httpMaximumConnectionsPerHost).map(on: DispatchQueue.global(qos: .background)) { results -> ResultType in
@@ -285,15 +290,23 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             for result in results {
                 switch result {
                 case .success(let item):
+                    let entitiesCount = entities.count
                     errors.append(contentsOf: item.errors.map {
-                        guard let multiSaveError = $0 as? MultiSaveError else {
+                        switch $0 {
+                        case let multiSaveError as MultiSaveError:
+                            return MultiSaveError(
+                                index: entitiesCount + multiSaveError.index,
+                                code: multiSaveError.code,
+                                message: multiSaveError.message
+                            )
+                        case let indexedError as IndexedError:
+                            return IndexedError(
+                                index: entitiesCount + indexedError.index,
+                                error: indexedError.error
+                            )
+                        default:
                             return $0
                         }
-                        return MultiSaveError(
-                            index: entities.count + multiSaveError.index,
-                            code: multiSaveError.code,
-                            message: multiSaveError.message
-                        )
                     })
                     entities.append(contentsOf: item.entities)
                 case .failure(let error):

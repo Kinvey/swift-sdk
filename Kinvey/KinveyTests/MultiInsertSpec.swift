@@ -567,6 +567,54 @@ class MultiInsertSpec: QuickSpec {
                             XCTAssertEqual((resultUnwrapped.errors.first as? IndexableError)?.index, 10)
                             XCTAssertEqual((resultUnwrapped.errors.last as? IndexableError)?.index, 120)
                         }
+                        it("whole batch fails") {
+                            let entities = Array((1 ... 100).map({ i in
+                                Person { $0.name = "Person \(i)" }
+                            })) + Array((101 ... 200).map({ i in
+                                Person {
+                                    $0.name = "Person \(i)"
+                                    $0.geolocation = GeoPoint(latitude: -500, longitude: -500)
+                                }
+                            })) + Array((201 ... 300).map({ i in
+                                Person { $0.name = "Person \(i)" }
+                            }))
+                            
+                            let result = kinveySaveMulti(
+                                dataStore: networkDataStore,
+                                entities: entities
+                            ).result
+                            
+                            expect(result).toNot(beNil())
+                            guard let resultUnwrapped = result else {
+                                return
+                            }
+                            expect(resultUnwrapped.entities.count).to(equal(300))
+                            expect(resultUnwrapped.entities.filter({ $0 != nil }).count).to(equal(200))
+                            expect(resultUnwrapped.entities.filter({ $0 == nil }).count).to(equal(100))
+                            for (index, entity) in resultUnwrapped.entities.enumerated() {
+                                switch index {
+                                case 0 ... 99, 200 ... 299:
+                                    expect(entity).toNot(beNil())
+                                case 100 ... 199:
+                                    expect(entity).to(beNil())
+                                default:
+                                    fail()
+                                }
+                            }
+                            expect(result?.errors.count).to(equal(100))
+                            for (index, error) in resultUnwrapped.errors.enumerated() {
+                                expect(error is IndexableError).to(beTrue())
+                                expect(error is IndexedError).to(beTrue())
+                                
+                                let indexableError = error as? IndexableError
+                                expect(indexableError?.index).to(beGreaterThanOrEqualTo(100))
+                                expect(indexableError?.index).to(beLessThanOrEqualTo(199))
+                                expect(indexableError?.index).to(equal(100 + index))
+                                
+                                let indexedError = error as? IndexedError
+                                expect(indexedError?.error.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
+                            }
+                        }
                     }
                 }
             }
