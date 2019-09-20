@@ -21,7 +21,8 @@ task:
 
 task:
   name: Linux
-  image: swift:latest
+  container:
+    image: swift:latest
   build_script: swift build
 
 task:
