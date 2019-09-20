@@ -46,6 +46,15 @@ class Book: Entity {
     
 }
 
+extension Book {
+    
+    convenience init(_ block: (Book) -> Void) {
+        self.init()
+        block(self)
+    }
+    
+}
+
 class BookEdition: Object, JSONDecodable, Mappable {
     
     convenience required init?(map: Map) {
