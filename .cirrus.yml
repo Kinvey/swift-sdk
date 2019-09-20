@@ -18,3 +18,14 @@ task:
   xcode_version_script: xcodebuild -version
   xcode_show_destinations_script: make show-destinations
   test_ios_script: make test-ios
+
+task:
+  name: Linux
+  image: swift
+  build_script: swift build
+
+task:
+  name: macOS SPM
+  osx_instance:
+    image: mojave-xcode-10.3
+  build_script: swift build
