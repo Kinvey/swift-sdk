@@ -21,7 +21,7 @@ task:
 
 task:
   name: Linux
-  image: swift
+  image: swift:latest
   build_script: swift build
 
 task:
