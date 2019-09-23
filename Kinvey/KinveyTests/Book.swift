@@ -6,6 +6,7 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+import Foundation
 import Kinvey
 
 class Book: Entity {

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Kinvey. All rights reserved.
 //
 
+import Foundation
 import Quick
 import Nimble
 @testable import Kinvey
@@ -512,7 +513,7 @@ class MultiInsertSpec: QuickSpec {
                                 var errors = jsonObject["errors"] as! [[String : Any]]
                                 switch count {
                                 case 0:
-                                    XCTAssertEqual(json.count, 100)
+                                    expect(json.count).to(equal(100))
                                     let index = 10
                                     let entity = entities[index]
                                     entities[index] = nil
@@ -522,7 +523,7 @@ class MultiInsertSpec: QuickSpec {
                                         "errmsg" : "Entity not saved"
                                     ])
                                 case 1:
-                                    XCTAssertEqual(json.count, 50)
+                                    expect(json.count).to(equal(50))
                                     let index = 20
                                     let entity = entities[index]
                                     entities[index] = nil
@@ -532,7 +533,7 @@ class MultiInsertSpec: QuickSpec {
                                         "errmsg" : "Entity not saved"
                                     ])
                                 default:
-                                    XCTFail("request not expected")
+                                    fail("request not expected")
                                 }
                                 jsonObject["entities"] = entities
                                 jsonObject["errors"] = errors
@@ -547,25 +548,25 @@ class MultiInsertSpec: QuickSpec {
                                 entities: entities
                             ).result
                             
-                            XCTAssertEqual(count, 2)
-                            XCTAssertNotNil(result)
+                            expect(count).to(equal(2))
+                            expect(result).toNot(beNil())
                             guard let resultUnwrapped = result else {
                                 return
                             }
-                            XCTAssertEqual(resultUnwrapped.entities.count, 150)
-                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 != nil }).count, 148)
-                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 == nil }).count, 2)
+                            expect(resultUnwrapped.entities.count).to(equal(150))
+                            expect(resultUnwrapped.entities.filter({ $0 != nil }).count).to(equal(148))
+                            expect(resultUnwrapped.entities.filter({ $0 == nil }).count).to(equal(2))
                             for (offset, entity) in resultUnwrapped.entities.enumerated() {
                                 switch offset {
                                 case 10, 120:
-                                    XCTAssertNil(entity)
+                                    expect(entity).to(beNil())
                                 default:
-                                    XCTAssertNotNil(entity)
+                                    expect(entity).toNot(beNil())
                                 }
                             }
-                            XCTAssertEqual(resultUnwrapped.errors.count, 2)
-                            XCTAssertEqual((resultUnwrapped.errors.first as? IndexableError)?.index, 10)
-                            XCTAssertEqual((resultUnwrapped.errors.last as? IndexableError)?.index, 120)
+                            expect(resultUnwrapped.errors.count).to(equal(2))
+                            expect((resultUnwrapped.errors.first as? IndexableError)?.index).to(equal(10))
+                            expect((resultUnwrapped.errors.last as? IndexableError)?.index).to(equal(120))
                         }
                         it("whole batch fails") {
                             let entities = Array((1 ... 100).map({ i in

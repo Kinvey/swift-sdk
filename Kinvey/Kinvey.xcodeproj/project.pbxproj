@@ -924,7 +924,6 @@
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AggregateOperation.swift; sourceTree = "<group>"; };
-		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKinveyBackend.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
@@ -969,7 +968,6 @@
 		57373ABE1ECE1849002842CE /* LogTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogTestCase.swift; sourceTree = "<group>"; };
 		57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadAndPlayVideoViewController.swift; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
-		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
 		573851AD1D47C7F800E4712A /* RealmFileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmFileCache.swift; sourceTree = "<group>"; };
 		573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = CacheMigrationTestCaseData.zip; sourceTree = "<group>"; };
@@ -1828,8 +1826,6 @@
 				57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */,
 				57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
-				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
-				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
 				5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */,
 				571BA2601F55D9E600DE1886 /* MyFile.swift */,
 				5781D1351CE3D0BA00369F40 /* FileTestCase.swift */,

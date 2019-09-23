@@ -6,6 +6,8 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+#if !SWIFT_PACKAGE
+
 import XCTest
 import RealmSwift
 @testable import Kinvey
@@ -295,3 +297,5 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     }
     
 }
+
+#endif
