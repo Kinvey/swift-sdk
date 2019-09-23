@@ -42,23 +42,32 @@ extension SaveOperationType {
     func execute(_ completionHandler: CompletionHandler?) -> AnyRequest<Result<SuccessType, FailureType>> {
         switch writePolicy {
         case .silentLocalThenNetwork:
-            executeLocal(nil)
-            return executeNetwork {
+            let multiRequest = MultiRequest<Result<SuccessType, FailureType>>()
+            executeLocal {
                 switch $0 {
-                case .success(let success):
-                    completionHandler?(.success(success))
-                case .failure(let failure):
-                    if let error = failure as? Kinvey.Error,
-                        let httpResponse = error.httpResponse,
-                        httpResponse.statusCode == 401
-                    {
-                        completionHandler?(.failure(failure))
-                        return
+                case .success:
+                    multiRequest += self.executeNetwork {
+                        switch $0 {
+                        case .success(let success):
+                            completionHandler?(.success(success))
+                        case .failure(let failure):
+                            if let error = failure as? Kinvey.Error,
+                                let httpResponse = error.httpResponse,
+                                httpResponse.statusCode == 401
+                            {
+                                completionHandler?(.failure(failure))
+                                return
+                            }
+                            log.error(failure)
+                            completionHandler?(.success(self.localSuccess))
+                        }
                     }
-                    log.error(failure)
-                    completionHandler?(.success(self.localSuccess))
+                case .failure:
+                    multiRequest.result = $0
+                    completionHandler?($0)
                 }
             }
+            return AnyRequest(multiRequest)
         default:
             return AnyWriteOperationType(self).execute(completionHandler)
         }

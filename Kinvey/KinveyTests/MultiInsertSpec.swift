@@ -1206,9 +1206,20 @@ class MultiInsertSpec: QuickSpec {
                         expect(entities?.last?.entityId).to(equal(id))
                     }
                     it("should return an error for an empty array") {
-                        let result = kinveySaveMulti(dataStore: autoDataStore, entities: []).result
-                        expect(result).toNot(beNil())
-                        expect(result?.entities.count).to(equal(0))
+                        let error = kinveySaveMulti(dataStore: autoDataStore, entities: []).error
+                        expect(error).toNot(beNil())
+                        expect(error as? Kinvey.Error).toNot(beNil())
+                        guard let kinveyError = error as? Kinvey.Error else {
+                            return
+                        }
+                        switch kinveyError {
+                        case .badRequest(let httpResponse, let data, let description):
+                            expect(httpResponse).to(beNil())
+                            expect(data).to(beNil())
+                            expect(description).to(equal("Request body cannot be an empty array"))
+                        default:
+                            fail(kinveyError.localizedDescription)
+                        }
                         
                         expect(syncDataStore.pendingSyncCount()).to(equal(0))
                         expect(syncDataStore.pendingSyncEntities().count).to(equal(0))
