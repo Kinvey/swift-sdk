@@ -1087,7 +1087,7 @@ class MultiInsertSpec: QuickSpec {
                         }
                         let entity = kinveySave(
                             dataStore: autoDataStore,
-                            entity: Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
+                            entity: Person { $0.name = UUID().uuidString }
                         ).entity
                         expect(entity).toNot(beNil())
                         
