@@ -74,6 +74,8 @@ script:
     travis_retry make test-ios | xcpretty;;
   Mac)
     travis_retry make test-macos | xcpretty;;
+  SPM)
+    swift build;;
   esac
 after_script:
 - date
@@ -88,3 +90,4 @@ env:
   matrix:
     - PLATFORM=Mac PLATFORM_ALIAS=osx
     - PLATFORM=iOS PLATFORM_ALIAS=ios DESTINATION_OS=12.4 DESTINATION_NAME="iPhone X"
+    - PLATFORM=SPM PLATFORM_ALIAS=spm
