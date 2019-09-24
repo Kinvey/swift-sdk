@@ -19,12 +19,12 @@ task:
   xcode_show_destinations_script: make show-destinations
   test_ios_script: make test-ios
 
-task:
-  name: Linux
-  container:
-    image: swift:latest
-  swift_version_script: swift --version
-  build_script: swift build
+# task:
+#   name: Linux
+#   container:
+#     image: swift:latest
+#   swift_version_script: swift --version
+#   build_script: swift build
 
 task:
   name: macOS SPM
