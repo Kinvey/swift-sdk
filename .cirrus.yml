@@ -1,7 +1,7 @@
 task:
   name: macOS
   osx_instance:
-    image: mojave-xcode-10.2
+    image: mojave-xcode-11
   download_dependencies_script: make travisci-cache
   brew_update_script: brew update
   install_carthage_script: brew install carthage
@@ -11,7 +11,7 @@ task:
 task:
   name: iOS
   osx_instance:
-    image: mojave-xcode-10.2
+    image: mojave-xcode-11
   download_dependencies_script: make travisci-cache
   brew_update_script: brew update
   install_carthage_script: brew install carthage
