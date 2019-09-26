@@ -1133,11 +1133,11 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
-                        let error = kinveySave(
+                        let entity = kinveySave(
                             dataStore: autoDataStore,
-                            entity: Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
-                        ).error
-                        expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            entity: Person { $0.name = UUID().uuidString }
+                        ).entity
+                        expect(entity).toNot(beNil())
                         
                         let entitites = kinveyFind(dataStore: syncDataStore).entities
                         expect(entitites?.count).to(equal(1))
@@ -1546,9 +1546,9 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person()).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            let result = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person()).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1573,12 +1573,12 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(
+                            let result = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: Person(), Person { $0.entityId = UUID().uuidString }
-                            ).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            ).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1618,12 +1618,12 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(
+                            let result = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: Person(), Person { $0.entityId = UUID().uuidString }
-                            ).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            ).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1878,15 +1878,16 @@ class MultiInsertSpec: QuickSpec {
                             expect(postCount).to(equal(2))
                         }
                     
-                        let error = kinveySaveMulti(
+                        let result = kinveySaveMulti(
                             dataStore: autoDataStore,
                             entities: [
                                 Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
                                 Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
                                 Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
                             ]
-                        ).error
-                        expect(error).toNot(beNil())
+                        ).result
+                        expect(result).toNot(beNil())
+                        expect(result?.entities.count).to(equal(3))
                     
                         expect(autoDataStore.pendingSyncCount()).to(equal(3))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(3))

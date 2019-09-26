@@ -13,7 +13,7 @@ private let maxSizePerRequest = 100
 
 public typealias MultiSaveResultTuple<T> = (entities: AnyRandomAccessCollection<T?>, errors: AnyRandomAccessCollection<Swift.Error>)
 
-internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveResultTuple<T>>, WriteOperationType where T: NSObject {
+internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveResultTuple<T>> where T: NSObject {
     
     let persistable: AnyRandomAccessCollection<T>
     let isNewItems: AnyRandomAccessCollection<Bool>
@@ -315,6 +315,20 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
             }
             return .success((entities: AnyRandomAccessCollection(entities), errors: AnyRandomAccessCollection(errors)))
         }
+    }
+    
+}
+
+extension SaveMultiOperation : SaveOperationType {
+    
+    var localSuccess: MultiSaveResultTuple<T> {
+        let entities: [T?] = persistable.map { (entity) -> T? in
+            return entity
+        }
+        return MultiSaveResultTuple(
+            entities: AnyRandomAccessCollection(entities),
+            errors: AnyRandomAccessCollection([])
+        )
     }
     
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperationType where T: NSObject {
+internal class SaveOperation<T: Persistable>: WriteOperation<T, T> where T: NSObject {
     
     var persistable: T
     
@@ -115,6 +115,14 @@ internal class SaveOperation<T: Persistable>: WriteOperation<T, T>, WriteOperati
         }
         
         return true
+    }
+    
+}
+
+extension SaveOperation : SaveOperationType {
+    
+    var localSuccess: T {
+        return persistable
     }
     
 }

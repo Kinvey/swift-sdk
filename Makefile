@@ -4,7 +4,10 @@ CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] =
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
-CARTFILE_RESOLVED_MD5=$(shell md5 Cartfile.resolved | awk '{ print $$4 }')
+CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e "s/Apple //" | head -1 | awk '{ print "Swift " $$3 }'; } | tr "\n" "\n" | md5)
+DESTINATION_OS?=13.0
+DESTINATION_NAME?=iPhone 11 Pro
+ECHO?=no
 
 all: build archive pack docs
 
@@ -16,13 +19,16 @@ clean:
 	rm -Rf docs
 	rm -Rf build
 	rm -Rf Carthage
+
+echo:
+	@echo $(ECHO)
 	
 checkout-dependencies:
 	carthage checkout
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone SE'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator'
 
 show-destinations:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -showdestinations
@@ -33,7 +39,7 @@ build-dependencies-ios: checkout-dependencies
 cartfile-md5:
 	@echo $(CARTFILE_RESOLVED_MD5)
 	
-travisci-cache:
+cache:
 	test -s Carthage/$(CARTFILE_RESOLVED_MD5).tar.lzma || \
 	{ \
 		cd Carthage; \
@@ -42,7 +48,7 @@ travisci-cache:
 		tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma; \
 	}
 
-travisci-cache-upload:
+cache-upload:
 	cd Carthage; \
 	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
@@ -71,7 +77,7 @@ test: test-ios test-macos
 
 	
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=12.0,name=iPhone X" test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' test -enableCodeCoverage YES
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
