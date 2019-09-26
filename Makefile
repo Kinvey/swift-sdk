@@ -77,7 +77,7 @@ test: test-ios test-macos
 
 	
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)" test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' test -enableCodeCoverage YES
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
