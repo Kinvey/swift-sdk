@@ -22,7 +22,7 @@ checkout-dependencies:
 
 build-debug:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11 Pro'
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator'
 
 show-destinations:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -showdestinations
@@ -71,7 +71,7 @@ test: test-ios test-macos
 
 	
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=13.0,name=iPhone 11 Pro" test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "platform=iOS Simulator" test -enableCodeCoverage YES
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
