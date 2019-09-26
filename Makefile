@@ -5,6 +5,9 @@ DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
 CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e "s/Apple //" | head -1 | awk '{ print "Swift " $$3 }'; } | tr "\n" "\n" | md5)
+DESTINATION_OS?=13.0
+DESTINATION_NAME?=iPhone 11 Pro
+ECHO?=no
 
 all: build archive pack docs
 
@@ -16,6 +19,9 @@ clean:
 	rm -Rf docs
 	rm -Rf build
 	rm -Rf Carthage
+
+echo:
+	@echo $(ECHO)
 	
 checkout-dependencies:
 	carthage checkout
@@ -71,7 +77,7 @@ test: test-ios test-macos
 
 	
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "platform=iOS Simulator" test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination "OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)" test -enableCodeCoverage YES
 
 test-macos:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
