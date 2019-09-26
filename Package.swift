@@ -78,14 +78,5 @@ let package = Package(
                 "MongoDBPredicateAdaptor",
             ]
         ),
-        .testTarget(
-            name: "KinveyTests",
-            dependencies: [
-                "Kinvey",
-                "Quick",
-                "Nimble",
-                "ZIPFoundation",
-            ]
-        ),
     ]
 )
