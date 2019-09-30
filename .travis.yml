@@ -74,8 +74,6 @@ script:
     travis_retry make test-ios | xcpretty;;
   Mac)
     travis_retry make test-macos | xcpretty;;
-  SPM)
-    swift build;;
   esac
 after_script:
 - date
