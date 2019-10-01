@@ -242,6 +242,8 @@ let groupId = "_group_"
 
 #if swift(>=6)
     let swiftVersion = "6 or above"
+#elseif swift(>=5.1)
+    let swiftVersion = "5.1"
 #elseif swift(>=5.0)
     let swiftVersion = "5.0"
 #elseif swift(>=4.2.4)

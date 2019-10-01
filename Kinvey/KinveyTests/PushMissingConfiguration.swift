@@ -7,10 +7,14 @@
 //
 
 import XCTest
+#if canImport(KIF)
 import KIF
+#endif
 import Kinvey
 
 class PushMissingConfigurationTestCase: KinveyTestCase {
+    
+    #if canImport(KIF)
     
     func testMissingConfigurationError() {
         signUp()
@@ -67,5 +71,7 @@ class PushMissingConfigurationTestCase: KinveyTestCase {
             }
         }
     }
+    
+    #endif
     
 }

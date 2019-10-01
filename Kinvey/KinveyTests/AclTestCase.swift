@@ -11,6 +11,16 @@ import XCTest
 
 class AclTestCase: StoreTestCase {
     
+    static var allTests = [
+        ("testNoPermissionToDelete", testNoPermissionToDelete),
+        ("testNoPermissionToDeletePush", testNoPermissionToDeletePush),
+        ("testGlobalRead", testGlobalRead),
+        ("testGlobalWrite", testGlobalWrite),
+        ("testReaders", testReaders),
+        ("testWriters", testWriters),
+        ("testValidation", testValidation),
+    ]
+    
     func testNoPermissionToDelete() {
         signUp()
         

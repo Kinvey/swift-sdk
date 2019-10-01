@@ -6,6 +6,7 @@
 //  Copyright © 2017 Kinvey. All rights reserved.
 //
 
+import Foundation
 import Kinvey
 
 class MyFile: File {

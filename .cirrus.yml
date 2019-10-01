@@ -18,3 +18,10 @@ task:
   xcode_version_script: xcodebuild -version
   xcode_show_destinations_script: make show-destinations
   test_ios_script: make test-ios
+
+task:
+  name: macOS SPM
+  osx_instance:
+    image: mojave-xcode-11
+  swift_version_script: swift --version
+  build_script: swift build
