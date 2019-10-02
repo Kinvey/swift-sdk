@@ -276,6 +276,8 @@
 		578B80721EE746EF004D92A6 /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		578B80741EE74E46004D92A6 /* PubNub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E6BD001EC51F80000E5C52 /* PubNub.framework */; };
 		578B80761EE876C5004D92A6 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AC1C17EC9500578974 /* UserTests.swift */; };
+		578D9152233190BF0001152E /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
+		578D9153233190C20001152E /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		578D9FE41E8DE53900C2B280 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		578D9FE51E8DE53900C2B280 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		578D9FE61E8DE53900C2B280 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
@@ -922,7 +924,6 @@
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		570BD2FC1E845E7A000341C9 /* AggregateOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AggregateOperation.swift; sourceTree = "<group>"; };
-		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		57136F621D5D23BF00731DDB /* MockKinveyBackend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKinveyBackend.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
@@ -967,7 +968,6 @@
 		57373ABE1ECE1849002842CE /* LogTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogTestCase.swift; sourceTree = "<group>"; };
 		57375F8F1E3FD71D0015A241 /* UploadAndPlayVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadAndPlayVideoViewController.swift; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
-		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
 		573851AD1D47C7F800E4712A /* RealmFileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmFileCache.swift; sourceTree = "<group>"; };
 		573CC99C20D19AB900BDF726 /* CacheMigrationTestCaseData.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = CacheMigrationTestCaseData.zip; sourceTree = "<group>"; };
@@ -1826,8 +1826,6 @@
 				57882EBF219BF5CA005ECCA3 /* AutoStoreTests.swift */,
 				57CDF45D22653DBC006596A7 /* AutoDataStoreSpec.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
-				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
-				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
 				5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */,
 				571BA2601F55D9E600DE1886 /* MyFile.swift */,
 				5781D1351CE3D0BA00369F40 /* FileTestCase.swift */,
@@ -3342,6 +3340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578D9153233190C20001152E /* Book.swift in Sources */,
 				57529845226FB1AD002FA614 /* Person.swift in Sources */,
 				57529847226FB1E4002FA614 /* KinveyTestCase.swift in Sources */,
 				57529846226FB1C6002FA614 /* KinveyURLProtocol.swift in Sources */,
@@ -3356,6 +3355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578D9152233190BF0001152E /* Book.swift in Sources */,
 				5752988E226FBADB002FA614 /* MockKinveyBackend.swift in Sources */,
 				5752988F226FBAFC002FA614 /* KinveyURLProtocol.swift in Sources */,
 				576B08DA22AEEE8800C22C95 /* MultiInsertSpec.swift in Sources */,
@@ -4871,18 +4871,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Debug;
 		};
@@ -4927,18 +4923,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Release;
 		};

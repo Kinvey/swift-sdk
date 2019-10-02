@@ -6,6 +6,7 @@
 //  Copyright © 2019 Kinvey. All rights reserved.
 //
 
+import Foundation
 import Quick
 import Nimble
 @testable import Kinvey
@@ -790,7 +791,7 @@ class AutoDataStoreSpec: QuickSpec {
                         case "PUT":
                             return HttpResponse(request: request)
                         default:
-                            fail("\(request.httpMethod!) \(request.url!)\n\(try! JSONSerialization.jsonObject(with: request))")
+                            fail("\(request.httpMethod!) \(request.url!)\n\(try! JSONSerialization.jsonObject(with: request)!)")
                             return HttpResponse(statusCode: 404, data: Data())
                         }
                     }
@@ -871,10 +872,10 @@ class AutoDataStoreSpec: QuickSpec {
                 
                 let errors = kinveySync(dataStore: autoDataStore).errors
                 expect(errors?.count).to(equal(2))
-                expect((errors?.first as? NSError)?.domain).to(equal(NSURLErrorDomain))
-                expect((errors?.first as? NSError)?.code).to(equal(NSURLErrorTimedOut))
-                expect((errors?.last as? NSError)?.domain).to(equal(NSURLErrorDomain))
-                expect((errors?.last as? NSError)?.code).to(equal(NSURLErrorTimedOut))
+                expect((errors?.first as NSError?)?.domain).to(equal(NSURLErrorDomain))
+                expect((errors?.first as NSError?)?.code).to(equal(NSURLErrorTimedOut))
+                expect((errors?.last as NSError?)?.domain).to(equal(NSURLErrorDomain))
+                expect((errors?.last as NSError?)?.code).to(equal(NSURLErrorTimedOut))
                 
                 expect(autoDataStore.syncCount()).to(equal(2))
                 
@@ -902,8 +903,8 @@ class AutoDataStoreSpec: QuickSpec {
                 
                 let errors = kinveySync(dataStore: autoDataStore).errors
                 expect(errors?.count).to(equal(1))
-                expect((errors?.first as? NSError)?.domain).to(equal(NSURLErrorDomain))
-                expect((errors?.first as? NSError)?.code).to(equal(NSURLErrorTimedOut))
+                expect((errors?.first as NSError?)?.domain).to(equal(NSURLErrorDomain))
+                expect((errors?.first as NSError?)?.code).to(equal(NSURLErrorTimedOut))
                 
                 expect(autoDataStore.syncCount()).to(equal(0))
                 expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
@@ -1036,7 +1037,9 @@ class AutoDataStoreSpec: QuickSpec {
                 
                 expect(entities?.count).to(equal(3))
                 expect(entities?.first).toNot(beNil())
-                expect(entities?[1]).toNot(beNil())
+                if let count = entities?.count, count > 1 {
+                    expect(entities?[1]).toNot(beNil())
+                }
                 expect(entities?.last).toNot(beNil())
                 guard let first = entities?.first,
                     let middle = entities?[1],
@@ -1131,13 +1134,12 @@ class AutoDataStoreSpec: QuickSpec {
                     setURLProtocol(nil)
                 }
                 
-                var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                expect(error?.domain).to(equal(NSURLErrorDomain))
-                expect(error?.code).to(equal(NSURLErrorTimedOut))
+                var entity = kinveySave(dataStore: autoDataStore).entity
+                expect(entity).toNot(beNil())
                 
                 expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(1))
                 
-                error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                 expect(error?.domain).to(equal(NSURLErrorDomain))
                 expect(error?.code).to(equal(NSURLErrorTimedOut))
                 
@@ -1162,13 +1164,11 @@ class AutoDataStoreSpec: QuickSpec {
                         setURLProtocol(KinveyURLProtocol.self)
                     }
                     
-                    var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    var entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
-                    error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
                     let pendingSyncEntities = autoDataStore.pendingSyncEntities()
                     expect(pendingSyncEntities.count).to(equal(2))
@@ -1177,7 +1177,7 @@ class AutoDataStoreSpec: QuickSpec {
                     
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
                     
-                    error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                    let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                     expect(error?.domain).to(equal(NSURLErrorDomain))
                     expect(error?.code).to(equal(NSURLErrorTimedOut))
                 }
@@ -1240,13 +1240,12 @@ class AutoDataStoreSpec: QuickSpec {
                     setURLProtocol(nil)
                 }
                 
-                var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                expect(error?.domain).to(equal(NSURLErrorDomain))
-                expect(error?.code).to(equal(NSURLErrorTimedOut))
+                var entity = kinveySave(dataStore: autoDataStore).entity
+                expect(entity).toNot(beNil())
                 
                 expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(1))
                 
-                error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                 expect(error?.domain).to(equal(NSURLErrorDomain))
                 expect(error?.code).to(equal(NSURLErrorTimedOut))
                 
@@ -1271,13 +1270,11 @@ class AutoDataStoreSpec: QuickSpec {
                         setURLProtocol(KinveyURLProtocol.self)
                     }
                     
-                    var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    var entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
-                    error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
                     let pendingSyncEntities = autoDataStore.pendingSyncEntities()
                     expect(pendingSyncEntities.count).to(equal(2))
@@ -1286,7 +1283,7 @@ class AutoDataStoreSpec: QuickSpec {
                     
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
                     
-                    error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                    let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                     expect(error?.domain).to(equal(NSURLErrorDomain))
                     expect(error?.code).to(equal(NSURLErrorTimedOut))
                 }
@@ -1349,13 +1346,12 @@ class AutoDataStoreSpec: QuickSpec {
                     setURLProtocol(nil)
                 }
                 
-                var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                expect(error?.domain).to(equal(NSURLErrorDomain))
-                expect(error?.code).to(equal(NSURLErrorTimedOut))
+                var entity = kinveySave(dataStore: autoDataStore).entity
+                expect(entity).toNot(beNil())
                 
                 expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(1))
                 
-                error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                 expect(error?.domain).to(equal(NSURLErrorDomain))
                 expect(error?.code).to(equal(NSURLErrorTimedOut))
                 
@@ -1380,13 +1376,11 @@ class AutoDataStoreSpec: QuickSpec {
                         setURLProtocol(KinveyURLProtocol.self)
                     }
                     
-                    var error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    var entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
-                    error = kinveySave(dataStore: autoDataStore).error as? NSError
-                    expect(error?.domain).to(equal(NSURLErrorDomain))
-                    expect(error?.code).to(equal(NSURLErrorTimedOut))
+                    entity = kinveySave(dataStore: autoDataStore).entity
+                    expect(entity).toNot(beNil())
                     
                     let pendingSyncEntities = autoDataStore.pendingSyncEntities()
                     expect(pendingSyncEntities.count).to(equal(2))
@@ -1395,7 +1389,7 @@ class AutoDataStoreSpec: QuickSpec {
                     
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
                     
-                    error = kinveyFind(dataStore: networkDataStore).error as? NSError
+                    let error = kinveyFind(dataStore: networkDataStore).error as? NSError
                     expect(error?.domain).to(equal(NSURLErrorDomain))
                     expect(error?.code).to(equal(NSURLErrorTimedOut))
                 }
@@ -1474,7 +1468,7 @@ class AutoDataStoreSpec: QuickSpec {
                         setURLProtocol(KinveyURLProtocol.self)
                     }
                     
-                    let error = kinveyRemove(dataStore: autoDataStore, query: query).error as? NSError
+                    let error = kinveyRemove(dataStore: autoDataStore, query: query).error as NSError?
                     expect(error?.domain).to(equal(NSURLErrorDomain))
                     expect(error?.code).to(equal(NSURLErrorTimedOut))
                 }
@@ -1547,7 +1541,7 @@ class AutoDataStoreSpec: QuickSpec {
                     setURLProtocol(KinveyURLProtocol.self)
                 }
                 
-                let error = kinveyRemove(dataStore: autoDataStore, id: "my_id1").error as? NSError
+                let error = kinveyRemove(dataStore: autoDataStore, id: "my_id1").error as NSError?
                 expect(error?.domain).to(equal(NSURLErrorDomain))
                 expect(error?.code).to(equal(NSURLErrorTimedOut))
                 
@@ -1651,7 +1645,7 @@ class AutoDataStoreSpec: QuickSpec {
 
 }
 
-func it(_ description: String, flags: FilterFlags = [:], file: String = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
+func it(_ description: String, flags: FilterFlags = [:], file: FileString = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
     it(description, flags: flags, file: file, line: line) {
         do {
             try closure()
@@ -1661,7 +1655,7 @@ func it(_ description: String, flags: FilterFlags = [:], file: String = #file, l
     }
 }
 
-func fit(_ description: String, flags: FilterFlags = [:], file: String = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
+func fit(_ description: String, flags: FilterFlags = [:], file: FileString = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
     fit(description, flags: flags, file: file, line: line) {
         do {
             try closure()

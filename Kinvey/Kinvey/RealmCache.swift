@@ -262,6 +262,9 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType, RealmCascadeDele
         var realmResults = newRealm.objects(self.entityType)
         
         if let predicate = query.predicate {
+            #if SWIFT_PACKAGE
+            realmResults = realmResults.filter(self.translate(predicate: predicate))
+            #else
             if let exception = tryBlock({
                 realmResults = realmResults.filter(self.translate(predicate: predicate))
             }), let reason = exception.reason
@@ -273,6 +276,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType, RealmCascadeDele
                     fatalError(reason)
                 }
             }
+            #endif
         }
         
         if let sortDescriptors = query.sortDescriptors {

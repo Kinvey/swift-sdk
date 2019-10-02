@@ -17,3 +17,5 @@ Carthage
 !Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/Sources/MongoDBPredicateAdaptor/*.swift
 Kinvey.framework.zip
 scripts/RealtimeSend/Rome
+Package.resolved
+Kinvey.xcodeproj

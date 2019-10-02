@@ -15,6 +15,10 @@ import Foundation
     import os
 #endif
 
+#if canImport(MongoDBPredicateAdaptor)
+    import MongoDBPredicateAdaptor
+#endif
+
 extension NSPredicate {
     
     internal var asString: String {

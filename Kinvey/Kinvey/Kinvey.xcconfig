@@ -24,4 +24,9 @@ FRAMEWORK_SEARCH_PATHS[sdk=appletvsimulator*] = $(inherited) $(PROJECT_DIR)/../C
 FRAMEWORK_SEARCH_PATHS[sdk=watchos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/watchOS
 FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/watchOS
 
+IPHONEOS_DEPLOYMENT_TARGET = 11.0
+MACOSX_DEPLOYMENT_TARGET = 10.12
+TVOS_DEPLOYMENT_TARGET = 11.0
+WATCHOS_DEPLOYMENT_TARGET = 4.0
+
 TARGETED_DEVICE_FAMILY = 1,2,3,4

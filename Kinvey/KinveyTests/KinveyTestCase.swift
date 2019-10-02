@@ -245,10 +245,12 @@ func kinveyLogout() {
     expect(Kinvey.sharedClient.activeUser).toEventually(beNil())
 }
 
+@discardableResult
 func kinveySave<T: Entity>(dataStore: DataStore<T>, entities: T...) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) {
     return kinveySave(dataStore: dataStore, entities: entities)
 }
 
+@discardableResult
 func kinveySave<T: Entity, S: Sequence>(dataStore: DataStore<T>, entities: S) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) where S.Element == T {
     var items = [T?]()
     var errors = [Swift.Error?]()
@@ -260,10 +262,12 @@ func kinveySave<T: Entity, S: Sequence>(dataStore: DataStore<T>, entities: S) ->
     return (entities: items.count > 0 ? AnyRandomAccessCollection(items.compactMap({ $0 })) : nil, errors: errors.count > 0 ? errors.compactMap({ $0 }) : nil)
 }
 
+@discardableResult
 func kinveySaveMulti<T: Entity>(dataStore: DataStore<T>, entities: T...) -> (result: MultiSaveResultTuple<T>?, error: Swift.Error?) {
     return kinveySaveMulti(dataStore: dataStore, entities: entities)
 }
 
+@discardableResult
 func kinveySaveMulti<T: Entity, S: RandomAccessCollection>(dataStore: DataStore<T>, entities: S) -> (result: MultiSaveResultTuple<T>?, error: Swift.Error?) where S.Element == T {
     var result: MultiSaveResultTuple<T>? = nil
     var error: Swift.Error? = nil
@@ -281,6 +285,7 @@ func kinveySaveMulti<T: Entity, S: RandomAccessCollection>(dataStore: DataStore<
     return (result: result, error: error)
 }
 
+@discardableResult
 func kinveySave<T: Entity>(dataStore: DataStore<T>, numberOfItems: Int) -> (entities: AnyRandomAccessCollection<T>?, errors: [Swift.Error]?) {
     var entities = [T?]()
     var errors = [Swift.Error?]()
@@ -292,6 +297,7 @@ func kinveySave<T: Entity>(dataStore: DataStore<T>, numberOfItems: Int) -> (enti
     return (entities: entities.count > 0 ? AnyRandomAccessCollection(entities.compactMap({ $0 })) : nil, errors: errors.count > 0 ? errors.compactMap({ $0 }) : nil)
 }
 
+@discardableResult
 func kinveySave<T: Entity>(dataStore: DataStore<T>, entity: T = T()) -> (entity: T?, error: Swift.Error?) {
     var entityPostSave: T? = nil
     var error: Swift.Error? = nil
@@ -386,6 +392,7 @@ func kinveySync<T: Entity>(
     return (result: result, errors: errors)
 }
 
+@discardableResult
 func kinveyPush<T: Entity>(
     dataStore: DataStore<T>,
     options: Options? = nil
@@ -432,6 +439,7 @@ func kinveyPull<T: Entity>(
     return (entities: entities, error: error)
 }
 
+@discardableResult
 func kinveyRemove<T: Entity>(
     dataStore: DataStore<T>,
     query: Query = Query(),
@@ -456,6 +464,7 @@ func kinveyRemove<T: Entity>(
     return (count: count, error: error)
 }
 
+@discardableResult
 func kinveyRemove<T: Entity>(
     dataStore: DataStore<T>,
     entity: T,
@@ -485,6 +494,7 @@ func kinveyRemove<T: Entity>(
     return (count: count, error: error)
 }
 
+@discardableResult
 func kinveyRemove<T: Entity>(
     dataStore: DataStore<T>,
     id: String,
@@ -514,6 +524,7 @@ func kinveyRemove<T: Entity>(
     return (count: count, error: error)
 }
 
+@discardableResult
 func kinveySave<T: Entity>(
     dataStore: DataStore<T>,
     entity: T,

@@ -2706,7 +2706,12 @@ class NetworkStoreTests: StoreTestCase {
                             XCTAssertLessThanOrEqual(textCheckingResult.numberOfRanges, 4)
                             if textCheckingResult.numberOfRanges > 1 {
                                 let majorVersion = kinveySdkVersion.substring(with: textCheckingResult.range(at: 1))
-                                XCTAssertEqual(majorVersion, "3")
+                                let minorVersion = kinveySdkVersion.substring(with: textCheckingResult.range(at: 2))
+                                let patchVersion = kinveySdkVersion.substring(with: textCheckingResult.range(at: 3))
+                                let shortVersions = (Bundle(for: Client.self).infoDictionary?["CFBundleShortVersionString"] as? String)?.split(separator: ".").map { String($0) }
+                                XCTAssertEqual(majorVersion, shortVersions?[0])
+                                XCTAssertEqual(minorVersion, shortVersions?[1])
+                                XCTAssertEqual(patchVersion, shortVersions?[2])
                             }
                         }
                     }

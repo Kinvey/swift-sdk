@@ -6,6 +6,8 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+#if canImport(KIF)
+
 import KIF
 
 extension XCTestCase {
@@ -50,3 +52,5 @@ extension XCTestCase {
         return fulfilled
     }
 }
+
+#endif

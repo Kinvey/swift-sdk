@@ -6,6 +6,7 @@
 //  Copyright © 2019 Kinvey. All rights reserved.
 //
 
+import Foundation
 import Quick
 import Nimble
 @testable import Kinvey
@@ -512,7 +513,7 @@ class MultiInsertSpec: QuickSpec {
                                 var errors = jsonObject["errors"] as! [[String : Any]]
                                 switch count {
                                 case 0:
-                                    XCTAssertEqual(json.count, 100)
+                                    expect(json.count).to(equal(100))
                                     let index = 10
                                     let entity = entities[index]
                                     entities[index] = nil
@@ -522,7 +523,7 @@ class MultiInsertSpec: QuickSpec {
                                         "errmsg" : "Entity not saved"
                                     ])
                                 case 1:
-                                    XCTAssertEqual(json.count, 50)
+                                    expect(json.count).to(equal(50))
                                     let index = 20
                                     let entity = entities[index]
                                     entities[index] = nil
@@ -532,7 +533,7 @@ class MultiInsertSpec: QuickSpec {
                                         "errmsg" : "Entity not saved"
                                     ])
                                 default:
-                                    XCTFail("request not expected")
+                                    fail("request not expected")
                                 }
                                 jsonObject["entities"] = entities
                                 jsonObject["errors"] = errors
@@ -547,25 +548,73 @@ class MultiInsertSpec: QuickSpec {
                                 entities: entities
                             ).result
                             
-                            XCTAssertEqual(count, 2)
-                            XCTAssertNotNil(result)
+                            expect(count).to(equal(2))
+                            expect(result).toNot(beNil())
                             guard let resultUnwrapped = result else {
                                 return
                             }
-                            XCTAssertEqual(resultUnwrapped.entities.count, 150)
-                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 != nil }).count, 148)
-                            XCTAssertEqual(resultUnwrapped.entities.filter({ $0 == nil }).count, 2)
+                            expect(resultUnwrapped.entities.count).to(equal(150))
+                            expect(resultUnwrapped.entities.filter({ $0 != nil }).count).to(equal(148))
+                            expect(resultUnwrapped.entities.filter({ $0 == nil }).count).to(equal(2))
                             for (offset, entity) in resultUnwrapped.entities.enumerated() {
                                 switch offset {
                                 case 10, 120:
-                                    XCTAssertNil(entity)
+                                    expect(entity).to(beNil())
                                 default:
-                                    XCTAssertNotNil(entity)
+                                    expect(entity).toNot(beNil())
                                 }
                             }
-                            XCTAssertEqual(resultUnwrapped.errors.count, 2)
-                            XCTAssertEqual((resultUnwrapped.errors.first as? IndexableError)?.index, 10)
-                            XCTAssertEqual((resultUnwrapped.errors.last as? IndexableError)?.index, 120)
+                            expect(resultUnwrapped.errors.count).to(equal(2))
+                            expect((resultUnwrapped.errors.first as? IndexableError)?.index).to(equal(10))
+                            expect((resultUnwrapped.errors.last as? IndexableError)?.index).to(equal(120))
+                        }
+                        it("whole batch fails") {
+                            let entities = Array((1 ... 100).map({ i in
+                                Person { $0.name = "Person \(i)" }
+                            })) + Array((101 ... 200).map({ i in
+                                Person {
+                                    $0.name = "Person \(i)"
+                                    $0.geolocation = GeoPoint(latitude: -500, longitude: -500)
+                                }
+                            })) + Array((201 ... 300).map({ i in
+                                Person { $0.name = "Person \(i)" }
+                            }))
+                            
+                            let result = kinveySaveMulti(
+                                dataStore: networkDataStore,
+                                entities: entities
+                            ).result
+                            
+                            expect(result).toNot(beNil())
+                            guard let resultUnwrapped = result else {
+                                return
+                            }
+                            expect(resultUnwrapped.entities.count).to(equal(300))
+                            expect(resultUnwrapped.entities.filter({ $0 != nil }).count).to(equal(200))
+                            expect(resultUnwrapped.entities.filter({ $0 == nil }).count).to(equal(100))
+                            for (index, entity) in resultUnwrapped.entities.enumerated() {
+                                switch index {
+                                case 0 ... 99, 200 ... 299:
+                                    expect(entity).toNot(beNil())
+                                case 100 ... 199:
+                                    expect(entity).to(beNil())
+                                default:
+                                    fail()
+                                }
+                            }
+                            expect(result?.errors.count).to(equal(100))
+                            for (index, error) in resultUnwrapped.errors.enumerated() {
+                                expect(error is IndexableError).to(beTrue())
+                                expect(error is IndexedError).to(beTrue())
+                                
+                                let indexableError = error as? IndexableError
+                                expect(indexableError?.index).to(beGreaterThanOrEqualTo(100))
+                                expect(indexableError?.index).to(beLessThanOrEqualTo(199))
+                                expect(indexableError?.index).to(equal(100 + index))
+                                
+                                let indexedError = error as? IndexedError
+                                expect(indexedError?.error.localizedDescription).to(equal("The value specified for one of the request parameters is out of range."))
+                            }
                         }
                     }
                 }
@@ -1085,11 +1134,11 @@ class MultiInsertSpec: QuickSpec {
                         defer {
                             setURLProtocol(nil)
                         }
-                        let error = kinveySave(
+                        let entity = kinveySave(
                             dataStore: autoDataStore,
-                            entity: Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) }
-                        ).error
-                        expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            entity: Person { $0.name = UUID().uuidString }
+                        ).entity
+                        expect(entity).toNot(beNil())
                         
                         let entitites = kinveyFind(dataStore: syncDataStore).entities
                         expect(entitites?.count).to(equal(1))
@@ -1498,9 +1547,9 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person()).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            let result = kinveySaveMulti(dataStore: autoDataStore, entities: Person(), Person()).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1525,12 +1574,12 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(
+                            let result = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: Person(), Person { $0.entityId = UUID().uuidString }
-                            ).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            ).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1570,12 +1619,12 @@ class MultiInsertSpec: QuickSpec {
                                 setURLProtocol(KinveyURLProtocol.self)
                             }
                             
-                            let error = kinveySaveMulti(
+                            let result = kinveySaveMulti(
                                 dataStore: autoDataStore,
                                 entities: Person(), Person { $0.entityId = UUID().uuidString }
-                            ).error
-                            expect(error).toNot(beNil())
-                            expect(error?.localizedDescription).to(equal(timeoutError.localizedDescription))
+                            ).result
+                            expect(result).toNot(beNil())
+                            expect(result?.entities.count).to(equal(2))
                         } catch {
                             fail(error.localizedDescription)
                         }
@@ -1728,6 +1777,44 @@ class MultiInsertSpec: QuickSpec {
                         expect(autoDataStore.pendingSyncCount()).to(equal(0))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
                     }
+                    it("push 2 new items") {
+                        let books = [
+                            Book { $0.title = "This 1 book" },
+                            Book { $0.title = "This 2 book" },
+                        ]
+                        
+                        var postCount = 0
+                        mockResponse { request in
+                            switch request.httpMethod {
+                            case "POST":
+                                postCount += 1
+                                expect(request.allHTTPHeaderFields?["Content-Type"] as? String).to(equal("application/json; charset=utf-8"))
+                                let json = try! JSONSerialization.jsonObject(with: request)
+                                expect(json is [[String : Any]]).to(beTrue())
+                                if let jsonArray = json as? [[String : Any]] {
+                                    expect(jsonArray.count).to(equal(books.count))
+                                    expect(jsonArray.first?["title"] as? String).to(equal(books.first?.title))
+                                    expect(jsonArray.last?["title"] as? String).to(equal(books.last?.title))
+                                }
+                                fallthrough
+                            default:
+                                return HttpResponse(request: request, urlProcotolType: KinveyURLProtocol.self)
+                            }
+                        }
+                        defer {
+                            setURLProtocol(nil)
+                            expect(postCount).to(equal(1))
+                        }
+                        
+                        let syncDataStore = try DataStore<Book>.collection(type: .sync)
+                        let result = kinveySaveMulti(dataStore: syncDataStore, entities: books).result
+                        
+                        expect(result?.entities.count).to(equal(books.count))
+                        expect(result?.errors.count).to(equal(0))
+                        
+                        let pushCount = kinveyPush(dataStore: syncDataStore).count
+                        expect(pushCount).to(equal(UInt(books.count)))
+                    }
                 }
                 context("Sync()") {
                     it("create an array of 3 items, the second of which has invalid _geoloc parameters") {
@@ -1792,15 +1879,16 @@ class MultiInsertSpec: QuickSpec {
                             expect(postCount).to(equal(2))
                         }
                     
-                        let error = kinveySaveMulti(
+                        let result = kinveySaveMulti(
                             dataStore: autoDataStore,
                             entities: [
                                 Person { $0.geolocation = GeoPoint(latitude: 0, longitude: 0) },
                                 Person { $0.geolocation = GeoPoint(latitude: -300, longitude: -300) },
                                 Person { $0.geolocation = GeoPoint(latitude: 45, longitude: 45) }
                             ]
-                        ).error
-                        expect(error).toNot(beNil())
+                        ).result
+                        expect(result).toNot(beNil())
+                        expect(result?.entities.count).to(equal(3))
                     
                         expect(autoDataStore.pendingSyncCount()).to(equal(3))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(3))
