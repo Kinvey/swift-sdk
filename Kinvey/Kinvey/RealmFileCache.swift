@@ -81,4 +81,31 @@ class RealmFileCache<T: File>: FileCache {
         return file
     }
     
+    func find(_ query: Query) -> AnyRandomAccessCollection<T> {
+        var files = AnyRandomAccessCollection<T>([])
+        executor.executeAndWait {
+            var results = self.realm.objects(T.self)
+            if let predicate = query.predicate {
+                results = results.filter(predicate)
+            }
+            if let sortDescriptors = query.sortDescriptors {
+                for sortDescriptor in sortDescriptors {
+                    if let key = sortDescriptor.key {
+                        results = results.sorted(byKeyPath: key, ascending: sortDescriptor.ascending)
+                    }
+                }
+            }
+            files = AnyRandomAccessCollection(results)
+            if let skip = query.skip {
+                let skipIndex = files.index(files.startIndex, offsetBy: skip)
+                files = files[skipIndex...]
+            }
+            if let limit = query.limit {
+                let limitIndex = files.index(files.startIndex, offsetBy: limit)
+                files = files[...limitIndex]
+            }
+        }
+        return files
+    }
+    
 }
