@@ -1280,6 +1280,16 @@ open class FileStore<FileType: File> {
         options: Options? = nil,
         completionHandler: ((Swift.Result<[FileType], Swift.Error>) -> Void)? = nil
     ) -> AnyRequest<Swift.Result<[FileType], Swift.Error>> {
+        if let cache = cache,
+            let readPolicy = options?.readPolicy,
+            readPolicy == .forceLocal || readPolicy == .both
+        {
+            let results = Array(cache.find(query))
+            completionHandler?(.success(results))
+            if readPolicy == .forceLocal {
+                return AnyRequest(.success(results))
+            }
+        }
         let request = client.networkRequestFactory.blob.buildBlobQueryFile(
             query,
             options: options,
@@ -1299,9 +1309,20 @@ open class FileStore<FileType: File> {
                 }
             }
         }.done { files in
+            request.result = .success(files)
             completionHandler?(.success(files))
         }.catch { error in
-            completionHandler?(.failure(error))
+            if let cache = self.cache,
+                let readPolicy = options?.readPolicy,
+                readPolicy == .networkOtherwiseLocal
+            {
+                let results = Array(cache.find(query))
+                request.result = .success(results)
+                completionHandler?(.success(results))
+            } else {
+                request.result = .failure(error)
+                completionHandler?(.failure(error))
+            }
         }
         return AnyRequest(request)
     }

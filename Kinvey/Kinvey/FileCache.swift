@@ -18,6 +18,16 @@ protocol FileCache {
     
     func get(_ fileId: String) -> FileType?
     
+    func find(_ query: Query) -> AnyRandomAccessCollection<FileType>
+    
+}
+
+extension FileCache {
+    
+    func eraseToAnyFileCache() -> AnyFileCache<Self.FileType> {
+        return AnyFileCache(self)
+    }
+    
 }
 
 class AnyFileCache<T: File>: FileCache {
@@ -27,6 +37,7 @@ class AnyFileCache<T: File>: FileCache {
     private let _save: (T, (() -> Void)?) -> Void
     private let _remove: (T) -> Void
     private let _get: (String) -> T?
+    private let _find: (Query) -> AnyRandomAccessCollection<T>
     
     let cache: Any
     
@@ -35,6 +46,7 @@ class AnyFileCache<T: File>: FileCache {
         _save = cache.save(_:beforeSave:)
         _remove = cache.remove(_:)
         _get = cache.get(_:)
+        _find = cache.find(_:)
     }
     
     func save(_ file: T, beforeSave: (() -> Void)?) {
@@ -47,6 +59,10 @@ class AnyFileCache<T: File>: FileCache {
     
     func get(_ fileId: String) -> T? {
         return _get(fileId)
+    }
+    
+    func find(_ query: Query) -> AnyRandomAccessCollection<T> {
+        return _find(query)
     }
     
 }
