@@ -92,6 +92,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: UserEndpoint.userDelete(client: client, userId: userId, hard: hard),
@@ -128,6 +129,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         authData: [String : Any],
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         return buildUserSocial(
             authSource,
             authData: authData,
@@ -141,6 +143,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         authData: [String : Any],
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         return buildUserSocial(
             authSource,
             authData: authData,
@@ -155,6 +158,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: UserEndpoint.userLogin(client: client),
@@ -174,6 +178,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: UserEndpoint.userLogout(client: client),
@@ -188,6 +193,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: RpcEndpoint.userExistsByUsername(client: client),
@@ -205,6 +211,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             endpoint: UserEndpoint.userById(client: client, userId: userId),
             credential: client.activeUser,
@@ -218,6 +225,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             endpoint: UserEndpoint.user(client: client, query: query),
             credential: client.activeUser,
@@ -254,6 +262,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: RpcEndpoint.sendEmailConfirmation(client: client, username: username),
@@ -269,6 +278,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: UserEndpoint.userLookup(client: client),
@@ -285,6 +295,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: RpcEndpoint.userResetPassword(usernameOrEmail: usernameOrEmail, client: client),
@@ -299,6 +310,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: RpcEndpoint.userForgotUsername(client: client),
@@ -314,6 +326,7 @@ struct HttpUserRequestFactory: UserRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             endpoint: UserEndpoint.userMe(client: client),
             credential: client.activeUser,
@@ -332,6 +345,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .get,
             endpoint: AppDataEndpoint.appDataPing(client: client),
@@ -346,6 +360,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             endpoint: AppDataEndpoint.appDataById(client: client, collectionName: collectionName, id: id),
             credential: client.activeUser,
@@ -359,6 +374,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         query: Query,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Any>(
             endpoint: AppDataEndpoint.appDataByQuery(client: client, collectionName: collectionName, query: query.isEmpty ? nil : query),
             credential: client.activeUser,
@@ -373,6 +389,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         sinceDate: Date,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Any>(
             endpoint: AppDataEndpoint.appDataByQueryDeltaSet(client: client, collectionName: collectionName, query: query.isEmpty ? nil : query, sinceDate: sinceDate),
             credential: client.activeUser,
@@ -387,6 +404,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             endpoint: AppDataEndpoint.appDataCount(client: client, collectionName: collectionName, query: query),
             credential: client.activeUser,
@@ -480,6 +498,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let query = Query(query)
         query.emptyPredicateMustReturnNil = false
         let request = HttpRequest<Result>(
@@ -497,6 +516,7 @@ struct HttpAppDataRequestFactory: AppDataRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: AppDataEndpoint.appDataById(client: client, collectionName: collectionName, id: objectId),
@@ -563,6 +583,7 @@ struct HttpBlobRequestFactory: BlobRequestFactory {
         _ file: File,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Any>(
             httpMethod: file.fileId == nil ? .post : .put,
             endpoint: BlobEndpoint.blobUpload(
@@ -585,6 +606,7 @@ struct HttpBlobRequestFactory: BlobRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let ttl = options?.ttl
         let request = HttpRequest<Result>(
             httpMethod: .get,
@@ -606,6 +628,7 @@ struct HttpBlobRequestFactory: BlobRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .delete,
             endpoint: BlobEndpoint.blobById(client: client, fileId: file.fileId!),
@@ -620,6 +643,7 @@ struct HttpBlobRequestFactory: BlobRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let ttl = options?.ttl
         let request = HttpRequest<Result>(
             httpMethod: .get,
@@ -681,12 +705,13 @@ struct HttpOAuthRequestFactory: OAuthRequestFactory {
         code: String,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         var params = [
             "grant_type" : "authorization_code",
             "redirect_uri" : redirectURI.absoluteString,
             "code" : code
         ]
-        set(&params, clientId: options?.authServiceId)
+        set(&params, clientId: options?.authServiceId, client: client)
         return buildOAuth(params: params, options: options)
     }
     
@@ -695,12 +720,13 @@ struct HttpOAuthRequestFactory: OAuthRequestFactory {
         password: String,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         var params = [
             "grant_type" : "password",
             "username" : username,
             "password" : password
         ]
-        set(&params, clientId: options?.authServiceId)
+        set(&params, clientId: options?.authServiceId, client: client)
         return buildOAuth(params: params, options: options)
     }
     
@@ -708,12 +734,13 @@ struct HttpOAuthRequestFactory: OAuthRequestFactory {
         redirectURI: URL,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         var json = [
             "redirect_uri" : redirectURI.absoluteString,
             "response_type" : "code"
         ]
         let clientId = options?.authServiceId
-        set(&json, clientId: clientId)
+        set(&json, clientId: clientId, client: client)
         let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: OAuthEndpoint.oauthAuth(
@@ -736,13 +763,14 @@ struct HttpOAuthRequestFactory: OAuthRequestFactory {
         password: String,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         var params = [
             "response_type" : "code",
             "redirect_uri" : redirectURI.absoluteString,
             "username" : username,
             "password" : password
         ]
-        set(&params, clientId: options?.authServiceId)
+        set(&params, clientId: options?.authServiceId, client: client)
         let request = HttpRequest<Any>(
             httpMethod: .post,
             endpoint: URLEndpoint(url: tempLoginUri),
@@ -761,11 +789,11 @@ struct HttpOAuthRequestFactory: OAuthRequestFactory {
             "grant_type" : "refresh_token",
             "refresh_token" : refreshToken
         ]
-        set(&params, clientId: options?.authServiceId)
+        set(&params, clientId: options?.authServiceId, client: options?.client ?? self.client)
         return buildOAuth(params: params, options: options)
     }
     
-    private func set(_ params: inout [String : String], clientId: String?) {
+    private func set(_ params: inout [String : String], clientId: String?, client: Client) {
         if let appKey = client.appKey {
             if let clientId = clientId {
                 params["client_id"] = "\(appKey).\(clientId)"
@@ -787,9 +815,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .get,
-            endpoint: StreamEndpoint.liveStreamByUser(client: options?.client ?? self.client, streamName: streamName, userId: userId),
+            endpoint: StreamEndpoint.liveStreamByUser(client: client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -801,9 +830,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         userId: String,
         options: Options?
     ) -> HttpRequest<Any> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Any>(
             httpMethod: .post,
-            endpoint: StreamEndpoint.liveStreamPublish(client: options?.client ?? self.client, streamName: streamName, userId: userId),
+            endpoint: StreamEndpoint.liveStreamPublish(client: client, streamName: streamName, userId: userId),
             credential: client.activeUser,
             options: options
         )
@@ -817,9 +847,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: StreamEndpoint.liveStreamSubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
+            endpoint: StreamEndpoint.liveStreamSubscribe(client: client, streamName: streamName, userId: userId),
             options: options,
             resultType: resultType
         )
@@ -832,9 +863,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: StreamEndpoint.liveStreamUnsubscribe(client: options?.client ?? self.client, streamName: streamName, userId: userId),
+            endpoint: StreamEndpoint.liveStreamUnsubscribe(client: client, streamName: streamName, userId: userId),
             options: options,
             resultType: resultType
         )
@@ -846,9 +878,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: AppDataEndpoint.appDataSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
+            endpoint: AppDataEndpoint.appDataSubscribe(client: client, collectionName: collectionName),
             options: options,
             resultType: resultType
         )
@@ -860,9 +893,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: AppDataEndpoint.appDataUnSubscribe(client: options?.client ?? self.client, collectionName: collectionName),
+            endpoint: AppDataEndpoint.appDataUnSubscribe(client: client, collectionName: collectionName),
             options: options,
             resultType: resultType
         )
@@ -874,9 +908,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: UserEndpoint.userRegisterRealtime(client: options?.client ?? self.client, user: user),
+            endpoint: UserEndpoint.userRegisterRealtime(client: client, user: user),
             options: options,
             resultType: resultType
         )
@@ -888,9 +923,10 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         return buildRequest(
             deviceId: deviceId,
-            endpoint: UserEndpoint.userUnregisterRealtime(client: options?.client ?? self.client, user: user),
+            endpoint: UserEndpoint.userUnregisterRealtime(client: client, user: user),
             options: options,
             resultType: resultType
         )
@@ -902,10 +938,11 @@ struct HttpStreamRequestFactory: StreamRequestFactory {
         options: Options?,
         resultType: Result.Type
     ) -> HttpRequest<Result> {
+        let client = options?.client ?? self.client
         let request = HttpRequest<Result>(
             httpMethod: .post,
             endpoint: endpoint,
-            credential: (options?.client ?? self.client).activeUser,
+            credential: client.activeUser,
             options: options
         )
         request.setBody(json: [
