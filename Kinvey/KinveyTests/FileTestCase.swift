@@ -16,12 +16,12 @@ import Nimble
     typealias Image = UIImage
 #endif
 
-class FileTestCase: StoreTestCase {
+class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
     
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
     let caminandes3TrailerImageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.jpg")
     var file: File?
-    var myFile: MyFile?
+    var myFile: FileType?
     var caminandes3TrailerFileSize: UInt64 {
         return try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerURL.path).filter { $0.key == .size }.first!.value as! UInt64
     }
@@ -327,9 +327,7 @@ class FileTestCase: StoreTestCase {
                         "ect": "2016-12-03T08:52:19.204Z"
                     ],
                     "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                    "_expiresAt": "2016-12-10T08:52:19.488Z",
-                    "_requiredHeaders": [
-                    ]
+                    "_expiresAt": "2016-12-10T08:52:19.488Z"
                 ])
             case 1:
                 return HttpResponse(error: timeoutError)
@@ -386,9 +384,7 @@ class FileTestCase: StoreTestCase {
                         "ect": "2016-12-03T08:52:19.204Z"
                     ],
                     "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                    "_expiresAt": "2016-12-10T08:52:19.488Z",
-                    "_requiredHeaders": [
-                    ]
+                    "_expiresAt": "2016-12-10T08:52:19.488Z"
                 ])
             case 1:
                 return HttpResponse(error: timeoutError)
@@ -447,9 +443,7 @@ class FileTestCase: StoreTestCase {
                         "ect": "2016-12-03T08:52:19.204Z"
                     ],
                     "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                    "_expiresAt": "2016-12-10T08:52:19.488Z",
-                    "_requiredHeaders": [
-                    ]
+                    "_expiresAt": "2016-12-10T08:52:19.488Z"
                     ])
             case 1:
                 return HttpResponse(statusCode: 404, data: nil)
@@ -507,9 +501,7 @@ class FileTestCase: StoreTestCase {
                         "ect": "2016-12-03T08:52:19.204Z"
                     ],
                     "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                    "_expiresAt": "2016-12-10T08:52:19.488Z",
-                    "_requiredHeaders": [
-                    ]
+                    "_expiresAt": "2016-12-10T08:52:19.488Z"
                 ])
             case 1:
                 return HttpResponse(error: timeoutError)
@@ -568,9 +560,7 @@ class FileTestCase: StoreTestCase {
                         "ect": "2016-12-03T08:52:19.204Z"
                     ],
                     "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                    "_expiresAt": "2016-12-10T08:52:19.488Z",
-                    "_requiredHeaders": [
-                    ]
+                    "_expiresAt": "2016-12-10T08:52:19.488Z"
                 ])
             case 1:
                 return HttpResponse(error: timeoutError)
@@ -610,13 +600,13 @@ class FileTestCase: StoreTestCase {
             client.logNetworkEnabled = originalLogNetworkEnabled
         }
         
-        var file = MyFile()
+        var file = FileType()
         file.label = "trailer"
         file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
         
-        let fileStore = FileStore<MyFile>()
+        let fileStore = FileStore<FileType>()
         
         var uploadProgressCount = 0
         
@@ -649,9 +639,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                            "_expiresAt": "2016-12-10T08:52:19.488Z",
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": "2016-12-10T08:52:19.488Z"
                         ])
                     case 1:
                         if let stream = request.httpBodyStream {
@@ -759,7 +747,15 @@ class FileTestCase: StoreTestCase {
                 
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+                XCTAssertNotNil(uploadedFile)
+
+                defer {
+                    expectationUpload?.fulfill()
+                }
+
+                guard uploadedFile != nil else {
+                    return
+                }
                 file = uploadedFile!
                 
                 XCTAssertNotNil(file.path)
@@ -772,8 +768,6 @@ class FileTestCase: StoreTestCase {
                     let diff = memoryNow - memoryBefore
                     XCTAssertLessThan(diff, 15) //15 MB
                 }
-                
-                expectationUpload?.fulfill()
             }
             
             keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
@@ -881,9 +875,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                            "_expiresAt": "2016-12-10T08:52:19.488Z",
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": "2016-12-10T08:52:19.488Z"
                         ])
                     case 1:
                         if let stream = request.httpBodyStream {
@@ -1110,9 +1102,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                            "_expiresAt": "2016-12-10T08:52:19.488Z",
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": "2016-12-10T08:52:19.488Z"
                         ])
                     case 1:
                         if let stream = request.httpBodyStream {
@@ -1347,9 +1337,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": "2016-12-03T08:52:19.204Z"
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=2a37d253-752f-42cd-987e-db319a626077%2Fa2f88ffc-e7fe-4d17-aa69-063088cb24fa&uploadType=resumable&predefinedAcl=publicRead&upload_id=AEnB2Uqwlm2GQ0JWMApi0ApeBHQ0PxjY3hSe_VNs5geuZFxLBkrwiI0gLldrE8GgkqX4ahWtRJ1MHombFq8hQc9o5772htAvDQ",
-                            "_expiresAt": "2016-12-10T08:52:19.488Z",
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": "2016-12-10T08:52:19.488Z"
                         ])
                     case 1:
                         if let stream = request.httpBodyStream {
@@ -1635,13 +1623,13 @@ class FileTestCase: StoreTestCase {
     func testDownloadAndResume() {
         signUp()
         
-        let file = MyFile()
+        let file = FileType()
         file.label = "trailer"
         file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
         
-        let fileStore = FileStore<MyFile>()
+        let fileStore = FileStore<FileType>()
         
         do {
             if useMockData {
@@ -1664,9 +1652,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": Date().toISO8601()
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)/o?name=\(UUID().uuidString)%2F\(UUID().uuidString)&uploadType=resumable&predefinedAcl=publicRead&upload_id=\(UUID().uuidString)",
-                            "_expiresAt": Date().toISO8601(),
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": Date().toISO8601()
                         ])
                     case 1:
                         return HttpResponse(json: [
@@ -1789,9 +1775,13 @@ class FileTestCase: StoreTestCase {
             }
         }
         
+        guard self.myFile != nil else {
+            return
+        }
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 self.myFile = file
                 XCTFail(error?.localizedDescription ?? "Handler was not expected to be called")
@@ -2317,9 +2307,7 @@ class FileTestCase: StoreTestCase {
                                 "ect": Date().toISO8601()
                             ],
                             "_uploadURL": "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)/o?name=\(UUID().uuidString)%2F\(UUID().uuidString)&uploadType=resumable&predefinedAcl=publicRead&upload_id=\(UUID().uuidString)",
-                            "_expiresAt": Date().toISO8601(),
-                            "_requiredHeaders": [
-                            ]
+                            "_expiresAt": Date().toISO8601()
                         ])
                     case 1:
                         return HttpResponse(json: [
@@ -2561,9 +2549,7 @@ class FileTestCase: StoreTestCase {
                                         "ect" : Date().toISO8601()
                                     ],
                                     "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/0b5b1cd673164e3185a2e75e815f5cfe/o?name=b69d8159-e59f-4337-b03b-1c2df3ccfed9%2F9b77d4f0-43ea-4d70-9f65-e40808d1e429&uploadType=resumable&upload_id=AEnB2Up1heH7qbZXQIqsaT-XJNJTv3OKufiMN_9OXh5qGPVfwP4SaWrU5LW7-ZXswXc11l_Wi027IUjZx44CzajfycP8aam7HQ",
-                                    "_expiresAt" : Date(timeIntervalSinceNow: 7 * TimeUnit.day.timeInterval).toISO8601(),
-                                    "_requiredHeaders" : [
-                                    ]
+                                    "_expiresAt" : Date(timeIntervalSinceNow: 7 * TimeUnit.day.timeInterval).toISO8601()
                                 ])
                             case 1:
                                 return HttpResponse(json: [
@@ -3131,9 +3117,7 @@ class FileTestCase: StoreTestCase {
                             "ect" : Date().toISO8601()
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
-                        "_expiresAt" : Date().toISO8601(),
-                        "_requiredHeaders" : [
-                        ]
+                        "_expiresAt" : Date().toISO8601()
                     ]
                 )
             default:
@@ -3211,9 +3195,7 @@ class FileTestCase: StoreTestCase {
                             "ect" : Date().toISO8601()
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
-                        "_expiresAt" : Date().toISO8601(),
-                        "_requiredHeaders" : [
-                        ]
+                        "_expiresAt" : Date().toISO8601()
                     ]
                 )
             default:
@@ -3290,7 +3272,8 @@ class FileTestCase: StoreTestCase {
                         ],
                         "_uploadURL" : "https://www.googleapis.com/upload/storage/v1/b/\(UUID().uuidString)",
                         "_expiresAt" : Date().toISO8601(),
-                        "_requiredHeaders" : [
+                        "_requiredHeaders": [
+                            "TEST_HEADER": "TEST_HEADER_VALUE"
                         ]
                     ]
                 )
@@ -3311,6 +3294,8 @@ class FileTestCase: StoreTestCase {
             XCTAssertNotNil(file.fileId)
             XCTAssertNotNil(file.uploadURL)
             XCTAssertFalse(file.publicAccessible)
+            XCTAssertNotNil(file.uploadHeaders)
+            XCTAssertEqual(file.uploadHeaders!["TEST_HEADER"], "TEST_HEADER_VALUE")
         }
     }
     
@@ -3334,5 +3319,12 @@ class FileTestCase: StoreTestCase {
             XCTAssertTimeoutError(error)
         }
     }
+}
+
+class MyFileTestCase : FileTestCase<MyFile> {
+    
+}
+
+class MyFileCodableTestCase : FileTestCase<MyFileCodable> {
     
 }
