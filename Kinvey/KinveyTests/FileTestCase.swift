@@ -3328,3 +3328,29 @@ class MyFileTestCase : FileTestCase<MyFile> {
 class MyFileCodableTestCase : FileTestCase<MyFileCodable> {
     
 }
+
+class MyFileTestCaseRunner: XCTestCase {
+    override func run() {
+        let suite = XCTestSuite(forTestCaseClass: MyFileTestCase.self)
+        suite.run()
+        super.run()
+    }
+
+    // At least one func is needed for `run` to be called
+    func testDummy() {
+        XCTAssert(true)
+    }
+}
+
+class MyFileCodableTestCaseRunner: XCTestCase {
+    override func run() {
+        let suite = XCTestSuite(forTestCaseClass: MyFileCodableTestCase.self)
+        suite.run()
+        super.run()
+    }
+
+    // At least one func is needed for `run` to be called
+    func testDummy() {
+        XCTAssert(true)
+    }
+}
