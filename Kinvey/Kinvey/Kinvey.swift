@@ -289,9 +289,23 @@ let groupId = "_group_"
 #if os(macOS)
     let cacheBasePath: String = {
         if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
-            return URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent().path
+            let fileManager = FileManager.default
+            let tmpDir = fileManager.temporaryDirectory
+            // Resolve symlinks in temp dir path so that later when tests come up with the resolved paths
+            // no mismatches occur. NSURL's `resolvingSymlinksInPath` doesn't correctly resolve `/var` as
+            // a link to `/private/var` so use `contentsOfDirectory` as a workaround.
+            let resolvedTmpDir = try! fileManager.contentsOfDirectory(at: tmpDir.deletingLastPathComponent(), includingPropertiesForKeys: nil)
+                .filter({ $0.lastPathComponent == tmpDir.lastPathComponent })[0]
+
+            // Inside test runner, use processId as subfolder to enable parallel execution
+            return resolvedTmpDir
+                .appendingPathComponent(Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName)
+                .appendingPathComponent(String(ProcessInfo.processInfo.processIdentifier))
+                .path
         } else {
-            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!).appendingPathComponent(Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName).path
+            return URL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first!)
+                .appendingPathComponent(Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName)
+                .path
         }
     }()
 #else
