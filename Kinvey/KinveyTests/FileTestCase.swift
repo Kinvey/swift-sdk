@@ -3322,11 +3322,72 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
 }
 
 class MyFileTestCase : FileTestCase<MyFile> {
-    
+    func testInvalidBodyIgnored() {
+        mockResponse { request in
+            switch (request.url?.path, request.url?.query) {
+            case ("/blob/_kid_"?, "tls=true"?):
+                return HttpResponse(
+                    statusCode: 201,
+                    json: [
+                        "_id" : UUID().uuidString,
+                        "_requiredHeaders": "wrongString"
+                    ]
+                )
+            default:
+                XCTFail(request.url?.absoluteString ?? "nil")
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let inputStream = InputStream(data: "test".data(using: .utf8)!)
+        defer {
+            inputStream.close()
+        }
+        let fileStore = FileStore<MyFile>()
+        let request = fileStore.create(MyFile(), stream: inputStream)
+        let file = try? request.waitForResult().value()
+        XCTAssertNotNil(file)
+        if let file = file {
+            XCTAssertNotNil(file.fileId)
+            XCTAssertNil(file.uploadHeaders)
+        }
+    }
 }
 
 class MyFileCodableTestCase : FileTestCase<MyFileCodable> {
-    
+    func testInvalidBodyThrows() {
+        mockResponse { request in
+            switch (request.url?.path, request.url?.query) {
+            case ("/blob/_kid_"?, "tls=true"?):
+                return HttpResponse(
+                    statusCode: 201,
+                    json: [
+                        "_requiredHeaders": "wrongString"
+                    ]
+                )
+            default:
+                XCTFail(request.url?.absoluteString ?? "nil")
+                return HttpResponse(statusCode: 404, data: Data())
+            }
+        }
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        let inputStream = InputStream(data: "test".data(using: .utf8)!)
+        defer {
+            inputStream.close()
+        }
+        let fileStore = FileStore<MyFileCodable>()
+        let request = fileStore.create(MyFileCodable(), stream: inputStream)
+        XCTAssertThrowsError(try request.waitForResult().value()) {
+            let error = $0
+            XCTAssertEqual(error.localizedDescription, "The data couldn’t be read because it isn’t in the correct format.")
+        }
+    }
 }
 
 class MyFileTestCaseRunner: XCTestCase {

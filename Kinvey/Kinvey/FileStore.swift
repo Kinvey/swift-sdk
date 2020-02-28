@@ -522,7 +522,7 @@ open class FileStore<FileType: File> {
                     do {
                         if let response = response, response.isOK,
                             let data = data {
-                            let newFile : FileType = try self.client.jsonParser.parseObject(FileType.self, from: data)
+                            let newFile = try self.client.jsonParser.parseObject(FileType.self, from: data)
                             resolver.fulfill((file: newFile, skip: nil))
                         } else {
                             resolver.reject(buildError(data, response, error, self.client))
