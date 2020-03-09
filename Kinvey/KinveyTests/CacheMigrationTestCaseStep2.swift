@@ -51,8 +51,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         let zip2DataPath = Bundle(for: CacheMigrationTestCaseStep2.self).url(forResource: "CacheMigrationTestCaseData2", withExtension: "zip")!
         var destination = Realm.Configuration.defaultConfiguration.fileURL!.deletingLastPathComponent()
         #if os(macOS)
-        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
-            destination = URL(fileURLWithPath: xcTestConfigurationFilePath).deletingLastPathComponent()
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            destination = URL(fileURLWithPath: cacheBasePath)
         }
         #endif
         removeItemIfExists(at: destination.appendingPathComponent("__MACOSX"))
@@ -79,8 +79,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         if let fileURL = realmConfiguration.fileURL {
             var fileURL = fileURL
             #if os(macOS)
-            if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
-                fileURL = URL(fileURLWithPath: xcTestConfigurationFilePath)
+            if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+                fileURL = URL(fileURLWithPath: cacheBasePath).appendingPathComponent("todel")
             }
             #endif
             fileURL = fileURL.deletingLastPathComponent()
@@ -242,8 +242,8 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         var realmConfiguration = Realm.Configuration.defaultConfiguration
         let lastPathComponent = realmConfiguration.fileURL!.lastPathComponent
         #if os(macOS)
-        if let xcTestConfigurationFilePath = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] {
-            realmConfiguration.fileURL = URL(fileURLWithPath: xcTestConfigurationFilePath)
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            realmConfiguration.fileURL = URL(fileURLWithPath: cacheBasePath).appendingPathComponent("todel")
         }
         #endif
         realmConfiguration.fileURL!.deleteLastPathComponent()

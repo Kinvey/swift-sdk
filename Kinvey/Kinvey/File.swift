@@ -11,8 +11,8 @@ import RealmSwift
 import Realm
 
 /// Class that represents a file in the backend holding all metadata of the file, but don't hold the data itself.
-open class File: Object {
-    
+open class File: Object, JSONCodable {
+
     /// `_id` property of the file.
     @objc
     open dynamic var fileId: String?
@@ -132,7 +132,9 @@ open class File: Object {
     }
     
     public enum FileCodingKeys: String, CodingKey {
-        
+        case entityId = "_id"
+        case acl = "_acl"
+        case metadata = "_kmd"
         case publicAccessible = "_public"
         case fileName = "_filename"
         case mimeType
@@ -143,12 +145,79 @@ open class File: Object {
         case uploadHeaders = "_requiredHeaders"
         
     }
+
+    public required init() {
+        super.init()
+    }
     
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: Any, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        super.init()
+        
+        let container = try decoder.container(keyedBy: FileCodingKeys.self)
+        fileId = try container.decodeIfPresent(String.self, forKey: .entityId)
+        acl = try container.decodeIfPresent(Acl.self, forKey: .acl)
+        metadata = try container.decodeIfPresent(Metadata.self, forKey: .metadata)
+        publicAccessible = try container.decodeIfPresent(Bool.self, forKey: .publicAccessible) ?? false
+        fileName = try container.decodeIfPresent(String.self, forKey: .fileName)
+        mimeType  = try container.decodeIfPresent(String.self, forKey: .mimeType)
+        size.value = try container.decodeIfPresent(Int64.self, forKey: .size)
+        upload = try container.decodeIfPresent(String.self, forKey: .upload)
+        download = try container.decodeIfPresent(String.self, forKey: .download)
+        expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
+        uploadHeaders = try container.decodeIfPresent([String : String].self, forKey: .uploadHeaders)
+    }
+    
+    open func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: FileCodingKeys.self)
+
+        try container.encodeIfPresent(fileId, forKey: .entityId)
+        try container.encodeIfPresent(acl, forKey: .acl)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
+        try container.encodeIfPresent(publicAccessible, forKey: .publicAccessible)
+        try container.encodeIfPresent(fileName, forKey: .fileName)
+        try container.encodeIfPresent(mimeType, forKey: .mimeType)
+        try container.encodeIfPresent(size, forKey: .size)
+        try container.encodeIfPresent(upload, forKey: .upload)
+        try container.encodeIfPresent(download, forKey: .download)
+        try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
+        try container.encodeIfPresent(uploadHeaders, forKey: .uploadHeaders)
+
+    }
+    
+    open class func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+        return try decodeArrayJSONDecodable(from: data)
+    }
+    
+    open class func decode<T>(from data: Data) throws -> T where T: JSONDecodable {
+        return try decodeJSONDecodable(from: data)
+    }
+    
+    open class func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+        return try decodeJSONDecodable(from: dictionary)
+    }
+    
+    open func refresh(from dictionary: [String : Any]) throws {
+        var _self = self
+        try _self.refreshJSONDecodable(from: dictionary)
+    }
+    
+    open func encode() throws -> [String : Any] {
+        return try encodeJSONEncodable()
+    }
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     open func mapping(map: Map) {
-        fileId <- ("fileId", map[Entity.EntityCodingKeys.entityId])
-        acl <- ("acl", map[Entity.EntityCodingKeys.acl])
-        metadata <- ("metadata", map[Entity.EntityCodingKeys.metadata])
+        fileId <- ("fileId", map[FileCodingKeys.entityId])
+        acl <- ("acl", map[FileCodingKeys.acl])
+        metadata <- ("metadata", map[FileCodingKeys.metadata])
         publicAccessible <- ("publicAccessible", map[FileCodingKeys.publicAccessible])
         fileName <- ("fileName", map[FileCodingKeys.fileName])
         mimeType <- ("mimeType", map[FileCodingKeys.mimeType])

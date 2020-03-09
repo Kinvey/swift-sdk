@@ -333,18 +333,21 @@ open class FileStore<FileType: File> {
         )
         let promise = Promise<FileType> { resolver in
             request.execute() { (data, response, error) -> Void in
-                if let response = response, response.isOK,
-                    let data = data,
-                    let json = try? self.client.jsonParser.parseDictionary(from: data),
-                    let newFile = FileType(JSON: json) {
-                    newFile.path = file.path
-                    if let cache = self.cache {
-                        cache.save(newFile, beforeSave: nil)
+                do {
+                    if let response = response, response.isOK,
+                        let data = data {
+                        let newFile : FileType = try self.client.jsonParser.parseObject(FileType.self, from: data)
+                        newFile.path = file.path
+                        if let cache = self.cache {
+                            cache.save(newFile, beforeSave: nil)
+                        }
+                        
+                        resolver.fulfill(newFile)
+                    } else {
+                        resolver.reject(buildError(data, response, error, self.client))
                     }
-                    
-                    resolver.fulfill(newFile)
-                } else {
-                    resolver.reject(buildError(data, response, error, self.client))
+                } catch let err {
+                    resolver.reject(buildError(data, response, err, self.client))
                 }
             }
             if let requests = requests {
@@ -516,14 +519,16 @@ open class FileStore<FileType: File> {
                 let request = self.client.networkRequestFactory.blob.buildBlobUploadFile(file, options: options)
                 requests += request
                 request.execute { (data, response, error) -> Void in
-                    if let response = response, response.isOK,
-                        let data = data,
-                        let json = try? self.client.jsonParser.parseDictionary(from: data),
-                        let newFile = FileType(JSON: json)
-                    {
-                        resolver.fulfill((file: newFile, skip: nil))
-                    } else {
-                        resolver.reject(buildError(data, response, error, self.client))
+                    do {
+                        if let response = response, response.isOK,
+                            let data = data {
+                            let newFile = try self.client.jsonParser.parseObject(FileType.self, from: data)
+                            resolver.fulfill((file: newFile, skip: nil))
+                        } else {
+                            resolver.reject(buildError(data, response, error, self.client))
+                        }
+                    } catch let err {
+                        resolver.reject(buildError(data, response, err, self.client))
                     }
                 }
             }
