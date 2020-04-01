@@ -55,7 +55,8 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/Quick/Nimble.git",
-            .branch("master")
+            // In master the package now requires Xcode 11.4 (Swift 5.2) which we still don't have on CI
+            .upToNextMinor(from: "8.0.7")
         ),
         .package(
             url: "https://github.com/weichsel/ZIPFoundation.git",
