@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode10.3
+osx_image: xcode11.3
 cache:
   directories:
   - Carthage
@@ -83,6 +83,13 @@ script:
 after_script:
 - date
 - security delete-keychain ios-build.keychain
+after_failure:
+- echo System Log
+- tail -n 1000 /var/log/system.log
+- echo Simulator Logs
+- cat  ~/Library/Logs/CoreSimulator/*/system.log"
+- echo Xcode Crash Logs
+- find ~/Library/Developer/Xcode/DerivedData/ -iname *.crash -exec echo "*****" \; -print -exec cat {} \;
 after_success:
 - bash <(curl -s https://codecov.io/bash) -J '^Kinvey$' -F $PLATFORM
 env:
@@ -92,4 +99,4 @@ env:
     - secure: nawAGSUbPzyAH/SllDj9q6IOLGaF91DQsudQYx4AJs+swwFhAvAe3hM6vWdGVuDLxqVHQ4+4AAQFecXq/mDi5WtRISPbGHWVtOx7Q6szL8Y54uZKVmKV06wnAo4nrwu8pp1+TbRLYwG+/oJIfabW2yuMgNn7nWFm5SdE0GuduVI7Ho9p0/SeaE7DCtaNKgyCLfspAA8svCYMK0N9NzBVhkTPzWRiIF174k5VE28lZox/fjN5x4j1aaMBUhElkJELjcWKdTX11MnCyybWjJZ1YTMK/A4vBtZCFmHIFuhtQiqWCQIWxeo8axRDBZEMzZ5U+9zSfaz0w0wovWI/cvtRFS0j/7UQ4o6alO7EOMdhH5rRl8atOxSS+Rl81Oz1kZiLhjJa/feAN5QGQ423L4CyfDeEBV6t1D8Cmb1jlficswFeX2rQw82qFnI2ua9p8HrpUJydDsGR6AoOI+KUamwi53OC+hsG/M1sA4MOAPEJoMGT6dyER5UVE63JB45All9TDJWV2EZz+11FQIp6P/62/QXJBQhqxu+W0u/3q7KqoSgmxFx/QSbv8hpK9aJWDQNf5cv02bT+vJnMv4Lrf+XcSVOWH0TwpL5nVcRJXyq2A6FCGdE2S0Xa0+KkgZdF7p3qk4jN32CryHImRp8T3qbkA6Q9nNdxATt7P9OjYl/XqDA=
   matrix:
     - PLATFORM=Mac PLATFORM_ALIAS=osx
-    - PLATFORM=iOS PLATFORM_ALIAS=ios DESTINATION_OS=12.4 DESTINATION_NAME="iPhone X"
+    - PLATFORM=iOS PLATFORM_ALIAS=ios DESTINATION_OS=13.3 DESTINATION_NAME="iPhone 11 Pro"
