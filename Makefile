@@ -5,7 +5,7 @@ DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
 CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e "s/Apple //" | head -1 | awk '{ print "Swift " $$3 }'; } | tr "\n" "\n" | md5)
-DESTINATION_OS?=13.0
+DESTINATION_OS?=13.4
 DESTINATION_NAME?=iPhone 11 Pro
 ECHO?=no
 
@@ -22,7 +22,7 @@ clean:
 
 echo:
 	@echo $(ECHO)
-	
+
 checkout-dependencies:
 	carthage checkout
 
@@ -38,7 +38,7 @@ build-dependencies-ios: checkout-dependencies
 
 cartfile-md5:
 	@echo $(CARTFILE_RESOLVED_MD5)
-	
+
 cache:
 	test -s Carthage/$(CARTFILE_RESOLVED_MD5).tar.lzma || \
 	{ \
@@ -75,7 +75,7 @@ archive-ios:
 
 test: test-ios test-macos
 
-	
+
 test-ios:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' test -enableCodeCoverage YES
 
@@ -99,7 +99,7 @@ docs:
 				--xcodebuild-arguments -workspace,Kinvey.xcworkspace,-scheme,Kinvey \
 				--module Kinvey \
 				--output docs
-				
+
 deploy-cocoapods:
 	pod trunk push Kinvey.podspec
 
@@ -158,21 +158,21 @@ show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
 	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
 	@agvtool what-version | awk '0 == NR % 2' | awk {'print $1'} | xargs echo 'Project Version  '
-	
+
 set-version:
 	@echo 'Current Version:'
 	@echo '----------------------'
 	@$(MAKE) show-version
-	
+
 	@echo
-	
+
 	@echo 'New Version:'
 	@read version; \
 	\
 	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $$version" "${PWD}/Kinvey/Kinvey/Info.plist"; \
 	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
 	rm Kinvey.podspec-e
-	
+
 	@echo
 	@echo
 

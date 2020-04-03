@@ -594,8 +594,7 @@ struct HttpBlobRequestFactory: BlobRequestFactory {
             credential: client.activeUser,
             options: options
         )
-        
-        let bodyObject = file.toJSON()
+        let bodyObject = try! client.jsonParser.toJSON(file)
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
         request.setBody(json: bodyObject)
         return request

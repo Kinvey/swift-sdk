@@ -30,22 +30,46 @@ public typealias BaseMappable = ObjectMapper.BaseMappable
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 public typealias MapContext = ObjectMapper.MapContext
 
+// Workaround regression introduced with https://github.com/tristanhimmelman/ObjectMapper/pull/1079
+// These extension methods have been moved to Mappable which breaks our code because we need to call
+// them on Mappable instances (e.g. StaticMappable doesn't conform to Mappable, but only to BaseMappable)
+public extension BaseMappable {
+
+    /// Initializes object from a JSON String
+    init?(JSONString: String, context: MapContext? = nil) {
+        if let obj: Self = Mapper(context: context).map(JSONString: JSONString) {
+            self = obj
+        } else {
+            return nil
+        }
+    }
+
+    /// Initializes object from a JSON Dictionary
+    init?(JSON: [String: Any], context: MapContext? = nil) {
+        if let obj: Self = Mapper(context: context).map(JSON: JSON) {
+            self = obj
+        } else {
+            return nil
+        }
+    }
+}
+
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension Map {
-    
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public subscript<Key: RawRepresentable>(key: Key) -> Map where Key.RawValue == String {
         return self[key.rawValue]
     }
-    
+
 }
 
 extension JSONDecodable where Self: BaseMappable {
-    
+
     public mutating func refreshMappable(from json: [String : Any]) throws {
         mapping(map: ObjectMapper.Map(mappingType: .fromJSON, JSON: json))
     }
-    
+
     public static func decodeMappable(from data: Data) throws -> Self {
         guard let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String : Any] else {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Data can't be converted to a Dictionary"))
@@ -55,29 +79,29 @@ extension JSONDecodable where Self: BaseMappable {
         }
         return _self
     }
-    
+
     public static func decodeMappableArray(from data: Data) throws -> [Any] {
         guard let jsonObjectArray = try JSONSerialization.jsonObject(with: data) as? [[String : Any]] else {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Data can't be converted to a Array of Dictionaries"))
         }
         return [Self](JSONArray: jsonObjectArray)
     }
-    
+
     public static func decodeMappable(from dictionary: [String : Any]) throws -> Self {
         guard let _self = Self(JSON: dictionary) else {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Data can't be converted to \(Self.self)"))
         }
         return _self
     }
-    
+
 }
 
 extension JSONEncodable where Self: BaseMappable {
-    
+
     func encodeMappable() throws -> [String : Any] {
         return self.toJSON()
     }
-    
+
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
@@ -270,12 +294,12 @@ public func <- (left: List<BoolValue>, right: (String, Map)) {
 
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension NSPredicate: StaticMappable {
-    
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public static func objectForMapping(map: Map) -> BaseMappable? {
         return nil
     }
-    
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public func mapping(map: Map) {
         if let json = mongoDBQuery {
@@ -284,14 +308,14 @@ extension NSPredicate: StaticMappable {
             }
         }
     }
-    
+
 }
 
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
-    
+
     static let shared = GeoPointTransform()
-    
+
     init() {
         super.init(fromJSON: { (array) -> GeoPoint? in
             if let array = array, array.count == 2 {
@@ -305,12 +329,12 @@ class GeoPointTransform: TransformOf<GeoPoint, [CLLocationDegrees]> {
             return nil
         })
     }
-    
+
 }
 
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictionary]> where T: BaseMappable {
-    
+
     init(_ list: List<T>) {
         super.init(fromJSON: { (array) -> List<T>? in
             if let array = array {
@@ -330,7 +354,7 @@ class ListValueTransform<T: RealmSwift.Object>: TransformOf<List<T>, [JsonDictio
             return nil
         })
     }
-    
+
 }
 
 // MARK: String Value Transform
@@ -449,10 +473,10 @@ class BoolValueTransform: TransformOf<List<BoolValue>, [Bool]> {
 }
 
 class AclTransformType {
-    
+
     typealias Object = [String]
     typealias JSON = String
-    
+
     func transformFromJSON(_ value: Any?) -> [String]? {
         if let value = value as? String,
             let data = value.data(using: String.Encoding.utf8),
@@ -463,7 +487,7 @@ class AclTransformType {
         }
         return nil
     }
-    
+
     func transformToJSON(_ value: [String]?) -> String? {
         if let value = value,
             let data = try? JSONSerialization.data(withJSONObject: value),
@@ -473,25 +497,25 @@ class AclTransformType {
         }
         return nil
     }
-    
+
 }
 
 struct AnyTransform: ObjectMapper.TransformType {
-    
+
     private let _transformFromJSON: (Any?) -> Any?
     private let _transformToJSON: (Any?) -> Any?
-    
+
     init<Transform: ObjectMapper.TransformType>(_ transform: Transform) {
         _transformFromJSON = { transform.transformFromJSON($0) }
         _transformToJSON = { transform.transformToJSON($0 as? Transform.Object) }
     }
-    
+
     func transformFromJSON(_ value: Any?) -> Any? {
         return _transformFromJSON(value)
     }
-    
+
     func transformToJSON(_ value: Any?) -> Any? {
         return _transformToJSON(value)
     }
-    
+
 }

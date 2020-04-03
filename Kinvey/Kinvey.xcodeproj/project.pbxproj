@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3919CCFE243680ED009366D4 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		3919CCFF243680F4009366D4 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		570423F91F82EC3E00EE5CBD /* KinveyAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570423F81F82EC3E00EE5CBD /* KinveyAppUITests.swift */; };
 		570424041F832C3600EE5CBD /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570424021F832BF000EE5CBD /* Swifter.framework */; };
 		570424061F832C4100EE5CBD /* Swifter.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 570424021F832BF000EE5CBD /* Swifter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -60,7 +62,6 @@
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* URLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* URLSessionTaskRequest.swift */; };
 		572B948020D235D000E23F59 /* ObjectMapper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */; };
-		572B948120D235DE00E23F59 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		572B948220D235E300E23F59 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; };
 		572B948320D2A7ED00E23F59 /* PushTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57873DEB1DFF3FDC002C87BF /* PushTestCase.swift */; };
 		572C457B1C86690700A41935 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* Date.swift */; };
@@ -134,8 +135,6 @@
 		575465A41E66405D0063B4B6 /* PerformanceProductTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575465A31E66405D0063B4B6 /* PerformanceProductTestCase.swift */; };
 		5754DDBD1EAEBC4A00122A7A /* DateTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5754DDBC1EAEBC4A00122A7A /* DateTestCase.swift */; };
 		5756FE861D136C330087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
-		5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; };
-		5756FE881D136C9C0087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; };
 		5756FE891D136CAF0087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		575792C01D412CD20065CC22 /* UserQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575792BF1D412CD20065CC22 /* UserQuery.swift */; };
@@ -1437,7 +1436,7 @@
 				57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */,
 				57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */,
-				5756FE881D136C9C0087141E /* RealmSwift.framework in Frameworks */,
+				3919CCFE243680ED009366D4 /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1445,13 +1444,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3919CCFF243680F4009366D4 /* RealmSwift.framework in Frameworks */,
 				57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */,
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
-				572B948120D235DE00E23F59 /* RealmSwift.framework in Frameworks */,
 				572B948020D235D000E23F59 /* ObjectMapper.framework in Frameworks */,
 				572B948220D235E300E23F59 /* Realm.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
-				5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4871,6 +4869,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -4915,6 +4915,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -4923,6 +4924,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
