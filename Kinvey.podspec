@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "4.1.1"
+  s.version      = "4.1.2"
   s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
@@ -92,14 +92,14 @@ Pod::Spec.new do |s|
   #
 
   s.source_files  = "Kinvey/Kinvey/**/*.{swift,h,m,mm}", "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/Sources/MongoDBPredicateAdaptor/*.{swift}"
-  
-  # s.public_header_files = 
-  
-  # s.private_header_files = 
-  
-  # s.exclude_files = 
-  
-  # s.prefix_header_file = 
+
+  # s.public_header_files =
+
+  # s.private_header_files =
+
+  # s.exclude_files =
+
+  # s.prefix_header_file =
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -126,7 +126,7 @@ Pod::Spec.new do |s|
   s.frameworks = "CoreGraphics", "CoreLocation", "Security"
   s.ios.frameworks = "MobileCoreServices", "WebKit"
 
-  # s.libraries = 
+  # s.libraries =
 
 
   # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -138,7 +138,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.swift_version = '5.0'
-	
+
   s.dependency "PromiseKit", "~> 6.0"
   s.dependency "KeychainAccess", "~> 3.0"
   s.dependency "Realm", "~> 3.17"
