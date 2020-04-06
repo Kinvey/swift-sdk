@@ -1021,7 +1021,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             deltaSet: deltaSet
         ) { (result: Swift.Result<(UInt, [T]), MultipleErrors>) in
             switch result {
-            case .success(let count, let array):
+            case .success((let count, let array)):
                 completionHandler?(count, array, nil)
             case .failure(let errors):
                 completionHandler?(nil, nil, errors.errors)
@@ -1048,7 +1048,7 @@ open class DataStore<T: Persistable> where T: NSObject {
             }
             
             switch result {
-            case .success(let count, let results):
+            case .success((let count, let results)):
                 completionHandler(.success((count, Array(results))))
             case .failure(let error):
                 completionHandler(.failure(error))
@@ -1057,7 +1057,7 @@ open class DataStore<T: Persistable> where T: NSObject {
         return AnyRequest(request) {
             if let result = $0 {
                 switch result {
-                case .success(let count, let results):
+                case .success((let count, let results)):
                     return .success((count, Array(results)))
                 case .failure(let error):
                     return .failure(error)

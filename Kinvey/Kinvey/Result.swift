@@ -63,7 +63,7 @@ extension Swift.Result {
             return
         }
         switch self {
-        case .success(let arg1, let arg2):
+        case .success((let arg1, let arg2)):
             completionHandler(arg1, arg2, nil)
         case .failure(let failure):
             completionHandler(nil, nil, failure)
