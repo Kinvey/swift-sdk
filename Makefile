@@ -8,6 +8,10 @@ CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e 
 DESTINATION_OS?=13.4
 DESTINATION_NAME?=iPhone 11 Pro
 ECHO?=no
+GREEN=\033[0;32m
+RED=\033[0;31m
+YELLOW=\033[1;33m
+NC=\033[0m
 
 all: build archive pack docs
 
@@ -53,8 +57,14 @@ cache-upload:
 	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
 
+# `--cache-builds` improves build times tremendously. However we need to be careful when doing
+# a production build. `--no-use-binaries` builds every dependency from source instead of
+# downloading it from the GitHub release. This ensures  correct binaries because it's possible
+# that some of the downloaded ones do not contain all platforms that we support
+# (e.g. PubNub v4.13.1 is missing tvOS and watchOS)
 build: checkout-dependencies
-	carthage build --no-skip-current
+	echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
+	carthage build --no-skip-current --cache-builds --no-use-binaries
 
 build-ios: checkout-dependencies
 	carthage build --no-skip-current --platform iOS
@@ -101,7 +111,7 @@ docs:
 				--output docs
 
 deploy-cocoapods:
-	pod trunk push Kinvey.podspec
+	pod trunk push Kinvey.podspec --allow-warnings
 
 test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
