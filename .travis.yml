@@ -87,7 +87,7 @@ after_failure:
 - echo System Log
 - tail -n 1000 /var/log/system.log
 - echo Simulator Logs
-- cat  ~/Library/Logs/CoreSimulator/*/system.log"
+- cat  ~/Library/Logs/CoreSimulator/*/system.log
 - echo Xcode Crash Logs
 - find ~/Library/Developer/Xcode/DerivedData/ -iname *.crash -exec echo "*****" \; -print -exec cat {} \;
 after_success:
