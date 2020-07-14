@@ -11,8 +11,11 @@ import XCTest
 import Nimble
 import RealmSwift
 
-class SyncStoreTests: StoreTestCase {
-    
+class SyncStoreTest: StoreTestCase {
+
+    private var originalRestApiVersion: Int = 0
+    fileprivate var restApiVersion: Int = Kinvey.defaultRestApiVersion
+
     class CheckForNetworkURLProtocol: URLProtocol {
         
         override class func canInit(with request: URLRequest) -> Bool {
@@ -21,8 +24,11 @@ class SyncStoreTests: StoreTestCase {
         }
         
     }
-    
+
     override func setUp() {
+        self.originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = self.restApiVersion
+
         super.setUp()
         
         signUp()
@@ -33,6 +39,10 @@ class SyncStoreTests: StoreTestCase {
     var mockCount = 0
     
     override func tearDown() {
+        defer {
+            Kinvey.restApiVersion = self.originalRestApiVersion
+        }
+
         if let activeUser = client.activeUser {
             let store = try! DataStore<Person>.collection(.network)
             let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
@@ -2045,7 +2055,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testSaveAndFind10SkipLimit() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
-        
+
         guard let user = Kinvey.sharedClient.activeUser else {
             return
         }
@@ -2281,9 +2291,15 @@ class SyncStoreTests: StoreTestCase {
         do {
             if useMockData {
                 mockResponse { request -> HttpResponse in
-                    let json = self.decorateJsonFromPostRequest(request)
-                    mockObjects.append(json)
-                    return HttpResponse(statusCode: 201, json: json)
+                    if self.restApiVersion < 5 {
+                        let json = self.decorateJsonFromPostRequest(request)
+                        mockObjects.append(json)
+                        return HttpResponse(statusCode: 201, json: json)
+                    } else {
+                        let result = self.decorateJsonArrayFromPostRequest(request)
+                        mockObjects.append(contentsOf: result["entities"] as! [JsonDictionary])
+                        return HttpResponse(statusCode: 201, json: result)
+                    }
                 }
             }
             defer {
@@ -2605,9 +2621,15 @@ class SyncStoreTests: StoreTestCase {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
                     XCTAssertEqual(request.httpMethod, "POST")
-                    let json = self.decorateJsonFromPostRequest(request)
-                    mockResponses.append(json)
-                    return HttpResponse(statusCode: 201, json: json)
+                    if self.restApiVersion < 5 {
+                        let json = self.decorateJsonFromPostRequest(request)
+                        mockResponses.append(json)
+                        return HttpResponse(statusCode: 201, json: json)
+                    } else {
+                        let result = self.decorateJsonArrayFromPostRequest(request)
+                        mockResponses.append(contentsOf: result["entities"] as! [JsonDictionary])
+                        return HttpResponse(statusCode: 201, json: result)
+                    }
                 }
             }
             defer {
@@ -8659,4 +8681,13 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+}
+
+class SyncStoreTestApi4 : SyncStoreTest {
+    
+    override func setUp() {
+        self.restApiVersion = 4
+        
+        super.setUp()
+    }
 }

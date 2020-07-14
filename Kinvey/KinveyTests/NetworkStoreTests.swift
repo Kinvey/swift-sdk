@@ -450,6 +450,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             XCTAssertEqual(requestCount, useMockData ? 1 : 0)
         }
+        let originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = 4
+        defer {
+            Kinvey.restApiVersion = originalRestApiVersion
+        }
         if useMockData {
             mockResponse { request in
                 requestCount += 1

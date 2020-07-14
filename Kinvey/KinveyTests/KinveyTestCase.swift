@@ -1104,7 +1104,7 @@ class KinveyTestCase: XCTestCase {
         return json
     }
     
-    func decorateJsonArrayFromPostRequest(_ request: URLRequest) -> [JsonDictionary] {
+    func decorateJsonArrayFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var jsonArray = try! JSONSerialization.jsonObject(with: request) as! [JsonDictionary]
         jsonArray = jsonArray.map {
@@ -1112,7 +1112,7 @@ class KinveyTestCase: XCTestCase {
             decorate(json: &json)
             return json
         }
-        return jsonArray
+        return ["entities": jsonArray, "errors": []]
     }
     
     func startLogPolling(timeInterval: TimeInterval = 30, function: String = #function) -> DispatchSourceTimer {

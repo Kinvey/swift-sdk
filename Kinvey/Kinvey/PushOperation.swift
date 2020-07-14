@@ -106,34 +106,54 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                     request: pendingOperation.buildRequest(),
                     options: options
                 )
-                let objectId = pendingOperation.objectId
+                var objectId = pendingOperation.objectId
                 let objectIds = pendingOperation.objectIds
                 let requestIds = pendingOperation.requestIds
-                var requestIdsRemoved = requestIds != nil ? [Bool](repeating: true, count: requestIds?.count ?? 0) : nil
-                var entities: AnyRandomAccessCollection<T?>? = nil
-                var entitiesErrors: AnyRandomAccessCollection<Swift.Error>? = nil
                 let operation = AsyncBlockOperation { (operation: AsyncBlockOperation) in
                     request.execute() { data, response, error in
                         if let response = response,
                             response.isOK,
                             let data = data
                         {
-                            let json = try? self.client.jsonParser.parseDictionary(from: data)
-                            if let cache = self.cache,
-                                let json = json,
-                                request.request.httpMethod != "DELETE"
+                            if let result = try? self.client.jsonParser.parseDictionary(from: data),
+                                let results = objectIds != nil
+                                    ? result["entities"] as? [JsonDictionary?]
+                                    : Array<JsonDictionary?>.init(repeating: result, count: 1)
                             {
-                                if let objectId = objectId,
-                                    objectId.hasPrefix(EntityIdTmpPrefix),
-                                    let entity = cache.find(byId: objectId)
-                                {
-                                    cache.remove(entity: entity)
+                                var index = objectIds?.startIndex
+                                for json in results {
+                                    if objectId == nil,
+                                        index != nil,
+                                        let objectIds = objectIds
+                                    {
+                                        objectId = objectIds[index!]
+                                        index = objectIds.index(after: index!)
+                                    }
+                                    if let cache = self.cache,
+                                        let json = json,
+                                        request.request.httpMethod != "DELETE"
+                                    {
+                                        if let objectId = objectId,
+                                            objectId.hasPrefix(EntityIdTmpPrefix),
+                                            let entity = cache.find(byId: objectId)
+                                        {
+                                            cache.remove(entity: entity)
+                                        }
+                                        
+                                        if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
+                                            cache.save(entity: persistable)
+                                        }
+                                    }
                                 }
                                 
-                                if let entitiesJson = json["entities"] as? [JsonDictionary?],
-                                    let errorsJson = json["errors"] as? [JsonDictionary],
-                                    let objectIds = objectIds
+                                var requestIdsRemoved = requestIds != nil ? [Bool](repeating: true, count: requestIds?.count ?? 0) : nil
+                                var entities: AnyRandomAccessCollection<T?>? = nil
+                                var entitiesErrors: AnyRandomAccessCollection<Swift.Error>? = nil
+                                if let errorsJson = result["errors"] as? [JsonDictionary],
+                                    let objectIds = objectIds,
+                                    let cache = self.cache
                                 {
+                                    let entitiesJson = results
                                     var objectIdsRemoved = [Bool](repeating: true, count: objectIds.count)
                                     let _entities = AnyRandomAccessCollection(entitiesJson.enumerated().lazy.map({ (offset, entity) -> T? in
                                         guard let entity = entity else {
@@ -158,31 +178,29 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                     cache.remove(byQuery: Query(format: "\(try! T.entityIdProperty()) IN %@", objectIdsToBeRemoved))
                                     cache.save(entities: _entities.compactMap({ $0 }), syncQuery: nil)
                                     entities = _entities
-                                } else if let persistable = try? self.client.jsonParser.parseObject(T.self, from: json) {
-                                    cache.save(entity: persistable)
                                 }
-                            }
-                            if request.request.httpMethod != "DELETE" {
-                                if let entities = entities,
-                                    let entitiesErrors = entitiesErrors,
-                                    let requestIds = requestIds,
-                                    let requestIdsRemoved = requestIdsRemoved
-                                {
-                                    errors.append(contentsOf: entitiesErrors)
-                                    let requestIdsToBeRemoved = zip(requestIds, requestIdsRemoved).compactMap { (requestId, removed) in
-                                        return removed ? requestId : nil
+                                if request.request.httpMethod != "DELETE" {
+                                    if let entities = entities,
+                                        let entitiesErrors = entitiesErrors,
+                                        let requestIds = requestIds,
+                                        let requestIdsRemoved = requestIdsRemoved
+                                    {
+                                        errors.append(contentsOf: entitiesErrors)
+                                        let requestIdsToBeRemoved = zip(requestIds, requestIdsRemoved).compactMap { (requestId, removed) in
+                                            return removed ? requestId : nil
+                                        }
+                                        self.sync?.remove(requestIds: requestIdsToBeRemoved)
+                                        count += UInt(entities.count)
+                                    } else {
+                                        self.sync?.remove(pendingOperation: pendingOperation)
+                                        count += 1
                                     }
-                                    self.sync?.remove(requestIds: requestIdsToBeRemoved)
-                                    count += UInt(entities.count)
-                                } else {
+                                } else if let _count = result["count"] as? UInt {
                                     self.sync?.remove(pendingOperation: pendingOperation)
-                                    count += 1
+                                    count += _count
+                                } else {
+                                    errors.append(buildError(data, response, error, self.client))
                                 }
-                            } else if let json = json, let _count = json["count"] as? UInt {
-                                self.sync?.remove(pendingOperation: pendingOperation)
-                                count += _count
-                            } else {
-                                errors.append(buildError(data, response, error, self.client))
                             }
                         } else if let response = response, response.isUnauthorized,
                             let data = data,

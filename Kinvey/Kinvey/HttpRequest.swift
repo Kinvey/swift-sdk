@@ -297,7 +297,7 @@ extension String {
 }
 
 /// Default REST API Version used in the REST calls.
-public let defaultRestApiVersion = 4
+public let defaultRestApiVersion = 5
 
 /// REST API Version used in the REST calls.
 public var restApiVersion = defaultRestApiVersion

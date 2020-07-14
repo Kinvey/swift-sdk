@@ -752,7 +752,7 @@ class AutoDataStoreSpec: QuickSpec {
                 }
                 
                 let errors = kinveyPush(dataStore: autoDataStore).errors
-                expect(errors?.count).to(equal(2))
+                expect(errors?.count).to(equal(1)) // 1 because of batching the two requests into one
                 for error in errors ?? [] {
                     expect((error as NSError).domain).to(equal(NSURLErrorDomain))
                     expect((error as NSError).code).to(equal(NSURLErrorTimedOut))
@@ -871,7 +871,7 @@ class AutoDataStoreSpec: QuickSpec {
                 }
                 
                 let errors = kinveySync(dataStore: autoDataStore).errors
-                expect(errors?.count).to(equal(2))
+                expect(errors?.count).to(equal(1)) // 1 because of batching the two requests into one
                 expect((errors?.first as NSError?)?.domain).to(equal(NSURLErrorDomain))
                 expect((errors?.first as NSError?)?.code).to(equal(NSURLErrorTimedOut))
                 expect((errors?.last as NSError?)?.domain).to(equal(NSURLErrorDomain))
