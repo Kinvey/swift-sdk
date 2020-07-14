@@ -165,12 +165,14 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                                     }))
                                     entitiesErrors = AnyRandomAccessCollection(errorsJson.lazy.compactMap({ (error) -> MultiSaveError? in
                                         guard let index = error[MultiSaveError.CodingKeys.index.rawValue] as? Int,
-                                            let code = error[MultiSaveError.CodingKeys.code.rawValue] as? Int,
                                             let message = error[MultiSaveError.CodingKeys.message.rawValue] as? String
                                         else {
                                             return nil
                                         }
-                                        return MultiSaveError(index: index, code: code, message: message)
+                                        let description = error[MultiSaveError.CodingKeys.serverDescription.rawValue] as? String
+                                        let debug = error[MultiSaveError.CodingKeys.serverDebug.rawValue] as? String
+                                        
+                                        return MultiSaveError(index: index, message: message, serverDescription: description, serverDebug: debug)
                                     }))
                                     let objectIdsToBeRemoved = zip(objectIds, objectIdsRemoved).compactMap { objectId, removed in
                                         return removed ? objectId : nil

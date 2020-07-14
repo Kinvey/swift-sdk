@@ -249,16 +249,19 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                     entities: AnyRandomAccessCollection(entities),
                     errors: AnyRandomAccessCollection(errors.map({
                         let json = $0
-                        guard let index = json["index"] as? Int,
-                            let code = json["code"] as? Int,
-                            let errmsg = json["errmsg"] as? String
+                        guard let error = json["error"] as? String,
+                            let index = json["index"] as? Int
                         else {
                             return Error.unknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
                         }
+                        let description = json["description"] as? String;
+                        let debug = json["debug"] as? String;
+                        
                         return MultiSaveError(
                             index: index,
-                            code: code,
-                            message: errmsg
+                            message: error,
+                            serverDescription: description,
+                            serverDebug: debug
                         )
                     }))
                 )))
@@ -296,8 +299,9 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                         case let multiSaveError as MultiSaveError:
                             return MultiSaveError(
                                 index: entitiesCount + multiSaveError.index,
-                                code: multiSaveError.code,
-                                message: multiSaveError.message
+                                message: multiSaveError.message,
+                                serverDescription: multiSaveError.serverDescription,
+                                serverDebug: multiSaveError.serverDebug
                             )
                         case let indexedError as IndexedError:
                             return IndexedError(
