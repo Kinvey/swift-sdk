@@ -12,6 +12,48 @@ import Nimble
 import RealmSwift
 
 class SyncStoreTest: StoreTestCase {
+    
+    class NotEntityPersistable: NSObject, Persistable {
+        
+        static func collectionName() -> String {
+            return "NotEntityPersistable"
+        }
+        
+        static func translate(property: String) -> String? {
+            return nil
+        }
+        
+        required override init() {
+        }
+        
+        required init?(map: Map) {
+        }
+        
+        func mapping(map: Map) {
+        }
+        
+        static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+            return NotEntityPersistable() as! T
+        }
+        
+        static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+            return [NotEntityPersistable]() as! [T]
+        }
+        
+        static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+            return NotEntityPersistable() as! T
+        }
+        
+        func refresh(from dictionary: [String : Any]) throws {
+            var _self = self
+            try _self.refreshJSONDecodable(from: dictionary)
+        }
+        
+        func encode() throws -> [String : Any] {
+            return [:]
+        }
+        
+    }
 
     private var originalRestApiVersion: Int = 0
     fileprivate var restApiVersion: Int = Kinvey.defaultRestApiVersion
@@ -408,50 +450,49 @@ class SyncStoreTest: StoreTestCase {
         
     }
     
-    func testCustomTag() {
-        let fileManager = FileManager.default
-        
-        let path = cacheBasePath
-        let tag = "Custom Identifier"
-        let customPath = "\(path)/\(client.appKey!)/\(tag).realm"
-        
-        let removeFiles: () -> Void = {
-            if fileManager.fileExists(atPath: customPath) {
-                try! fileManager.removeItem(atPath: customPath)
+        func testCustomTag() {
+            let fileManager = FileManager.default
+            
+            let path = cacheBasePath
+            let tag = "Custom Identifier-\(self.restApiVersion)" // append restApiVersion to avoid sporatic Realm failures when tags are the same in parallel tests
+            let customPath = "\(path)/\(client.appKey!)/\(tag).realm"
+            
+            let removeFiles: () -> Void = {
+                if fileManager.fileExists(atPath: customPath) {
+                    try! fileManager.removeItem(atPath: customPath)
+                }
+                
+                let lockPath = (customPath as NSString).appendingPathExtension("lock")!
+                if fileManager.fileExists(atPath: lockPath) {
+                    try! fileManager.removeItem(atPath: lockPath)
+                }
+                
+                let logPath = (customPath as NSString).appendingPathExtension("log")!
+                if fileManager.fileExists(atPath: logPath) {
+                    try! fileManager.removeItem(atPath: logPath)
+                }
+                
+                let logAPath = (customPath as NSString).appendingPathExtension("log_a")!
+                if fileManager.fileExists(atPath: logAPath) {
+                    try! fileManager.removeItem(atPath: logAPath)
+                }
+                
+                let logBPath = (customPath as NSString).appendingPathExtension("log_b")!
+                if fileManager.fileExists(atPath: logBPath) {
+                    try! fileManager.removeItem(atPath: logBPath)
+                }
             }
             
-            let lockPath = (customPath as NSString).appendingPathExtension("lock")!
-            if fileManager.fileExists(atPath: lockPath) {
-                try! fileManager.removeItem(atPath: lockPath)
-            }
+            removeFiles()
+            XCTAssertFalse(fileManager.fileExists(atPath: customPath))
             
-            let logPath = (customPath as NSString).appendingPathExtension("log")!
-            if fileManager.fileExists(atPath: logPath) {
-                try! fileManager.removeItem(atPath: logPath)
-            }
-            
-            let logAPath = (customPath as NSString).appendingPathExtension("log_a")!
-            if fileManager.fileExists(atPath: logAPath) {
-                try! fileManager.removeItem(atPath: logAPath)
-            }
-            
-            let logBPath = (customPath as NSString).appendingPathExtension("log_b")!
-            if fileManager.fileExists(atPath: logBPath) {
-                try! fileManager.removeItem(atPath: logBPath)
-            }
-        }
-        
-        removeFiles()
-        XCTAssertFalse(fileManager.fileExists(atPath: customPath))
-        
-        store = try! DataStore<Person>.collection(.sync, tag: tag)
-        defer {
+            store = try! DataStore<Person>.collection(.sync, tag: tag)
+            XCTAssertTrue(fileManager.fileExists(atPath: customPath))
+
             removeFiles()
             XCTAssertFalse(fileManager.fileExists(atPath: customPath))
         }
-        XCTAssertTrue(fileManager.fileExists(atPath: customPath))
-    }
-    
+        
     func testPurge() {
         store.clearCache()
         XCTAssertEqual(store.syncCount(), 0)
@@ -2783,49 +2824,6 @@ class SyncStoreTest: StoreTestCase {
     }
     
     func testRealmCacheNotEntity() {
-        // swiftlint:disable nesting
-        class NotEntityPersistable: NSObject, Persistable {
-            
-            static func collectionName() -> String {
-                return "NotEntityPersistable"
-            }
-            
-            static func translate(property: String) -> String? {
-                return nil
-            }
-            
-            required override init() {
-            }
-            
-            required init?(map: Map) {
-            }
-            
-            func mapping(map: Map) {
-            }
-            
-            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
-                return [NotEntityPersistable]() as! [T]
-            }
-            
-            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            func refresh(from dictionary: [String : Any]) throws {
-                var _self = self
-                try _self.refreshJSONDecodable(from: dictionary)
-            }
-            
-            func encode() throws -> [String : Any] {
-                return [:]
-            }
-            
-        }
-        // swiftlint:enable nesting
         
         expect {
             try RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
@@ -2833,48 +2831,6 @@ class SyncStoreTest: StoreTestCase {
     }
     
     func testRealmSyncNotEntity() {
-        // swiftlint:disable nesting
-        class NotEntityPersistable: NSObject, Persistable {
-            
-            static func collectionName() -> String {
-                return "NotEntityPersistable"
-            }
-            
-            static func translate(property: String) -> String? {
-                return nil
-            }
-            
-            required override init() {
-            }
-            
-            required init?(map: Map) {
-            }
-            
-            func mapping(map: Map) {
-            }
-            
-            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
-                 return [NotEntityPersistable]() as! [T]
-            }
-            
-            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            func refresh(from dictionary: [String : Any]) throws {
-            }
-            
-            func encode() throws -> [String : Any] {
-                return [:]
-            }
-            
-        }
-        // swiftlint:enable nesting
-        
         expect {
             try RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
         }.to(throwError())
@@ -8684,7 +8640,7 @@ class SyncStoreTest: StoreTestCase {
 }
 
 class SyncStoreTestApi4 : SyncStoreTest {
-    
+
     override func setUp() {
         self.restApiVersion = 4
         
