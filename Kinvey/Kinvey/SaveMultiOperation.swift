@@ -254,8 +254,8 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                         else {
                             return Error.unknownJsonError(httpResponse: response.httpResponse, data: data, json: json)
                         }
-                        let description = json["description"] as? String;
-                        let debug = json["debug"] as? String;
+                        let description = json["description"] as? String
+                        let debug = json["debug"] as? String
                         
                         return MultiSaveError(
                             index: index,

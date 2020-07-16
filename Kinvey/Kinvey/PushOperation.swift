@@ -220,7 +220,8 @@ internal class PushOperation<T: Persistable>: SyncOperation<T, UInt, MultipleErr
                             )
                             errors.append(error)
                         } else {
-                            errors.append(buildError(data, response, error, self.client))
+                            let errorCount = objectIds != nil ? objectIds!.count : 1
+                            errors.append(contentsOf: repeatElement(buildError(data, response, error, self.client), count: errorCount))
                         }
                         operation.state = .finished
                     }

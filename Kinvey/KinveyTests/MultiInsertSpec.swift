@@ -955,9 +955,10 @@ class MultiInsertSpec: QuickSpec {
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                     
                     let errors = kinveyPush(dataStore: syncDataStore).errors
-                    expect(errors?.count).to(equal(1))
+                    expect(errors?.count).to(equal(2))
                     expect(errors?.first?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
-                    
+                    expect(errors?.last?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
+
                     expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
