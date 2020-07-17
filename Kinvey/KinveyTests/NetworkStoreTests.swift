@@ -20,36 +20,36 @@ import Nimble
 #endif
 
 class NetworkStoreTests: StoreTestCase {
-    
+
     override func setUp() {
         super.setUp()
         signUp()
-        
+
         store = try! DataStore<Person>.collection()
     }
-    
+
     override func assertThread() {
         XCTAssertTrue(Thread.isMainThread)
     }
-    
+
     func testSaveEvent() {
         guard !useMockData else {
             return
         }
-        
+
         let store = try! DataStore<Event>.collection(.network)
-        
+
         let event = Event()
         event.name = "Friday Party!"
         event.publishDate = Date(timeIntervalSince1970: 1468001397) // Fri, 08 Jul 2016 18:09:57 GMT
         event.location = "The closest pub!"
-        
+
         event.acl?.globalRead.value = true
         event.acl?.globalWrite.value = true
-        
+
         do {
             weak var expectationCreate = expectation(description: "Create")
-            
+
             let request = store.save(event) {
                 switch $0 {
                 case .success(let event):
@@ -60,12 +60,12 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationCreate?.fulfill()
             }
-            
+
             var progressReportCount = 0
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 progressReportCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -73,19 +73,19 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertLessThanOrEqual(request.progress.fractionCompleted, 1.0)
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
-            
+
             XCTAssertGreaterThan(progressReportCount, 0)
         }
-        
+
         XCTAssertNotNil(event.entityId)
-        
+
         if let eventId = event.entityId {
             weak var expectationFind = expectation(description: "Find")
-            
+
             let request = store.find(eventId) {
                 switch $0 {
                 case .success(let event):
@@ -96,35 +96,35 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
-        
+
         do {
             class DelayURLProtocol: URLProtocol {
-                
+
                 static var delay: TimeInterval?
-                
+
                 let urlSession = URLSession(configuration: URLSessionConfiguration.default)
-                
+
                 override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
-                
+
                 override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                     return request
                 }
-                
+
                 override func startLoading() {
                     if let delay = DelayURLProtocol.delay {
                         RunLoop.current.run(until: Date(timeIntervalSinceNow: delay))
                     }
-                    
+
                     let dataTask = urlSession.dataTask(with: request) { data, response, error in
                         self.client?.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
                         if let data = data {
@@ -143,21 +143,21 @@ class NetworkStoreTests: StoreTestCase {
                     }
                     dataTask.resume()
                 }
-                
+
                 override func stopLoading() {
                 }
-                
+
             }
-            
+
             DelayURLProtocol.delay = 1
-            
+
             setURLProtocol(DelayURLProtocol.self)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             let request = store.find() {
                 XCTAssertTrue(Thread.isMainThread)
                 switch $0 {
@@ -166,12 +166,12 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             var reportProgressCount = 0
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 reportProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -180,15 +180,15 @@ class NetworkStoreTests: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
-            
+
             XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
-    
+
     func testSaveAddress() {
         if useMockData {
             mockResponse(json: [
@@ -212,37 +212,37 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let person = Person()
         person.name = "Victor Barros"
-        
+
         let address = Address()
         address.city = "Vancouver"
-        
+
         person.address = address
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let person):
                 XCTAssertNotNil(person.address)
-                
+
                 if let address = person.address {
                     XCTAssertNotNil(address.city)
                 }
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveArray() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -268,14 +268,14 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let persons = [
             Person { $0.name = "Victor" },
             Person { $0.name = "Hugo" }
         ]
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
@@ -286,15 +286,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveArraySameId() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -328,14 +328,14 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let persons = [
             Person { $0.entityId = id; $0.name = "Victor" },
             Person { $0.entityId = id; $0.name = "Hugo" }
         ]
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
@@ -354,15 +354,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveArrayIdsAlreadyExists() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -393,12 +393,12 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         do {
             let person = Person { $0.entityId = id; $0.name = "Victor" }
-            
+
             weak var expectationSave = expectation(description: "Save")
-            
+
             store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let person):
@@ -406,25 +406,25 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationSave?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
         }
-        
+
         XCTAssertEqual(requests.count, useMockData ? 1 : 0)
-        
+
         do {
             let persons = [
                 Person { $0.personId = id; $0.name = "Hugo" },
                 Person { $0.personId = id; $0.name = "Barros" }
             ]
-            
+
             weak var expectationSave = expectation(description: "Save")
-            
+
             store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let result):
@@ -435,18 +435,18 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationSave?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
         }
-        
+
         XCTAssertEqual(requests.count, useMockData ? 3 : 0)
     }
-    
+
     func testSaveArrayFeatureUnavailableError() {
         var requestCount = 0
         defer {
@@ -477,14 +477,14 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let persons = [
             Person { $0.name = "Victor" },
             Person { $0.name = "Hugo" }
         ]
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -503,15 +503,15 @@ class NetworkStoreTests: StoreTestCase {
                     XCTFail(error.localizedDescription)
                 }
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveArrayEmpty() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -537,9 +537,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save([], options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
@@ -558,15 +558,15 @@ class NetworkStoreTests: StoreTestCase {
                     Nimble.fail(error.localizedDescription)
                 }
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveArrayLimitSingleRequest() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -592,13 +592,13 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let persons = (0 ..< 100).map { _ in
             return Person { $0.name = UUID().uuidString }
         }
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
@@ -607,17 +607,17 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
-        
+
         XCTAssertEqual(requests, useMockData ? 1 : 0)
     }
-    
+
     func testSaveArrayMultiRequest() {
         let originalRestApiVersion = Kinvey.restApiVersion
         Kinvey.restApiVersion = 5
@@ -643,13 +643,13 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let persons = (0 ... 100).map { _ in
             return Person { $0.name = UUID().uuidString }
         }
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(persons, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success(let result):
@@ -658,26 +658,26 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
-        
+
         XCTAssertEqual(requests, useMockData ? 2 : 0)
     }
-    
+
     func testSaveAddressCodable() {
         let person = PersonCodable()
         person.name = "Victor Barros"
-        
+
         let address = AddressCodable()
         address.city = "Vancouver"
-        
+
         person.address = address
-        
+
         if useMockData {
             mockResponse { response in
                 let jsonObject = try? JSONSerialization.jsonObject(with: response)
@@ -716,31 +716,31 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let store = try! DataStore<PersonCodable>.collection(.network)
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(person) {
             switch $0 {
             case .success(let person):
                 XCTAssertNotNil(person.address)
-                
+
                 if let address = person.address {
                     XCTAssertNotNil(address.city)
                 }
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testSaveAddressSync() {
         if useMockData {
             mockResponse(json: [
@@ -764,15 +764,15 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let person = Person()
         person.name = "Victor Barros"
-        
+
         let address = Address()
         address.city = "Vancouver"
-        
+
         person.address = address
-        
+
         let request = store.save(person, options: try! Options(writePolicy: .forceNetwork))
         XCTAssertTrue(request.wait(timeout: defaultTimeout))
         guard let result = request.result else {
@@ -781,7 +781,7 @@ class NetworkStoreTests: StoreTestCase {
         switch result {
         case .success(let person):
             XCTAssertNotNil(person.address)
-            
+
             if let address = person.address {
                 XCTAssertNotNil(address.city)
             }
@@ -789,7 +789,7 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testSaveAddressTryCatchSync() {
         if useMockData {
             mockResponse(json: [
@@ -813,20 +813,20 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let person = Person()
         person.name = "Victor Barros"
-        
+
         let address = Address()
         address.city = "Vancouver"
-        
+
         person.address = address
-        
+
         let request = store.save(person, options: try! Options(writePolicy: .forceNetwork))
         do {
             let person = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(person.address)
-            
+
             if let address = person.address {
                 XCTAssertNotNil(address.city)
             }
@@ -834,12 +834,12 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testCount() {
         let store = try! DataStore<Event>.collection(.network)
-        
+
         var eventsCount: Int? = nil
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 85])
@@ -849,9 +849,9 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationCount = expectation(description: "Count")
-            
+
             store.count {
                 switch $0 {
                 case .success(let count):
@@ -860,18 +860,18 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationCount?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
         }
-        
+
         do {
             weak var expectationCount = expectation(description: "Count")
-            
+
             store.count(options: try! Options(readPolicy: .forceLocal)) {
                 switch $0 {
                 case .success(let count):
@@ -879,17 +879,17 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationCount?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
         }
-        
+
         XCTAssertNotNil(eventsCount)
-        
+
         do {
             if useMockData {
                 mockResponse(statusCode: 201, json: [
@@ -909,12 +909,12 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let event = Event()
             event.name = "Friday Party!"
-            
+
             weak var expectationCreate = expectation(description: "Create")
-            
+
             store.save(event) {
                 switch $0 {
                 case .success:
@@ -922,15 +922,15 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationCreate?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
         }
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 86])
@@ -940,9 +940,9 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationCount = expectation(description: "Count")
-            
+
             store.count {
                 switch $0 {
                 case .success(let count):
@@ -953,21 +953,21 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationCount?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
         }
     }
-    
+
     func testCountSync() {
         let store = try! DataStore<Event>.collection(.network)
-        
+
         var eventsCount: Int? = nil
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 85])
@@ -977,7 +977,7 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let request = store.count(options: nil)
             XCTAssertTrue(request.wait(timeout: defaultTimeout))
             guard let result = request.result else {
@@ -991,7 +991,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTFail(error.localizedDescription)
             }
         }
-        
+
         do {
             let request = store.count(options: try! Options(readPolicy: .forceLocal))
             XCTAssertTrue(request.wait(timeout: defaultTimeout))
@@ -1005,9 +1005,9 @@ class NetworkStoreTests: StoreTestCase {
                 XCTFail(error.localizedDescription)
             }
         }
-        
+
         XCTAssertNotNil(eventsCount)
-        
+
         do {
             if useMockData {
                 mockResponse(statusCode: 201, json: [
@@ -1027,10 +1027,10 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let event = Event()
             event.name = "Friday Party!"
-            
+
             let request = store.save(event, options: nil)
             XCTAssertTrue(request.wait(timeout: defaultTimeout))
             guard let result = request.result else {
@@ -1043,7 +1043,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTFail(error.localizedDescription)
             }
         }
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 86])
@@ -1053,7 +1053,7 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let request = store.count(options: nil)
             XCTAssertTrue(request.wait(timeout: defaultTimeout))
             guard let result = request.result else {
@@ -1071,12 +1071,12 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testCountTryCatchSync() {
         let store = try! DataStore<Event>.collection(.network)
-        
+
         var eventsCount: Int? = nil
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 85])
@@ -1086,7 +1086,7 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let request = store.count(options: nil)
             do {
                 let count = try request.waitForResult(timeout: defaultTimeout).value()
@@ -1096,7 +1096,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTFail(error.localizedDescription)
             }
         }
-        
+
         do {
             let request = store.count(options: try! Options(readPolicy: .forceLocal))
             let count = try request.waitForResult(timeout: defaultTimeout).value()
@@ -1104,9 +1104,9 @@ class NetworkStoreTests: StoreTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
-        
+
         XCTAssertNotNil(eventsCount)
-        
+
         do {
             if useMockData {
                 mockResponse(statusCode: 201, json: [
@@ -1126,16 +1126,16 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let event = Event()
             event.name = "Friday Party!"
-            
+
             let request = store.save(event, options: nil)
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
         } catch {
             XCTFail(error.localizedDescription)
         }
-        
+
         do {
             if useMockData {
                 mockResponse(json: ["count" : 86])
@@ -1145,7 +1145,7 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let request = store.count(options: nil)
             let count = try request.waitForResult(timeout: defaultTimeout).value()
             XCTAssertNotNil(eventsCount)
@@ -1157,10 +1157,10 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testCountTranslateQuery() {
         let store = try! DataStore<Event>.collection(.network)
-        
+
         if useMockData {
             mockResponse { (request) -> HttpResponse in
                 let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
@@ -1176,11 +1176,11 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationCount = expectation(description: "Count")
-        
+
         let query = Query(format: "publishDate >= %@", Date())
-        
+
         store.count(query) {
             switch $0 {
             case .success(let count):
@@ -1188,25 +1188,25 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationCount?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationCount = nil
         }
     }
-    
+
     func testCountTimeoutError() {
         let store = try! DataStore<Event>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationCount = expectation(description: "Count")
-        
+
         store.count {
             switch $0 {
             case .success:
@@ -1214,24 +1214,24 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationCount?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationCount = nil
         }
     }
-    
+
     func testSaveAndFind10SkipLimit() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
-        
+
         guard let user = Kinvey.sharedClient.activeUser else {
             return
         }
-        
+
         var i = 0
-        
+
         var mockData = [JsonDictionary]()
         do {
             if useMockData {
@@ -1254,14 +1254,14 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             measure {
                 let person = Person {
                     $0.name = "Person \(i)"
                 }
-                
+
                 weak var expectationSave = self.expectation(description: "Save")
-                
+
                 self.store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
                     switch $0 {
                     case .success:
@@ -1269,21 +1269,21 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationSave?.fulfill()
                 }
-                
+
                 self.waitForExpectations(timeout: self.defaultTimeout) { error in
                     expectationSave = nil
                 }
-                
+
                 i += 1
             }
         }
-        
+
         var skip = 0
         let limit = 2
-        
+
         if useMockData {
             mockResponse { request in
                 let regex = try! NSRegularExpression(pattern: "([^&=]*)=([^&]*)")
@@ -1313,119 +1313,119 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         for _ in 0 ..< 5 {
             weak var expectationFind = expectation(description: "Find")
-            
+
             let query = Query {
                 $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
                 $0.skip = skip
                 $0.limit = limit
                 $0.ascending(\Person.name)
             }
-            
+
             store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let results):
                     XCTAssertEqual(results.count, limit)
-                    
+
                     XCTAssertNotNil(results.first)
-                    
+
                     if let person = results.first {
                         XCTAssertEqual(person.name, "Person \(skip)")
                     }
-                    
+
                     XCTAssertNotNil(results.last)
-                    
+
                     if let person = results.last {
                         XCTAssertEqual(person.name, "Person \(skip + 1)")
                     }
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 skip += limit
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
     }
-    
+
     class MethodNotAllowedError: URLProtocol {
-        
+
         static let debugValue = "insert' method is not allowed for this collection."
         static let descriptionValue = "The method is not allowed for this resource."
-        
+
         override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
-        
+
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
             return request
         }
-        
+
         override func startLoading() {
             let response = HTTPURLResponse(url: request.url!, statusCode: 405, httpVersion: "1.1", headerFields: [:])!
             client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            
+
             let responseBody = [
                 "error": "MethodNotAllowed",
                 "debug": MethodNotAllowedError.debugValue,
                 "description": MethodNotAllowedError.descriptionValue
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
+            let responseBodyData = try! JSONSerialize.data(responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
-            
+
             client!.urlProtocolDidFinishLoading(self)
         }
-        
+
         override func stopLoading() {
         }
-        
+
     }
-    
+
     class DataLinkEntityNotFoundError: URLProtocol {
-        
+
         override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
-        
+
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
             return request
         }
-        
+
         override func startLoading() {
             let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "1.1", headerFields: [:])!
             client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            
+
             let responseBody = [
                 "error": "DataLinkEntityNotFound",
                 "debug": "Error: Not Found",
                 "description": "The data link could not find this entity"
             ]
-            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody)
+            let responseBodyData = try! JSONSerialize.data(responseBody)
             client!.urlProtocol(self, didLoad: responseBodyData)
-            
+
             client!.urlProtocolDidFinishLoading(self)
         }
-        
+
         override func stopLoading() {
         }
-        
+
     }
-    
+
     func testGetDataLinkEntityNotFound() {
         setURLProtocol(DataLinkEntityNotFoundError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find("sample-id", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -1442,26 +1442,26 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testSaveMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let person = Person()
         person.name = "Victor Barros"
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -1471,11 +1471,11 @@ class NetworkStoreTests: StoreTestCase {
                 if let error = error as? Kinvey.Error {
                     XCTAssertEqual(error.description, MethodNotAllowedError.descriptionValue)
                     XCTAssertEqual(error.debugDescription, MethodNotAllowedError.debugValue)
-                    
+
                     XCTAssertEqual("\(error)", MethodNotAllowedError.descriptionValue)
                     XCTAssertEqual("\(String(describing: error))", MethodNotAllowedError.descriptionValue)
                     XCTAssertEqual("\(String(reflecting: error))", MethodNotAllowedError.debugValue)
-                    
+
                     switch error {
                     case .methodNotAllowed(_, _, let debug, let description):
                         XCTAssertEqual(description, MethodNotAllowedError.descriptionValue)
@@ -1485,23 +1485,23 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
-    
+
     func testFindMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -1518,21 +1518,21 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodNotAllowedSync() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.find(options: try! Options(readPolicy: .forceNetwork))
         XCTAssertTrue(request.wait(timeout: defaultTimeout))
         guard let result = request.result else {
@@ -1543,7 +1543,7 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .methodNotAllowed(_, _, let debug, let description):
@@ -1555,20 +1555,20 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testFindMethodNotAllowedTryCatchSync() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.find(options: try! Options(readPolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .methodNotAllowed(_, _, let debug, let description):
@@ -1580,7 +1580,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testFindByIdEntityNotFoundError() {
         mockResponse(
             statusCode: 404,
@@ -1593,16 +1593,16 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find("id-not-found", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
                 XCTFail("A failure result is expected")
             case .failure(let error):
                 XCTAssertTrue(error is Kinvey.Error)
-                
+
                 if let error = error as? Kinvey.Error {
                     switch error {
                     case .entityNotFound(let debug, let description):
@@ -1613,15 +1613,15 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindByIdEntityNotFoundErrorSync() {
         mockResponse(
             statusCode: 404,
@@ -1634,7 +1634,7 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.find("id-not-found", options: try! Options(readPolicy: .forceNetwork))
         XCTAssertTrue(request.wait(timeout: defaultTimeout))
         guard let result = request.result else {
@@ -1645,7 +1645,7 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .entityNotFound(let debug, let description):
@@ -1657,7 +1657,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testFindByIdEntityNotFoundErrorTryCatchSync() {
         mockResponse(
             statusCode: 404,
@@ -1670,14 +1670,14 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.find("id-not-found", options: try! Options(readPolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .entityNotFound(let debug, let description):
@@ -1689,7 +1689,7 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testFindMethodObjectIdMissing() {
         mockResponse(json: [
             [
@@ -1699,11 +1699,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
@@ -1722,12 +1722,12 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodObjectIdMissingAndRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
@@ -1737,11 +1737,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network, validationStrategy: .randomSample(percentage: 0.1))
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
@@ -1761,12 +1761,12 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodObjectIdMissingAndAllValidationStrategy() {
         mockResponse(json: [
             [
@@ -1776,11 +1776,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network, validationStrategy: .all)
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success:
@@ -1800,12 +1800,12 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodObjectIdNotMissingAndAllValidationStrategy() {
         mockResponse(json: [
             [
@@ -1816,11 +1816,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network, validationStrategy: .all)
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success(let persons):
@@ -1831,12 +1831,12 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodObjectIdMissingAndZeroRandomSampleValidationStrategy() {
         mockResponse(json: [
             [
@@ -1846,11 +1846,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network, validationStrategy: .randomSample(percentage: 0))
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success(let results):
@@ -1864,12 +1864,12 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testFindMethodObjectIdMissingAndCustomValidationStrategy() {
         mockResponse(json: [
             [
@@ -1879,12 +1879,12 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let store = try! DataStore<Person>.collection(.network, validationStrategy: .custom(validationBlock: { (entity: Array<Dictionary<String, Any>>) in
         }))
-        
+
         store.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success(let results):
@@ -1898,20 +1898,20 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testGetMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find("sample-id", options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -1928,23 +1928,23 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testRemoveByIdMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.remove(byId: "sample-id", options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -1961,21 +1961,21 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testRemoveByIdMethodNotAllowedSync() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.remove(byId: "sample-id", options: try! Options(writePolicy: .forceNetwork))
         XCTAssertTrue(request.wait(timeout: defaultTimeout))
         guard let result = request.result else {
@@ -1986,7 +1986,7 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail("A failure result is expected")
         case .failure(let error):
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .methodNotAllowed(_, _, let debug, let description):
@@ -1998,20 +1998,20 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testRemoveByIdMethodNotAllowedTryCatchSync() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let request = store.remove(byId: "sample-id", options: try! Options(writePolicy: .forceNetwork))
         do {
             let _ = try request.waitForResult(timeout: defaultTimeout).value()
             XCTFail("Error is expected")
         } catch {
             XCTAssertTrue(error is Kinvey.Error)
-            
+
             if let error = error as? Kinvey.Error {
                 switch error {
                 case .methodNotAllowed(_, _, let debug, let description):
@@ -2023,15 +2023,15 @@ class NetworkStoreTests: StoreTestCase {
             }
         }
     }
-    
+
     func testRemoveMethodNotAllowed() {
         setURLProtocol(MethodNotAllowedError.self)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.remove(options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -2048,15 +2048,15 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testRemoveArrayTimeoutError() {
         let mockObjs: [[String : Any]] = [
             [
@@ -2084,17 +2084,17 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ]
-        
+
         var _persons: AnyRandomAccessCollection<Person>? = nil
-        
+
         do {
             mockResponse(json: mockObjs)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
@@ -2103,25 +2103,25 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
         }
-        
+
         XCTAssertNotNil(_persons)
-        
+
         if let persons = _persons {
             mockResponse(error: timeoutError)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationRemove = expectation(description: "Remove")
-            
+
             store.remove(persons, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success:
@@ -2129,16 +2129,16 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
-                
+
                 expectationRemove?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
         }
     }
-    
+
     func testFindArrayByIdCodable() {
         let id1 = UUID().uuidString
         let name1 = UUID().uuidString
@@ -2146,14 +2146,14 @@ class NetworkStoreTests: StoreTestCase {
         let creator1 = UUID().uuidString
         let lmt1 = Date().toISO8601()
         let ect1 = Date().toISO8601()
-        
+
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
         let lmt2 = Date().toISO8601()
         let ect2 = Date().toISO8601()
-        
+
         let mockObjs: [[String : Any]] = [
             [
                 "_id": id1,
@@ -2180,17 +2180,17 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ]
-        
+
         do {
             mockResponse(json: mockObjs)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             let store = try! DataStore<PersonCodable>.collection(.network)
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find() {
                 switch $0 {
                 case .success(let persons):
@@ -2216,16 +2216,16 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
         }
     }
-    
+
     func testFindArrayByIdCustomParser() {
         let id1 = UUID().uuidString
         let name1 = UUID().uuidString
@@ -2233,14 +2233,14 @@ class NetworkStoreTests: StoreTestCase {
         let creator1 = UUID().uuidString
         let lmt1 = Date().toISO8601()
         let ect1 = Date().toISO8601()
-        
+
         let id2 = UUID().uuidString
         let name2 = UUID().uuidString
         let age2 = Int(arc4random())
         let creator2 = UUID().uuidString
         let lmt2 = Date().toISO8601()
         let ect2 = Date().toISO8601()
-        
+
         let mockObjs: [[String : Any]] = [
             [
                 "_id": id1,
@@ -2267,17 +2267,17 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ]
-        
+
         do {
             mockResponse(json: mockObjs)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             let store = try! DataStore<PersonCustomParser>.collection(.network)
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find() {
                 switch $0 {
                 case .success(let persons):
@@ -2297,16 +2297,16 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
         }
     }
-    
+
     func testRemoveArrayById() {
         let mockObjs: [[String : Any]] = [
             [
@@ -2334,17 +2334,17 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ]
-        
+
         var _persons: AnyRandomAccessCollection<Person>? = nil
-        
+
         do {
             mockResponse(json: mockObjs)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
@@ -2353,25 +2353,25 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
         }
-        
+
         XCTAssertNotNil(_persons)
-        
+
         if let persons = _persons {
             mockResponse(json: ["count" : persons.count])
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationRemove = expectation(description: "Remove")
-            
+
             store.remove(byIds: persons.map { $0.entityId! }, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let count):
@@ -2379,16 +2379,16 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationRemove?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
         }
     }
-    
+
     func testRemoveArrayByIdTimeoutError() {
         let mockObjs: [[String : Any]] = [
             [
@@ -2416,17 +2416,17 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ]
-        
+
         var _persons: AnyRandomAccessCollection<Person>? = nil
-        
+
         do {
             mockResponse(json: mockObjs)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
@@ -2435,25 +2435,25 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout, handler: { (error) in
                 expectationFind = nil
             })
         }
-        
+
         XCTAssertNotNil(_persons)
-        
+
         if let persons = _persons {
             mockResponse(error: timeoutError)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationRemove = expectation(description: "Remove")
-            
+
             store.remove(byIds: persons.map { $0.entityId! }, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success:
@@ -2461,24 +2461,24 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTAssertTimeoutError(error)
                 }
-                
+
                 expectationRemove?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
         }
     }
-    
+
     func testRemoveEmptyArray() {
         mockResponse(json: [])
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.remove(byIds: [], options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -2486,15 +2486,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertEqual(error.localizedDescription, "ids cannot be an empty array")
             }
-            
+
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testRemoveAll() {
         if useMockData {
             mockResponse { request in
@@ -2515,11 +2515,11 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.removeAll(options: nil) {
             switch $0 {
             case .success(let count):
@@ -2529,20 +2529,20 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testRemoveAllTimeoutError() {
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.removeAll(options: try! Options(writePolicy: .forceNetwork)) {
             switch $0 {
             case .success:
@@ -2550,23 +2550,23 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testSyncCount() {
         let person = Person()
         person.name = "Test"
-        
+
         let store = try! DataStore<Person>.collection(.sync)
-        
+
         weak var expectationSave = expectation(description: "Save")
-        
+
         store.save(person) {
             switch $0 {
             case .success:
@@ -2574,22 +2574,22 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationSave?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
-        
+
         XCTAssertEqual(try! DataStore<Person>.collection(.network).syncCount(), 0)
         XCTAssertEqual(try! DataStore<Person>.collection(.sync).syncCount(), 1)
-        
+
         DataStore<Person>.clearCache()
-        
+
         XCTAssertEqual(try! DataStore<Person>.collection(.sync).syncCount(), 0)
     }
-    
+
     func testClientAppVersion() {
         mockResponse { (request) -> HttpResponse in
             XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Client-App-Version"], "1.0.0")
@@ -2598,9 +2598,9 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(
             options: try! Options(
                 readPolicy: .forceNetwork,
@@ -2613,15 +2613,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testCustomRequestProperties() {
         mockResponse { (request) -> HttpResponse in
             XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Custom-Request-Properties"], "{\"someKey\":\"someValue\"}")
@@ -2630,9 +2630,9 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(
             options: try! Options(
                 readPolicy: .forceNetwork,
@@ -2647,15 +2647,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testCustomRequestPropertiesPerRequest() {
         mockResponse { (request) -> HttpResponse in
             XCTAssertEqual(request.allHTTPHeaderFields?["X-Kinvey-Custom-Request-Properties"], "{\"someKeyPerRequest\":\"someValuePerRequest\"}")
@@ -2664,9 +2664,9 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let options = try! Options(
             readPolicy: .forceNetwork,
             customRequestProperties: [
@@ -2682,15 +2682,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testDefaultHeaders() {
         mockResponse { request in
             let userAgent = request.allHTTPHeaderFields?["User-Agent"]
@@ -2701,9 +2701,9 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertEqual(textCheckingResults.count, 1)
                 if let textCheckingResult = textCheckingResults.first {
                     XCTAssertEqual(textCheckingResult.numberOfRanges, 3)
-                    
+
                     let regex = try! NSRegularExpression(pattern: "(\\d+)\\.(\\d+)(?:\\.(\\d+))?")
-                    
+
                     if textCheckingResult.numberOfRanges > 1 {
                         let kinveySdkVersion = userAgent.substring(with: textCheckingResult.range(at: 1))
                         let textCheckingResults = regex.matches(in: kinveySdkVersion, range: NSRange(location: 0, length: kinveySdkVersion.count))
@@ -2722,7 +2722,7 @@ class NetworkStoreTests: StoreTestCase {
                             }
                         }
                     }
-                    
+
                     if textCheckingResult.numberOfRanges > 2 {
                         let swiftVersion = userAgent.substring(with: textCheckingResult.range(at: 2))
                         let textCheckingResults = regex.matches(in: swiftVersion, range: NSRange(location: 0, length: swiftVersion.count))
@@ -2738,7 +2738,7 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             let deviceInfo = request.allHTTPHeaderFields?["X-Kinvey-Device-Info"]
             XCTAssertNotNil(deviceInfo)
             if let deviceInfo = deviceInfo {
@@ -2749,15 +2749,15 @@ class NetworkStoreTests: StoreTestCase {
                     XCTAssertNotNil(deviceInfoObj)
                 }
             }
-            
+
             return HttpResponse(json: [])
         }
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             switch result {
             case .success(let results):
@@ -2765,19 +2765,19 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testPlusSign() {
         var person = Person()
         person.name = "C++"
-        
+
         var mockJson: JsonDictionary?
         do {
             if useMockData {
@@ -2794,9 +2794,9 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationSave = expectation(description: "Save")
-            
+
             store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let _person):
@@ -2808,20 +2808,20 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationSave?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
         }
-        
+
         XCTAssertNotNil(person.personId)
         guard let personId = person.personId else {
             return
         }
-        
+
         do {
             if useMockData {
                 mockResponse(json: [mockJson!])
@@ -2831,11 +2831,11 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             let query = Query(format: "name == %@", "C++")
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let persons):
@@ -2850,32 +2850,32 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
     }
-    
+
     func testGeolocationQuery() {
         var person = Person()
         person.name = "Victor Barros"
         let latitude = 42.3133521
         let longitude = -71.1271963
         person.geolocation = GeoPoint(latitude: latitude, longitude: longitude)
-        
+
         let json = person.toJSON()
-        
+
         let geolocation = json[GeoPoint.CodingKey] as? [Double]
         XCTAssertNotNil(geolocation)
         if let geolocation = geolocation {
             XCTAssertEqual(geolocation[1], latitude)
             XCTAssertEqual(geolocation[0], longitude)
         }
-        
+
         var mockJson: JsonDictionary?
         do {
             if useMockData {
@@ -2892,9 +2892,9 @@ class NetworkStoreTests: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationSave = expectation(description: "Save")
-            
+
             store.save(person, options: try! Options(writePolicy: .forceNetwork)) {
                 switch $0 {
                 case .success(let _person):
@@ -2907,15 +2907,15 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationSave?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationSave = nil
             }
         }
-        
+
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
             do {
@@ -2927,9 +2927,9 @@ class NetworkStoreTests: StoreTestCase {
                         setURLProtocol(nil)
                     }
                 }
-                
+
                 weak var expectationFind = expectation(description: "Find")
-                
+
                 store.find(personId, options: try! Options(readPolicy: .forceNetwork)) {
                     switch $0 {
                     case .success(let person):
@@ -2941,20 +2941,20 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationFind?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationFind = nil
                 }
             }
-            
+
             circle(latitude: latitude, longitude: longitude, mockJson: mockJson)
             polygon(latitude: latitude, longitude: longitude, mockJson: mockJson)
         }
     }
-    
+
     func circle(latitude: Double, longitude: Double, mockJson: JsonDictionary?) {
         if useMockData {
             mockResponse(completionHandler: { (request) -> HttpResponse in
@@ -2979,15 +2979,15 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let coordinate = CLLocationCoordinate2D(latitude: 42.3536701, longitude: -71.0607657)
-        
+
         do {
             let query = Query(format: "geolocation = %@", MKCircle(center: coordinate, radius: 8000))
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                     switch $0 {
                     case .success(let persons):
@@ -3002,18 +3002,18 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                     switch $0 {
                     case .success(let persons):
@@ -3028,22 +3028,22 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
         }
-        
+
         do {
             let query = Query(format: "geolocation = %@", MKCircle(center: coordinate, radius: 7000))
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                     switch $0 {
                     case .success(let persons):
@@ -3051,18 +3051,18 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                     switch $0 {
                     case .success(let persons):
@@ -3070,17 +3070,17 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
         }
     }
-    
+
     func polygon(latitude: Double, longitude: Double, mockJson: JsonDictionary?) {
         if useMockData {
             mockResponse(completionHandler: { (request) -> HttpResponse in
@@ -3122,7 +3122,7 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         do {
             let coordinates = [
                 CLLocationCoordinate2D(latitude: 42.30229389364817, longitude: -71.14453953484005),
@@ -3133,10 +3133,10 @@ class NetworkStoreTests: StoreTestCase {
             ]
             let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
             let query = Query(format: "geolocation = %@", polygon)
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                     switch $0 {
                     case .success(let persons):
@@ -3151,18 +3151,18 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                     switch $0 {
                     case .success(let persons):
@@ -3177,16 +3177,16 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
         }
-        
+
         do {
             let coordinates = [
                 CLLocationCoordinate2D(latitude: 42.31363114297847, longitude: -71.12454163288896),
@@ -3197,10 +3197,10 @@ class NetworkStoreTests: StoreTestCase {
             ]
             let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
             let query = Query(format: "geolocation = %@", polygon)
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceNetwork)) {
                     switch $0 {
                     case .success(let persons):
@@ -3208,18 +3208,18 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
-            
+
             do {
                 weak var expectationQuery = expectation(description: "Query")
-                
+
                 store.find(query, options: try! Options(readPolicy: .forceLocal)) {
                     switch $0 {
                     case .success(let persons):
@@ -3227,22 +3227,22 @@ class NetworkStoreTests: StoreTestCase {
                     case .failure(let error):
                         XCTFail(error.localizedDescription)
                     }
-                    
+
                     expectationQuery?.fulfill()
                 }
-                
+
                 waitForExpectations(timeout: defaultTimeout) { error in
                     expectationQuery = nil
                 }
             }
         }
     }
-    
+
     func testGroupCustomAggregation() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 ["sum" : 926]
@@ -3253,9 +3253,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
@@ -3271,20 +3271,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupCustomAggregationSync() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 ["sum" : 926]
@@ -3295,7 +3295,7 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let request = store.group(
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
@@ -3316,12 +3316,12 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testGroupCustomAggregationTryCatchSync() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 ["sum" : 926]
@@ -3332,7 +3332,7 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         let request = store.group(
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
@@ -3349,12 +3349,12 @@ class NetworkStoreTests: StoreTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testGroupCustomAggregationByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3368,9 +3368,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             initialObject: ["sum" : 0],
@@ -3387,27 +3387,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupCustomAggregationTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             initialObject: ["sum" : 0],
             reduceJSFunction: "function(doc,out) { out.sum += doc.age; }",
@@ -3419,20 +3419,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationCountByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3446,9 +3446,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             count: ["name"],
             countType: Int.self,
@@ -3457,7 +3457,7 @@ class NetworkStoreTests: StoreTestCase {
             switch $0 {
             case .success(let results):
                 XCTAssertGreaterThanOrEqual(results.count, 0)
-                
+
                 if let first = results.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.count, 32)
@@ -3465,27 +3465,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationCountByNameTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             count: ["name"],
             countType: Int.self,
@@ -3497,20 +3497,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationSumByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3524,9 +3524,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             sum: "age",
@@ -3536,7 +3536,7 @@ class NetworkStoreTests: StoreTestCase {
             switch $0 {
             case .success(let results):
                 XCTAssertGreaterThanOrEqual(results.count, 0)
-                
+
                 if let first = results.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.sum, 926.2)
@@ -3544,27 +3544,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationSumByNameTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             sum: "age",
@@ -3577,20 +3577,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationAvgByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3606,9 +3606,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             avg: "age",
@@ -3618,7 +3618,7 @@ class NetworkStoreTests: StoreTestCase {
             switch $0 {
             case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
-                
+
                 if let first = result.first {
                     XCTAssertNotNil(first.value.name)
                     XCTAssertEqual(first.avg, 28.9375)
@@ -3626,27 +3626,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationAvgByNameTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             avg: "age",
@@ -3659,20 +3659,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationMinByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3686,9 +3686,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             min: "age",
@@ -3698,7 +3698,7 @@ class NetworkStoreTests: StoreTestCase {
             switch $0 {
             case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
-                
+
                 if let (person, min) = result.first {
                     XCTAssertNotNil(person.name)
                     XCTAssertEqual(min, 27.6)
@@ -3706,27 +3706,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationMinByNameTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             min: "age",
@@ -3739,20 +3739,20 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationMaxByName() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -3766,9 +3766,9 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             max: "age",
@@ -3778,7 +3778,7 @@ class NetworkStoreTests: StoreTestCase {
             switch $0 {
             case .success(let result):
                 XCTAssertGreaterThanOrEqual(result.count, 0)
-                
+
                 if let (person, max) = result.first {
                     XCTAssertNotNil(person.name)
                     XCTAssertEqual(max, 30.5)
@@ -3786,27 +3786,27 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupAggregationMaxByNameTimeoutError() {
         signUp()
-        
+
         let store = try! DataStore<Person>.collection(.network)
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationGroup = expectation(description: "Group")
-        
+
         store.group(
             keys: ["name"],
             max: "age",
@@ -3819,26 +3819,26 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTAssertTimeoutError(error)
             }
-            
+
             expectationGroup?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationGroup = nil
         }
     }
-    
+
     func testGroupCustomResultKey() {
         expect {
             try Aggregation.custom(keys: [], initialObject: [:], reduceJSFunction: "").resultKey()
         }.to(throwError())
     }
-    
+
     func testRemoveByEmptyId() {
         let store = try! DataStore<Person>.collection(.network)
-        
+
         weak var expectationRemove = expectation(description: "Remove")
-        
+
         store.remove(byId: "") {
             switch $0 {
             case .success:
@@ -3857,15 +3857,15 @@ class NetworkStoreTests: StoreTestCase {
             }
             expectationRemove?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
-    
+
     func testAutoPaginationDisabled() {
         let store = try! DataStore<Products>.collection(.network)
-        
+
         mockResponse(
             statusCode: 400,
             json: [
@@ -3877,9 +3877,9 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success:
@@ -3898,15 +3898,15 @@ class NetworkStoreTests: StoreTestCase {
                     XCTFail(error.localizedDescription)
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testAutoPaginationEnabledNetworkOnly() {
         mockResponse { (request) -> HttpResponse in
             let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
@@ -3938,11 +3938,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let store = try! DataStore<Products>.collection(.network, autoPagination: true)
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success(let products):
@@ -3958,15 +3958,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout * 5) { error in
             expectationFind = nil
         }
     }
-    
+
     func testAutoPaginationEnabled() {
         let pageSizeLimit = 2_000
         let expectedCount = 21_000
@@ -4001,11 +4001,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let store = try! DataStore<Products>.collection(.sync, autoPagination: true)
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork, maxSizePerResultSet: pageSizeLimit)) { (result: Result<AnyRandomAccessCollection<Products>, Swift.Error>) in
             switch result {
             case .success(let products):
@@ -4021,15 +4021,15 @@ class NetworkStoreTests: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout * 5) { error in
             expectationFind = nil
         }
     }
-    
+
     func testNestedMapping() {
         mockResponse(json: [
             [
@@ -4075,35 +4075,35 @@ class NetworkStoreTests: StoreTestCase {
                 ]
             ]
         ])
-        
+
         let book = Book()
         book.title = "Learning Swift"
-        
+
         let firstEdition = BookEdition()
         firstEdition.year = 2015
         firstEdition.retailPrice = 10
         book.editions.append(firstEdition)
-        
+
         let secondEdition = BookEdition()
         secondEdition.year = 2016
         secondEdition.retailPrice = 20
         book.editions.append(secondEdition)
-        
+
         let thirdEdition = BookEdition()
         thirdEdition.year = 2017
         thirdEdition.retailPrice = 30
         book.editions.append(thirdEdition)
-        
+
         let nextEdition = BookEdition()
         nextEdition.year = 2018
         nextEdition.retailPrice = 40
         book.nextEdition = nextEdition
-        
+
         let store = try! DataStore<Book>.collection(.sync)
-        
+
         do {
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(Query(format: "title == %@", book.title!), options: try! Options(readPolicy: .forceNetwork)) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
                 switch result {
                 case .success(let books):
@@ -4127,18 +4127,18 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
-        
+
         do {
             weak var expectationFind = expectation(description: "Find")
-            
+
             store.find(Query(format: "title == %@", book.title!), options: nil) { (result: Result<AnyRandomAccessCollection<Book>, Swift.Error>) in
                 switch result {
                 case .success(let books):
@@ -4162,44 +4162,44 @@ class NetworkStoreTests: StoreTestCase {
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
     }
-    
+
     func testDataStoreCacheInstances() {
         let ds1 = try! DataStore<Person>.collection(.network, options: try! Options(deltaSet: true))
         let ds2 = try! DataStore<Person>.collection(.network, options: try! Options(deltaSet: false))
         XCTAssertTrue(ds1.deltaSet)
         XCTAssertFalse(ds2.deltaSet)
-        
+
         let addr1 = Unmanaged.passUnretained(ds1).toOpaque()
         let addr2 = Unmanaged.passUnretained(ds2).toOpaque()
         XCTAssertNotEqual(addr1, addr2)
         XCTAssertNotEqual(ds1, ds2)
         XCTAssertNotEqual(ds1.hashValue, ds2.hashValue)
-        
+
         var h1 = Hasher()
         ds1.hash(into: &h1)
-        
+
         var h2 = Hasher()
         ds2.hash(into: &h2)
-        
+
         XCTAssertNotEqual(h1.finalize(), h2.finalize())
     }
-    
+
     func testFindCancel() {
         signUp()
-        
+
         let dataStore = try! DataStore<Person>.collection(.network)
-        
+
         var running = true
-        
+
         var runLoop: CFRunLoop?
         defer {
             if let runLoop = runLoop {
@@ -4217,35 +4217,35 @@ class NetworkStoreTests: StoreTestCase {
             }
             return HttpResponse(statusCode: 404, data: Data())
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         let request = dataStore.find(options: nil) { (result: Result<AnyRandomAccessCollection<Person>, Swift.Error>) in
             XCTFail("Handler was not expected to be called")
             expectationFind?.fulfill()
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             request.cancel()
             running = false
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testBLRuntimeError() {
         signUp()
-        
+
         let description = "The Business Logic script has a runtime error. See debug message for details."
         let debug = "ReferenceError: asdadsa is not defined"
         let stack = "ReferenceError: asdadsa is not defined\n  at onPreFetch (Person/onPreFetch:2:5)"
-        
+
         mockResponse(
             statusCode: 400,
             json: [
@@ -4258,11 +4258,11 @@ class NetworkStoreTests: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let dataStore = try! DataStore<Person>.collection(.network)
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         dataStore.find() {
             switch $0 {
             case .success:
@@ -4283,30 +4283,30 @@ class NetworkStoreTests: StoreTestCase {
                     }
                 }
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
 }
 
 class Products: Entity {
-    
+
     @objc
     dynamic var desc: String?
-    
+
     override static func collectionName() -> String {
         return "products"
     }
-    
+
     override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
-        
+
         desc <- ("desc", map["Description"])
     }
-    
+
 }
