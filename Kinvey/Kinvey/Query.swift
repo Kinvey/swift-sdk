@@ -20,23 +20,23 @@ import Foundation
 #endif
 
 extension NSPredicate {
-    
+
     internal var asString: String {
         return String(describing: self)
     }
-    
+
 }
 
 /// Class that represents a query including filters and sorts.
 public final class Query: NSObject, BuilderType {
-    
+
     /// Fields to be included in the results of the query.
     public var fields: Set<String>?
-    
+
     internal var fieldsAsString: String? {
         return fields?.sorted().joined(separator: ",")
     }
-    
+
     /// `NSPredicate` used to filter records.
     public var predicate: NSPredicate? {
         get {
@@ -54,24 +54,24 @@ public final class Query: NSObject, BuilderType {
             predicateKind = newValue.predicateKind
         }
     }
-    
+
     private var predicateKind: PredicateKind?
-    
+
     /// Array of `NSSortDescriptor`s used to sort records.
     public var sortDescriptors: [NSSortDescriptor]?
-    
+
     /// Skip a certain amount of records in the results of the query.
     public var skip: Int?
-    
+
     /// Impose a limit of records in the results of the query.
     public var limit: Int?
-    
+
     internal var emptyPredicateMustReturnNil = true
-    
+
     public override var description: String {
         return "Fields: \(String(describing: fields))\nPredicate: \(String(describing: predicate))\nSort Descriptors: \(String(describing: sortDescriptors))\nSkip: \(String(describing: skip))\nLimit: \(String(describing: limit))"
     }
-    
+
     internal func translate(expression: NSExpression, otherSideExpression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .keyPath:
@@ -148,7 +148,7 @@ public final class Query: NSObject, BuilderType {
             return expression
         }
     }
-    
+
     fileprivate func translate(predicate: NSPredicate) -> NSPredicate {
         signpost(.begin, log: osLog, name: "Translate Query")
         defer {
@@ -171,7 +171,7 @@ public final class Query: NSObject, BuilderType {
         }
         return predicate
     }
-    
+
     var isEmpty: Bool {
         return predicate == nil &&
             (sortDescriptors == nil || sortDescriptors!.isEmpty) &&
@@ -179,12 +179,12 @@ public final class Query: NSObject, BuilderType {
             limit == nil &&
             (fields == nil || fields!.isEmpty)
     }
-    
+
     fileprivate var queryStringEncoded: String? {
         guard let predicateKind = predicateKind else {
             return emptyPredicateMustReturnNil ? nil : "{}"
         }
-        
+
         let queryObj: [String : Any]
         switch predicateKind {
         case .predicate(let predicate):
@@ -193,50 +193,50 @@ public final class Query: NSObject, BuilderType {
         case .booleanExpression(let booleanExpression):
             queryObj = booleanExpression.expression.mongoDBQuery!
         }
-        
-        let data = try! JSONSerialization.data(withJSONObject: queryObj)
+
+        let data = try! JSONSerialize.data(queryObj)
         let queryStr = String(data: data, encoding: String.Encoding.utf8)!
         return queryStr.trimmingCharacters(in: CharacterSet.whitespaces)
     }
-    
+
     internal var urlQueryItems: [URLQueryItem]? {
         var queryParams = [URLQueryItem]()
-        
+
         if let queryParam = queryStringEncoded, !queryParam.isEmpty {
             let queryItem = URLQueryItem(name: "query", value: queryParam)
             queryParams.append(queryItem)
         }
-        
+
         if let sortDescriptors = sortDescriptors {
             var sorts = [String : Int]()
             for sortDescriptor in sortDescriptors {
                 sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
             }
-            let data = try! JSONSerialization.data(withJSONObject: sorts)
+            let data = try! JSONSerialize.data(sorts)
             let queryItem = URLQueryItem(name: "sort", value: String(data: data, encoding: String.Encoding.utf8)!)
             queryParams.append(queryItem)
         }
-        
+
         if let fields = fields {
             let queryItem = URLQueryItem(name: "fields", value: fields.joined(separator: ","))
             queryParams.append(queryItem)
         }
-        
+
         if let skip = skip {
             let queryItem = URLQueryItem(name: "skip", value: String(skip))
             queryParams.append(queryItem)
         }
-        
+
         if let limit = limit {
             let queryItem = URLQueryItem(name: "limit", value: String(limit))
             queryParams.append(queryItem)
         }
-        
+
         return queryParams.count > 0 ? queryParams : nil
     }
-    
+
     var persistableType: Persistable.Type?
-    
+
     init(
         predicate: NSPredicate? = nil,
         sortDescriptors: [NSSortDescriptor]? = nil,
@@ -248,7 +248,7 @@ public final class Query: NSObject, BuilderType {
         self.fields = fields
         self.persistableType = persistableType
     }
-    
+
     public var booleanExpression: BooleanExpression? {
         get {
             guard let predicateKind = predicateKind else {
@@ -265,17 +265,17 @@ public final class Query: NSObject, BuilderType {
             predicateKind = newValue.predicateKind
         }
     }
-    
+
     public init(_ booleanExpression: BooleanExpression) {
         self.predicateKind = .booleanExpression(booleanExpression)
     }
-    
+
     convenience init(query: Query, persistableType: Persistable.Type) {
         self.init(query) {
             $0.persistableType = persistableType
         }
     }
-    
+
     /// Default Constructor.
     public override convenience required init() {
         self.init(
@@ -285,7 +285,7 @@ public final class Query: NSObject, BuilderType {
             persistableType: nil
         )
     }
-    
+
     /// Constructor using a `NSPredicate` to filter records, an array of `NSSortDescriptor`s to sort records and the fields that should be returned.
     public convenience init(
         predicate: NSPredicate? = nil,
@@ -299,27 +299,27 @@ public final class Query: NSObject, BuilderType {
             persistableType: nil
         )
     }
-    
+
     /// Constructor using a similar way to construct a `NSPredicate`.
     public convenience init(format: String, _ args: Any...) {
         self.init(format: format, argumentArray: args)
     }
-    
+
     /// Constructor using a similar way to construct a `NSPredicate`.
     public convenience init(format: String, args: CVarArg) {
         self.init(predicate: NSPredicate(format: format, args))
     }
-    
+
     /// Constructor using a similar way to construct a `NSPredicate`.
     public convenience init(format: String, argumentArray: [Any]?) {
         self.init(predicate: NSPredicate(format: format, argumentArray: argumentArray))
     }
-    
+
     /// Constructor using a similar way to construct a `NSPredicate`.
     public convenience init(format: String, arguments: CVaListPointer) {
         self.init(predicate: NSPredicate(format: format, arguments: arguments))
     }
-    
+
     /// Copy Constructor.
     public convenience init(_ query: Query) {
         self.init() {
@@ -331,20 +331,20 @@ public final class Query: NSObject, BuilderType {
             $0.persistableType = query.persistableType
         }
     }
-    
+
     /// Copy Constructor.
     public convenience init(_ query: Query, _ block: ((Query) -> Void)) {
         self.init(query)
         block(self)
     }
-    
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public init?(map: Map) {
         return nil
     }
-    
+
     let sortLock = NSLock()
-    
+
     fileprivate func addSort(_ property: String, ascending: Bool) {
         sortLock.lock()
         if sortDescriptors == nil {
@@ -353,7 +353,7 @@ public final class Query: NSObject, BuilderType {
         sortLock.unlock()
         sortDescriptors!.append(NSSortDescriptor(key: property, ascending: ascending))
     }
-    
+
     /// Adds ascending properties to be sorted.
     @discardableResult
     public func ascending(_ properties: String...) -> Query {
@@ -362,7 +362,7 @@ public final class Query: NSObject, BuilderType {
         }
         return self
     }
-    
+
     /// Adds descending properties to be sorted.
     @discardableResult
     public func descending(_ properties: String...) -> Query {
@@ -371,7 +371,7 @@ public final class Query: NSObject, BuilderType {
         }
         return self
     }
-    
+
     @discardableResult
     public func sort<Root, Value>(_ keyPath: KeyPath<Root, Value>, ascending: Bool) -> Query {
         sortLock.lock()
@@ -382,7 +382,7 @@ public final class Query: NSObject, BuilderType {
         sortDescriptors!.append(NSSortDescriptor(key: keyPath.name, ascending: ascending))
         return self
     }
-    
+
     /// Adds ascending properties to be sorted.
     @discardableResult
     public func ascending<Root, Value>(_ keyPaths: KeyPath<Root, Value>...) -> Query {
@@ -391,7 +391,7 @@ public final class Query: NSObject, BuilderType {
         }
         return self
     }
-    
+
     /// Adds ascending properties to be sorted.
     @discardableResult
     public func descending<Root, Value>(_ keyPaths: KeyPath<Root, Value>...) -> Query {
@@ -404,28 +404,28 @@ public final class Query: NSObject, BuilderType {
 }
 
 extension KeyPath {
-    
+
     internal var name: String {
         return NSExpression(forKeyPath: self).keyPath
     }
-    
+
 }
 
 @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
 extension Query: Mappable {
-    
+
     public func mapping(map: Map) {
         if map.mappingType == .toJSON, let predicate = predicate {
             predicate.mapping(map: map)
         }
     }
-    
+
 }
 
 public indirect enum Expression {
-    
+
     public typealias ExpressionProducer = () -> Expression
-    
+
     case column(String)
     case and(lhs: Expression, rhs: Expression)
     case or(lhs: Expression, rhs: Expression)
@@ -441,7 +441,7 @@ public indirect enum Expression {
     case geoIn(lhs: Expression, rhs: Expression)
     case lazy(ExpressionProducer)
     case keyPath(AnyKeyPath, NSExpression)
-    
+
     case integer(Int)
     case uinteger(UInt)
     case integer64(Int64)
@@ -452,7 +452,7 @@ public indirect enum Expression {
     case uinteger16(UInt16)
     case integer8(Int8)
     case uinteger8(UInt8)
-    
+
     case double(Double)
     case float(Float)
     case string(String)
@@ -463,22 +463,22 @@ public indirect enum Expression {
     case date(Date)
     case url(URL)
     case null
-    
+
     #if canImport(MapKit) && !os(watchOS)
     case circle(MKCircle)
     case polygon(MKPolygon)
     #endif
-    
+
 }
 
 // MARK: - Mongo DB Query
 
 extension Expression {
-    
+
     var mongoDBQuery: [String : Any]? {
         return transform(expression: self)
     }
-    
+
     var keyPath: String? {
         switch self {
         case .keyPath(_, let expression):
@@ -487,7 +487,7 @@ extension Expression {
             return nil
         }
     }
-    
+
     var value: Any? {
         switch self {
         case .integer(let value as Any),
@@ -521,7 +521,7 @@ extension Expression {
             return nil
         }
     }
-    
+
     var lhsMongoDBOperatorRhs: (lhs: Expression, `operator`: MongoDBOperator, rhs: Expression)? {
         switch self {
         case .equality(let lhs, let rhs):
@@ -540,7 +540,7 @@ extension Expression {
             return nil
         }
     }
-    
+
     private func transform(lhs: Expression, operator: MongoDBOperator, rhs: Expression, optimize: Bool) -> [String : Any]? {
         let keyPath = lhs.keyPath!
         let value = rhs.value!
@@ -551,7 +551,7 @@ extension Expression {
             return [keyPath : [`operator`.rawValue : value]]
         }
     }
-    
+
     private func transform(expression: Expression, optimize: Bool = true) -> [String : Any]? {
         switch expression {
         case .equality(let lhs, let rhs):
@@ -677,17 +677,17 @@ extension Expression {
             return [:]
         }
     }
-    
+
 }
 
 // MARK: - Expression -> Predicate
 
 extension Expression {
-    
+
     var predicate: NSPredicate? {
         return transform(expression: self)
     }
-    
+
     var expression: NSExpression? {
         switch self {
         case .keyPath(_, let expression):
@@ -723,7 +723,7 @@ extension Expression {
             return nil
         }
     }
-    
+
     private func transform(expression: Expression) -> NSPredicate? {
         switch expression {
         case .equality(let lhs, let rhs):
@@ -763,7 +763,7 @@ extension Expression {
             return nil
         }
     }
-    
+
     private func transform(
         lhs: NSExpression,
         rhs: NSExpression,
@@ -779,32 +779,32 @@ extension Expression {
             options: options
         )
     }
-    
+
 }
 
 // MARK: - BooleanExpression
 
 public protocol BooleanExpression {
-    
+
     var expression: Expression { get }
-    
+
 }
 
 struct BooleanExpressionWrapper: BooleanExpression {
-    
+
     let expression: Expression
-    
+
     init(_ e: Expression) {
         expression = e
     }
-    
+
 }
 
 enum PredicateKind {
-    
+
     case predicate(NSPredicate)
     case booleanExpression(BooleanExpression)
-    
+
 }
 
 // MARK: - == Operator
@@ -998,17 +998,17 @@ public func !~ <Root, Value: ValueExpressionType>(lhs: KeyPath<Root, Value?>, rh
 // MARK: - Expression Types
 
 public protocol ExpressionType {
-    
+
     var expression: Expression { get }
-    
+
 }
 
 extension KeyPath: ExpressionType {
-    
+
     public var expression: Expression {
         return .keyPath(self, NSExpression(forKeyPath: self))
     }
-    
+
 }
 
 public protocol ValueExpressionType: ExpressionType {
@@ -1018,192 +1018,192 @@ public protocol GeoValueExpressionType: ExpressionType {
 }
 
 extension Int: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .integer(self)
     }
-    
+
 }
 
 extension UInt: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uinteger(self)
     }
-    
+
 }
 
 extension Int64: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .integer64(self)
     }
-    
+
 }
 
 extension UInt64: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uinteger64(self)
     }
-    
+
 }
 
 extension Int32: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .integer32(self)
     }
-    
+
 }
 
 extension UInt32: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uinteger32(self)
     }
-    
+
 }
 
 extension Int16: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .integer16(self)
     }
-    
+
 }
 
 extension UInt16: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uinteger16(self)
     }
-    
+
 }
 
 extension Int8: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .integer8(self)
     }
-    
+
 }
 
 extension UInt8: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uinteger8(self)
     }
-    
+
 }
 
 extension Double: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .double(self)
     }
-    
+
 }
 
 extension Float: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .float(self)
     }
-    
+
 }
 
 extension String: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .string(self)
     }
-    
+
 }
 
 extension Array: ValueExpressionType, ExpressionType where Element == UInt8 {
-    
+
     public var expression: Expression {
         return .blob(self)
     }
-    
+
 }
 
 extension Array /*: ValueExpressionType, ExpressionType */ where Element == Int8 {
-    
+
     public var expression: Expression {
         return .sblob(self)
     }
-    
+
 }
 
 extension Bool: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .bool(self)
     }
-    
+
 }
 
 extension UUID: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .uuid(self)
     }
-    
+
 }
 
 extension Date: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .date(self)
     }
-    
+
 }
 
 extension URL: ValueExpressionType {
-    
+
     public var expression: Expression {
         return .url(self)
     }
-    
+
 }
 
 #if canImport(MapKit) && !os(watchOS)
 extension MKCircle: GeoValueExpressionType {
-    
+
     public var expression: Expression {
         return .circle(self)
     }
-    
+
 }
 
 extension MKPolygon: GeoValueExpressionType {
-    
+
     public var expression: Expression {
         return .polygon(self)
     }
-    
+
 }
 #endif
 
 // MARK: - Optional Expression
 
 extension Optional where Wrapped: ExpressionType {
-    
+
     public var expression: Expression {
         if let value = self {
             return value.expression
         }
         return .null
     }
-    
+
 }
 
 // MARK: - Optional PredicateKind
 
 extension Optional where Wrapped == BooleanExpression {
-    
+
     var predicateKind: PredicateKind? {
         switch self {
         case .some(let wrapped):
@@ -1212,11 +1212,11 @@ extension Optional where Wrapped == BooleanExpression {
             return nil
         }
     }
-    
+
 }
 
 extension Optional where Wrapped == NSPredicate {
-    
+
     var predicateKind: PredicateKind? {
         switch self {
         case .some(let wrapped):
@@ -1225,5 +1225,5 @@ extension Optional where Wrapped == NSPredicate {
             return nil
         }
     }
-    
+
 }

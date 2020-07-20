@@ -12,20 +12,20 @@ import XCTest
 // swiftlint:disable nesting
 
 class PersistableTestCase: StoreTestCase {
-    
+
     func testAclNull() {
         store = try! DataStore<Person>.collection()
-        
+
         class NullAclURLProtocol : URLProtocol {
-            
+
             fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
-            
+
             fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
-            
+
             fileprivate override func startLoading() {
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
@@ -39,23 +39,23 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json)
-                
+                let data = try! JSONSerialize.data(json)
+
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)
                 client!.urlProtocolDidFinishLoading(self)
             }
-            
+
             fileprivate override func stopLoading() {
             }
-            
+
         }
-        
+
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
@@ -63,28 +63,28 @@ class PersistableTestCase: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testAclEmpty() {
         store = try! DataStore<Person>.collection()
-        
+
         class NullAclURLProtocol : URLProtocol {
-            
+
             fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
-            
+
             fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
-            
+
             fileprivate override func startLoading() {
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
@@ -99,23 +99,23 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json)
-                
+                let data = try! JSONSerialize.data(json)
+
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)
                 client!.urlProtocolDidFinishLoading(self)
             }
-            
+
             fileprivate override func stopLoading() {
             }
-            
+
         }
-        
+
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
@@ -123,28 +123,28 @@ class PersistableTestCase: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testKmdNull() {
         store = try! DataStore<Person>.collection()
-        
+
         class NullAclURLProtocol : URLProtocol {
-            
+
             fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
-            
+
             fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
-            
+
             fileprivate override func startLoading() {
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
@@ -157,23 +157,23 @@ class PersistableTestCase: StoreTestCase {
                         ]
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json)
-                
+                let data = try! JSONSerialize.data(json)
+
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)
                 client!.urlProtocolDidFinishLoading(self)
             }
-            
+
             fileprivate override func stopLoading() {
             }
-            
+
         }
-        
+
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
@@ -181,28 +181,28 @@ class PersistableTestCase: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testKmdEmpty() {
         store = try! DataStore<Person>.collection()
-        
+
         class NullAclURLProtocol : URLProtocol {
-            
+
             fileprivate override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
-            
+
             fileprivate override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
-            
+
             fileprivate override func startLoading() {
                 let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json"])!
                 let json = [
@@ -216,23 +216,23 @@ class PersistableTestCase: StoreTestCase {
                         "_kmd" : JsonDictionary()
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json)
-                
+                let data = try! JSONSerialize.data(json)
+
                 client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 client!.urlProtocol(self, didLoad: data)
                 client!.urlProtocolDidFinishLoading(self)
             }
-            
+
             fileprivate override func stopLoading() {
             }
-            
+
         }
-        
+
         setURLProtocol(NullAclURLProtocol.self)
         defer { setURLProtocol(nil) }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         store.find(options: try! Options(readPolicy: .forceNetwork)) {
             switch $0 {
             case .success(let results):
@@ -240,15 +240,15 @@ class PersistableTestCase: StoreTestCase {
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
 }
 
 // swiftlint:enable nesting

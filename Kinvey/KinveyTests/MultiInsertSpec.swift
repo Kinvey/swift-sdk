@@ -305,13 +305,15 @@ class MultiInsertSpec: QuickSpec {
                                     "errors" : [
                                         [
                                             "index": 0,
-                                            "code": 11000,
-                                            "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"
+                                            "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }",
+                                            "description": "description",
+                                            "debug": "debug"
                                         ],
                                         [
                                             "index": 1,
-                                            "code": 11000,
-                                            "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"
+                                            "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }",
+                                            "description": "description",
+                                            "debug": "debug"
                                         ]
                                     ]
                                 ]
@@ -354,11 +356,13 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(0))
-                            expect(firstError.code).to(equal(11000))
                             expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.serverDescription).to(equal("description"))
+                            expect(firstError.serverDebug).to(equal("debug"))
                             expect(lastError.index).to(equal(1))
-                            expect(lastError.code).to(equal(11000))
                             expect(lastError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
+                            expect(lastError.serverDescription).to(equal("description"))
+                            expect(lastError.serverDebug).to(equal("debug"))
                         }
                         it("should return an entities and errors when some requests fail and some succeed") {
                             let id1 = UUID().uuidString
@@ -382,8 +386,9 @@ class MultiInsertSpec: QuickSpec {
                                     "errors" : [
                                         [
                                             "index": 0,
-                                            "code": 11000,
-                                            "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"
+                                            "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }",
+                                            "description": "description",
+                                            "debug": "debug"
                                         ]
                                     ]
                                 ]
@@ -423,8 +428,9 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(0))
-                            expect(firstError.code).to(equal(11000))
                             expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.serverDescription).to(equal("description"))
+                            expect(firstError.serverDebug).to(equal("debug"))
                         }
                         it("should return PUT failures at the matching index") {
                             let id1 = UUID().uuidString
@@ -448,8 +454,9 @@ class MultiInsertSpec: QuickSpec {
                                     "errors" : [
                                         [
                                             "index": 1,
-                                            "code": 11000,
-                                            "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"
+                                            "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }",
+                                            "description": "description",
+                                            "debug": "debug"
                                         ]
                                     ]
                                 ]
@@ -489,8 +496,9 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(1))
-                            expect(firstError.code).to(equal(11000))
                             expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.serverDescription).to(equal("description"))
+                            expect(firstError.serverDebug).to(equal("debug"))
                         }
                     }
                     context("more than 100 items") {
@@ -519,8 +527,7 @@ class MultiInsertSpec: QuickSpec {
                                     entities[index] = nil
                                     errors.append([
                                         "index" : index,
-                                        "code" : 100,
-                                        "errmsg" : "Entity not saved"
+                                        "error" : "Entity not saved"
                                     ])
                                 case 1:
                                     expect(json.count).to(equal(50))
@@ -529,8 +536,7 @@ class MultiInsertSpec: QuickSpec {
                                     entities[index] = nil
                                     errors.append([
                                         "index" : index,
-                                        "code" : 200,
-                                        "errmsg" : "Entity not saved"
+                                        "error" : "Entity not saved"
                                     ])
                                 default:
                                     fail("request not expected")
@@ -949,9 +955,10 @@ class MultiInsertSpec: QuickSpec {
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
                     
                     let errors = kinveyPush(dataStore: syncDataStore).errors
-                    expect(errors?.count).to(equal(1))
+                    expect(errors?.count).to(equal(2))
                     expect(errors?.first?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
-                    
+                    expect(errors?.last?.localizedDescription).to(equal("The Kinvey server encountered an unexpected error. Please retry your request."))
+
                     expect(syncDataStore.pendingSyncCount()).to(equal(2))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(2))
                     expect(syncDataStore.pendingSyncOperations().count).to(equal(1))
@@ -1028,8 +1035,7 @@ class MultiInsertSpec: QuickSpec {
                                     "errors" : [
                                         [
                                             "index": 1,
-                                            "code": errorCode,
-                                            "errmsg": errorMessage
+                                            "error": errorMessage
                                         ],
                                     ]
                                 ]
@@ -1071,8 +1077,6 @@ class MultiInsertSpec: QuickSpec {
                     expect(multiSaveError).toNot(beNil())
                     
                     expect(multiSaveError?.index).to(equal(1))
-                    
-                    expect(multiSaveError?.code).to(equal(errorCode))
                     
                     expect(multiSaveError?.message).to(equal(errorMessage))
                     
@@ -1322,13 +1326,15 @@ class MultiInsertSpec: QuickSpec {
                                 "errors" : [
                                     [
                                         "index": 0,
-                                        "code": 11000,
-                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"
+                                        "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }",
+                                        "description": "description",
+                                        "debug": "debug"
                                     ],
                                     [
                                         "index": 1,
-                                        "code": 11000,
-                                        "errmsg": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"
+                                        "error": "E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }",
+                                        "description": "description",
+                                        "debug": "debug"
                                     ]
                                 ]
                             ]
@@ -1343,14 +1349,18 @@ class MultiInsertSpec: QuickSpec {
                         expect(result?.entities.last!).to(beNil())
                         expect(result?.errors.count).to(equal(2))
                         
-                        expect((result?.errors.first as? MultiSaveError)?.index).to(equal(0))
-                        expect((result?.errors.first as? MultiSaveError)?.code).to(equal(11000))
-                        expect((result?.errors.first as? MultiSaveError)?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
-                        
-                        expect((result?.errors.last as? MultiSaveError)?.index).to(equal(1))
-                        expect((result?.errors.last as? MultiSaveError)?.code).to(equal(11000))
-                        expect((result?.errors.last as? MultiSaveError)?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
-                        
+                        let firstError = result?.errors.first as? MultiSaveError
+                        expect(firstError?.index).to(equal(0))
+                        expect(firstError?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                        expect(firstError?.serverDescription).to(equal("description"))
+                        expect(firstError?.serverDebug).to(equal("debug"))
+
+                        let lastError = result?.errors.last as? MultiSaveError
+                        expect(lastError?.index).to(equal(1))
+                        expect(lastError?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
+                        expect(lastError?.serverDescription).to(equal("description"))
+                        expect(lastError?.serverDebug).to(equal("debug"))
+
                         expect(autoDataStore.pendingSyncCount()).to(equal(2))
                         expect(autoDataStore.pendingSyncEntities().count).to(equal(2))
                         expect(autoDataStore.pendingSyncOperations().count).to(equal(1))
@@ -1388,8 +1398,9 @@ class MultiInsertSpec: QuickSpec {
                                         "errors" : [
                                             [
                                                 "index" : 1,
-                                                "code": 123,
-                                                "errmsg": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                                "error": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90",
+                                                "description": "description",
+                                                "debug": "debug"
                                             ]
                                         ]
                                     ]
@@ -1468,8 +1479,9 @@ class MultiInsertSpec: QuickSpec {
                                         "errors" : [
                                             [
                                                 "index" : 0,
-                                                "code": 123,
-                                                "errmsg": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                                "error": "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90",
+                                                "description": "description",
+                                                "debug": "debug"
                                             ]
                                         ]
                                     ]
@@ -1699,13 +1711,11 @@ class MultiInsertSpec: QuickSpec {
                                         "errors": [
                                             [
                                                 "index": 0,
-                                                "code": 1,
-                                                "errmsg": "An entity with that name already exists in this collection"
+                                                "error": "An entity with that name already exists in this collection"
                                             ],
                                             [
                                                 "index": 1,
-                                                "code": 2,
-                                                "errmsg": "An entity with that name already exists in this collection"
+                                                "error": "An entity with that name already exists in this collection"
                                             ],
                                         ]
                                     ]
@@ -1864,8 +1874,7 @@ class MultiInsertSpec: QuickSpec {
                                         "errors" : [
                                             [
                                                 "index" : 1,
-                                                "code" : 123,
-                                                "errmsg" : "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
+                                                "error" : "Geolocation points must be in the form [longitude, latitude] with long between -180 and 180, lat between -90 and 90"
                                             ]
                                         ]
                                     ])

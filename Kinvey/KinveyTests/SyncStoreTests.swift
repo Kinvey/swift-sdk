@@ -11,8 +11,56 @@ import XCTest
 import Nimble
 import RealmSwift
 
-class SyncStoreTests: StoreTestCase {
+class SyncStoreTest: StoreTestCase {
     
+    class NotEntityPersistable: NSObject, Persistable {
+        
+        static func collectionName() -> String {
+            return "NotEntityPersistable"
+        }
+        
+        static func translate(property: String) -> String? {
+            return nil
+        }
+        
+        required override init() {
+        }
+        
+        required init?(map: Map) {
+        }
+        
+        func mapping(map: Map) {
+        }
+        
+        static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
+            return NotEntityPersistable() as! T
+        }
+        
+        static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
+            return [NotEntityPersistable]() as! [T]
+        }
+        
+        static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
+            return NotEntityPersistable() as! T
+        }
+        
+        func refresh(from dictionary: [String : Any]) throws {
+            var _self = self
+            try _self.refreshJSONDecodable(from: dictionary)
+        }
+        
+        func encode() throws -> [String : Any] {
+            return [:]
+        }
+        
+    }
+
+    private var originalRestApiVersion: Int = 0
+    fileprivate var restApiVersion: Int = Kinvey.defaultRestApiVersion
+    private var collectionTag: String {
+        return String(self.restApiVersion)
+    }
+
     class CheckForNetworkURLProtocol: URLProtocol {
         
         override class func canInit(with request: URLRequest) -> Bool {
@@ -21,20 +69,28 @@ class SyncStoreTests: StoreTestCase {
         }
         
     }
+
     
     override func setUp() {
+        self.originalRestApiVersion = Kinvey.restApiVersion
+        Kinvey.restApiVersion = self.restApiVersion
+
         super.setUp()
         
         signUp()
         
-        store = try! DataStore<Person>.collection(.sync)
+        store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
     }
     
     var mockCount = 0
     
     override func tearDown() {
+        defer {
+            Kinvey.restApiVersion = self.originalRestApiVersion
+        }
+
         if let activeUser = client.activeUser {
-            let store = try! DataStore<Person>.collection(.network)
+            let store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
             let query = Query(format: "\(try! Person.aclProperty() ?? Person.EntityCodingKeys.acl.rawValue).creator == %@", activeUser.userId)
             
             if useMockData {
@@ -398,50 +454,49 @@ class SyncStoreTests: StoreTestCase {
         
     }
     
-    func testCustomTag() {
-        let fileManager = FileManager.default
-        
-        let path = cacheBasePath
-        let tag = "Custom Identifier"
-        let customPath = "\(path)/\(client.appKey!)/\(tag).realm"
-        
-        let removeFiles: () -> Void = {
-            if fileManager.fileExists(atPath: customPath) {
-                try! fileManager.removeItem(atPath: customPath)
+        func testCustomTag() {
+            let fileManager = FileManager.default
+            
+            let path = cacheBasePath
+            let tag = "Custom Identifier-\(self.restApiVersion)" // append restApiVersion to avoid sporatic Realm failures when tags are the same in parallel tests
+            let customPath = "\(path)/\(client.appKey!)/\(tag).realm"
+            
+            let removeFiles: () -> Void = {
+                if fileManager.fileExists(atPath: customPath) {
+                    try! fileManager.removeItem(atPath: customPath)
+                }
+                
+                let lockPath = (customPath as NSString).appendingPathExtension("lock")!
+                if fileManager.fileExists(atPath: lockPath) {
+                    try! fileManager.removeItem(atPath: lockPath)
+                }
+                
+                let logPath = (customPath as NSString).appendingPathExtension("log")!
+                if fileManager.fileExists(atPath: logPath) {
+                    try! fileManager.removeItem(atPath: logPath)
+                }
+                
+                let logAPath = (customPath as NSString).appendingPathExtension("log_a")!
+                if fileManager.fileExists(atPath: logAPath) {
+                    try! fileManager.removeItem(atPath: logAPath)
+                }
+                
+                let logBPath = (customPath as NSString).appendingPathExtension("log_b")!
+                if fileManager.fileExists(atPath: logBPath) {
+                    try! fileManager.removeItem(atPath: logBPath)
+                }
             }
             
-            let lockPath = (customPath as NSString).appendingPathExtension("lock")!
-            if fileManager.fileExists(atPath: lockPath) {
-                try! fileManager.removeItem(atPath: lockPath)
-            }
+            removeFiles()
+            XCTAssertFalse(fileManager.fileExists(atPath: customPath))
             
-            let logPath = (customPath as NSString).appendingPathExtension("log")!
-            if fileManager.fileExists(atPath: logPath) {
-                try! fileManager.removeItem(atPath: logPath)
-            }
-            
-            let logAPath = (customPath as NSString).appendingPathExtension("log_a")!
-            if fileManager.fileExists(atPath: logAPath) {
-                try! fileManager.removeItem(atPath: logAPath)
-            }
-            
-            let logBPath = (customPath as NSString).appendingPathExtension("log_b")!
-            if fileManager.fileExists(atPath: logBPath) {
-                try! fileManager.removeItem(atPath: logBPath)
-            }
-        }
-        
-        removeFiles()
-        XCTAssertFalse(fileManager.fileExists(atPath: customPath))
-        
-        store = try! DataStore<Person>.collection(.sync, tag: tag)
-        defer {
+            store = try! DataStore<Person>.collection(.sync, tag: tag)
+            XCTAssertTrue(fileManager.fileExists(atPath: customPath))
+
             removeFiles()
             XCTAssertFalse(fileManager.fileExists(atPath: customPath))
         }
-        XCTAssertTrue(fileManager.fileExists(atPath: customPath))
-    }
-    
+        
     func testPurge() {
         store.clearCache()
         XCTAssertEqual(store.syncCount(), 0)
@@ -735,7 +790,7 @@ class SyncStoreTests: StoreTestCase {
     func testPurgeInvalidDataStoreType() {
         save()
         
-        store = try! DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
         
         weak var expectationPurge = expectation(description: "Purge")
         
@@ -1037,7 +1092,7 @@ class SyncStoreTests: StoreTestCase {
     func testSyncInvalidDataStoreType() {
         save()
         
-        store = try! DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
         
         weak var expectationSync = expectation(description: "Sync")
         
@@ -1102,7 +1157,7 @@ class SyncStoreTests: StoreTestCase {
     func testPush() {
         save()
         
-        let bookDataStore = try! DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync, tag: self.collectionTag)
         
         do {
             let book = Book()
@@ -1171,7 +1226,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushSync() {
         save()
         
-        let bookDataStore = try! DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync, tag: self.collectionTag)
         
         do {
             let book = Book()
@@ -1238,7 +1293,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushTryCatchSync() {
         save()
         
-        let bookDataStore = try! DataStore<Book>.collection(.sync)
+        let bookDataStore = try! DataStore<Book>.collection(.sync, tag: self.collectionTag)
         
         do {
             let book = Book()
@@ -1332,7 +1387,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushInvalidDataStoreType() {
         save()
         
-        store = try! DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
 		defer {
             store.clearCache()
         }
@@ -1605,7 +1660,7 @@ class SyncStoreTests: StoreTestCase {
     func testPullInvalidDataStoreType() {
         //save()
         
-        store = try! DataStore<Person>.collection(.network)
+        store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
         
         weak var expectationPull = expectation(description: "Pull")
         
@@ -2045,7 +2100,7 @@ class SyncStoreTests: StoreTestCase {
     
     func testSaveAndFind10SkipLimit() {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
-        
+
         guard let user = Kinvey.sharedClient.activeUser else {
             return
         }
@@ -2281,9 +2336,15 @@ class SyncStoreTests: StoreTestCase {
         do {
             if useMockData {
                 mockResponse { request -> HttpResponse in
-                    let json = self.decorateJsonFromPostRequest(request)
-                    mockObjects.append(json)
-                    return HttpResponse(statusCode: 201, json: json)
+                    if self.restApiVersion < 5 {
+                        let json = self.decorateJsonFromPostRequest(request)
+                        mockObjects.append(json)
+                        return HttpResponse(statusCode: 201, json: json)
+                    } else {
+                        let result = self.decorateJsonArrayFromPostRequest(request)
+                        mockObjects.append(contentsOf: result["entities"] as! [JsonDictionary])
+                        return HttpResponse(statusCode: 201, json: result)
+                    }
                 }
             }
             defer {
@@ -2605,9 +2666,15 @@ class SyncStoreTests: StoreTestCase {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
                     XCTAssertEqual(request.httpMethod, "POST")
-                    let json = self.decorateJsonFromPostRequest(request)
-                    mockResponses.append(json)
-                    return HttpResponse(statusCode: 201, json: json)
+                    if self.restApiVersion < 5 {
+                        let json = self.decorateJsonFromPostRequest(request)
+                        mockResponses.append(json)
+                        return HttpResponse(statusCode: 201, json: json)
+                    } else {
+                        let result = self.decorateJsonArrayFromPostRequest(request)
+                        mockResponses.append(contentsOf: result["entities"] as! [JsonDictionary])
+                        return HttpResponse(statusCode: 201, json: result)
+                    }
                 }
             }
             defer {
@@ -2761,49 +2828,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testRealmCacheNotEntity() {
-        // swiftlint:disable nesting
-        class NotEntityPersistable: NSObject, Persistable {
-            
-            static func collectionName() -> String {
-                return "NotEntityPersistable"
-            }
-            
-            static func translate(property: String) -> String? {
-                return nil
-            }
-            
-            required override init() {
-            }
-            
-            required init?(map: Map) {
-            }
-            
-            func mapping(map: Map) {
-            }
-            
-            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
-                return [NotEntityPersistable]() as! [T]
-            }
-            
-            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            func refresh(from dictionary: [String : Any]) throws {
-                var _self = self
-                try _self.refreshJSONDecodable(from: dictionary)
-            }
-            
-            func encode() throws -> [String : Any] {
-                return [:]
-            }
-            
-        }
-        // swiftlint:enable nesting
         
         expect {
             try RealmCache<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
@@ -2811,48 +2835,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testRealmSyncNotEntity() {
-        // swiftlint:disable nesting
-        class NotEntityPersistable: NSObject, Persistable {
-            
-            static func collectionName() -> String {
-                return "NotEntityPersistable"
-            }
-            
-            static func translate(property: String) -> String? {
-                return nil
-            }
-            
-            required override init() {
-            }
-            
-            required init?(map: Map) {
-            }
-            
-            func mapping(map: Map) {
-            }
-            
-            static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            static func decodeArray<T>(from data: Data) throws -> [T] where T : JSONDecodable {
-                 return [NotEntityPersistable]() as! [T]
-            }
-            
-            static func decode<T>(from dictionary: [String : Any]) throws -> T where T : JSONDecodable {
-                return NotEntityPersistable() as! T
-            }
-            
-            func refresh(from dictionary: [String : Any]) throws {
-            }
-            
-            func encode() throws -> [String : Any] {
-                return [:]
-            }
-            
-        }
-        // swiftlint:enable nesting
-        
         expect {
             try RealmSync<NotEntityPersistable>(persistenceId: UUID().uuidString, schemaVersion: 0)
         }.to(throwError())
@@ -2889,7 +2871,7 @@ class SyncStoreTests: StoreTestCase {
     func testGroupCustomAggregationError() {
         signUp()
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         if useMockData {
             mockResponse(json: [
@@ -2936,7 +2918,7 @@ class SyncStoreTests: StoreTestCase {
     func testGroupCustomAggregationErrorSync() {
         signUp()
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         if useMockData {
             mockResponse(json: [
@@ -2978,7 +2960,7 @@ class SyncStoreTests: StoreTestCase {
     func testGroupCustomAggregationErrorTryCatchSync() {
         signUp()
         
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         if useMockData {
             mockResponse(json: [
@@ -3014,7 +2996,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testObjectMappingMemoryLeak() {
-        var store = try! DataStore<Person>.collection(.network)
+        var store = try! DataStore<Person>.collection(.network, tag: self.collectionTag)
         
         mockResponse(json: [
             [
@@ -3062,12 +3044,12 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAdd1Record() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = 0
         do {
             if !useMockData {
-                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
+                initialCount = try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         
@@ -3107,7 +3089,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -3171,7 +3153,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -3205,7 +3187,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncUpdate1Record() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3321,7 +3303,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncDelete1Record() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3424,7 +3406,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncAddUpdateDelete2Records() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -3599,7 +3581,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCacheNoQuery() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         do {
@@ -3807,7 +3789,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncClearCache() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         let realm = (store.cache!.cache as! RealmCache<Person>).newRealm
         
         do {
@@ -4015,7 +3997,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncResultSetExceed() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -4117,7 +4099,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncMissingConfiguration() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         mockResponse { (request) -> HttpResponse in
             guard let url = request.url else {
@@ -4202,7 +4184,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testServerSideDeltaSetSyncParameterValueOutOfRange() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             mockResponse { (request) -> HttpResponse in
@@ -4321,12 +4303,12 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDisabledDeltasetWithPull() {
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -4366,7 +4348,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4446,7 +4428,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4485,12 +4467,12 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 person, Make regular GET, Create 1 more person, Make deltaset request
     func testSyncStoreDeltaset1ExtraItemAddedWithPull() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -4530,7 +4512,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4601,7 +4583,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4639,12 +4621,12 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithPull() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -4684,7 +4666,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4768,14 +4750,14 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 2 persons, pull with regular GET, update 1, deltaset returning 1 changed, delete 1, deltaset returning 1 deleted
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithPull() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -4826,10 +4808,10 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToUpdate = person.personId!
                 idToDelete = secondPerson.personId!
             }
@@ -4907,7 +4889,7 @@ class SyncStoreTests: StoreTestCase {
                 var updatedPerson = Person()
                 updatedPerson.name = "Victor C Barros"
                 updatedPerson.personId = idToUpdate
-                updatedPerson = try! DataStore<Person>.collection(.network).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                updatedPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -4967,7 +4949,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout).value()
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5002,13 +4984,13 @@ class SyncStoreTests: StoreTestCase {
     }
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, delete 1 item that satisfies the query, deltaset returns 1 deleted item
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithPull() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -5062,15 +5044,15 @@ class SyncStoreTests: StoreTestCase {
                 var person = Person()
                 person.name = "Victor Barros"
                 person.age = 23
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
                 secondPerson.age = 24
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var thirdPerson = Person()
                 thirdPerson.name = "Victor Emmanuel"
                 thirdPerson.age = 23
-                thirdPerson = try! DataStore<Person>.collection(.network).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                thirdPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToDelete = thirdPerson.personId!
             }
             defer {
@@ -5133,7 +5115,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
             }
             defer {
                 if useMockData {
@@ -5168,13 +5150,13 @@ class SyncStoreTests: StoreTestCase {
     
     //Created 3 items, 2 of which satisfy a query, pull with query with regular GET, update 1 item that satisfies the query, deltaset returns 1 changed item
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithPull() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -5228,16 +5210,16 @@ class SyncStoreTests: StoreTestCase {
                 var person = Person()
                 person.name = "Victor Barros"
                 person.age = 23
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToUpdate = person.personId!
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
                 secondPerson.age = 24
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var thirdPerson = Person()
                 thirdPerson.name = "Victor Emmanuel"
                 thirdPerson.age = 23
-                thirdPerson = try! DataStore<Person>.collection(.network).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                thirdPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5316,7 +5298,7 @@ class SyncStoreTests: StoreTestCase {
                 updatedPerson.name = "Victor C Barros"
                 updatedPerson.personId = idToUpdate
                 updatedPerson.age = 23
-                updatedPerson = try! DataStore<Person>.collection(.network).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                updatedPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5353,12 +5335,12 @@ class SyncStoreTests: StoreTestCase {
     }
     //Create 1 item, pull with regular GET, create another item, deltaset returns 1 changed, switch off deltaset, pull with regular GET
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithPull() {
-        var store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -5398,7 +5380,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5469,7 +5451,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5506,7 +5488,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationPull = nil
             }
         }
-        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -5583,12 +5565,12 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDisabledDeltasetWithSync() {
-        let store = try! DataStore<Person>.collection(.sync)
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         var initialCount = 0
         do {
             if !useMockData {
-                initialCount = try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value()
+                initialCount = try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value()
             }
         }
         
@@ -5628,7 +5610,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5700,7 +5682,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5736,12 +5718,12 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ExtraItemAddedWithSync() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -5781,7 +5763,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5849,7 +5831,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -5883,12 +5865,12 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetSinceIsRespectedWithoutChangesWithSync() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -5928,7 +5910,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6006,14 +5988,14 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithSync() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -6064,10 +6046,10 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToUpdate = person.personId!
                 idToDelete = secondPerson.personId!
             }
@@ -6142,7 +6124,7 @@ class SyncStoreTests: StoreTestCase {
                 var updatedPerson = Person()
                 updatedPerson.name = "Victor C Barros"
                 updatedPerson.personId = idToUpdate
-                updatedPerson = try! DataStore<Person>.collection(.network).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                updatedPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6198,7 +6180,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout).value()
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6229,13 +6211,13 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithSync() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -6289,15 +6271,15 @@ class SyncStoreTests: StoreTestCase {
                 var person = Person()
                 person.name = "Victor Barros"
                 person.age = 23
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
                 secondPerson.age = 24
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var thirdPerson = Person()
                 thirdPerson.name = "Victor Emmanuel"
                 thirdPerson.age = 23
-                thirdPerson = try! DataStore<Person>.collection(.network).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                thirdPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToDelete = thirdPerson.personId!
             }
             defer {
@@ -6356,7 +6338,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
             }
             defer {
                 if useMockData {
@@ -6387,13 +6369,13 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetWithQuery1ItemUpdatedWithSync() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -6447,16 +6429,16 @@ class SyncStoreTests: StoreTestCase {
                 var person = Person()
                 person.name = "Victor Barros"
                 person.age = 23
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToUpdate = person.personId!
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
                 secondPerson.age = 24
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var thirdPerson = Person()
                 thirdPerson.name = "Victor Emmanuel"
                 thirdPerson.age = 23
-                thirdPerson = try! DataStore<Person>.collection(.network).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                thirdPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6531,7 +6513,7 @@ class SyncStoreTests: StoreTestCase {
                 updatedPerson.name = "Victor C Barros"
                 updatedPerson.personId = idToUpdate
                 updatedPerson.age = 23
-                updatedPerson = try! DataStore<Person>.collection(.network).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                updatedPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6567,12 +6549,12 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltasetTurnedOffSendsRegularGETWithSync() {
-        var store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        var store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -6612,7 +6594,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6680,7 +6662,7 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Hugo"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6713,7 +6695,7 @@ class SyncStoreTests: StoreTestCase {
                 expectationSync = nil
             }
         }
-        store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: false))
+        store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: false))
         do {
             if useMockData {
                 mockResponse { (request) -> HttpResponse in
@@ -6787,14 +6769,14 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testSyncStoreDeltaset1ItemAdded1Updated1DeletedWithFindNetworkReadPolicy() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToUpdate = ""
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -6845,10 +6827,10 @@ class SyncStoreTests: StoreTestCase {
             } else {
                 var person = Person()
                 person.name = "Victor Barros"
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToUpdate = person.personId!
                 idToDelete = secondPerson.personId!
             }
@@ -6931,7 +6913,7 @@ class SyncStoreTests: StoreTestCase {
                 var updatedPerson = Person()
                 updatedPerson.name = "Victor C Barros"
                 updatedPerson.personId = idToUpdate
-                updatedPerson = try! DataStore<Person>.collection(.network).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                updatedPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(updatedPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
             }
             defer {
                 if useMockData {
@@ -6996,7 +6978,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout)
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId: idToDelete).waitForResult(timeout: defaultTimeout)
             }
             defer {
                 if useMockData {
@@ -7035,13 +7017,13 @@ class SyncStoreTests: StoreTestCase {
     }
 
     func testSyncStoreDeltaset1WithQuery1ItemDeletedWithFindWithNetworkPolicy() {
-        let store = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let store = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         var idToDelete = ""
         
         var initialCount = Int64(0)
         do {
             if !useMockData {
-                initialCount = Int64(try! DataStore<Person>.collection(.network).count(options: nil).waitForResult(timeout: defaultTimeout).value())
+                initialCount = Int64(try! DataStore<Person>.collection(.network, tag: self.collectionTag).count(options: nil).waitForResult(timeout: defaultTimeout).value())
             }
         }
         
@@ -7095,15 +7077,15 @@ class SyncStoreTests: StoreTestCase {
                 var person = Person()
                 person.name = "Victor Barros"
                 person.age = 23
-                person = try! DataStore<Person>.collection(.network).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
+                person = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(person, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var secondPerson = Person()
                 secondPerson.name = "Victor Hugo"
                 secondPerson.age = 24
-                secondPerson = try! DataStore<Person>.collection(.network).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                secondPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(secondPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 var thirdPerson = Person()
                 thirdPerson.name = "Victor Emmanuel"
                 thirdPerson.age = 23
-                thirdPerson = try! DataStore<Person>.collection(.network).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
+                thirdPerson = try! DataStore<Person>.collection(.network, tag: self.collectionTag).save(thirdPerson, options: nil).waitForResult(timeout: defaultTimeout).value()
                 idToDelete = thirdPerson.personId!
             }
             defer {
@@ -7171,7 +7153,7 @@ class SyncStoreTests: StoreTestCase {
                     }
                 }
             } else {
-                try! DataStore<Person>.collection(.network).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
+                try! DataStore<Person>.collection(.network, tag: self.collectionTag).remove(byId:idToDelete).waitForResult(timeout: defaultTimeout)
             }
             defer {
                 if useMockData {
@@ -7244,7 +7226,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = try! DataStore<Person>.collection(.sync, autoPagination: true)
+        let store = try! DataStore<Person>.collection(.sync, autoPagination: true, tag: self.collectionTag)
         
         let startMemory = getMegabytesUsed()
         XCTAssertNotNil(startMemory)
@@ -7273,7 +7255,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testObjectObserve() {
-        let dataStore = try! DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         let personId = UUID().uuidString
         
@@ -7326,7 +7308,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testCollectionObserve() {
-        let dataStore = try! DataStore<Person>.collection(.sync)
+        let dataStore = try! DataStore<Person>.collection(.sync, tag: self.collectionTag)
         
         let personId = UUID().uuidString
         let personName = "Victor"
@@ -7435,7 +7417,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let dataStore = try! DataStore<Person>.collection(.sync, options: try! Options(deltaSet: true))
+        let dataStore = try! DataStore<Person>.collection(.sync, tag: self.collectionTag, options: try! Options(deltaSet: true))
         
         do {
             var results = try dataStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -7471,7 +7453,7 @@ class SyncStoreTests: StoreTestCase {
     func testIssue311() {
         signUp()
         
-        let store = try! DataStore<Issue311_MyModel>.collection(.sync)
+        let store = try! DataStore<Issue311_MyModel>.collection(.sync, tag: self.collectionTag)
         
         do {
             var myModel = Issue311_MyModel()
@@ -7552,7 +7534,7 @@ class SyncStoreTests: StoreTestCase {
         
         Kinvey.logLevel = .debug
         
-        let store = try! DataStore<Issue311_MyModelCodable>.collection(.sync)
+        let store = try! DataStore<Issue311_MyModelCodable>.collection(.sync, tag: self.collectionTag)
         
         do {
             var myModel = Issue311_MyModelCodable()
@@ -7627,7 +7609,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushCodable() {
         signUp()
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let store = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
         
         let name = UUID().uuidString
         
@@ -7767,7 +7749,7 @@ class SyncStoreTests: StoreTestCase {
             ]
         ]
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let store = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
         
         do {
             mockResponse(json: mockObjs)
@@ -7892,7 +7874,7 @@ class SyncStoreTests: StoreTestCase {
         ]
         
         let maxSizePerResultSet = 1
-        let store = try! DataStore<PersonCodable>.collection(.sync, autoPagination: true, options: try! Options(deltaSet: true, maxSizePerResultSet: maxSizePerResultSet))
+        let store = try! DataStore<PersonCodable>.collection(.sync, autoPagination: true, tag: self.collectionTag, options: try! Options(deltaSet: true, maxSizePerResultSet: maxSizePerResultSet))
         
         XCTContext.runActivity(named: "Pull Data") { activity in
             var count = 0
@@ -8055,7 +8037,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let store = try DataStore<PersonCodable>.collection(.sync)
+            let store = try DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
             let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
             let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(mockObjs.count, items.count)
@@ -8080,7 +8062,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync)
+            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync, tag: self.collectionTag)
             let realm = (store.cache!.cache as! RealmCache<PersonCodableCascadeDeletable>).newRealm
             let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(mockObjs.count, items.count)
@@ -8169,7 +8151,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let store = try DataStore<PersonCodable>.collection(.sync)
+            let store = try DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
             let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
             let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(mockObjs.count, items.count)
@@ -8194,7 +8176,7 @@ class SyncStoreTests: StoreTestCase {
         }
         
         do {
-            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync)
+            let store = try DataStore<PersonCodableCascadeDeletable>.collection(.sync, tag: self.collectionTag)
             let realm = (store.cache!.cache as! RealmCache<PersonCodableCascadeDeletable>).newRealm
             let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(mockObjs.count, items.count)
@@ -8282,7 +8264,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let store = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
         let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
@@ -8366,7 +8348,7 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let store = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
         let realm = (store.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let items = try! store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         XCTAssertEqual(mockObjs.count, items.count)
@@ -8441,8 +8423,8 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let personStore = try! DataStore<PersonCodable>.collection(.sync)
-        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let personStore = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync, tag: self.collectionTag)
         let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -8518,8 +8500,8 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let personStore = try! DataStore<PersonCodable>.collection(.sync)
-        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let personStore = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync, tag: self.collectionTag)
         let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -8595,8 +8577,8 @@ class SyncStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        let personStore = try! DataStore<PersonCodable>.collection(.sync)
-        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync)
+        let personStore = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
+        let entityWithRefenceStore = try! DataStore<EntityWithRefenceCodable>.collection(.sync, tag: self.collectionTag)
         let realm = (personStore.cache!.cache as! RealmCache<PersonCodable>).newRealm
         let persons = try! personStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
         let entities = try! entityWithRefenceStore.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
@@ -8618,7 +8600,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testTranslateQueryCodable() {
-        let store = try! DataStore<PersonCodable>.collection(.sync)
+        let store = try! DataStore<PersonCodable>.collection(.sync, tag: self.collectionTag)
         let id = UUID().uuidString
         
         if useMockData {
@@ -8659,4 +8641,13 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
+}
+
+class SyncStoreTestApi4 : SyncStoreTest {
+
+    override func setUp() {
+        self.restApiVersion = 4
+        
+        super.setUp()
+    }
 }

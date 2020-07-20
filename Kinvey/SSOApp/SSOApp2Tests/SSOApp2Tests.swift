@@ -63,7 +63,7 @@ class SSOApp2Tests: KinveyTestCase {
                         "authtoken" : UUID().uuidString
                     ]
                 ]
-                let data = try! JSONSerialization.data(withJSONObject: json)
+                let data = try! JSONSerialization.data(withJSONObject: json, options: JSONSerialization.WritingOptions.sortedKeys)
                 client?.urlProtocol(self, didLoad: data)
                 
                 client?.urlProtocolDidFinishLoading(self)

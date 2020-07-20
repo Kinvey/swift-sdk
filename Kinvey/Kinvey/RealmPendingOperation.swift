@@ -9,34 +9,34 @@
 import Foundation
 
 internal class RealmPendingOperation: Object, PendingOperation {
-    
+
     @objc
     dynamic var requestId: String = ""
-    
+
     @objc
     dynamic var date: Date = Date()
-    
+
     @objc
     dynamic var collectionName: String = ""
-    
+
     @objc
     dynamic var objectId: String?
-    
+
     var objectIds: AnyRandomAccessCollection<String>?
     var requestIds: AnyRandomAccessCollection<String>?
-    
+
     @objc
     dynamic var method: String = ""
-    
+
     @objc
     dynamic var url: String = ""
-    
+
     @objc
     dynamic var headers: Data = Data()
-    
+
     @objc
     dynamic var body: Data?
-    
+
     convenience init<RequestIds>(
         request: URLRequest,
         collectionName: String,
@@ -50,14 +50,14 @@ internal class RealmPendingOperation: Object, PendingOperation {
         )
         self.requestIds = AnyRandomAccessCollection(requestIds)
     }
-    
+
     convenience init(
         request: URLRequest,
         collectionName: String,
         objectIdKind: ObjectIdKind? = nil
     ) {
         self.init()
-        
+
         requestId = request.value(forHTTPHeaderField: KinveyHeaderField.requestId)!
         self.collectionName = collectionName
         if let objectIdKind = objectIdKind {
@@ -70,10 +70,10 @@ internal class RealmPendingOperation: Object, PendingOperation {
         }
         method = request.httpMethod ?? "GET"
         url = request.url!.absoluteString
-        headers = try! JSONSerialization.data(withJSONObject: request.allHTTPHeaderFields!)
+        headers = try! JSONSerialize.data(request.allHTTPHeaderFields!)
         body = request.httpBody
     }
-    
+
     func buildRequest() -> URLRequest {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = method
@@ -83,9 +83,9 @@ internal class RealmPendingOperation: Object, PendingOperation {
         }
         return request
     }
-    
+
     override class func primaryKey() -> String? {
         return "requestId"
     }
-    
+
 }

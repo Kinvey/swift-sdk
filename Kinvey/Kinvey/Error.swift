@@ -344,13 +344,15 @@ extension NSException {
 public struct MultiSaveError: Swift.Error, Codable, IndexableError {
     
     public let index: Int
-    public let code: Int
     public let message: String
-    
+    public let serverDescription: String?
+    public let serverDebug: String?
+
     enum CodingKeys: String, CodingKey {
         case index
-        case code
-        case message = "errmsg"
+        case message = "error"
+        case serverDescription = "description"
+        case serverDebug = "debug"
     }
     
     public var localizedDescription: String {

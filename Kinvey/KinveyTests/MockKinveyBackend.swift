@@ -10,13 +10,13 @@ import Foundation
 @testable import Kinvey
 
 class MockKinveyBackend: URLProtocol {
-    
+
     static var kid = "_kid_"
     static var baseURLBaas = URL(string: "https://baas.kinvey.com")!
     static var user = [String : [String : Any]]()
     static var appdata = [String : [[String : Any]]]()
     static var usersMustIncludeSocialIdentity: Bool = false
-    
+
     var requestJsonBody: [String : Any]? {
         if
             let httpBody = request.httpBody,
@@ -35,15 +35,15 @@ class MockKinveyBackend: URLProtocol {
             return nil
         }
     }
-    
+
     override class func canInit(with request: URLRequest) -> Bool {
         return request.url!.scheme == MockKinveyBackend.baseURLBaas.scheme && request.url!.host == MockKinveyBackend.baseURLBaas.host
     }
-    
+
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-    
+
     override func startLoading() {
         let requestJsonBody = self.requestJsonBody
         if let pathComponents = request.url?.pathComponents {
@@ -51,7 +51,7 @@ class MockKinveyBackend: URLProtocol {
                 if pathComponents[1] == "appdata" && pathComponents[2] == MockKinveyBackend.kid, let collection = MockKinveyBackend.appdata[pathComponents[3]] {
                     let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
                     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-                    
+
                     var array: [[String : Any]]
                     if let query = request.url?.query {
                         var queryParams = [String : String]()
@@ -82,9 +82,9 @@ class MockKinveyBackend: URLProtocol {
                     } else {
                         array = collection
                     }
-                    let data = try! JSONSerialization.data(withJSONObject: array)
+                    let data = try! JSONSerialize.data(array)
                     client?.urlProtocol(self, didLoad: data)
-                    
+
                     client?.urlProtocolDidFinishLoading(self)
                 } else if pathComponents[1] == "user" && pathComponents[2] == MockKinveyBackend.kid {
                     let userId = pathComponents[3]
@@ -94,7 +94,7 @@ class MockKinveyBackend: URLProtocol {
                             if let requestJsonBody = requestJsonBody, var user = MockKinveyBackend.user[userId] {
                                 user += requestJsonBody
                                 MockKinveyBackend.user[userId] = user
-                                
+
                                 response(json: user)
                             } else {
                                 reponse404()
@@ -143,7 +143,7 @@ class MockKinveyBackend: URLProtocol {
                                     ]
                                 }
                                 MockKinveyBackend.user[userId] = user
-                                
+
                                 response(json: user)
                             }
                         default:
@@ -162,32 +162,32 @@ class MockKinveyBackend: URLProtocol {
             reponse404()
         }
     }
-    
+
     override func stopLoading() {
     }
-    
+
     //Not Found
     private func reponse404() {
         let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
-    
+
     //No Content
     private func response204() {
         let response = HTTPURLResponse(url: request.url!, statusCode: 204, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
-    
+
     private func response(json: [String : Any]) {
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-        
-        let data = try! JSONSerialization.data(withJSONObject: json)
+
+        let data = try! JSONSerialize.data(json)
         client?.urlProtocol(self, didLoad: data)
-        
+
         client?.urlProtocolDidFinishLoading(self)
     }
-    
+
 }

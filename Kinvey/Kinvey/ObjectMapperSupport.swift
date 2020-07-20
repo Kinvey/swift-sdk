@@ -490,7 +490,7 @@ class AclTransformType {
 
     func transformToJSON(_ value: [String]?) -> String? {
         if let value = value,
-            let data = try? JSONSerialization.data(withJSONObject: value),
+            let data = try? JSONSerialize.data(value),
             let json = String(data: data, encoding: String.Encoding.utf8)
         {
             return json

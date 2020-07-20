@@ -15,67 +15,67 @@ import Foundation
 #endif
 
 enum Encoding: String {
-    
+
     case utf8 = "utf-8"
-    
+
 }
 
 enum MimeType: String {
-    
+
     case applicationJson = "application/json"
     case applicationXWWWFormURLEncoded = "application/x-www-form-urlencoded"
-    
+
 }
 
 struct MimeTypeCharset {
-    
+
     let mimeType: MimeType
     let encoding: Encoding
-    
+
     init(_ mimeType: MimeType) {
         self.init(mimeType: mimeType)
     }
-    
+
     init(mimeType: MimeType, encoding: Encoding = .utf8) {
         self.mimeType = mimeType
         self.encoding = encoding
     }
-    
+
     var value: String {
         return "\(mimeType.rawValue); charset=\(encoding.rawValue)"
     }
-    
+
 }
 
 enum HeaderField: String {
-    
+
     case userAgent = "User-Agent"
     case contentType = "Content-Type"
-    
+
 }
 
 enum KinveyHeaderField: String {
-    
+
     case requestId = "X-Kinvey-Request-Id"
     case clientAppVersion = "X-Kinvey-Client-App-Version"
     case customRequestProperties = "X-Kinvey-Custom-Request-Properties"
     case apiVersion = "X-Kinvey-API-Version"
     case deviceInfo = "X-Kinvey-Device-Info"
-    
+
 }
 
 extension Dictionary where Key == AnyHashable {
-    
+
     subscript<K: RawRepresentable>(key: K) -> Value? where K.RawValue: Hashable {
         return self[key.rawValue]
     }
-    
+
 }
 
 enum HttpMethod {
-    
+
     case get, post, put, delete
-    
+
     var stringValue: String {
         switch self {
         case .post:
@@ -88,7 +88,7 @@ enum HttpMethod {
             return "GET"
         }
     }
-    
+
     static func parse(_ httpMethod: String) -> HttpMethod {
         switch httpMethod {
         case "POST":
@@ -101,7 +101,7 @@ enum HttpMethod {
             return .get
         }
     }
-    
+
     var requestType: RequestType {
         switch self {
         case .post:
@@ -114,23 +114,23 @@ enum HttpMethod {
             return .read
         }
     }
-    
+
 }
 
 enum HttpHeaderKey: String {
-    
+
     case authorization = "Authorization"
-    
+
 }
 
 enum HttpHeader {
-    
+
     case authorization(credential: Credential?)
     case apiVersion(version: Int)
     case requestId(requestId: String)
     case userAgent
     case deviceInfo
-    
+
     var name: String {
         switch self {
         case .authorization:
@@ -145,7 +145,7 @@ enum HttpHeader {
             return KinveyHeaderField.deviceInfo.rawValue
         }
     }
-    
+
     var value: String? {
         switch self {
         case .authorization(let credential):
@@ -161,11 +161,11 @@ enum HttpHeader {
             return String(data: data, encoding: .utf8)
         }
     }
-    
+
 }
 
 extension RequestType {
-    
+
     var httpMethod: HttpMethod {
         switch self {
         case .create:
@@ -178,14 +178,14 @@ extension RequestType {
             return .delete
         }
     }
-    
+
 }
 
 internal typealias DataResponseCompletionHandler = (Data?, Response?, Swift.Error?) -> Void
 internal typealias PathResponseCompletionHandler = (URL?, Response?, Swift.Error?) -> Void
 
 extension URLRequest {
-    
+
     /// Description for the NSURLRequest including url, headers and the body content
     public var description: String {
         var description = "\(httpMethod ?? "GET") \(url?.absoluteString ?? "")"
@@ -199,41 +199,41 @@ extension URLRequest {
         }
         return description
     }
-    
+
     mutating func setValue<Header: RawRepresentable>(_ value: String?, forHTTPHeaderField header: Header) where Header.RawValue == String {
         setValue(value, forHTTPHeaderField: header.rawValue)
     }
-    
+
     mutating func addValue<Header: RawRepresentable>(_ value: String, forHTTPHeaderField header: Header) where Header.RawValue == String {
         addValue(value, forHTTPHeaderField: header.rawValue)
     }
-    
+
     mutating func setValue<Header: RawRepresentable, Value: RawRepresentable>(_ value: Value?, forHTTPHeaderField header: Header) where Header.RawValue == String, Value.RawValue == String {
         setValue(value?.rawValue, forHTTPHeaderField: header.rawValue)
     }
-    
+
     mutating func addValue<Header: RawRepresentable, Value: RawRepresentable>(_ value: Value, forHTTPHeaderField header: Header) where Header.RawValue == String, Value.RawValue == String {
         addValue(value.rawValue, forHTTPHeaderField: header.rawValue)
     }
-    
+
     mutating func setValue(_ mimeType: MimeTypeCharset?) {
         setValue(mimeType?.value, forHTTPHeaderField: HeaderField.contentType)
     }
-    
+
     mutating func addValue(_ mimeType: MimeTypeCharset) {
         addValue(mimeType.value, forHTTPHeaderField: HeaderField.contentType)
     }
-    
+
     mutating func setBody(json: JsonDictionary) throws {
         setValue(MimeTypeCharset(.applicationJson))
-        httpBody = try JSONSerialization.data(withJSONObject: json)
+        httpBody = try JSONSerialize.data(json)
     }
-    
+
     mutating func setBody(json: [JsonDictionary]) throws {
         setValue(MimeTypeCharset(.applicationJson))
-        httpBody = try JSONSerialization.data(withJSONObject: json)
+        httpBody = try JSONSerialize.data(json)
     }
-    
+
     mutating func setBody(xWWWFormURLEncoded: [String : String]) {
         setValue(MimeTypeCharset(.applicationXWWWFormURLEncoded))
         var paramsKeyValue = [String]()
@@ -247,15 +247,15 @@ extension URLRequest {
         let httpBody = paramsKeyValue.joined(separator: "&")
         self.httpBody = httpBody.data(using: .utf8)
     }
-    
+
     func value<Header: RawRepresentable>(forHTTPHeaderField header: Header) -> String? where Header.RawValue == String {
         return value(forHTTPHeaderField: header.rawValue)
     }
-    
+
 }
 
 extension HTTPURLResponse {
-    
+
     /// Description for the NSHTTPURLResponse including url and headers
     open override var description: String {
         var description = "\(statusCode) \(HTTPURLResponse.localizedString(forStatusCode: statusCode))"
@@ -264,7 +264,7 @@ extension HTTPURLResponse {
         }
         return description
     }
-    
+
     /// Description for the NSHTTPURLResponse including url, headers and the body content
     public func description(_ body: Data?) -> String {
         var description = self.description
@@ -274,40 +274,40 @@ extension HTTPURLResponse {
         description += "\n"
         return description
     }
-    
+
 }
 
 extension String {
-    
+
     internal func stringByAddingPercentEncodingForFormData(plusForSpace: Bool = false) -> String? {
         var allowed = CharacterSet.alphanumerics
         allowed.insert(charactersIn: "*-._")
-        
+
         if plusForSpace {
             allowed.insert(charactersIn: " ")
         }
-        
+
         var encoded = addingPercentEncoding(withAllowedCharacters: allowed)
         if plusForSpace {
             encoded = encoded?.replacingOccurrences(of: " ", with: "+")
         }
         return encoded
     }
-    
+
 }
 
 /// Default REST API Version used in the REST calls.
-public let defaultRestApiVersion = 4
+public let defaultRestApiVersion = 5
 
 /// REST API Version used in the REST calls.
 public var restApiVersion = defaultRestApiVersion
 
 enum Body {
-    
+
     case json(json: JsonDictionary)
     case jsonArray(json: [JsonDictionary])
     case formUrlEncoded(params: [String : String])
-    
+
     func attachTo(request: inout URLRequest) {
         switch self {
         case .json(let json):
@@ -318,7 +318,7 @@ enum Body {
             request.setBody(xWWWFormURLEncoded: params)
         }
     }
-    
+
     static func buildFormUrlEncoded(body: String) -> Body {
         let regex = try! NSRegularExpression(pattern: "([^&=]+)=([^&]*)")
         var params = [String : String]()
@@ -330,15 +330,15 @@ enum Body {
         }
         return .formUrlEncoded(params: params)
     }
-    
+
 }
 
 internal class HttpRequest<Result>: TaskProgressRequest, Request {
-    
+
     typealias ResultType = Result
-    
+
     var result: Result?
-    
+
     let httpMethod: HttpMethod
     let endpoint: Endpoint
     let defaultHeaders: [HttpHeader] = [
@@ -346,9 +346,9 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         HttpHeader.userAgent,
         HttpHeader.deviceInfo
     ]
-    
+
     var headers: [HttpHeader] = []
-    
+
     var request: URLRequest
     var credential: Credential? {
         didSet {
@@ -357,15 +357,15 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
     }
     let options: Options?
     let client: Client
-    
+
     internal var executing: Bool {
         return task?.state == .running
     }
-    
+
     internal var cancelled: Bool {
         return task?.state == .canceling || (task?.error as NSError?)?.code == NSURLErrorCancelled
     }
-    
+
     init(
         request: URLRequest,
         options: Options?
@@ -375,7 +375,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         self.options = options
         let client = options?.client ?? sharedClient
         self.client = client
-        
+
         if request.value(forHTTPHeaderField: HttpHeaderKey.authorization.rawValue) == nil {
             self.credential = client.activeUser ?? client
         }
@@ -385,7 +385,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         }
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
     }
-    
+
     init(
         httpMethod: HttpMethod = .get,
         endpoint: Endpoint,
@@ -399,7 +399,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         let client = options?.client ?? sharedClient
         self.client = client
         self.credential = credential ?? client
-        
+
         let url = endpoint.url
         request = URLRequest(url: url)
         request.httpMethod = httpMethod.stringValue
@@ -411,14 +411,14 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         }
         self.request.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
     }
-    
+
     private func setAuthorization() {
         if let credential = credential {
             let header = HttpHeader.authorization(credential: credential)
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
     }
-    
+
     func prepareRequest() {
         for header in defaultHeaders {
             request.setValue(header.value, forHTTPHeaderField: header.name)
@@ -430,15 +430,15 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         if let clientAppVersion = options?.clientAppVersion ?? client.options?.clientAppVersion {
             request.setValue(clientAppVersion, forHTTPHeaderField: KinveyHeaderField.clientAppVersion)
         }
-        
+
         if let customRequestProperties = self.options?.customRequestProperties ?? client.options?.customRequestProperties,
             customRequestProperties.count > 0,
-            let data = try? JSONSerialization.data(withJSONObject: customRequestProperties),
+            let data = try? JSONSerialize.data(customRequestProperties),
             let customRequestPropertiesString = String(data: data, encoding: .utf8)
         {
             request.setValue(customRequestPropertiesString, forHTTPHeaderField: KinveyHeaderField.customRequestProperties)
         }
-        
+
         if let url = request.url,
             let query = url.query,
             query.contains("+"),
@@ -450,25 +450,25 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
             request.url = urlComponents.url
         }
     }
-    
+
     func execute(urlSession: URLSession? = nil, _ completionHandler: DataResponseCompletionHandler? = nil) {
         execute(retry: true, urlSession: urlSession, completionHandler)
     }
-    
+
     func execute(retry: Bool, urlSession: URLSession?, _ completionHandler: DataResponseCompletionHandler?) {
         guard !cancelled else {
             completionHandler?(nil, nil, Error.requestCancelled)
             return
         }
-        
+
         prepareRequest()
-        
+
         if client.logNetworkEnabled {
             do {
                 log.debug("\(request.description)")
             }
         }
-        
+
         let urlSession = urlSession ?? options?.urlSession ?? client.urlSession
         task = urlSession.dataTask(with: request) { (data, response, error) -> Void in
             self.handleResponse(
@@ -482,7 +482,7 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         }
         task!.resume()
     }
-    
+
     private func handleResponse(
         retry: Bool,
         urlSession: URLSession,
@@ -517,10 +517,10 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
                 return
             }
         }
-        
+
         completionHandler?(data, HttpResponse(response: response), error)
     }
-    
+
     private func refreshToken(
         user: User,
         urlSession: URLSession,
@@ -580,14 +580,14 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
             self.client.refreshTokenDispatchGroup.leave()
         }
     }
-    
+
     internal func cancel() {
         task?.cancel()
     }
-    
+
     var curlCommand: String {
         prepareRequest()
-        
+
         var headers = ""
         if let allHTTPHeaderFields = request.allHTTPHeaderFields {
             for (headerField, value) in allHTTPHeaderFields {
@@ -596,11 +596,11 @@ internal class HttpRequest<Result>: TaskProgressRequest, Request {
         }
         return "curl -X \(String(describing: request.httpMethod)) \(headers) \(request.url!)"
     }
-    
+
     func setBody(json: [String : Any]) {
         try! request.setBody(json: json)
     }
-    
+
     func setBody(json: [[String : Any]]) {
         try! request.setBody(json: json)
     }

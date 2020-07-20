@@ -29,7 +29,7 @@ func listReleases(completionHandler: @escaping ([[String : Any]]) -> Void) {
     var request = URLRequest(url: URL(string: "https://api.github.com/repos/Kinvey/swift-sdk/releases")!)
     request.httpMethod = "GET"
     request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
-    
+
     let task = session.dataTask(with: request) { (data, response, error) -> Void in
         if let httpResponse = response as? HTTPURLResponse,
             200 <= httpResponse.statusCode && httpResponse.statusCode < 300,
@@ -151,12 +151,12 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
     let zipURL = basePathURL.appendingPathComponent("build").appendingPathComponent("Kinvey-\(version.infoPlist).zip")
     DispatchQueue.global().async {
         let uploadGroup = DispatchGroup()
-        
+
         func deleteFile(url: String, completionHandler: @escaping () -> Void) {
             var request = URLRequest(url: URL(string: url)!)
             request.httpMethod = "DELETE"
             request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
-            
+
             let task = session.dataTask(with: request) { (data, response, error) -> Void in
                 if let httpResponse = response as? HTTPURLResponse,
                     200 <= httpResponse.statusCode && httpResponse.statusCode < 300,
@@ -183,7 +183,7 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             print("Deleting file: \(url)")
             task.resume()
         }
-        
+
         if let assets = draft["assets"] as? [[String : Any]] {
             for asset in assets {
                 if let url = asset["url"] as? String {
@@ -195,7 +195,7 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             }
             uploadGroup.wait()
         }
-        
+
         func uploadFile(_ draft: [String : Any], file: URL, name: String? = nil, completionHandler: @escaping () -> Void) {
             guard let uploadUrl = draft["upload_url"] as? String else {
                 fatalError("'upload_url' not found")
@@ -210,7 +210,7 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             request.httpMethod = "POST"
             request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
             request.setValue("application/zip", forHTTPHeaderField: "Content-Type")
-            
+
             let reportProgress = { (task: URLSessionUploadTask, change: NSKeyValueObservedChange<Int64>) in
                 guard task.countOfBytesExpectedToSend > 0 else {
                     return
@@ -218,10 +218,10 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
                 let percent = Float(task.countOfBytesSent) / Float(task.countOfBytesExpectedToSend) * 100
                 print(String(format: "File \(fileName) status: \(task.countOfBytesSent)/\(task.countOfBytesExpectedToSend) %.1f%%\r", percent))
             }
-            
+
             var countOfBytesSentObservationToken: NSKeyValueObservation?
             var countOfBytesExpectedToSendObservationToken: NSKeyValueObservation?
-            
+
             let task = session.uploadTask(with: request, fromFile: file) { (data, response, error) in
                 if let observationToken = countOfBytesSentObservationToken {
                     observationToken.invalidate()
@@ -256,19 +256,19 @@ func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Voi
             )
             task.resume()
         }
-        
+
         uploadGroup.enter()
         uploadFile(draft, file: carthageZipURL, name: "Carthage.framework.zip") {
             uploadGroup.leave()
         }
         uploadGroup.wait()
-        
+
         uploadGroup.enter()
         uploadFile(draft, file: zipURL) {
             uploadGroup.leave()
         }
         uploadGroup.wait()
-        
+
         completionHandler()
     }
 }
@@ -278,8 +278,8 @@ func publish(url: String, completionHandler: @escaping () -> Void) {
     request.httpMethod = "PATCH"
     request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
     let body = ["draft" : false]
-    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-    
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: JSONSerialization.WritingOptions.sortedKeys)
+
     let task = session.dataTask(with: request) { (data, response, error) -> Void in
         if let httpResponse = response as? HTTPURLResponse,
             200 <= httpResponse.statusCode && httpResponse.statusCode < 300,
@@ -322,14 +322,14 @@ case "check":
 case "release":
     check { draft in
         print("Check done!")
-        
+
         uploadFiles(draft) {
             print("Upload succeed!")
-            
+
             guard let url = draft["url"] as? String else {
                 fatalError("Draft 'url' not found")
             }
-            
+
             publish(url: url) {
                 print("Release Published!")
                 exit(EXIT_SUCCESS)
