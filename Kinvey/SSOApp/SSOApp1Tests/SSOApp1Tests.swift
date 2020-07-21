@@ -110,7 +110,7 @@ class SSOApp1Tests: KinveyTestCase {
                     "expires_in" : 3599,
                     "refresh_token" : UUID().uuidString
                     ] as [String : Any]
-                let data = try! JSONSerialization.data(withJSONObject: json)
+                let data = try! JSONSerialization.data(withJSONObject: json, options: JSONSerialization.WritingOptions.sortedKeys)
                 client?.urlProtocol(self, didLoad: data)
                 
                 client?.urlProtocolDidFinishLoading(self)
@@ -137,7 +137,7 @@ class SSOApp1Tests: KinveyTestCase {
                         "authtoken" : UUID().uuidString
                     ]
                     ] as [String : Any]
-                let data = try! JSONSerialization.data(withJSONObject: json)
+                let data = try! JSONSerialization.data(withJSONObject: json, options: JSONSerialization.WritingOptions.sortedKeys)
                 client?.urlProtocol(self, didLoad: data)
                 
                 client?.urlProtocolDidFinishLoading(self)

@@ -11,16 +11,16 @@ import Foundation
 public typealias JSONCodable = JSONDecodable & JSONEncodable
 
 public protocol JSONDecodable {
-    
+
     static func decode<T>(from data: Data) throws -> T where T: JSONDecodable
     static func decodeArray<T>(from data: Data) throws -> [T] where T: JSONDecodable
     static func decode<T>(from dictionary: [String : Any]) throws -> T where T: JSONDecodable
     mutating func refresh(from dictionary: [String : Any]) throws
-    
+
 }
 
 extension JSONDecodable {
-    
+
     public mutating func refreshJSONDecodable(from dictionary: [String : Any]) throws {
         switch self {
         case var selfMappable as (JSONDecodable & BaseMappable):
@@ -29,7 +29,7 @@ extension JSONDecodable {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Your \(self) subclass must implement Swift.Codable or ObjectMapper.Mappable"))
         }
     }
-    
+
     public static func decodeJSONDecodable<T>(from data: Data) throws -> T where T: JSONDecodable {
         switch self {
         case let decodableType as (JSONDecodable & Decodable).Type:
@@ -40,7 +40,7 @@ extension JSONDecodable {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Your \(self) subclass must implement Swift.Codable or ObjectMapper.Mappable"))
         }
     }
-    
+
     public static func decodeArrayJSONDecodable<T>(from data: Data) throws -> [T] where T : JSONDecodable {
         switch self {
         case let decodableType as (JSONDecodable & Decodable).Type:
@@ -51,7 +51,7 @@ extension JSONDecodable {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Your \(self) subclass must implement Swift.Codable or ObjectMapper.Mappable"))
         }
     }
-    
+
     public static func decodeJSONDecodable<T>(from dictionary: [String : Any]) throws -> T where T: JSONDecodable {
         switch self {
         case let decodableType as (JSONDecodable & Decodable).Type:
@@ -62,42 +62,42 @@ extension JSONDecodable {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Your \(self) subclass must implement Swift.Codable or ObjectMapper.Mappable"))
         }
     }
-    
+
 }
 
 extension JSONDecodable where Self: JSONEncodable {
-    
+
     public mutating func refresh(from _self: Self) throws {
         try refresh(from: try _self.encode())
     }
-    
+
 }
 
 extension JSONDecodable where Self: Decodable {
-    
+
     static func decodeDecodable(from data: Data) throws -> Self {
         return try jsonDecoder.decode(Self.self, from: data)
     }
-    
+
     static func decodeDecodableArray(from data: Data) throws -> [Any] {
         return try jsonDecoder.decode([Self].self, from: data)
     }
-    
+
     static func decodeDecodable(from dictionary: [String : Any]) throws -> Self {
-        let data = try JSONSerialization.data(withJSONObject: dictionary)
+        let data = try JSONSerialize.data(dictionary)
         return try jsonDecoder.decode(Self.self, from: data)
     }
-    
+
 }
 
 public protocol JSONEncodable {
-    
+
     func encode() throws -> [String : Any]
-    
+
 }
 
 extension JSONEncodable {
-    
+
     public func encodeJSONEncodable() throws -> [String : Any] {
         switch self {
         case let selfEncodable as (JSONEncodable & Encodable):
@@ -108,32 +108,32 @@ extension JSONEncodable {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Your \(self) subclass must implement Swift.Codable or ObjectMapper.Mappable"))
         }
     }
-    
+
 }
 
 extension JSONEncodable where Self: Encodable {
-    
+
     func encodeEncodable() throws -> [String : Any] {
         let data = try jsonEncoder.encode(self)
         return try JSONSerialization.jsonObject(with: data) as! [String : Any]
     }
-    
+
 }
 
 public protocol JSONParser {
-    
+
     func parseDictionary(from data: Data) throws -> JsonDictionary
     func parseDictionaries(from data: Data) throws -> [JsonDictionary]
-    
+
     func parseObject<T>(_ type: T.Type, from data: Data) throws -> T where T: JSONDecodable
     func parseObjects<T>(_ type: T.Type, from data: Data) throws -> [T] where T: JSONDecodable
-    
+
     func parseUser<UserType: User>(_ type: UserType.Type, from data: Data) throws -> UserType
     func parseUsers<UserType: User>(_ type: UserType.Type, from data: Data) throws -> [UserType]
-    
+
     func parseUser<UserType: User>(_ type: UserType.Type, from dictionary: [String : Any]) throws -> UserType
     func parseObject<T>(_ type: T.Type, from dictionary: [String : Any]) throws -> T where T: JSONDecodable
-    
+
     func toJSON<UserType: User>(_ user: UserType) throws -> [String : Any]
     func toJSON<T>(_ object: T) throws -> [String : Any] where T: JSONEncodable
     func toJSON<S: Sequence, T>(_ sequence: S) throws -> [[String : Any]] where T: JSONEncodable, S.Element == T
@@ -141,9 +141,9 @@ public protocol JSONParser {
 }
 
 class DefaultJSONParser: JSONParser {
-    
+
     let client: Client
-    
+
     init(client: Client) {
         self.client = client
     }
@@ -181,7 +181,7 @@ class DefaultJSONParser: JSONParser {
     }
 
     func parseUser<UserType>(_ type: UserType.Type, from dictionary: [String : Any]) throws -> UserType where UserType : User {
-        let data = try JSONSerialization.data(withJSONObject: dictionary)
+        let data = try JSONSerialize.data(dictionary)
         return try parseUser(client.userType, from: data) as! UserType
     }
 
@@ -196,9 +196,19 @@ class DefaultJSONParser: JSONParser {
     func toJSON<T>(_ object: T) throws -> [String : Any] where T: JSONEncodable {
         return try object.encode()
     }
-    
+
     func toJSON<S, T>(_ sequence: S) throws -> [[String : Any]] where S : Sequence, T : JSONEncodable, T == S.Element {
         return try sequence.map { try $0.encode() }
     }
 
+}
+
+public class JSONSerialize {
+    public static func data(_ json: Any) throws -> Data{
+        if #available(iOS 11.0, OSX 10.13, tvOS 11.0, watchOS 4.0, *) {
+            return try JSONSerialization.data(withJSONObject: json, options: JSONSerialization.WritingOptions.sortedKeys)
+        } else {
+            return try JSONSerialization.data(withJSONObject: json)
+        }
+    }
 }

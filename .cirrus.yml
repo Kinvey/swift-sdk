@@ -1,7 +1,7 @@
 task:
   name: macOS
   osx_instance:
-    image: catalina-xcode-11.4
+    image: catalina-xcode-11.5
   xcode_version_script:
     - xcode-select -p
     - sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
@@ -14,7 +14,7 @@ task:
 task:
   name: iOS
   osx_instance:
-    image: catalina-xcode-11.4
+    image: catalina-xcode-11.5
   xcode_version_script:
     - xcode-select -p
     - sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
@@ -23,12 +23,12 @@ task:
   brew_update_script: brew update
   install_carthage_script: brew install carthage
   xcode_show_destinations_script: make show-destinations
-  test_ios_script: DESTINATION_OS=13.4 DESTINATION_NAME="iPhone 11 Pro" make test-ios || (echo System Log; tail -n 1000 /var/log/system.log; echo Simulator Logs; cat  ~/Library/Logs/CoreSimulator/*/system.log; echo Xcode Crash Logs; find ~/Library/Developer/Xcode/DerivedData/ -iname *.crash -print -exec cat {} \;)
+  test_ios_script: DESTINATION_OS=13.5 DESTINATION_NAME="iPhone 11 Pro" make test-ios || (echo System Log; tail -n 1000 /var/log/system.log; echo Simulator Logs; cat  ~/Library/Logs/CoreSimulator/*/system.log; echo Xcode Crash Logs; find ~/Library/Developer/Xcode/DerivedData/ -iname *.crash -print -exec cat {} \;)
 
 task:
   name: macOS SPM
   osx_instance:
-    image: catalina-xcode-11.3.1
+    image: catalina-xcode-11.5
   xcode_version_script:
     - xcode-select -p
     - sudo xcode-select -s /Applications/Xcode.app/Contents/Developer

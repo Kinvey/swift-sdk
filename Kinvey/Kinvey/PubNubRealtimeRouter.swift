@@ -12,7 +12,7 @@ import PromiseKit
 protocol PubNubType {
     
     static func clientWithConfiguration(_ configuration: PNConfiguration) -> Self
-    func addListener(_ listener: PNObjectEventListener)
+    func addListener(_ listener: PNEventsListener)
     func subscribeToChannelGroups(_ groups: [String], withPresence shouldObservePresence: Bool)
     func publish(_ message: Any, toChannel channel: String, withCompletion block: PNPublishCompletionBlock?)
     
@@ -127,7 +127,7 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
     
 }
 
-extension PubNubRealtimeRouter: PNObjectEventListener {
+extension PubNubRealtimeRouter: PNEventsListener {
     
     func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
         for (_, callback) in self[message.data.channel] {

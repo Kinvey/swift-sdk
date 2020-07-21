@@ -42,8 +42,8 @@ let package = Package(
             .upToNextMajor(from: "3.5.1")
         ),
         .package(
-            url: "https://github.com/heyzooi/objective-c.git",
-            .branch("master")
+            url: "https://github.com/mbektchiev/objective-c.git",
+            .branch("spm-support")
         ),
         .package(
             url: "https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor.git",

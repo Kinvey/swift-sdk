@@ -17,7 +17,7 @@ import Nimble
 #endif
 
 class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
-    
+
     let caminandes3TrailerURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.mp4")
     let caminandes3TrailerImageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Caminandes 3 - TRAILER.jpg")
     var file: File?
@@ -25,20 +25,20 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
     var caminandes3TrailerFileSize: UInt64 {
         return try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerURL.path).filter { $0.key == .size }.first!.value as! UInt64
     }
-    
+
     lazy var fileStore: FileStore = {
         return FileStore()
     }()
-    
+
     override func setUp() {
         super.setUp()
-        
+
         var count = 0
-        
+
         while count < 10, !FileManager.default.fileExists(atPath: caminandes3TrailerURL.path) || !FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path) {
             count += 1
             let downloadGroup = DispatchGroup()
-            
+
             if !FileManager.default.fileExists(atPath: self.caminandes3TrailerURL.path) {
                 let url = URL(string: "https://download.kinvey.com/iOS/travisci-cache/Caminandes+3+-+TRAILER.mp4")!
                 downloadGroup.enter()
@@ -50,12 +50,12 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     {
                         try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerURL)
                     }
-                    
+
                     downloadGroup.leave()
                 }
                 downloadTask.resume()
             }
-            
+
             if !FileManager.default.fileExists(atPath: self.caminandes3TrailerImageURL.path) {
                 let url = URL(string: "https://download.kinvey.com/iOS/travisci-cache/Caminandes+3+-+TRAILER.jpg")!
                 downloadGroup.enter()
@@ -67,19 +67,19 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     {
                         try! FileManager.default.moveItem(at: url, to: self.caminandes3TrailerImageURL)
                     }
-                    
+
                     downloadGroup.leave()
                 }
                 downloadTask.resume()
             }
-            
+
             downloadGroup.wait()
         }
-        
+
         XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: caminandes3TrailerImageURL.path))
     }
-    
+
     override func tearDown() {
         if let file = file, let _ = file.fileId {
             if useMockData {
@@ -90,33 +90,33 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationRemove = expectation(description: "Remove")
-            
+
             fileStore.remove(file) { (count, error) in
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
-                
+
                 if let count = count {
                     XCTAssertEqual(count, 1)
                 }
-                
+
                 expectationRemove?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRemove = nil
             }
         }
-        
+
         super.tearDown()
     }
-    
+
     func testDownloadMissingFileId() {
         signUp()
-        
+
         weak var expectationDownload = expectation(description: "Download")
-        
+
         self.fileStore.download(File()) { (file, data: Data?, error) in
             XCTAssertNil(file)
             XCTAssertNil(data)
@@ -129,133 +129,133 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     XCTFail(error.localizedDescription)
                 }
             }
-            
+
             expectationDownload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
         }
     }
-    
+
     func testDownloadTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.fileId = UUID().uuidString
         }
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationDownload = expectation(description: "Download")
-        
+
         fileStore.download(file) { (file, data: Data?, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNil(data)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationDownload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
         }
     }
-    
+
     func testDownload404Error() {
         signUp()
-        
+
         var file = File() {
             $0.fileId = UUID().uuidString
         }
-        
+
         mockResponse(statusCode: 404, data: [])
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationDownload = expectation(description: "Download")
-        
+
         fileStore.download(file) { (file, data: Data?, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNil(data)
             XCTAssertNotNil(error)
-            
+
             expectationDownload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
         }
     }
-    
+
     func testDownloadDataTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.fileId = UUID().uuidString
         }
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationDownload = expectation(description: "Download")
-        
+
         fileStore.download(file) { (file, data: Data?, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNil(data)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationDownload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
         }
     }
-    
+
     func testDownloadPathTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.fileId = UUID().uuidString
         }
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationDownload = expectation(description: "Download")
-        
+
         let request = fileStore.download(file) { (file, url: URL?, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNil(url)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationDownload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationDownload = nil
         }
-        
+
         XCTAssertNotNil(request.result)
         if let result = request.result {
             do {
@@ -266,48 +266,48 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             }
         }
     }
-    
+
     func testUploadFileMetadataTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         var count = 0
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, path: path) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUploadTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         var count = 0
         mockResponse { request in
             defer {
@@ -338,33 +338,33 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, path: path) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUploadDataTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         var count = 0
         mockResponse { request in
             defer {
@@ -395,35 +395,35 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, data: data) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUploadData404Error() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         var count = 0
         mockResponse { request in
             defer {
@@ -454,34 +454,34 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, data: data) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUploadImageTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerImageURL.path
-        
+
         var count = 0
         mockResponse { request in
             defer {
@@ -512,35 +512,35 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let image = Image(contentsOfFile: path)!
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, image: image) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUploadInputStreamTimeoutError() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerImageURL.path
-        
+
         var count = 0
         mockResponse { request in
             defer {
@@ -571,45 +571,45 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let inputStream = InputStream(fileAtPath: path)!
-        
+
         weak var expectationUpload = expectation(description: "Upload")
-        
+
         fileStore.upload(file, stream: inputStream) { (file, error) in
             XCTAssertTrue(Thread.isMainThread)
-            
+
             XCTAssertNil(file)
             XCTAssertNotNil(error)
             XCTAssertTimeoutError(error)
-            
+
             expectationUpload?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationUpload = nil
         }
     }
-    
+
     func testUpload() {
         signUp()
-        
+
         let originalLogNetworkEnabled = client.logNetworkEnabled
         client.logNetworkEnabled = true
         defer {
             client.logNetworkEnabled = originalLogNetworkEnabled
         }
-        
+
         var file = FileType()
         file.label = "trailer"
         file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         let fileStore = FileStore<FileType>()
-        
+
         var uploadProgressCount = 0
-        
+
         var runLoop: CFRunLoop?
         defer {
             if let runLoop = runLoop {
@@ -736,15 +736,15 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
-            
+
             let request = fileStore.upload(file, path: path) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
                 XCTAssertNotNil(uploadedFile)
@@ -757,11 +757,11 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     return
                 }
                 file = uploadedFile!
-                
+
                 XCTAssertNotNil(file.path)
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
-                
+
                 let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
@@ -769,7 +769,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     XCTAssertLessThan(diff, 15) //15 MB
                 }
             }
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
                 uploadProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -779,46 +779,46 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Upload: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format:"%3.2f", percentage))%)")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
                 XCTAssertLessThan(diff, 10)
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         if !useMockData {
             XCTAssertGreaterThan(uploadProgressCount, 0)
         }
-        
+
         XCTAssertNotNil(file.fileId)
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(file) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let file = file {
                     XCTAssertEqual(file.label, "trailer")
                 }
-                
+
                 if let data = data {
                     XCTAssertEqual(data.count, 8578265)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             var reportProgress = 0
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: #selector(getter: request.progress.fractionCompleted).description) { (object, info) -> Bool in
                 reportProgress += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -828,26 +828,26 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("\(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format:"%3.2f", percentage))%")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
-            
+
             XCTAssertGreaterThan(reportProgress, 0)
         }
     }
-    
+
     func testUploadStream() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         var uploadProgressCount = 0
-        
+
         var runLoop: CFRunLoop?
         defer {
             if let runLoop = runLoop {
@@ -971,35 +971,35 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
-            
+
             let inputStream = InputStream(fileAtPath: path)!
             let request = fileStore.upload(file, stream: inputStream) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 file = uploadedFile!
-                
+
                 XCTAssertNil(file.path)
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
-                
+
                 let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
                     XCTAssertLessThan(diff, 15) //15 MB
                 }
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 uploadProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1008,42 +1008,42 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
                 XCTAssertLessThan(diff, 10)
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         if !useMockData {
             XCTAssertGreaterThan(uploadProgressCount, 0)
         }
-        
+
         XCTAssertNotNil(file.fileId)
-        
+
         if let _ = file.fileId {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(file) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let data = data {
                     XCTAssertEqual(data.count, 8578265)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             var reportProgressCount = 0
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 reportProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1052,26 +1052,26 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
-            
+
             XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
-    
+
     func testUploadImagePNG() {
         signUp()
-        
+
         var file = File() {
             $0.fileName = "videoplayback.png"
             $0.publicAccessible = true
         }
         let path = caminandes3TrailerImageURL.path
-        
+
         var uploadProgressCount = 0
-        
+
         var runLoop: CFRunLoop?
         defer {
             if let runLoop = runLoop {
@@ -1199,36 +1199,36 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
-            
+
             let image = Image(contentsOfFile: path)!
-            
+
             let request = fileStore.upload(file, image: image) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 file = uploadedFile!
-                
+
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/png")
-                
+
                 let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
                     XCTAssertLessThan(diff, 15) //15 MB
                 }
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 uploadProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1237,18 +1237,18 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
                 XCTAssertLessThan(diff, 15) //15 MB
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
-            
+
             XCTAssertNotNil(request.result)
             if let result = request.result {
                 let file = try? result.value()
@@ -1257,29 +1257,29 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 XCTAssertEqual(file?.mimeType, "image/png")
             }
         }
-        
+
         if !useMockData {
             XCTAssertGreaterThan(uploadProgressCount, 0)
         }
-        
+
         XCTAssertNotNil(file.fileId)
         self.file = file
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(file) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let data = data {
                     XCTAssertEqual(data.count, 1994579)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 uploadProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1288,26 +1288,26 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
-            
+
             XCTAssertGreaterThan(uploadProgressCount, 0)
         }
     }
-    
+
     func testUploadImageJPEG() {
         signUp()
-        
+
         var file = File() {
             $0.fileName = "videoplayback.jpg"
             $0.publicAccessible = true
         }
         let path = caminandes3TrailerImageURL.path
-        
+
         var uploadProgressCount = 0
-        
+
         var runLoop: CFRunLoop?
         defer {
             if let runLoop = runLoop {
@@ -1434,36 +1434,36 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             let memoryBefore = getMegabytesUsed()
             XCTAssertNotNil(memoryBefore)
-            
+
             let image = Image(contentsOfFile: path)!
-            
+
             let request = fileStore.upload(file, image: image, imageRepresentation: .jpeg(compressionQuality: 0.8)) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 file = uploadedFile!
-                
+
                 XCTAssertNotNil(file.download)
                 XCTAssertNotNil(file.downloadURL)
                 XCTAssertEqual(file.mimeType, "image/jpeg")
-                
+
                 let memoryNow = getMegabytesUsed()
                 XCTAssertNotNil(memoryNow)
                 if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                     let diff = memoryNow - memoryBefore
                     XCTAssertLessThan(diff, 15) //15 MB
                 }
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 uploadProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1472,18 +1472,18 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Upload: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) (\(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             let memoryNow = getMegabytesUsed()
             XCTAssertNotNil(memoryNow)
             if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
                 let diff = memoryNow - memoryBefore
                 XCTAssertLessThan(diff, 15) //15 MB
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
-            
+
             XCTAssertNotNil(request.result)
             if let result = request.result {
                 let file = try? result.value()
@@ -1492,31 +1492,31 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 XCTAssertEqual(file?.mimeType, "image/jpeg")
             }
         }
-        
+
         if !useMockData {
             XCTAssertGreaterThan(uploadProgressCount, 0)
         }
-        
+
         XCTAssertNotNil(file.fileId)
         self.file = file
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(file) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let data = data {
                     XCTAssertEqual(data.count, 233281)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             var reportProgressCount = 0
-            
+
             keyValueObservingExpectation(for: request.progress, keyPath: "fractionCompleted") { (object, info) -> Bool in
                 reportProgressCount += 1
                 XCTAssertLessThanOrEqual(request.progress.completedUnitCount, request.progress.totalUnitCount)
@@ -1525,22 +1525,22 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 print("Download: \(request.progress.completedUnitCount) / \(request.progress.totalUnitCount) \(String(format: "%3.2f", request.progress.fractionCompleted * 100))")
                 return request.progress.fractionCompleted >= 1.0
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
-            
+
             XCTAssertGreaterThan(reportProgressCount, 0)
         }
     }
-    
+
     func testUploadAndResume() {
         guard !useMockData else {
             return
         }
-        
+
         signUp()
-        
+
         let file = File() {
             $0.publicAccessible = true
         }
@@ -1550,87 +1550,87 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         guard let fileSize = attributes[.size] as? Int else {
             Swift.fatalError()
         }
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             let request = fileStore.upload(file, path: path) { (file, error) in
                 self.file = file
                 XCTFail("Handler was not expected to be called")
             }
-            
+
             let delayTime = DispatchTime.now() + Double(Int64(3 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             DispatchQueue.main.asyncAfter(deadline: delayTime) {
                 request.cancel()
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         //XCTAssertNotNil(self.file?.entityId)
-        
+
         do {
             weak var expectationWait = expectation(description: "Wait")
-            
+
             let delayTime = DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             DispatchQueue.main.asyncAfter(deadline: delayTime) {
                 expectationWait?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationWait = nil
             }
         }
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(self.file!, path: path) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(self.file!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let data = data {
                     XCTAssertEqual(data.count, fileSize)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
     }
-    
+
     func testDownloadAndResume() {
         signUp()
-        
+
         let file = FileType()
         file.label = "trailer"
         file.publicAccessible = true
         self.file = file
         let path = caminandes3TrailerURL.path
-        
+
         let fileStore = FileStore<FileType>()
-        
+
         do {
             if useMockData {
                 var count = 0
@@ -1732,24 +1732,24 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, path: path) { (file, error) in
                 XCTAssertNotNil(file)
                 self.myFile = file
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         XCTAssertNotNil(self.myFile?.fileId)
-        
+
         if useMockData {
             let url = caminandes3TrailerURL
             let data = try! Data(contentsOf: url)
@@ -1774,7 +1774,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         guard self.myFile != nil else {
             return
         }
@@ -1786,53 +1786,53 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 self.myFile = file
                 XCTFail(error?.localizedDescription ?? "Handler was not expected to be called")
             }
-            
+
             let delayTime = DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             DispatchQueue.main.asyncAfter(deadline: delayTime) {
                 XCTAssertTrue(request.executing)
                 XCTAssertFalse(request.cancelled)
-                
+
                 request.cancel()
-                
+
                 XCTAssertFalse(request.executing)
                 XCTAssertTrue(request.cancelled)
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
-        
+
         XCTAssertNotNil(self.myFile?.resumeDownloadData)
         if let resumeData = self.myFile?.resumeDownloadData {
             XCTAssertGreaterThan(resumeData.count, 0)
         }
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             let request = fileStore.download(self.myFile!) { (file, data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
-                
+
                 if let file = file {
                     XCTAssertEqual(file.label, "trailer")
                 }
-                
+
                 if let data = data {
                     XCTAssertEqual(UInt64(data.count), self.caminandes3TrailerFileSize)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
-            
+
             XCTAssertNotNil(request.result)
             if let result = request.result {
                 do {
@@ -1845,70 +1845,70 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             }
         }
     }
-    
+
     func testUploadDataDownloadPath() {
         guard !useMockData else {
             return
         }
-        
+
         signUp()
-        
+
         let file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let data = "Hello".data(using: String.Encoding.utf8)!
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         XCTAssertNotNil(file.fileId)
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNil(error)
-                
+
                 if let url = url, let _data = try? Data(contentsOf: url) {
                     XCTAssertEqual(data.count, _data.count)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
-        
+
         do {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNotNil(url?.path)
                 XCTAssertNil(error)
-                
+
                 if let url = url {
                     XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
-                    
+
                     if let dataTmp = try? Data(contentsOf: url) {
                         XCTAssertEqual(dataTmp.count, data.count)
                     } else {
@@ -1917,7 +1917,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 } else {
                     XCTFail("URL not found")
                 }
-                
+
                 if let _ = expectationCached {
                     expectationCached?.fulfill()
                     expectationCached = nil
@@ -1925,40 +1925,40 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     expectationDownload?.fulfill()
                 }
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCached = nil
                 expectationDownload = nil
             }
         }
-        
+
         let data2 = "Hello World".data(using: String.Encoding.utf8)!
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data2) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         do {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNotNil(url?.path)
                 XCTAssertNil(error)
-                
+
                 if let _ = expectationCached {
                     if let url = url,
                         let dataTmp = try? Data(contentsOf: url)
@@ -1967,7 +1967,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     } else {
                         XCTFail("Data not found")
                     }
-                    
+
                     expectationCached?.fulfill()
                     expectationCached = nil
                 } else {
@@ -1978,176 +1978,176 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     } else {
                         XCTFail("Data not found")
                     }
-                    
+
                     expectationDownload?.fulfill()
                 }
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCached = nil
                 expectationDownload = nil
             }
         }
     }
-    
+
     func testUploadDataWithFileId() {
         guard !useMockData else {
             return
         }
-        
+
         signUp()
-        
+
         let fileId = UUID().uuidString
-        
+
         let file = File() {
             $0.publicAccessible = true
             $0.fileId = fileId
         }
         self.file = file
         var data = "Hello".data(using: String.Encoding.utf8)!
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, _data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(_data)
                 XCTAssertNil(error)
-                
+
                 if let _data = _data {
                     XCTAssertEqual(data.count, _data.count)
                     XCTAssertEqual(data, _data)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
-        
+
         data = "Hello World".data(using: String.Encoding.utf8)!
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, _data: Data?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(_data)
                 XCTAssertNil(error)
-                
+
                 if let _data = _data {
                     XCTAssertEqual(data.count, _data.count)
                     XCTAssertEqual(data, _data)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
     }
-    
+
     func testUploadPathDownloadPath() {
         guard !useMockData else {
             return
         }
-        
+
         signUp()
-        
+
         let file = File() {
             $0.publicAccessible = true
         }
         self.file = file
         let data = "Hello".data(using: String.Encoding.utf8)!
-        
+
         let path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("upload")
         do {
             try data.write(to: path, options: [.atomic])
         } catch {
             XCTFail(error.localizedDescription)
         }
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, path: path.path) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         XCTAssertNotNil(file.fileId)
-        
+
         do {
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNil(error)
-                
+
                 if let url = url, let _data = try? Data(contentsOf: url) {
                     XCTAssertEqual(data.count, _data.count)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
-        
+
         do {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNotNil(url?.path)
                 XCTAssertNil(error)
-                
+
                 if let url = url,
                     let dataTmp = try? Data(contentsOf: url)
                 {
@@ -2155,7 +2155,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 } else {
                     XCTFail("Data not found")
                 }
-                
+
                 if let _ = expectationCached {
                     expectationCached?.fulfill()
                     expectationCached = nil
@@ -2163,45 +2163,45 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     expectationDownload?.fulfill()
                 }
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCached = nil
                 expectationDownload = nil
             }
         }
-        
+
         let data2 = "Hello World".data(using: String.Encoding.utf8)!
         do {
             try data2.write(to: path, options: [.atomic])
         } catch {
             XCTFail(error.localizedDescription)
         }
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, path: path.path) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         do {
             weak var expectationCached = expectation(description: "Cached")
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file) { (file, url: URL?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNotNil(url?.path)
                 XCTAssertNil(error)
-                
+
                 if let _ = expectationCached {
                     if let url = url,
                         let dataTmp = try? Data(contentsOf: url)
@@ -2210,7 +2210,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     } else {
                         XCTFail("Data not found")
                     }
-                    
+
                     expectationCached?.fulfill()
                     expectationCached = nil
                 } else {
@@ -2221,71 +2221,71 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     } else {
                         XCTFail("Data not found")
                     }
-                    
+
                     expectationDownload?.fulfill()
                 }
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCached = nil
                 expectationDownload = nil
             }
         }
     }
-    
+
     func testUploadTTLExpired() {
         guard !useMockData else {
             return
         }
-        
+
         signUp()
-        
+
         let file = File() {
             $0.publicAccessible = false
         }
         self.file = file
         let data = "Hello".data(using: String.Encoding.utf8)!
-        
+
         let beforeDate = Date()
         let ttl = TTL(10, .second)
-        
+
         do {
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data, ttl: ttl) { (file, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         XCTAssertNotNil(file.fileId)
         XCTAssertNotNil(file.expiresAt)
-        
+
         if let expiresAt = file.expiresAt {
             XCTAssertGreaterThan(expiresAt.timeIntervalSince(beforeDate), ttl.1.toTimeInterval(ttl.0))
-            
+
             let twentySecs = TTL(20, .second)
             XCTAssertLessThan(expiresAt.timeIntervalSince(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))
         }
     }
-    
+
     func testDownloadTTLExpired() {
         signUp()
-        
+
         var file = File() {
             $0.publicAccessible = false
         }
         self.file = file
         let data = "Hello".data(using: String.Encoding.utf8)!
-        
+
         let ttl = TTL(10, .second)
-        
+
         do {
             if useMockData {
                 var count = 0
@@ -2354,32 +2354,32 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationUpload = expectation(description: "Upload")
-            
+
             fileStore.upload(file, data: data) { (uploadedFile, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 file = uploadedFile!
-                
+
                 expectationUpload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationUpload = nil
             }
         }
-        
+
         XCTAssertNotNil(file.fileId)
-        
+
         file.download = nil
         file.expiresAt = nil
-        
+
         let beforeDate = Date()
-        
+
         do {
             if useMockData {
                 var count = 0
@@ -2415,45 +2415,45 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationDownload = expectation(description: "Download")
-            
+
             fileStore.download(file, ttl: ttl) { (downloadedFile, url: URL?, error) in
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(url)
                 XCTAssertNil(error)
-                
+
                 file = downloadedFile!
-                
+
                 if let url = url, let _data = try? Data(contentsOf: url) {
                     XCTAssertEqual(data.count, _data.count)
                 }
-                
+
                 expectationDownload?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDownload = nil
             }
         }
-        
+
         XCTAssertNotNil(file.expiresAt)
-        
+
         if let expiresAt = file.expiresAt {
             XCTAssertGreaterThan(expiresAt.timeIntervalSince(beforeDate), ttl.1.toTimeInterval(ttl.0 - 1))
-            
+
             let twentySecs = TTL(20, .second)
             XCTAssertLessThan(expiresAt.timeIntervalSince(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))
         }
     }
-    
+
     func testGetInstance() {
         let appKey = "file-get_instance-\(UUID().uuidString)"
         let client = Client(appKey: appKey, appSecret: "unit-test")
         let fileStore = FileStore(client: client)
-        
+
         let fileCache = fileStore.cache?.cache as? RealmFileCache<File>
         XCTAssertNotNil(fileCache)
         if let fileCache = fileCache {
@@ -2465,7 +2465,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             }
         }
     }
-    
+
     func testAclJson() {
         let file = File {
             $0.acl = Acl {
@@ -2479,53 +2479,53 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 "w" : ["other-user-id"]
             ]
         ]
-        
-        let resultData = try! JSONSerialization.data(withJSONObject: result)
-        let expectedData = try! JSONSerialization.data(withJSONObject: expected)
-        
+
+        let resultData = try! JSONSerialize.data(result)
+        let expectedData = try! JSONSerialize.data(expected)
+
         let resultJsonObject = try! JSONSerialization.jsonObject(with: resultData) as! [String : Any]
         let expectedJsonObject = try! JSONSerialization.jsonObject(with: expectedData) as! [String : Any]
-        
+
         XCTAssertEqual(resultJsonObject.count, expectedJsonObject.count)
         XCTAssertEqual(resultJsonObject["_public"] as? Bool, expectedJsonObject["_public"] as? Bool)
-        
+
         let resultAcl = resultJsonObject["_acl"] as? [String : Any]
         let expectedAcl = expectedJsonObject["_acl"] as? [String : Any]
-        
+
         XCTAssertEqual(resultAcl?.count, expectedAcl?.count)
-        
+
         let resultAclW = resultAcl?["w"] as? [String]
         let expectedAclW = expectedAcl?["w"] as? [String]
-        
+
         XCTAssertEqual(resultAclW?.count, expectedAclW?.count)
         XCTAssertEqual(resultAclW?.count, 1)
         XCTAssertEqual(resultAclW?.first, expectedAclW?.first)
     }
-    
+
     func testAclShareWithAnotherUser() {
         let username = "aclShareWithAnotherUser_\(UUID().uuidString)"
         let password = UUID().uuidString
-        
+
         signUp(username: username, password: password)
-        
+
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         if let user = Kinvey.sharedClient.activeUser {
             let userId = user.userId
-            
+
             user.logout()
-            
+
             XCTAssertNil(Kinvey.sharedClient.activeUser)
-            
+
             signUp()
-            
+
             XCTAssertNotNil(Kinvey.sharedClient.activeUser)
-            
+
             if let user = Kinvey.sharedClient.activeUser {
                 let secretMessage = "secret message"
                 let secretMessageData = secretMessage.data(using: .utf8)!
-                
+
                 var uploadedFileId: String? = nil
-                
+
                 do {
                     if useMockData {
                         var count = 0
@@ -2598,7 +2598,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                             setURLProtocol(nil)
                         }
                     }
-                    
+
                     let file = File {
                         $0.acl = Acl {
                             $0.readers = [userId]
@@ -2606,27 +2606,27 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                         }
                     }
                     let fileStore = FileStore()
-                    
+
                     weak var expectationUpload = expectation(description: "Upload")
-                    
+
                     fileStore.upload(file, data: secretMessageData) { file, error in
                         XCTAssertNotNil(file)
                         XCTAssertNil(error)
-                        
+
                         if let file = file {
                             uploadedFileId = file.fileId
                         }
-                        
+
                         expectationUpload?.fulfill()
                     }
-                    
+
                     waitForExpectations(timeout: defaultTimeout) { error in
                         expectationUpload = nil
                     }
                 }
-                
+
                 XCTAssertNotNil(uploadedFileId)
-                
+
                 do {
                     if useMockData {
                         mockResponse(statusCode: 204, data: Data())
@@ -2636,29 +2636,29 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                             setURLProtocol(nil)
                         }
                     }
-                    
+
                     weak var expectationDestroy = expectation(description: "Destroy")
-                    
+
                     user.destroy() {
                         XCTAssertTrue(Thread.isMainThread)
-                        
+
                         switch $0 {
                         case .success:
                             break
                         case .failure(let error):
                             XCTFail(error.localizedDescription)
                         }
-                        
+
                         expectationDestroy?.fulfill()
                     }
-                    
+
                     waitForExpectations(timeout: defaultTimeout) { error in
                         expectationDestroy = nil
                     }
                 }
-                
+
                 XCTAssertNil(Kinvey.sharedClient.activeUser)
-                
+
                 do {
                     if useMockData {
                         let userId = "589e6b0587e8310c76216fbb"
@@ -2682,26 +2682,26 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                             setURLProtocol(nil)
                         }
                     }
-                    
+
                     weak var expectationLogin = expectation(description: "Login")
-                    
+
                     User.login(username: username, password: password) { user, error in
                         XCTAssertNotNil(user)
                         XCTAssertNil(error)
-                        
+
                         expectationLogin?.fulfill()
                     }
-                    
+
                     waitForExpectations(timeout: defaultTimeout) { error in
                         expectationLogin = nil
                     }
                 }
-                
+
                 XCTAssertNotNil(Kinvey.sharedClient.activeUser)
-                
+
                 let file = File { $0.fileId = uploadedFileId }
                 let fileStore = FileStore()
-                
+
                 do {
                     if useMockData {
                         var count = 0
@@ -2739,27 +2739,27 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                             setURLProtocol(nil)
                         }
                     }
-                    
+
                     weak var expectationDownload = expectation(description: "Download")
-                    
+
                     fileStore.download(file) { (file, data: Data?, error) in
                         XCTAssertNotNil(file)
                         XCTAssertNotNil(data)
                         XCTAssertNil(error)
-                        
+
                         if let data = data {
                             let receivedMessage = String(data: data, encoding: .utf8)
                             XCTAssertEqual(receivedMessage, secretMessage)
                         }
-                        
+
                         expectationDownload?.fulfill()
                     }
-                    
+
                     waitForExpectations(timeout: defaultTimeout) { error in
                         expectationDownload = nil
                     }
                 }
-                
+
                 do {
                     if useMockData {
                         mockResponse(json: ["count" : 1])
@@ -2769,20 +2769,20 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                             setURLProtocol(nil)
                         }
                     }
-                    
+
                     weak var expectationDelete = expectation(description: "Delete")
-                    
+
                     fileStore.remove(file) { (count, error) in
                         XCTAssertNotNil(count)
                         XCTAssertNil(error)
-                        
+
                         if let count = count {
                             XCTAssertEqual(count, 1)
                         }
-                        
+
                         expectationDelete?.fulfill()
                     }
-                    
+
                     waitForExpectations(timeout: defaultTimeout) { error in
                         expectationDelete = nil
                     }
@@ -2790,7 +2790,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             }
         }
     }
-    
+
     func testToJson() {
         let file = File()
         file.publicAccessible = true
@@ -2806,24 +2806,24 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         if let acl = json["_acl"] as? [String : Any] {
             XCTAssertEqual(acl["gr"] as? Bool, true)
             XCTAssertEqual(acl["gw"] as? Bool, true)
-            
+
             XCTAssertTrue(acl["r"] is [String])
             if let readers = acl["r"] as? [String] {
                 XCTAssertEqual(readers, ["user-to-read-1", "user-to-read-2"])
             }
-            
+
             XCTAssertTrue(acl["w"] is [String])
             if let writers = acl["w"] as? [String] {
                 XCTAssertEqual(writers, ["user-to-write-1", "user-to-write-2"])
             }
         }
     }
-    
+
     func testFind() {
         signUp()
-        
+
         let fileStore = FileStore()
-        
+
         if useMockData {
             mockResponse(json: [
                 [
@@ -2849,32 +2849,32 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationFind = expectation(description: "Find")
-        
+
         fileStore.find() { files, error in
             XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(files)
             XCTAssertNil(error)
-            
+
             if let files = files {
                 XCTAssertEqual(files.count, 1)
             }
-            
+
             expectationFind?.fulfill()
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
-    
+
     func testRefresh() {
         signUp()
-        
+
         let fileStore = FileStore()
         var _file: File? = nil
-        
+
         do {
             if useMockData {
                 mockResponse(json: [
@@ -2901,18 +2901,18 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             fileStore.find(ttl: (5, .second)) { files, error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(files)
                 XCTAssertNil(error)
-                
+
                 if var files = files {
                     files = files.filter { $0.expiresAt != nil }
                     XCTAssertEqual(files.count, 1)
-                    
+
                     if let file = files.first {
                         _file = file
                         let expiresInSeconds = file.expiresAt?.timeIntervalSinceNow
@@ -2923,17 +2923,17 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                         }
                     }
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
-        
+
         XCTAssertNotNil(_file)
-        
+
         if let file = _file {
             if useMockData {
                 mockResponse(json: [
@@ -2958,14 +2958,14 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationRefresh = expectation(description: "Refresh")
-            
+
             fileStore.refresh(file, ttl: (5, .second)) { file, error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(file)
                 XCTAssertNil(error)
-                
+
                 if let file = file {
                     let expiresInSeconds = file.expiresAt?.timeIntervalSinceNow
                     XCTAssertNotNil(expiresInSeconds)
@@ -2974,22 +2974,22 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                         XCTAssertLessThanOrEqual(expiresInSeconds, 5)
                     }
                 }
-                
+
                 expectationRefresh?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRefresh = nil
             }
         }
     }
-    
+
     func testRefreshTimeoutError() {
         signUp()
-        
+
         let fileStore = FileStore()
         var _file: File? = nil
-        
+
         do {
             if useMockData {
                 mockResponse(json: [
@@ -3016,18 +3016,18 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationFind = expectation(description: "Find")
-            
+
             fileStore.find(ttl: (5, .second)) { files, error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(files)
                 XCTAssertNil(error)
-                
+
                 if var files = files {
                     files = files.filter { $0.expiresAt != nil }
                     XCTAssertEqual(files.count, 1)
-                    
+
                     if let file = files.first {
                         _file = file
                         let expiresInSeconds = file.expiresAt?.timeIntervalSinceNow
@@ -3038,40 +3038,40 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
                         }
                     }
                 }
-                
+
                 expectationFind?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
-        
+
         XCTAssertNotNil(_file)
-        
+
         if let file = _file {
             mockResponse(error: timeoutError)
             defer {
                 setURLProtocol(nil)
             }
-            
+
             weak var expectationRefresh = expectation(description: "Refresh")
-            
+
             fileStore.refresh(file, ttl: (5, .second)) { file, error in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(file)
                 XCTAssertNotNil(error)
                 XCTAssertTimeoutError(error)
-                
+
                 expectationRefresh?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationRefresh = nil
             }
         }
     }
-    
+
     func testCachedFileNotFound() {
         let file = File() {
             $0.fileId = UUID().uuidString
@@ -3080,11 +3080,11 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             try self.fileStore.cachedFile(file)
         }.to(beNil())
     }
-    
+
     func testCreateBucketData() {
         let text = "test"
         let data = text.data(using: .utf8)!
-        
+
         mockResponse { request in
             switch (request.url?.path, request.url?.query) {
             case ("/blob/_kid_"?, "tls=true"?):
@@ -3128,7 +3128,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), data: data)
         let file = try? request.waitForResult().value()
@@ -3140,16 +3140,16 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             XCTAssertEqual(file.size.value, Int64(data.count))
         }
     }
-    
+
     func testCreateBucketDataTimeout() {
         let text = "test"
         let data = text.data(using: .utf8)!
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), data: data)
         do {
@@ -3159,10 +3159,10 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             XCTAssertTimeoutError(error)
         }
     }
-    
+
     func testCreateBucketPath() {
         let size = try! FileManager.default.attributesOfItem(atPath: caminandes3TrailerImageURL.path)[.size] as! Int64
-        
+
         mockResponse { request in
             switch (request.url?.path, request.url?.query) {
             case ("/blob/_kid_"?, "tls=true"?):
@@ -3206,7 +3206,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), path: caminandes3TrailerImageURL.path)
         let file = try? request.waitForResult().value()
@@ -3218,13 +3218,13 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             XCTAssertEqual(file.size.value, size)
         }
     }
-    
+
     func testCreateBucketPathTimeout() {
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), path: caminandes3TrailerImageURL.path)
         do {
@@ -3234,13 +3234,13 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             XCTAssertTimeoutError(error)
         }
     }
-    
+
     func testCreateBucketInputStream() {
         let inputStream = InputStream(data: "test".data(using: .utf8)!)
         defer {
             inputStream.close()
         }
-        
+
         mockResponse { request in
             switch (request.url?.path, request.url?.query) {
             case ("/blob/_kid_"?, "tls=true"?):
@@ -3285,7 +3285,7 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), stream: inputStream)
         let file = try? request.waitForResult().value()
@@ -3298,18 +3298,18 @@ class FileTestCase<FileType : File & MyFileProtocol>: StoreTestCase {
             XCTAssertEqual(file.uploadHeaders!["TEST_HEADER"], "TEST_HEADER_VALUE")
         }
     }
-    
+
     func testCreateBucketInputStreamTimeout() {
         let inputStream = InputStream(data: "test".data(using: .utf8)!)
         defer {
             inputStream.close()
         }
-        
+
         mockResponse(error: timeoutError)
         defer {
             setURLProtocol(nil)
         }
-        
+
         let fileStore = FileStore()
         let request = fileStore.create(File(), stream: inputStream)
         do {
@@ -3341,7 +3341,7 @@ class MyFileTestCase : FileTestCase<MyFile> {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let inputStream = InputStream(data: "test".data(using: .utf8)!)
         defer {
             inputStream.close()
@@ -3376,7 +3376,7 @@ class MyFileCodableTestCase : FileTestCase<MyFileCodable> {
         defer {
             setURLProtocol(nil)
         }
-        
+
         let inputStream = InputStream(data: "test".data(using: .utf8)!)
         defer {
             inputStream.close()

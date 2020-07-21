@@ -11,88 +11,88 @@ import XCTest
 import Nimble
 
 extension XCTestCase {
-    
+
     @discardableResult
     func wait(toBeTrue evaluate: @escaping @autoclosure () -> Bool, timeout: TimeInterval = 60) -> Bool {
         var result = false
-        
+
         let observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { (observer, activity) in
             if evaluate() {
                 result = true
                 CFRunLoopStop(CFRunLoopGetCurrent())
             }
         }
-        
+
         CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
         CFRunLoopRunInMode(.defaultMode, timeout, false)
         CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
-        
+
         return result
     }
-    
+
 }
 
 struct ChunkData {
-    
+
     let data: Data
     let delay: TimeInterval?
-    
+
     init(data: Data, delay: TimeInterval? = nil) {
         self.data = data
         self.delay = delay
     }
-    
+
 }
 
 struct HttpResponse {
-    
+
     let statusCode: Int?
     let headerFields: [String : String]?
     let chunks: [ChunkData]?
     let error: Swift.Error?
-    
+
     init(error: Swift.Error) {
         statusCode = nil
         headerFields = nil
         chunks = nil
         self.error = error
     }
-    
+
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, chunks: [ChunkData]? = nil) {
         var headerFields = headerFields ?? [:]
         if let chunks = chunks {
             let contentLength = chunks.reduce(0, { $0 + $1.data.count })
             headerFields["Content-Length"] = "\(contentLength)"
         }
-        
+
         self.statusCode = statusCode
         self.headerFields = headerFields
         self.chunks = chunks
         error = nil
     }
-    
+
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, data: Data? = nil) {
         self.init(statusCode: statusCode, headerFields: headerFields, chunks: data != nil ? [ChunkData(data: data!)] : nil)
     }
-    
+
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        let data = try! JSONSerialization.data(withJSONObject: json)
+        let data = try! JSONSerialize.data(json)
         self.init(statusCode: statusCode, headerFields: headerFields, data: data)
     }
-    
+
     init(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary]) {
         var headerFields = headerFields ?? [:]
         headerFields["Content-Type"] = "application/json; charset=utf-8"
-        let data = try! JSONSerialization.data(withJSONObject: json)
+        let data = try! JSONSerialize.data(json)
         self.init(statusCode: statusCode, headerFields: headerFields, data: data)
     }
-    
+
     init(request: URLRequest) {
         self.init(request: request, urlProcotolType: KinveyURLProtocol.self)
     }
-    
+
     init<URLProtocolType>(
         request: URLRequest,
         urlProcotolType: URLProtocolType.Type
@@ -103,7 +103,7 @@ struct HttpResponse {
         urlProtocol.stopLoading()
         self.init(response: client.response, data: client.data)
     }
-    
+
     init(response: URLResponse?, data: Data? = nil) {
         let httpURLResponse = response as? HTTPURLResponse
         let headerFields: [String : String]?
@@ -116,11 +116,11 @@ struct HttpResponse {
         }
         self.init(statusCode: httpURLResponse?.statusCode, headerFields: headerFields, data: data)
     }
-    
+
 }
 
 extension JSONSerialization {
-    
+
     class func jsonObject(with request: URLRequest, options opt: JSONSerialization.ReadingOptions = []) throws -> Any? {
         if let data = request.httpBody {
             return try jsonObject(with: data, options: opt)
@@ -134,11 +134,11 @@ extension JSONSerialization {
             return nil
         }
     }
-    
+
 }
 
 extension URLRequest {
-    
+
     var httpBodyData: Data {
         if let data = httpBody {
             return data
@@ -160,11 +160,11 @@ extension URLRequest {
             Swift.fatalError()
         }
     }
-    
+
     var httpBodyString: String {
         return String(data: httpBodyData, encoding: .utf8)!
     }
-    
+
 }
 
 var protocolClasses = [URLProtocol.Type]() {
@@ -604,12 +604,12 @@ func kinveyUpload<FileType>(
 }
 
 class MockURLProtocol: URLProtocol {
-    
+
     static var completionHandler: ((URLRequest) -> HttpResponse)? = nil
     static var function: String?
     static var runLoop: CFRunLoop?
     static var running = false
-    
+
     override class func canInit(with request: URLRequest) -> Bool {
         while running {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
@@ -624,14 +624,14 @@ class MockURLProtocol: URLProtocol {
         log.debug("Mock \(function ?? "") return \(matches) \(request.url!)")
         return matches
     }
-    
+
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         while running {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
         }
         return request
     }
-    
+
     override class func canInit(with task: URLSessionTask) -> Bool {
         while running {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
@@ -643,7 +643,7 @@ class MockURLProtocol: URLProtocol {
         log.debug("Mock \(function ?? "") return \(matches) \(task.currentRequest!.url!)")
         return matches
     }
-    
+
     override func startLoading() {
         while MockURLProtocol.running {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
@@ -670,24 +670,24 @@ class MockURLProtocol: URLProtocol {
         }
         self.client!.urlProtocolDidFinishLoading(self)
     }
-    
+
     override func stopLoading() {
         log.debug("Mock \(MockURLProtocol.function ?? "") \(request.url!)")
         MockURLProtocol.running = false
     }
-    
+
 }
 
 func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: JsonDictionary, function: String = #function) {
     var headerFields = headerFields ?? [:]
     headerFields["Content-Type"] = "application/json; charset=utf-8"
-    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialize.data(json), function: function)
 }
 
 func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, json: [JsonDictionary], function: String = #function) {
     var headerFields = headerFields ?? [:]
     headerFields["Content-Type"] = "application/json; charset=utf-8"
-    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialization.data(withJSONObject: json), function: function)
+    mockResponse(statusCode: statusCode, headerFields: headerFields, data: try! JSONSerialize.data(json), function: function)
 }
 
 func mockResponse(statusCode: Int? = nil, headerFields: [String : String]? = nil, string: String, function: String = #function) {
@@ -781,11 +781,11 @@ func getMegabytesUsed() -> Float? {
 }
 
 class KinveyTestCase: XCTestCase {
-    
+
     let client = Kinvey.sharedClient
     var encrypted = false
     var useMockData = appKey == nil || appSecret == nil
-    
+
     static let defaultTimeout: TimeInterval = {
         guard let timeout = ProcessInfo.processInfo.environment["TIMEOUT"], let timeInterval = TimeInterval(timeout) else {
             return 60
@@ -793,7 +793,7 @@ class KinveyTestCase: XCTestCase {
         return timeInterval
     }()
     let defaultTimeout: TimeInterval = KinveyTestCase.defaultTimeout
-    
+
     static let appKey = ProcessInfo.processInfo.environment["KINVEY_APP_KEY"]
     static let appSecret = ProcessInfo.processInfo.environment["KINVEY_APP_SECRET"]
     static let hostUrl: URL? = {
@@ -802,12 +802,12 @@ class KinveyTestCase: XCTestCase {
         }
         return URL(string: hostUrl)
     }()
-    
+
     typealias AppInitialize = (appKey: String, appSecret: String)
     static let appInitializeDevelopment = AppInitialize(appKey: "kid_Wy35WH6X9e", appSecret: "d85f81cad5a649baaa6fdcd99a108ab1")
     static let appInitializeProduction = AppInitialize(appKey: MockKinveyBackend.kid, appSecret: "appSecret")
     static let appInitialize = appInitializeProduction
-    
+
     func initializeDevelopment() {
         if !Kinvey.sharedClient.isInitialized() {
             Kinvey.sharedClient.initialize(
@@ -827,7 +827,7 @@ class KinveyTestCase: XCTestCase {
             }
         }
     }
-    
+
     func initializeProduction() {
         if !Kinvey.sharedClient.isInitialized() {
             Kinvey.sharedClient.initialize(
@@ -846,57 +846,57 @@ class KinveyTestCase: XCTestCase {
                 }
             }
         }
-        
+
     }
-    
+
     private var originalLogLevel: LogLevel!
     private var running = false
-    
+
     override func setUp() {
         if running {
             keyValueObservingExpectation(for: self, keyPath: NSExpression(forKeyPath: \KinveyTestCase.running).keyPath) { (obj, change) -> Bool in
                 return !self.running
             }
-            
+
             waitForExpectations(timeout: defaultTimeout)
         }
         XCTAssertFalse(MockURLProtocol.running)
         running = true
-        
+
         super.setUp()
-        
+
         originalLogLevel = Kinvey.logLevel
         Kinvey.logLevel = .error
-        
+
         if KinveyTestCase.appInitialize == KinveyTestCase.appInitializeDevelopment {
             initializeDevelopment()
         } else {
             initializeProduction()
         }
-        
+
         XCTAssertNotNil(client.isInitialized())
-        
+
         if let activeUser = client.activeUser {
             activeUser.logout()
         }
-        
+
         client.userType = User.self
     }
-    
+
     class SignUpMockURLProtocol: URLProtocol {
-        
+
         override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
-        
+
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
             return request
         }
-        
+
         override func startLoading() {
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "1.1", headerFields: [ "Content-Type" : "application/json; charset=utf-8" ])!
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            
+
             var resquestBody: [String : Any]? = nil
             if let data = request.httpBody {
                 resquestBody = try! JSONSerialization.jsonObject(with: data) as? [String : Any]
@@ -907,7 +907,7 @@ class KinveyTestCase: XCTestCase {
                 }
                 resquestBody = try! JSONSerialization.jsonObject(with: httpBodyStream) as? [String : Any]
             }
-            
+
             var responseBody = [
                 "_id" : UUID().uuidString,
                 "username" : (resquestBody?["username"] as? String) ?? UUID().uuidString,
@@ -923,23 +923,23 @@ class KinveyTestCase: XCTestCase {
             if let resquestBody = resquestBody {
                 responseBody += resquestBody
             }
-            let data = try! JSONSerialization.data(withJSONObject: responseBody)
+            let data = try! JSONSerialize.data(responseBody)
             client?.urlProtocol(self, didLoad: data)
-            
+
             client?.urlProtocolDidFinishLoading(self)
         }
-        
+
         override func stopLoading() {
         }
-        
+
     }
-    
+
     func signUp<UserType: User>(username: String? = nil, password: String? = nil, user: UserType? = nil, mustIncludeSocialIdentity: Bool = false, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
         let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
-        
+
         let originalMustIncludeSocialIdentity = MockKinveyBackend.usersMustIncludeSocialIdentity
         if useMockData {
             MockKinveyBackend.usersMustIncludeSocialIdentity = mustIncludeSocialIdentity
@@ -951,9 +951,9 @@ class KinveyTestCase: XCTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationSignUp = expectation(description: "Sign Up")
-        
+
         let handler: (UserType?, Swift.Error?) -> Void = { user, error in
             if let completionHandler = completionHandler {
                 completionHandler(user, error)
@@ -962,31 +962,31 @@ class KinveyTestCase: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
             }
-            
+
             expectationSignUp?.fulfill()
         }
-        
+
         if let username = username {
             User.signup(username: username, password: password, user: user, completionHandler: handler)
         } else {
             User.signup(user: user, completionHandler: handler)
         }
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationSignUp = nil
         }
-        
+
         if mustHaveAValidUserInTheEnd {
             XCTAssertNotNil(client.activeUser)
         }
     }
-    
+
     func login<UserType: User>(username: String, password: String, mustHaveAValidUserInTheEnd: Bool = true, client: Client? = nil, mockHandler: ((URLRequest) -> HttpResponse)? = nil, completionHandler: ((UserType?, Swift.Error?) -> Void)? = nil) {
         let client = client ?? self.client
         if let user = client.activeUser {
             user.logout()
         }
-        
+
         if useMockData {
             if let mockHandler = mockHandler {
                 mockResponse(completionHandler: mockHandler)
@@ -999,9 +999,9 @@ class KinveyTestCase: XCTestCase {
                 setURLProtocol(nil)
             }
         }
-        
+
         weak var expectationLogin = expectation(description: "Login")
-        
+
         let handler: (UserType?, Swift.Error?) -> Void = { user, error in
             if let completionHandler = completionHandler {
                 completionHandler(user, error)
@@ -1010,16 +1010,16 @@ class KinveyTestCase: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
             }
-            
+
             expectationLogin?.fulfill()
         }
-        
+
         User.login(username: username, password: password, client: client, completionHandler: handler)
-        
+
         waitForExpectations(timeout: defaultTimeout) { error in
             expectationLogin = nil
         }
-        
+
         if mustHaveAValidUserInTheEnd {
             XCTAssertNotNil(client.activeUser)
         }
@@ -1031,9 +1031,9 @@ class KinveyTestCase: XCTestCase {
             cache.clear(query: nil)
         }
     }
-    
+
     var deleteUserDuringTearDown = true
-    
+
     override func tearDown() {
         defer {
             running = false
@@ -1043,7 +1043,7 @@ class KinveyTestCase: XCTestCase {
         }
         XCTAssertFalse(MockURLProtocol.running)
         setURLProtocol(nil)
-        
+
         if deleteUserDuringTearDown, let user = client.activeUser {
             if useMockData {
                 setURLProtocol(MockKinveyBackend.self)
@@ -1053,39 +1053,39 @@ class KinveyTestCase: XCTestCase {
                     setURLProtocol(nil)
                 }
             }
-            
+
             weak var expectationDestroyUser = expectation(description: "Destroy User")
-            
+
             user.destroy {
                 XCTAssertTrue(Thread.isMainThread)
-                
+
                 switch $0 {
                 case .success:
                     break
                 case .failure(let error):
                     XCTFail(error.localizedDescription)
                 }
-                
+
                 expectationDestroyUser?.fulfill()
             }
-            
+
             waitForExpectations(timeout: defaultTimeout) { error in
                 expectationDestroyUser = nil
             }
-            
+
             XCTAssertNil(client.activeUser)
         }
-        
+
         client.cacheManager.clearAll()
         removeAll(Person.self)
-        
+
         Kinvey.logLevel = originalLogLevel
-        
+
         client.userType = User.self
-        
+
         super.tearDown()
     }
-    
+
     func decorate(json: inout JsonDictionary) {
         json[Entity.EntityCodingKeys.entityId] = UUID().uuidString
         json[Entity.EntityCodingKeys.acl] = [
@@ -1096,15 +1096,15 @@ class KinveyTestCase: XCTestCase {
             Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
         ]
     }
-    
+
     func decorateJsonFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var json = try! JSONSerialization.jsonObject(with: request) as! JsonDictionary
         decorate(json: &json)
         return json
     }
-    
-    func decorateJsonArrayFromPostRequest(_ request: URLRequest) -> [JsonDictionary] {
+
+    func decorateJsonArrayFromPostRequest(_ request: URLRequest) -> JsonDictionary {
         XCTAssertEqual(request.httpMethod, "POST")
         var jsonArray = try! JSONSerialization.jsonObject(with: request) as! [JsonDictionary]
         jsonArray = jsonArray.map {
@@ -1112,9 +1112,9 @@ class KinveyTestCase: XCTestCase {
             decorate(json: &json)
             return json
         }
-        return jsonArray
+        return ["entities": jsonArray, "errors": []]
     }
-    
+
     func startLogPolling(timeInterval: TimeInterval = 30, function: String = #function) -> DispatchSourceTimer {
         let startTime = Date()
         let timer = DispatchSource.makeTimerSource()
@@ -1127,5 +1127,5 @@ class KinveyTestCase: XCTestCase {
         timer.resume()
         return timer
     }
-    
+
 }

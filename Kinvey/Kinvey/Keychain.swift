@@ -10,23 +10,23 @@ import Foundation
 import KeychainAccess
 
 class Keychain {
-    
+
     private let appKey: String?
     private let accessGroup: String?
     private let _client: Client?
     internal let keychain: KeychainAccess.Keychain
-    
+
     private var client: Client {
         return _client ?? sharedClient
     }
-    
+
     init() {
         self.appKey = nil
         self.accessGroup = nil
         self._client = nil
         self.keychain = KeychainAccess.Keychain().accessibility(.afterFirstUnlockThisDeviceOnly)
     }
-    
+
     init(appKey: String, client: Client) {
         self.appKey = appKey
         self.accessGroup = nil
@@ -39,25 +39,25 @@ class Keychain {
         #endif
         self.keychain = KeychainAccess.Keychain(service: "com.kinvey.Kinvey.\(appKey)").accessibility(.afterFirstUnlockThisDeviceOnly)
     }
-    
+
     init(accessGroup: String, client: Client) {
         self.accessGroup = accessGroup
         self.appKey = nil
         self._client = client
         self.keychain = KeychainAccess.Keychain(service: accessGroup, accessGroup: accessGroup).accessibility(.afterFirstUnlockThisDeviceOnly)
     }
-    
+
     enum Key: String {
-        
+
         case deviceToken = "deviceToken"
         case user = "user"
         case clientId = "client_id"
         case kinveyAuth = "kinveyAuth"
         case defaultEncryptionKey = "defaultEncryptionKey"
         case deviceId = "deviceId"
-        
+
     }
-    
+
     var deviceToken: Data? {
         get {
             return keychain[data: .deviceToken]
@@ -66,7 +66,7 @@ class Keychain {
             keychain[data: .deviceToken] = newValue
         }
     }
-    
+
     var user: User? {
         get {
             guard let data = keychain[.user]?.data(using: .utf8),
@@ -89,7 +89,7 @@ class Keychain {
             if let socialIdentity = newValue.socialIdentityDictionary {
                 json[User.CodingKeys.socialIdentity] = socialIdentity
             }
-            guard let data = try? JSONSerialization.data(withJSONObject: json) else {
+            guard let data = try? JSONSerialize.data(json) else {
                 keychain[.user] = nil
                 return
             }
@@ -97,7 +97,7 @@ class Keychain {
             keychain[.user] = jsonString
         }
     }
-    
+
     var clientId: String? {
         get {
             return keychain[.clientId]
@@ -106,7 +106,7 @@ class Keychain {
             keychain[.clientId] = newValue
         }
     }
-    
+
     var kinveyAuth: [String : Any]? {
         get {
             if let jsonString = keychain[.kinveyAuth],
@@ -119,7 +119,7 @@ class Keychain {
         }
         set {
             if let newValue = newValue,
-                let data = try? JSONSerialization.data(withJSONObject: newValue)
+                let data = try? JSONSerialize.data(newValue)
             {
                 keychain[.kinveyAuth] = String(data: data, encoding: .utf8)
             } else {
@@ -127,7 +127,7 @@ class Keychain {
             }
         }
     }
-    
+
     var defaultEncryptionKey: Data? {
         get {
             return keychain[data: .defaultEncryptionKey]
@@ -136,15 +136,15 @@ class Keychain {
             keychain[data: .defaultEncryptionKey] = newValue
         }
     }
-    
+
     func removeAll() throws {
         try keychain.removeAll()
     }
-    
+
 }
 
 extension KeychainAccess.Keychain {
-    
+
     subscript(key: Keychain.Key) -> String? {
         get {
             return self[key.rawValue]
@@ -153,7 +153,7 @@ extension KeychainAccess.Keychain {
             self[key.rawValue] = newValue
         }
     }
-    
+
     subscript(data key: Keychain.Key) -> Data? {
         get {
             return self[data: key.rawValue]
@@ -162,5 +162,5 @@ extension KeychainAccess.Keychain {
             self[data: key.rawValue] = newValue
         }
     }
-    
+
 }

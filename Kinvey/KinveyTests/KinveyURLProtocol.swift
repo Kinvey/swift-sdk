@@ -8,55 +8,56 @@
 
 import Foundation
 import XCTest
+import class Kinvey.JSONSerialize
 
 class KinveyURLProtocolClient: NSObject, URLProtocolClient {
-    
+
     var response: URLResponse?
     var data: Data?
     var error: Error?
-    
+
     func urlProtocol(_ protocol: URLProtocol, wasRedirectedTo request: URLRequest, redirectResponse: URLResponse) {
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, cachedResponseIsValid cachedResponse: CachedURLResponse) {
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, didReceive response: URLResponse, cacheStoragePolicy policy: URLCache.StoragePolicy) {
         self.response = response
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, didLoad data: Data) {
         self.data = data
     }
-    
+
     func urlProtocolDidFinishLoading(_ protocol: URLProtocol) {
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, didFailWithError error: Error) {
         self.error = error
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, didReceive challenge: URLAuthenticationChallenge) {
     }
-    
+
     func urlProtocol(_ protocol: URLProtocol, didCancel challenge: URLAuthenticationChallenge) {
     }
-    
+
 }
 
 class KinveyURLProtocol: URLProtocol {
-    
+
     static var appKey = "kid_\(UUID().uuidString)"
     static var appSecret = UUID().uuidString
-    
+
     static var users = [
         String : [ //_id
             String : Any
         ]
     ]()
-    
+
     static var userSessions = [String : String]()
-    
+
     static var collections = [
         String : [ //collection
             String : [ //_id
@@ -64,10 +65,10 @@ class KinveyURLProtocol: URLProtocol {
             ]
         ]
     ]()
-    
+
     private static var blob = [String : [String : Any]]()
     private static var blobData = [String : Data]()
-    
+
     class func reset() {
         users.removeAll()
         userSessions.removeAll()
@@ -75,7 +76,7 @@ class KinveyURLProtocol: URLProtocol {
         blob.removeAll()
         blobData.removeAll()
     }
-    
+
     override class func canInit(with request: URLRequest) -> Bool {
         guard let url = request.url,
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -84,11 +85,11 @@ class KinveyURLProtocol: URLProtocol {
         }
         return urlComponents.scheme == "https" && urlComponents.host == "baas.kinvey.com"
     }
-    
+
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-    
+
     override func startLoading() {
         guard let url = request.url,
             let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -147,23 +148,23 @@ class KinveyURLProtocol: URLProtocol {
                 guard let authtoken = validateUserAuth(url: url), KinveyURLProtocol.userSessions[authtoken] != nil else {
                     return
                 }
-                
+
                 var range = match.range(at: 1)
                 var startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
                 var endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
                 let collection = String(urlComponents.path[startIndex ..< endIndex])
-                
+
                 if KinveyURLProtocol.collections[collection] == nil {
                     KinveyURLProtocol.collections[collection] = [:]
                 }
-                
+
                 range = match.range(at: 2)
                 startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
                 endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
                 let id = String(urlComponents.path[startIndex ..< endIndex])
-                
+
                 let now = Date().toISO8601()
-                
+
                 switch httpMethod {
                 case "POST":
                     XCTAssertEqual(request.allHTTPHeaderFields?["Content-Type"] as? String, "application/json; charset=utf-8")
@@ -292,14 +293,14 @@ class KinveyURLProtocol: URLProtocol {
                 var startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
                 var endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
                 var id = String(urlComponents.path[startIndex ..< endIndex])
-                
+
                 range = match.range(at: 2)
                 startIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.lowerBound)
                 endIndex = urlComponents.path.index(urlComponents.path.startIndex, offsetBy: range.upperBound)
                 let lastUrlComponent = String(urlComponents.path[startIndex ..< endIndex])
-                
+
                 let now = Date()
-                
+
                 switch httpMethod {
                 case "PUT":
                     switch lastUrlComponent {
@@ -394,10 +395,10 @@ class KinveyURLProtocol: URLProtocol {
             }
         }
     }
-    
+
     override func stopLoading() {
     }
-    
+
     func validate(url: URL, jsonArray: [[String : Any]]) -> Bool {
         guard jsonArray.count > 0 else {
             sendResponse(
@@ -409,7 +410,7 @@ class KinveyURLProtocol: URLProtocol {
         }
         return jsonArray.allSatisfy { validate(url: url, json: $0) }
     }
-    
+
     func validate(url: URL, json: [String : Any]) -> Bool {
         if let _geoloc = json["_geoloc"] {
             guard let geoloc = _geoloc as? [Int],
@@ -433,14 +434,14 @@ class KinveyURLProtocol: URLProtocol {
         }
         return true
     }
-    
+
     enum Body {
         case data(Data)
         case string(String)
         case jsonObject([String : Any])
         case jsonArray([[String : Any]])
     }
-    
+
     private func find(collection: String) -> [[String : Any]] {
         var results = KinveyURLProtocol.collections[collection]!.map { $1 }
         results.sort { (obj1, obj2) -> Bool in
@@ -452,7 +453,7 @@ class KinveyURLProtocol: URLProtocol {
         }
         return results
     }
-    
+
     private func find(collection: String, urlComponents: URLComponents) -> [[String : Any]] {
         var results = find(collection: collection)
         if let queryItems = urlComponents.queryItems {
@@ -548,7 +549,7 @@ class KinveyURLProtocol: URLProtocol {
         }
         return results
     }
-    
+
     private func sendResponseEntityNotFound(url: URL) {
         sendResponse(
             url: url,
@@ -560,7 +561,7 @@ class KinveyURLProtocol: URLProtocol {
             ])
         )
     }
-    
+
     private func sendResponse(
         url: URL,
         statusCode: Int = 200,
@@ -579,10 +580,10 @@ class KinveyURLProtocol: URLProtocol {
         if let body = body {
             switch body {
             case .jsonObject(let jsonObject):
-                let data = try! JSONSerialization.data(withJSONObject: jsonObject)
+                let data = try! JSONSerialize.data(jsonObject)
                 client!.urlProtocol(self, didLoad: data)
             case .jsonArray(let jsonArray):
-                let data = try! JSONSerialization.data(withJSONObject: jsonArray)
+                let data = try! JSONSerialize.data(jsonArray)
                 client!.urlProtocol(self, didLoad: data)
             case .string(let string):
                 let data = string.data(using: .utf8)!
@@ -593,7 +594,7 @@ class KinveyURLProtocol: URLProtocol {
         }
         client!.urlProtocolDidFinishLoading(self)
     }
-    
+
     private func validateUserAuth(url: URL) -> String? {
         guard let authorization = request.allHTTPHeaderFields?["Authorization"],
             let regex = try? NSRegularExpression(pattern: "Kinvey (.*)"),
@@ -617,5 +618,5 @@ class KinveyURLProtocol: URLProtocol {
         let authtoken = String(authorization[startIndex ..< endIndex])
         return authtoken
     }
-    
+
 }
