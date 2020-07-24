@@ -71,9 +71,6 @@
                <Test
                   Identifier = "PerformanceTestCase">
                </Test>
-               <Test
-                  Identifier = "SyncStoreTestApi4">
-               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference
