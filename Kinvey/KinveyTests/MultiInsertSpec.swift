@@ -356,11 +356,11 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(0))
-                            expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                             expect(firstError.serverDescription).to(equal("description"))
                             expect(firstError.serverDebug).to(equal("debug"))
                             expect(lastError.index).to(equal(1))
-                            expect(lastError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
+                            expect(lastError.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
                             expect(lastError.serverDescription).to(equal("description"))
                             expect(lastError.serverDebug).to(equal("debug"))
                         }
@@ -428,7 +428,7 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(0))
-                            expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                             expect(firstError.serverDescription).to(equal("description"))
                             expect(firstError.serverDebug).to(equal("debug"))
                         }
@@ -496,7 +496,7 @@ class MultiInsertSpec: QuickSpec {
                                 return
                             }
                             expect(firstError.index).to(equal(1))
-                            expect(firstError.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                            expect(firstError.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                             expect(firstError.serverDescription).to(equal("description"))
                             expect(firstError.serverDebug).to(equal("debug"))
                         }
@@ -1078,7 +1078,7 @@ class MultiInsertSpec: QuickSpec {
                     
                     expect(multiSaveError?.index).to(equal(1))
                     
-                    expect(multiSaveError?.message).to(equal(errorMessage))
+                    expect(multiSaveError?.error).to(equal(errorMessage))
                     
                     expect(syncDataStore.pendingSyncCount()).to(equal(1))
                     expect(syncDataStore.pendingSyncEntities().count).to(equal(1))
@@ -1351,13 +1351,13 @@ class MultiInsertSpec: QuickSpec {
                         
                         let firstError = result?.errors.first as? MultiSaveError
                         expect(firstError?.index).to(equal(0))
-                        expect(firstError?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
+                        expect(firstError?.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id1)\" }"))
                         expect(firstError?.serverDescription).to(equal("description"))
                         expect(firstError?.serverDebug).to(equal("debug"))
 
                         let lastError = result?.errors.last as? MultiSaveError
                         expect(lastError?.index).to(equal(1))
-                        expect(lastError?.message).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
+                        expect(lastError?.error).to(equal("E11000 duplicate key error collection: kdb1.kid1.Person index: _id_ dup key: { : \"\(id2)\" }"))
                         expect(lastError?.serverDescription).to(equal("description"))
                         expect(lastError?.serverDebug).to(equal("debug"))
 

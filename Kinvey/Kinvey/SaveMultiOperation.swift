@@ -259,7 +259,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                         
                         return MultiSaveError(
                             index: index,
-                            message: error,
+                            error: error,
                             serverDescription: description,
                             serverDebug: debug
                         )
@@ -299,7 +299,7 @@ internal class SaveMultiOperation<T: Persistable>: WriteOperation<T, MultiSaveRe
                         case let multiSaveError as MultiSaveError:
                             return MultiSaveError(
                                 index: entitiesCount + multiSaveError.index,
-                                message: multiSaveError.message,
+                                error: multiSaveError.error,
                                 serverDescription: multiSaveError.serverDescription,
                                 serverDebug: multiSaveError.serverDebug
                             )

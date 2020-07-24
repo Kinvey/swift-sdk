@@ -347,7 +347,7 @@ class NetworkStoreTests: StoreTestCase {
                 XCTAssertNotNil(error)
                 if let error = error {
                     XCTAssertEqual(error.index, 1)
-                    XCTAssertEqual(error.message, "E11000 duplicate key error index: kdb1923.\(self.client.appKey!).Person.$_id_ dup key: { : \"\(id)\" }")
+                    XCTAssertEqual(error.error, "E11000 duplicate key error index: kdb1923.\(self.client.appKey!).Person.$_id_ dup key: { : \"\(id)\" }")
                     XCTAssertEqual(error.serverDescription, "description")
                     XCTAssertEqual(error.serverDebug, "debug")
                 }

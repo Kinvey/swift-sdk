@@ -344,19 +344,19 @@ extension NSException {
 public struct MultiSaveError: Swift.Error, Codable, IndexableError {
     
     public let index: Int
-    public let message: String
+    public let error: String
     public let serverDescription: String?
     public let serverDebug: String?
 
     enum CodingKeys: String, CodingKey {
         case index
-        case message = "error"
+        case error
         case serverDescription = "description"
         case serverDebug = "debug"
     }
     
     public var localizedDescription: String {
-        return message
+        return self.serverDescription != nil ? self.serverDescription! : error
     }
     
 }
@@ -364,19 +364,19 @@ public struct MultiSaveError: Swift.Error, Codable, IndexableError {
 extension MultiSaveError: LocalizedError {
     
     public var errorDescription: String? {
-        return message
+        return localizedDescription
     }
     
     public var failureReason: String? {
-        return message
+        return localizedDescription
     }
     
     public var recoverySuggestion: String? {
-        return message
+        return localizedDescription
     }
     
     public var helpAnchor: String? {
-        return message
+        return localizedDescription
     }
     
 }
@@ -384,7 +384,7 @@ extension MultiSaveError: LocalizedError {
 extension MultiSaveError: CustomStringConvertible {
     
     public var description: String {
-        return message
+        return localizedDescription
     }
     
 }
@@ -392,7 +392,7 @@ extension MultiSaveError: CustomStringConvertible {
 extension MultiSaveError: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        return message
+        return localizedDescription
     }
     
 }
