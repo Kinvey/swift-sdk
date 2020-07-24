@@ -24,10 +24,12 @@ extension XCTestCase {
         }
 
         CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
+        if !evaluate() {
         CFRunLoopRunInMode(.defaultMode, timeout, false)
+        }
         CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), observer, .defaultMode)
 
-        return result
+        return result || evaluate()
     }
 
 }
