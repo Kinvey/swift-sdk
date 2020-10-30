@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-private let maxSizePerRequest = 100
+internal let maxSizePerRequest = 100
 
 public typealias MultiSaveResultTuple<T> = (entities: AnyRandomAccessCollection<T?>, errors: AnyRandomAccessCollection<Swift.Error>)
 

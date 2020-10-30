@@ -943,7 +943,7 @@ class SyncStoreTest: StoreTestCase {
                     XCTAssertEqual(count, 1)
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 1)
 
                 expectationSync?.fulfill()
@@ -970,7 +970,7 @@ class SyncStoreTest: StoreTestCase {
                     XCTFail(error.localizedDescription)
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 1)
 
                 expectationFind?.fulfill()
@@ -994,7 +994,7 @@ class SyncStoreTest: StoreTestCase {
                     XCTFail(error.localizedDescription)
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 0)
 
                 expectationRemove?.fulfill()
@@ -1022,7 +1022,7 @@ class SyncStoreTest: StoreTestCase {
                     XCTAssertEqual(count, 1)
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 0)
 
                 expectationSync?.fulfill()
@@ -1431,6 +1431,87 @@ class SyncStoreTest: StoreTestCase {
         XCTAssertTrue(wait(toBeTrue: !request.executing))
     }
 
+    func testPushMultipleMultiInserts() {
+        guard self.restApiVersion >= 5 else {
+            return
+        }
+        
+        let bookDataStore = try! DataStore<Book>.collection(.sync, tag: self.collectionTag)
+
+        let items = UInt(ceil(1.1 * Double(maxSizePerRequest)))
+        for i in 1...items {
+            do {
+                let book = Book()
+                book.title = "Les Miserables " + String(i)
+
+                weak var expectationSave = expectation(description: "Save Book")
+
+                bookDataStore.save(book, options: nil) { (result: Result<Book, Swift.Error>) in
+                    switch result {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        XCTFail(error.localizedDescription)
+                    }
+
+                    expectationSave?.fulfill()
+                }
+
+                waitForExpectations(timeout: defaultTimeout) { error in
+                    expectationSave = nil
+                }
+            }
+        }
+
+        XCTAssertEqual(bookDataStore.syncCount(), items)
+
+        var requestsCount = 0
+        if useMockData {
+            mockResponse { request -> HttpResponse in
+                requestsCount += 1
+                XCTAssertEqual(request.httpMethod, "POST")
+                var requestBody = try! JSONSerialization.jsonObject(with: request) as! [JsonDictionary]
+                for i in 0..<requestBody.count {
+                    requestBody[i][Entity.EntityCodingKeys.entityId] = UUID().uuidString
+                    requestBody[i][Entity.EntityCodingKeys.acl] = [
+                        Acl.CodingKeys.creator.rawValue : self.client.activeUser!.userId
+                    ]
+                    requestBody[i][Entity.EntityCodingKeys.metadata] = [
+                        Metadata.CodingKeys.lastModifiedTime.rawValue : Date().toISO8601(),
+                        Metadata.CodingKeys.entityCreationTime.rawValue : Date().toISO8601()
+                    ]
+                }
+                return HttpResponse(statusCode: 201, json: ["entities": requestBody, "errors": []])
+            }
+        }
+        defer {
+            if useMockData {
+                XCTAssertEqual(requestsCount, 2)
+                setURLProtocol(nil)
+            }
+        }
+
+        weak var expectationPush = expectation(description: "Push")
+
+        bookDataStore.push() { count, error in
+            self.assertThread()
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+
+            if let count = count {
+                XCTAssertEqual(count, items)
+            }
+
+            expectationPush?.fulfill()
+        }
+
+        waitForExpectations(timeout: defaultTimeout) { error in
+            expectationPush = nil
+        }
+
+        XCTAssertEqual(bookDataStore.syncCount(), 0)
+    }
+
     func testPull() {
         MockKinveyBackend.kid = client.appKey!
         setURLProtocol(MockKinveyBackend.self)
@@ -1467,7 +1548,7 @@ class SyncStoreTest: StoreTestCase {
                     XCTAssertEqual(cacheCount, results.count)
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 3)
 
                 expectationPull?.fulfill()
@@ -1501,7 +1582,7 @@ class SyncStoreTest: StoreTestCase {
                     }
                 }
 
-                realm.refresh();
+                realm.refresh()
                 XCTAssertEqual(realm.objects(Metadata.self).count, 1)
 
                 expectationPull?.fulfill()
@@ -3643,7 +3724,7 @@ class SyncStoreTest: StoreTestCase {
             }
         }
 
-        realm.refresh();
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 1)
 
         do {
@@ -3721,7 +3802,7 @@ class SyncStoreTest: StoreTestCase {
             }
         }
 
-        realm.refresh();
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 2)
 
         store.clearCache()
@@ -3793,7 +3874,7 @@ class SyncStoreTest: StoreTestCase {
             }
         }
 
-        realm.refresh();
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 2)
     }
 
@@ -3932,7 +4013,7 @@ class SyncStoreTest: StoreTestCase {
             }
         }
 
-        realm.refresh();
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 2)
 
         let query = Query(format: "name == %@", "Victor")
@@ -4003,7 +4084,7 @@ class SyncStoreTest: StoreTestCase {
             }
         }
 
-        realm.refresh();
+        realm.refresh()
         XCTAssertEqual(realm.objects(Metadata.self).count, 2)
     }
 
@@ -8053,7 +8134,7 @@ class SyncStoreTest: StoreTestCase {
             let items = try store.pull(options: nil).waitForResult(timeout: defaultTimeout).value()
             XCTAssertEqual(mockObjs.count, items.count)
             XCTAssertEqual(mockObjs.count, store.cache!.count(query: nil))
-            realm.refresh();
+            realm.refresh()
             XCTAssertEqual(1, realm.objects(Reference.self).count)
 
             if let person = items.first {

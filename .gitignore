@@ -19,3 +19,4 @@ Kinvey.framework.zip
 scripts/RealtimeSend/Rome
 Package.resolved
 Kinvey.xcodeproj
+.swiftpm
