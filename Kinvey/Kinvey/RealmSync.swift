@@ -138,37 +138,44 @@ class RealmSync<T: Persistable>: SyncType where T: NSObject {
                 }
                 return
             }
-            var result = (requestIds: [String](), urls: [URL](), objectIds: [String](), jsonArray: [JsonDictionary]())
-            result.requestIds.reserveCapacity(_results.count)
-            result.urls.reserveCapacity(_results.count)
-            result.objectIds.reserveCapacity(_results.count)
-            result.jsonArray.reserveCapacity(_results.count)
-            result = posts.reduce(into: result) { (result, value) in
-                result.requestIds.append(value.pendingOperation.requestId)
-                result.urls.append(value.url)
-                result.objectIds.append(value.objectId)
-                result.jsonArray.append(value.json)
-            }
-            let urls = Set(result.urls)
-            guard urls.count == 1,
-                let url = urls.first,
-                JSONSerialization.isValidJSONObject(result.jsonArray)
-            else {
-                return
-            }
-            var urlRequest = URLRequest(url: url)
-            urlRequest.httpMethod = "POST"
-            urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
-            try! urlRequest.setBody(json: result.jsonArray)
-            results.append(
-                RealmPendingOperation(
-                    request: urlRequest,
-                    collectionName: collectionName,
-                    objectIdKind: ObjectIdKind(result.objectIds),
-                    requestIds: result.requestIds
+            
+            stride(from: 0, to: posts.count, by: maxSizePerRequest).forEach { startIndex in
+                let endIndex = Swift.min(startIndex + maxSizePerRequest, posts.count)
+                let indexRange = startIndex..<endIndex
+                var result = (requestIds: [String](), urls: [URL](), objectIds: [String](), jsonArray: [JsonDictionary]())
+                result.requestIds.reserveCapacity(indexRange.count)
+                result.urls.reserveCapacity(indexRange.count)
+                result.objectIds.reserveCapacity(indexRange.count)
+                result.jsonArray.reserveCapacity(indexRange.count)
+                result = posts[indexRange].reduce(into: result) { (result, value) in
+                    result.requestIds.append(value.pendingOperation.requestId)
+                    result.urls.append(value.url)
+                    result.objectIds.append(value.objectId)
+                    result.jsonArray.append(value.json)
+                }
+                let urls = Set(result.urls)
+                guard urls.count == 1,
+                    let url = urls.first,
+                    JSONSerialization.isValidJSONObject(result.jsonArray)
+                else {
+                    return
+                }
+                
+                var urlRequest = URLRequest(url: url)
+                urlRequest.httpMethod = "POST"
+                urlRequest.setValue(UUID().uuidString, forHTTPHeaderField: KinveyHeaderField.requestId)
+                try! urlRequest.setBody(json: Array(result.jsonArray))
+                results.append(
+                    RealmPendingOperation(
+                        request: urlRequest,
+                        collectionName: collectionName,
+                        objectIdKind: ObjectIdKind(result.objectIds),
+                        requestIds: result.requestIds
+                    )
                 )
-            )
+            }
         }
+        
         return AnyRandomAccessCollection(results)
     }
     
