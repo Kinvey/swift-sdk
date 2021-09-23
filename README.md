@@ -22,8 +22,9 @@ Note:
 ## Building
 You will need [Carthage](https://github.com/Carthage/Carthage), [Jazzy](https://github.com/realm/jazzy) and `Xcode command line tools` installed to be able to build the SDK.
 
-* `carthage build`: build the dependencies frameworks using `Carthage`
-* `make`: runs a script that compile and generate the documentation files using `Jazzy`
+* `make`: runs build, archive, pack and docs commands one after another which will build and pack the project and also generate the documentation files using `Jazzy`
+
+> Check the Makefile for all available commands
 
 ## Testing
 

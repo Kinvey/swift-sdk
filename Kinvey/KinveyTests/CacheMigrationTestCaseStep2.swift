@@ -25,12 +25,11 @@ class Person: Entity {
     }
     
     @available(*, deprecated)
-    override func propertyMapping(_ map: Map) {
+    override func propertyMapping(_ map: ObjectMapper.Map) {
         super.propertyMapping(map)
         
         fullName <- map["fullName"]
     }
-    
 }
 
 class CacheMigrationTestCaseStep2: XCTestCase {

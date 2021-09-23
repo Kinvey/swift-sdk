@@ -146,16 +146,8 @@ open class File: Object, JSONCodable {
         
     }
 
-    public required init() {
+    public required override init() {
         super.init()
-    }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
     }
     
     public init(from decoder: Decoder) throws {

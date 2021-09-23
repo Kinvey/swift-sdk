@@ -10,6 +10,7 @@ import XCTest
 import RealmSwift
 import Kinvey
 import PromiseKit
+import ObjectMapper
 
 class Product: Entity {
     
@@ -64,7 +65,7 @@ class Product: Entity {
         return "Product"
     }
     
-    override func propertyMapping(_ map: Map) {
+    override func propertyMapping(_ map: ObjectMapper.Map) {
         super.propertyMapping(map)
         
         materialNumber <- ("materialNumber", map["MaterialNumber"])

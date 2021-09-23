@@ -42,7 +42,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
         describe("Find") {
             context("with correct data and querries and not network interruption") {
-                it("should return the data") {
+                _it("should return the data") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -54,7 +54,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(3))
                 }
 
-                it("should return correct data with query") {
+                _it("should return correct data with query") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: [
@@ -70,7 +70,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: syncDataStore, query: query).entities?.count).to(equal(2))
                 }
 
-                it("should return correct data with limit and skip") {
+                _it("should return correct data with limit and skip") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: [
@@ -94,7 +94,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(persons?.first?.age).to(equal(20))
                 }
 
-                it("should return correct data with delta set") {
+                _it("should return correct data with delta set") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyPull(dataStore: autoDataStoreDeltaSetOn).entities?.count).to(equal(2))
@@ -119,7 +119,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(4))
                 }
 
-                it("should return correctly sorted data descending") {
+                _it("should return correctly sorted data descending") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -138,7 +138,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(items[2].age).to(equal(10))
                 }
 
-                it("should return correctly sorted data ascending") {
+                _it("should return correctly sorted data ascending") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 30 }), Person({ $0.age = 20 }), Person({ $0.age = 10 })
@@ -157,7 +157,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(items[2].age).to(equal(30))
                 }
 
-                it("should delete items in the cache that have been deleted in the backend") {
+                _it("should delete items in the cache that have been deleted in the backend") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let _items = kinveyFind(dataStore: autoDataStore).entities
@@ -174,7 +174,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(1))
                 }
 
-                it("should use different collection with tagged data store") {
+                _it("should use different collection with tagged data store") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let tag = UUID().uuidString
@@ -185,11 +185,11 @@ class AutoDataStoreSpec: QuickSpec {
             }
 
             context("with invalid data and network interruptions") {
-                it("should return error for invalid query") {
+                _it("should return error for invalid query") {
                     // N/A
                 }
 
-                it("should return regular error for invalid operation") {
+                _it("should return regular error for invalid operation") {
                     mockResponseInsufficientCredentialsError()
                     defer {
                         setURLProtocol(nil)
@@ -198,7 +198,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
                 }
 
-                it("should return locally stored data if connectivity error") {
+                _it("should return locally stored data if connectivity error") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -213,7 +213,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
                 }
 
-                it("should return locally stored data if connectivity error with tagged store") {
+                _it("should return locally stored data if connectivity error with tagged store") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let tag = UUID().uuidString
@@ -231,7 +231,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: try DataStore<Person>.collection(type: .auto, tag: tag)).entities?.count).to(equal(2))
                 }
 
-                it("should return backend data after connectivity error is eliminated") {
+                _it("should return backend data after connectivity error is eliminated") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -251,7 +251,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(4))
                 }
 
-                it("should return queried data if connectivity error") {
+                _it("should return queried data if connectivity error") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -267,7 +267,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore, query: Query(\Person.age < 25)).entities?.count).to(equal(2))
                 }
 
-                it("should return correct data with limit and skip") {
+                _it("should return correct data with limit and skip") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -285,7 +285,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(items?.first?.age).to(equal(20))
                 }
 
-                it("should return sorted data") {
+                _it("should return sorted data") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -305,7 +305,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(items?[2].age).to(equal(10))
                 }
 
-                it("should return correct data with delta set") {
+                _it("should return correct data with delta set") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -323,7 +323,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStoreDeltaSetOn).entities?.count).to(equal(3))
                 }
 
-                it("should remove entities no longer existing in the backend") {
+                _it("should remove entities no longer existing in the backend") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let items = kinveyFind(dataStore: autoDataStore).entities
@@ -348,7 +348,7 @@ class AutoDataStoreSpec: QuickSpec {
 
         describe("Count") {
             context("with valid data and no network issues") {
-                it("should the count of all items") {
+                _it("should the count of all items") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyCount(dataStore: autoDataStore).count).to(equal(2))
@@ -358,7 +358,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyCount(dataStore: autoDataStore).count).to(equal(3))
                 }
 
-                it("should the count of all items from a tagged data store") {
+                _it("should the count of all items from a tagged data store") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let tag = UUID().uuidString
@@ -370,7 +370,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyCount(dataStore: syncDataStore).count).to(equal(0))
                 }
 
-                it("should return the count of queried items") {
+                _it("should return the count of queried items") {
                     kinveySave(
                         dataStore: networkDataStore,
                         entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -381,11 +381,11 @@ class AutoDataStoreSpec: QuickSpec {
             }
 
             context("with invalid data or with network interruption") {
-                it("should throw an error for invalid query") {
+                _it("should throw an error for invalid query") {
                     // N/A
                 }
 
-                it("should return the number of locally stored items with network interruption") {
+                _it("should return the number of locally stored items with network interruption") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     expect(kinveyFind(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -399,7 +399,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyCount(dataStore: autoDataStore).count).to(equal(2))
                 }
 
-                it("should return the number of locally stored items with network interruption with tagged store") {
+                _it("should return the number of locally stored items with network interruption with tagged store") {
                     kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                     let tag = UUID().uuidString
@@ -418,7 +418,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyCount(dataStore: syncDataStore).count).to(equal(0))
                 }
 
-                it("should throw regular error for invalid operation") {
+                _it("should throw regular error for invalid operation") {
                     mockResponseInsufficientCredentialsError()
                     defer {
                         setURLProtocol(nil)
@@ -431,7 +431,7 @@ class AutoDataStoreSpec: QuickSpec {
 
         describe("FindById") {
             context("with correct data and not network interruption") {
-                it("should return correct item") {
+                _it("should return correct item") {
                     let items = kinveySave(dataStore: networkDataStore, numberOfItems: 2).entities!
 
                     expect(items.first?.entityId).toNot(beNil())
@@ -444,11 +444,11 @@ class AutoDataStoreSpec: QuickSpec {
             }
 
             context("with invalid data and network interruptions") {
-                it("should throw error if id is not provided") {
+                _it("should throw error if id is not provided") {
                     // N/A
                 }
 
-                it("should throw regular error for invalid operation") {
+                _it("should throw regular error for invalid operation") {
                     mockResponseInsufficientCredentialsError()
                     defer {
                         setURLProtocol(nil)
@@ -457,7 +457,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore, id: UUID().uuidString).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
                 }
 
-                it("should return locally stored item if connectivity error is returned") {
+                _it("should return locally stored item if connectivity error is returned") {
                     let items = kinveySave(dataStore: networkDataStore, numberOfItems: 2).entities!
 
                     expect(items.first?.entityId).toNot(beNil())
@@ -473,7 +473,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: autoDataStore, id: id).result?.entityId).to(equal(id))
                 }
 
-                it("should delete the item locally if it has been deleted in the backend") {
+                _it("should delete the item locally if _it has been deleted in the backend") {
                     let items = kinveySave(dataStore: autoDataStore, numberOfItems: 2).entities!
 
                     expect(items.first?.entityId).toNot(beNil())
@@ -488,7 +488,7 @@ class AutoDataStoreSpec: QuickSpec {
                     expect(kinveyFind(dataStore: syncDataStore, id: id).error?.localizedDescription).to(equal(entityNotFoundErrorDescription))
                 }
 
-                it("should return correct item with tagged store") {
+                _it("should return correct item with tagged store") {
                     let items = kinveySave(dataStore: autoDataStore, numberOfItems: 2).entities!
 
                     expect(items.first?.entityId).toNot(beNil())
@@ -504,14 +504,14 @@ class AutoDataStoreSpec: QuickSpec {
         }
 
         describe("Pull") {
-            it("should pull all data with no connectivity issues") {
+            _it("should pull all data with no connectivity issues") {
                 kinveySave(dataStore: autoDataStore, numberOfItems: 2)
 
                 expect(kinveyPull(dataStore: autoDataStore).entities?.count).to(equal(2))
                 expect(kinveyPull(dataStore: syncDataStore).entities?.count).to(equal(2))
             }
 
-            it("should pull all data with no connectivity issues with tagged store") {
+            _it("should pull all data with no connectivity issues with tagged store") {
                 kinveySave(dataStore: networkDataStore, numberOfItems: 2)
 
                 let tag = UUID().uuidString
@@ -520,7 +520,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(0))
             }
 
-            it("should return error with connectivity issue") {
+            _it("should return error with connectivity issue") {
                 mockResponse(error: timeoutError)
                 defer {
                     setURLProtocol(nil)
@@ -529,7 +529,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyPull(dataStore: autoDataStore).error?.localizedDescription).to(equal(timeoutError.localizedDescription))
             }
 
-            it("should pull only the items conforming to a query") {
+            _it("should pull only the items conforming to a query") {
                 kinveySave(
                     dataStore: networkDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -539,7 +539,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(2))
             }
 
-            it("should delete locally stored items that are deleted from the backend") {
+            _it("should delete locally stored items that are deleted from the backend") {
                 kinveySave(dataStore: networkDataStore, numberOfItems: 4)
 
                 let entities = kinveyPull(dataStore: autoDataStore).entities
@@ -560,7 +560,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(2))
             }
 
-            it("should update items in the cache that are changed in the backend") {
+            _it("should update items in the cache that are changed in the backend") {
                 kinveySave(dataStore: networkDataStore, numberOfItems: 4)
 
                 var entities = kinveyPull(dataStore: autoDataStore).entities
@@ -595,7 +595,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?[3].age).to(equal(40))
             }
 
-            it("should use autopagination when turned on") {
+            _it("should use autopagination when turned on") {
                 kinveySave(dataStore: networkDataStore, numberOfItems: 4)
 
                 let autoDataStoreAutoPaginationOn = try DataStore<Person>.collection(type: .auto, autoPagination: true, options: Options(maxSizePerResultSet: 2))
@@ -604,7 +604,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore).entities?.count).to(equal(4))
             }
 
-            it("should return error for invalid query") {
+            _it("should return error for invalid query") {
                 mockResponseInsufficientCredentialsError()
                 defer {
                     setURLProtocol(nil)
@@ -613,13 +613,13 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyPull(dataStore: autoDataStore).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
             }
 
-            it("should return error if there are items not synced with the backend") {
+            _it("should return error if there are items not synced with the backend") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
 
                 expect(kinveyPull(dataStore: autoDataStore).error?.localizedDescription).to(equal("You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
             }
 
-            it("should persist updated and deleted items") {
+            _it("should persist updated and deleted items") {
                 var _entities = kinveySave(dataStore: networkDataStore, numberOfItems: 3).entities
                 expect(_entities).toNot(beNil())
                 guard let entities = _entities else {
@@ -658,7 +658,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
 
         describe("Push") {
-            it("should push created items to the backend") {
+            _it("should push created items to the backend") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
 
                 expect(autoDataStore.syncCount()).to(equal(2))
@@ -670,7 +670,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.syncCount()).to(equal(0))
             }
 
-            it("should push created items to the backend with tagged store") {
+            _it("should push created items to the backend with tagged store") {
                 let tag = UUID().uuidString
                 kinveySave(dataStore: try DataStore<Person>.collection(.sync, tag: tag), numberOfItems: 2)
 
@@ -687,7 +687,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.syncCount()).to(equal(0))
             }
 
-            it("should push updated items to the backend") {
+            _it("should push updated items to the backend") {
                 var entities = kinveySave(dataStore: networkDataStore, numberOfItems: 2).entities
 
                 expect(kinveyPull(dataStore: autoDataStore).entities?.count).to(equal(2))
@@ -711,7 +711,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.syncCount()).to(equal(0))
             }
 
-            it("should push deleted items to the backend") {
+            _it("should push deleted items to the backend") {
                 var entities = kinveySave(
                     dataStore: networkDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -741,7 +741,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.syncCount()).to(equal(0))
             }
 
-            it("should return error for connectivity error") {
+            _it("should return error for connectivity error") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
 
                 expect(autoDataStore.syncCount()).to(equal(2))
@@ -762,11 +762,11 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.syncCount()).to(equal(2))
             }
 
-            it("should push all items disregarding a query") {
+            _it("should push all items disregarding a query") {
                 // N/A
             }
 
-            it("should complete push of multiple items if one of them fails") {
+            _it("should complete push of multiple items if one of them fails") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 3)
 
                 kinveyPush(dataStore: autoDataStore)
@@ -810,7 +810,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore).entities?.count).to(equal(3))
             }
             
-            it("should recreate an item changed locally but deleted from the server") {
+            _it("should recreate an item changed locally but deleted from the server") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
                 
                 expect(kinveyPush(dataStore: syncDataStore).count).to(equal(2))
@@ -830,7 +830,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Sync") {
-            it("should push all items and pull all items") {
+            _it("should push all items and pull all items") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 3)
                 
                 kinveySave(dataStore: networkDataStore, numberOfItems: 2)
@@ -843,7 +843,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore).entities?.count).to(equal(5))
             }
             
-            it("should push all items with a query and pull only the items conforming to that query") {
+            _it("should push all items with a query and pull only the items conforming to that query") {
                 kinveySave(
                     dataStore: syncDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -862,7 +862,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, query: query).entities?.count).to(equal(3))
             }
             
-            it("should return error if there is network connectivity for the push request and save the sync queue") {
+            _it("should return error if there is network connectivity for the push request and save the sync queue") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
                 
                 mockResponse(error: timeoutError)
@@ -885,7 +885,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(pendingSyncEntities.last?.buildRequest().httpMethod).to(equal("POST"))
             }
             
-            it("should push the data and return connectivity error if the pull request cannot connect") {
+            _it("should push the data and return connectivity error if the pull request cannot connect") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
                 kinveySave(dataStore: networkDataStore, numberOfItems: 2)
                 
@@ -910,7 +910,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.pendingSyncEntities().count).to(equal(0))
             }
             
-            it("should push all items and pull all items with tagged store") {
+            _it("should push all items and pull all items with tagged store") {
                 let tag = UUID().uuidString
                 
                 kinveySave(dataStore: try DataStore<Person>.collection(.sync, tag: tag), numberOfItems: 3)
@@ -927,24 +927,24 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("PendingSyncCount") {
-            it("should return the count of entities waiting to be synced") {
+            _it("should return the count of entities waiting to be synced") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 3)
                 expect(autoDataStore.pendingSyncCount()).to(equal(3))
             }
             
-            it("should return the count of created items waiting to be synced according to query") {
+            _it("should return the count of created items waiting to be synced according to query") {
                 // N/A
             }
             
-            it("should return the count of updated items waiting to be synced according to query") {
+            _it("should return the count of updated items waiting to be synced according to query") {
                 // N/A
             }
             
-            it("should return the count of deleted items waiting to be synced according to query") {
+            _it("should return the count of deleted items waiting to be synced according to query") {
                 // N/A
             }
             
-            it("should return the count of entities waiting to be synced with tagged store") {
+            _it("should return the count of entities waiting to be synced with tagged store") {
                 let tag = UUID().uuidString
                 
                 kinveySave(dataStore: try DataStore<Person>.collection(.sync, tag: tag), numberOfItems: 3)
@@ -955,45 +955,45 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("PendingSyncEntities") {
-            it("should return the entities waiting to be synced") {
+            _it("should return the entities waiting to be synced") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 3)
                 expect(autoDataStore.pendingSyncCount()).to(equal(3))
             }
             
-            it("should return the created items waiting to be synced according to query") {
+            _it("should return the created items waiting to be synced according to query") {
                 // N/A
             }
             
-            it("should return the updated items waiting to be synced according to query") {
+            _it("should return the updated items waiting to be synced according to query") {
                 // N/A
             }
             
-            it("should return the deleted items waiting to be synced according to query") {
+            _it("should return the deleted items waiting to be synced according to query") {
                 // N/A
             }
         }
         
         describe("ClearSync") {
-            it("should clear all items from the sync queue") {
+            _it("should clear all items from the sync queue") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 3)
                 
                 expect(autoDataStore.clearSync()).to(equal(3))
                 expect(autoDataStore.pendingSyncCount()).to(equal(0))
             }
             
-            it("should clear the created items to be synced according to query") {
+            _it("should clear the created items to be synced according to query") {
                 // N/A
             }
             
-            it("should clear the updated items to be synced according to query") {
+            _it("should clear the updated items to be synced according to query") {
                 // N/A
             }
             
-            it("should clear the deleted items to be synced according to query") {
+            _it("should clear the deleted items to be synced according to query") {
                 // N/A
             }
             
-            it("should clear all items from the sync queue with tagged store") {
+            _it("should clear all items from the sync queue with tagged store") {
                 let tag = UUID().uuidString
                 
                 kinveySave(dataStore: try DataStore<Person>.collection(.sync, tag: tag), numberOfItems: 3)
@@ -1006,7 +1006,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Clear") {
-            it("should clear all entities from the cache and keep them in the backend") {
+            _it("should clear all entities from the cache and keep them in the backend") {
                 kinveySave(dataStore: autoDataStore, numberOfItems: 2)
                 
                 expect(kinveyCount(dataStore: syncDataStore).count).to(equal(2))
@@ -1016,7 +1016,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyCount(dataStore: networkDataStore).count).to(equal(2))
             }
             
-            it("should clear all items matching a query") {
+            _it("should clear all items matching a query") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -1029,7 +1029,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyCount(dataStore: syncDataStore).count).to(equal(1))
             }
             
-            it("should clear only entities from the sync queue that match a query") {
+            _it("should clear only entities from the sync queue that match a query") {
                 let entities = kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -1064,7 +1064,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.pendingSyncCount()).to(equal(1))
             }
             
-            it("should clear all items from the sync queue") {
+            _it("should clear all items from the sync queue") {
                 kinveySave(dataStore: syncDataStore, numberOfItems: 2)
                 
                 expect(autoDataStore.pendingSyncCount()).to(equal(2))
@@ -1076,7 +1076,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(autoDataStore.pendingSyncCount()).to(equal(0))
             }
             
-            it("should clear local data for tagged store and only for it") {
+            _it("should clear local data for tagged store and only for _it") {
                 kinveySave(dataStore: autoDataStore, numberOfItems: 2)
                 
                 let tag = UUID().uuidString
@@ -1091,11 +1091,11 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Save") {
-            it("should throw an error when trying to create an array of items") {
+            _it("should throw an error when trying to create an array of items") {
                 // N/A
             }
             
-            it("should create an item even if _id was not provided") {
+            _it("should create an item even if _id was not provided") {
                 kinveySave(dataStore: autoDataStore, entity: Person())
                 
                 let entities = kinveyFind(dataStore: networkDataStore).entities
@@ -1106,7 +1106,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.entityId).to(equal(entities?.first?.personId))
             }
             
-            it("should create an item using the _id provided") {
+            _it("should create an item using the _id provided") {
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id" }))
                 
                 let entities = kinveyFind(dataStore: networkDataStore).entities
@@ -1116,7 +1116,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.entityId).to(equal(entities?.first?.personId))
             }
             
-            it("should update an item with existing _id") {
+            _it("should update an item with existing _id") {
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id" }))
                 
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id"; $0.age = 10 }))
@@ -1128,7 +1128,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.age).to(equal(10))
             }
             
-            it("should save locally the item if connectivity error occurs") {
+            _it("should save locally the item if connectivity error occurs") {
                 mockResponse(error: timeoutError)
                 defer {
                     setURLProtocol(nil)
@@ -1148,7 +1148,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(pendingSyncEntities.first?.buildRequest().httpMethod).to(equal("POST"))
             }
             
-            it("should throw regular error for invalid operation") {
+            _it("should throw regular error for invalid operation") {
                 mockResponse(httpResponse: httpResponseInsufficientCredentialsError)
                 defer {
                     setURLProtocol(nil)
@@ -1157,7 +1157,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveySave(dataStore: autoDataStore, entity: Person()).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
             }
             
-            it("should create multiple sync operations with connectivity issues") {
+            _it("should create multiple sync operations with connectivity issues") {
                 do {
                     mockResponse(error: timeoutError)
                     defer {
@@ -1187,7 +1187,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore).entities?.count).to(equal(2))
             }
             
-            it("should save locally an item with tagged store") {
+            _it("should save locally an item with tagged store") {
                 let tag = UUID().uuidString
                 kinveySave(dataStore: try DataStore<Person>.collection(.auto, tag: tag), numberOfItems: 2)
                 
@@ -1197,11 +1197,11 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Create") {
-            it("should throw an error when trying to create an array of items") {
+            _it("should throw an error when trying to create an array of items") {
                 // N/A
             }
             
-            it("should create an item even if _id was not provided") {
+            _it("should create an item even if _id was not provided") {
                 kinveySave(dataStore: autoDataStore, entity: Person())
                 
                 let entities = kinveyFind(dataStore: networkDataStore).entities
@@ -1212,7 +1212,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.entityId).to(equal(entities?.first?.personId))
             }
             
-            it("should create an item using the _id provided") {
+            _it("should create an item using the _id provided") {
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id" }))
                 
                 let entities = kinveyFind(dataStore: networkDataStore).entities
@@ -1222,7 +1222,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.entityId).to(equal(entities?.first?.personId))
             }
             
-            it("should update an item with existing _id") {
+            _it("should update an item with existing _id") {
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id" }))
                 
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id"; $0.age = 10 }))
@@ -1234,7 +1234,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.age).to(equal(10))
             }
             
-            it("should save locally the item if connectivity error occurs") {
+            _it("should save locally the item if connectivity error occurs") {
                 mockResponse(error: timeoutError)
                 defer {
                     setURLProtocol(nil)
@@ -1254,7 +1254,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(pendingSyncEntities.first?.buildRequest().httpMethod).to(equal("POST"))
             }
             
-            it("should throw regular error for invalid operation") {
+            _it("should throw regular error for invalid operation") {
                 mockResponse(httpResponse: httpResponseInsufficientCredentialsError)
                 defer {
                     setURLProtocol(nil)
@@ -1263,7 +1263,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveySave(dataStore: autoDataStore, entity: Person()).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
             }
             
-            it("should create multiple sync operations with connectivity issues") {
+            _it("should create multiple sync operations with connectivity issues") {
                 do {
                     mockResponse(error: timeoutError)
                     defer {
@@ -1293,7 +1293,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore).entities?.count).to(equal(2))
             }
             
-            it("should save locally an item with tagged store") {
+            _it("should save locally an item with tagged store") {
                 let tag = UUID().uuidString
                 kinveySave(dataStore: try DataStore<Person>.collection(.auto, tag: tag), numberOfItems: 2)
                 
@@ -1303,15 +1303,15 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Update") {
-            it("should throw an error when trying to create an array of items") {
+            _it("should throw an error when trying to create an array of items") {
                 // N/A
             }
             
-            it("should throw an error for trying to update without supplying an _id") {
+            _it("should throw an error for trying to update without supplying an _id") {
                 // N/A
             }
             
-            it("should create an item whose _id does not exist") {
+            _it("should create an item whose _id does not exist") {
                 kinveySave(dataStore: autoDataStore)
                 
                 let entities1 = kinveyFind(dataStore: syncDataStore).entities
@@ -1328,7 +1328,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities2?.first?.metadata?.lastModifiedTime).to(equal(entities1?.first?.metadata?.lastModifiedTime))
             }
             
-            it("should update an item with existing _id") {
+            _it("should update an item with existing _id") {
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id" }))
                 
                 kinveySave(dataStore: autoDataStore, entity: Person({ $0.personId = "my_id"; $0.age = 10 }))
@@ -1340,7 +1340,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.age).to(equal(10))
             }
             
-            it("should save locally the item if connectivity error occurs") {
+            _it("should save locally the item if connectivity error occurs") {
                 mockResponse(error: timeoutError)
                 defer {
                     setURLProtocol(nil)
@@ -1360,7 +1360,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(pendingSyncEntities.first?.buildRequest().httpMethod).to(equal("POST"))
             }
             
-            it("should throw error if invalid credentials") {
+            _it("should throw error if invalid credentials") {
                 mockResponse(httpResponse: httpResponseInsufficientCredentialsError)
                 defer {
                     setURLProtocol(nil)
@@ -1369,7 +1369,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveySave(dataStore: autoDataStore, entity: Person()).error?.localizedDescription).to(equal(insufficientCredentialsErrorDescription))
             }
             
-            it("should create multiple sync operations with connectivity issues") {
+            _it("should create multiple sync operations with connectivity issues") {
                 do {
                     mockResponse(error: timeoutError)
                     defer {
@@ -1399,7 +1399,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore).entities?.count).to(equal(2))
             }
             
-            it("should save locally an item with tagged store") {
+            _it("should save locally an item with tagged store") {
                 let tag = UUID().uuidString
                 kinveySave(dataStore: try DataStore<Person>.collection(.auto, tag: tag), numberOfItems: 2)
                 
@@ -1409,7 +1409,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("Remove") {
-            it("should remove items matching a query") {
+            _it("should remove items matching a query") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -1426,7 +1426,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(entities?.first?.age).to(equal(10))
             }
             
-            it("should remove items from the backend even if they are deleted locally") {
+            _it("should remove items from the backend even if they are deleted locally") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.personId = "my_id1"; $0.age = 10 }), Person({ $0.personId = "my_id2"; $0.age = 20 })
@@ -1441,7 +1441,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: networkDataStore, id: "my_id2").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("should return 0 when no items are deleted") {
+            _it("should return 0 when no items are deleted") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 })
@@ -1450,11 +1450,11 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyRemove(dataStore: autoDataStore, query: Query(\Person.age > 20)).count).to(equal(0))
             }
             
-            it("should return an error for invalid query") {
+            _it("should return an error for invalid query") {
                 // N/A
             }
             
-            it("should remove item locally and create delete operation in the sync queue with connectivity error") {
+            _it("should remove item locally and create delete operation in the sync queue with connectivity error") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.age = 10 }), Person({ $0.age = 20 }), Person({ $0.age = 30 })
@@ -1486,7 +1486,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, query: query).entities?.count).to(equal(0))
             }
             
-            it("should delete locally stored items that are deleted from the backend") {
+            _it("should delete locally stored items that are deleted from the backend") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.personId = "my_id1"; $0.age = 10 }), Person({ $0.personId = "my_id2"; $0.age = 20 }), Person({ $0.personId = "my_id3"; $0.age = 30 })
@@ -1497,7 +1497,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, id: "my_id1").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("should delete items with tagged store") {
+            _it("should delete items with tagged store") {
                 let tag = UUID().uuidString
                 let autoDataStoreTagged = try DataStore<Person>.collection(.auto, tag: tag)
                 kinveySave(dataStore: autoDataStoreTagged)
@@ -1514,7 +1514,7 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         describe("RemoveById") {
-            it("should remove entity with specified id") {
+            _it("should remove entity with specified id") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.personId = "my_id1"; $0.age = 10 }), Person({ $0.personId = "my_id2"; $0.age = 20 })
@@ -1526,11 +1526,11 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, id: "my_id2").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("should throw error for missing id") {
+            _it("should throw error for missing id") {
                 // N/A
             }
             
-            it("should remove item locally and create delete operation in the sync queue with connectivity error") {
+            _it("should remove item locally and create delete operation in the sync queue with connectivity error") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entity: Person({ $0.personId = "my_id1"; $0.age = 10 })
@@ -1552,11 +1552,11 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, id: "my_id1").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("should throw error for non-existing id") {
+            _it("should throw error for non-existing id") {
                 expect(kinveyRemove(dataStore: autoDataStore, id: UUID().uuidString).error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("should delete locally stored items that are deleted from the backend") {
+            _it("should delete locally stored items that are deleted from the backend") {
                 kinveySave(
                     dataStore: autoDataStore,
                     entities: Person({ $0.personId = "my_id1"; $0.age = 10 }), Person({ $0.personId = "my_id2"; $0.age = 20 })
@@ -1568,7 +1568,7 @@ class AutoDataStoreSpec: QuickSpec {
                 expect(kinveyFind(dataStore: syncDataStore, id: "my_id2").error?.localizedDescription).to(equal("This entity not found in the collection."))
             }
             
-            it("Retrieving data. Wait a few seconds and try to cut or copy again.") {
+            _it("Retrieving data. Wait a few seconds and try to cut or copy again.") {
                 let tag = UUID().uuidString
                 let autoDataStoreTagged = try DataStore<Person>.collection(.auto, tag: tag)
                 
@@ -1585,12 +1585,12 @@ class AutoDataStoreSpec: QuickSpec {
         }
         
         context("File") {
-            it("download") {
+            _it("download") {
                 let fileId = UUID().uuidString
                 let fileStore = FileStore()
                 let text = "Test"
                 let _data = text.data(using: .utf8)!
-                let timeout: TimeInterval = 5
+                let timeout: DispatchTimeInterval = DispatchTimeInterval.seconds(5)
                 
                 let file = kinveyUpload(
                     file: File { $0.fileId = fileId },
@@ -1645,18 +1645,8 @@ class AutoDataStoreSpec: QuickSpec {
 
 }
 
-func it(_ description: String, flags: FilterFlags = [:], file: FileString = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
+func _it(_ description: String, flags: FilterFlags = [:], file: FileString = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
     it(description, flags: flags, file: file, line: line) {
-        do {
-            try closure()
-        } catch {
-            fail(error.localizedDescription)
-        }
-    }
-}
-
-func fit(_ description: String, flags: FilterFlags = [:], file: FileString = #file, line: UInt = #line, closure: @escaping () throws -> Void) {
-    fit(description, flags: flags, file: file, line: line) {
         do {
             try closure()
         } catch {

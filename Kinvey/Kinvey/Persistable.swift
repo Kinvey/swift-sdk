@@ -35,7 +35,7 @@ extension Persistable where Self: Entity {
         let completionHandler = { (objectChange: RealmSwift.ObjectChange) in
             switch objectChange {
             case .change(let propertyChanges):
-                for propertyChange in propertyChanges {
+                for propertyChange in propertyChanges.1 {
                     if let newValue = propertyChange.newValue, !(newValue is NSNull) {
                         self[propertyChange.name] = newValue
                     } else {

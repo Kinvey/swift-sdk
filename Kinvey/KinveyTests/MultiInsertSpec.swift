@@ -575,14 +575,18 @@ class MultiInsertSpec: QuickSpec {
                             expect((resultUnwrapped.errors.last as? IndexableError)?.index).to(equal(120))
                         }
                         it("whole batch fails") {
-                            let entities = Array((1 ... 100).map({ i in
+                            var entities = Array((1 ... 100).map({ i in
                                 Person { $0.name = "Person \(i)" }
-                            })) + Array((101 ... 200).map({ i in
+                            }))
+                          
+                            entities += Array((101 ... 200).map({ i in
                                 Person {
                                     $0.name = "Person \(i)"
                                     $0.geolocation = GeoPoint(latitude: -500, longitude: -500)
                                 }
-                            })) + Array((201 ... 300).map({ i in
+                            }))
+                          
+                            entities += Array((201 ... 300).map({ i in
                                 Person { $0.name = "Person \(i)" }
                             }))
                             

@@ -1,5 +1,5 @@
-github "kif-framework/KIF" ~> 3.7
-github "Quick/Quick" ~> 2.0
-github "Quick/Nimble" ~> 8.0
+github "kif-framework/KIF" ~> 3.0
+github "Quick/Quick" ~> 4.0
+github "Quick/Nimble" ~> 9.0
 github "httpswift/swifter" "stable"
 github "weichsel/ZIPFoundation"

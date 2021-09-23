@@ -556,7 +556,7 @@ func kinveyDownload<FileType>(
     fileStore: FileStore<FileType>,
     storeType: StoreType,
     options: Options? = nil,
-    timeout: TimeInterval = AsyncDefaults.Timeout
+    timeout: DispatchTimeInterval = AsyncDefaults.timeout
 ) -> (success: (file: FileType, url: URL)?, error: Swift.Error?) where FileType: File {
     var _success: (FileType, URL)? = nil
     var _error: Swift.Error? = nil
@@ -583,7 +583,7 @@ func kinveyUpload<FileType>(
     fileStore: FileStore<FileType>,
     data: Data,
     options: Options? = nil,
-    timeout: TimeInterval = AsyncDefaults.Timeout
+    timeout: DispatchTimeInterval = AsyncDefaults.timeout
 ) -> (file: (FileType)?, error: Swift.Error?) where FileType: File {
     var _file: FileType? = nil
     var _error: Swift.Error? = nil
@@ -762,24 +762,24 @@ func mach_task_self() -> task_t {
     return mach_task_self_
 }
 
-// got from https://forums.developer.apple.com/thread/64665
+// ref: https://stackoverflow.com/a/64893753/3635395
 func getMegabytesUsed() -> Float? {
-    var info = mach_task_basic_info()
-    var count = mach_msg_type_number_t(MemoryLayout.size(ofValue: info) / MemoryLayout<integer_t>.size)
-    let kerr = withUnsafeMutablePointer(to: &info) { infoPtr in
-        return infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { (machPtr: UnsafeMutablePointer<integer_t>) in
-            return task_info(
-                mach_task_self(),
-                task_flavor_t(MACH_TASK_BASIC_INFO),
-                machPtr,
-                &count
-            )
+    let TASK_VM_INFO_COUNT = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+    let TASK_VM_INFO_REV1_COUNT = mach_msg_type_number_t(MemoryLayout.offset(of: \task_vm_info_data_t.min_address)! / MemoryLayout<integer_t>.size)
+    var info = task_vm_info_data_t()
+    var count = TASK_VM_INFO_COUNT
+    let kr = withUnsafeMutablePointer(to: &info) { infoPtr in
+        infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
+            task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), intPtr, &count)
         }
     }
-    guard kerr == KERN_SUCCESS else {
-        return nil
-    }
-    return Float(info.resident_size) / (1024 * 1024)
+    guard
+        kr == KERN_SUCCESS,
+        count >= TASK_VM_INFO_REV1_COUNT
+    else { return nil }
+    
+    let usedBytes = Float(info.phys_footprint)
+    return usedBytes / (1024 * 1024)
 }
 
 class KinveyTestCase: XCTestCase {

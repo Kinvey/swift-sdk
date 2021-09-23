@@ -23,27 +23,27 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(
             url: "https://github.com/realm/realm-cocoa.git",
-            .upToNextMajor(from: "3.18.0")
+            .upToNextMajor(from: "10.15.1")
         ),
         .package(
             url: "https://github.com/mxcl/PromiseKit.git",
-            .upToNextMajor(from: "6.10.0")
+            .upToNextMajor(from: "6.15.3")
         ),
         .package(
             url: "https://github.com/kishikawakatsumi/KeychainAccess.git",
-            .upToNextMajor(from: "3.2.0")
+            .upToNextMajor(from: "4.2.2")
         ),
         .package(
             url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git",
-            .upToNextMajor(from: "1.7.1")
+            .upToNextMajor(from: "1.9.5")
         ),
         .package(
             url: "https://github.com/tristanhimmelman/ObjectMapper.git",
-            .upToNextMajor(from: "3.5.1")
+            .upToNextMajor(from: "4.2.0")
         ),
         .package(
-            url: "https://github.com/mbektchiev/objective-c.git",
-            .branch("spm-support")
+            url: "https://github.com/pubnub/objective-c.git",
+            .branch("4.16.2")
         ),
         .package(
             url: "https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor.git",
@@ -51,16 +51,15 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/Quick/Quick.git",
-            .upToNextMajor(from: "2.2.0")
+            .upToNextMajor(from: "4.0.0")
         ),
         .package(
             url: "https://github.com/Quick/Nimble.git",
-            // In master the package now requires Xcode 11.4 (Swift 5.2) which we still don't have on CI
-            .upToNextMinor(from: "8.0.7")
+            .upToNextMinor(from: "9.2.1")
         ),
         .package(
             url: "https://github.com/weichsel/ZIPFoundation.git",
-            .upToNextMajor(from: "0.9.9")
+            .upToNextMajor(from: "0.9.12")
         ),
     ],
     targets: [

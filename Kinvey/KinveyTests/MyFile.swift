@@ -37,16 +37,8 @@ class MyFileCodable : File, MyFileProtocol, Codable {
         case label
     }
 
-    public required init() {
+    public required override init() {
         super.init()
-    }
-
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-
-    required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
     }
 
     public required override init(from decoder: Decoder) throws {

@@ -25,13 +25,12 @@ class Person: Entity {
         return "CacheMigrationTestCase_Person"
     }
     
-    override func propertyMapping(_ map: Map) {
+    override func propertyMapping(_ map: ObjectMapper.Map) {
         super.propertyMapping(map)
         
         firstName <- map["firstName"]
         lastName <- map["lastName"]
     }
-    
 }
 
 class CacheMigrationTestCaseStep1: XCTestCase {

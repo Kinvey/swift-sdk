@@ -310,12 +310,12 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType, RealmCascadeDele
         return result
     }
     
-    private func detach(_ list: ListBase) -> [Object] {
+    private func detach(_ list: RLMSwiftCollectionBase) -> [Object] {
         var result = [Object]()
-        result.reserveCapacity(list.count)
-        let rlmArray = list._rlmArray
-        for i in 0 ..< rlmArray.count {
-            let item = rlmArray.object(at: i) as! Object
+        let rlmCollection = list._rlmCollection
+        result.reserveCapacity(Int(rlmCollection.count))
+        for i in 0 ..< rlmCollection.count {
+            let item = rlmCollection.object(at: i) as! Object
             let detached = detach(item)
             result.append(detached)
         }
@@ -351,7 +351,7 @@ internal class RealmCache<T: Persistable>: Cache<T>, CacheType, RealmCascadeDele
             case var list as List<BoolValue>:
                 list = self.detach(list)
                 json[property] = list
-            case let list as ListBase:
+            case let list as RLMSwiftCollectionBase:
                 json[property] = self.detach(list)
             default:
                 break

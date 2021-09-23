@@ -24,6 +24,9 @@ clean:
 	rm -Rf build
 	rm -Rf Carthage
 
+open:
+	@open Kinvey.xcworkspace 
+
 echo:
 	@echo $(ECHO)
 
@@ -57,26 +60,31 @@ cache-upload:
 	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
 	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
 
+update-deps:
+	carthage update --cache-builds --no-use-binaries --use-xcframeworks
+
 # `--cache-builds` improves build times tremendously. However we need to be careful when doing
 # a production build. `--no-use-binaries` builds every dependency from source instead of
 # downloading it from the GitHub release. This ensures  correct binaries because it's possible
 # that some of the downloaded ones do not contain all platforms that we support
 # (e.g. PubNub v4.13.1 is missing tvOS and watchOS)
-build: checkout-dependencies
-	echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
-	carthage build --no-skip-current --cache-builds --no-use-binaries
+build-warning:
+	@echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
 
-build-ios: checkout-dependencies
-	carthage build --no-skip-current --platform iOS
+build: build-warning checkout-dependencies
+	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks
 
-build-macos: checkout-dependencies
-	carthage build --no-skip-current --platform macOS
+build-ios: build-warning checkout-dependencies
+	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform iOS
 
-build-tvos: checkout-dependencies
-	carthage build --no-skip-current --platform tvOS
+build-macos: build-warning checkout-dependencies
+	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform macOS
 
-build-watchos: checkout-dependencies
-	carthage build --no-skip-current --platform watchOS
+build-tvos: build-warning checkout-dependencies
+	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform tvOS
+
+build-watchos: build-warning checkout-dependencies
+	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform watchOS
 
 archive: archive-ios
 
