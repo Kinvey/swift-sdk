@@ -23,43 +23,31 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(
             url: "https://github.com/realm/realm-cocoa.git",
-            .upToNextMajor(from: "10.15.1")
+            .exact("10.15.1")
         ),
         .package(
             url: "https://github.com/mxcl/PromiseKit.git",
-            .upToNextMajor(from: "6.15.3")
+            .exact("6.15.3")
         ),
         .package(
             url: "https://github.com/kishikawakatsumi/KeychainAccess.git",
-            .upToNextMajor(from: "4.2.2")
+            .exact("4.2.2")
         ),
         .package(
             url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git",
-            .upToNextMajor(from: "1.9.5")
+            .exact("1.9.5")
         ),
         .package(
             url: "https://github.com/tristanhimmelman/ObjectMapper.git",
-            .upToNextMajor(from: "4.2.0")
+            .exact("4.2.0")
         ),
         .package(
-            url: "https://github.com/pubnub/objective-c.git",
-            .branch("4.16.2")
+            url: "https://github.com/Kinvey/objective-c.git",
+            .exact("4.16.2-with-spm-v0.0.1")
         ),
         .package(
             url: "https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor.git",
             .branch("master")
-        ),
-        .package(
-            url: "https://github.com/Quick/Quick.git",
-            .upToNextMajor(from: "4.0.0")
-        ),
-        .package(
-            url: "https://github.com/Quick/Nimble.git",
-            .upToNextMinor(from: "9.2.1")
-        ),
-        .package(
-            url: "https://github.com/weichsel/ZIPFoundation.git",
-            .upToNextMajor(from: "0.9.12")
         ),
     ],
     targets: [

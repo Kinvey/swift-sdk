@@ -4,9 +4,9 @@ CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] =
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
-CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e "s/Apple //" | head -1 | awk '{ print "Swift " $$3 }'; } | tr "\n" "\n" | md5)
-DESTINATION_OS?=13.5
-DESTINATION_NAME?=iPhone 11 Pro
+DESTINATION_OS?=15.0
+DESTINATION_NAME?=iPhone 13 mini
+
 ECHO?=no
 GREEN=\033[0;32m
 RED=\033[0;31m
@@ -30,35 +30,11 @@ open:
 echo:
 	@echo $(ECHO)
 
-checkout-dependencies:
-	carthage checkout
-
-build-debug:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator'
-
 show-destinations:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -showdestinations
 
-build-dependencies-ios: checkout-dependencies
-	carthage build --platform iOS
-
-cartfile-md5:
-	@echo $(CARTFILE_RESOLVED_MD5)
-
-cache:
-	test -s Carthage/$(CARTFILE_RESOLVED_MD5).tar.lzma || \
-	{ \
-		cd Carthage; \
-		rm *.tar.lzma; \
-		curl -L http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma -o $(CARTFILE_RESOLVED_MD5).tar.lzma; \
-		tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma; \
-	}
-
-cache-upload:
-	cd Carthage; \
-	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
-	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
+checkout-dependencies:
+	carthage checkout
 
 update-deps:
 	carthage update --cache-builds --no-use-binaries --use-xcframeworks
@@ -71,20 +47,23 @@ update-deps:
 build-warning:
 	@echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
 
-build: build-warning checkout-dependencies
+build-deps: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks
+
+build-all: build-warning checkout-dependencies
 	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks
 
 build-ios: build-warning checkout-dependencies
-	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform iOS
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform iOS
 
 build-macos: build-warning checkout-dependencies
-	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform macOS
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform macOS
 
 build-tvos: build-warning checkout-dependencies
-	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform tvOS
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform tvOS
 
 build-watchos: build-warning checkout-dependencies
-	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks --platform watchOS
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform watchOS
 
 archive: archive-ios
 
@@ -95,10 +74,18 @@ test: test-ios test-macos
 
 
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace \
+		-scheme Kinvey \
+		-destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' \
+		'-skip-testing:KinveyTests/PushTestCase/testRegisterForPush' \
+		'-skip-testing:PushMissingConfiguration/PushMissingConfigurationTestCase/testMissingConfigurationError' \
+		test -enableCodeCoverage YES
 
 test-macos:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace \
+		-scheme Kinvey-macOS \
+		-destination 'platform=macOS,arch=x86_64' \
+		test -enableCodeCoverage YES
 
 pack:
 	mkdir -p build/Kinvey-$(VERSION)

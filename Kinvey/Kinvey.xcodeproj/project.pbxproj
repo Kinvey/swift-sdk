@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -382,20 +382,34 @@
 		FD11407126FA074700C4920F /* KeychainAccess.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406126FA074600C4920F /* KeychainAccess.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD11407226FA074700C4920F /* ObjectMapper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406226FA074600C4920F /* ObjectMapper.xcframework */; };
 		FD11407326FA074700C4920F /* ObjectMapper.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406226FA074600C4920F /* ObjectMapper.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407426FA074700C4920F /* KIF.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; platformFilters = (ios, tvos, watchos, ); };
-		FD11407526FA074700C4920F /* KIF.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; platformFilters = (ios, tvos, watchos, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD11407626FA074700C4920F /* PubNub.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406426FA074600C4920F /* PubNub.xcframework */; };
 		FD11407726FA074700C4920F /* PubNub.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406426FA074600C4920F /* PubNub.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407826FA074700C4920F /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406526FA074600C4920F /* Swifter.xcframework */; };
-		FD11407926FA074700C4920F /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406526FA074600C4920F /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407A26FA074700C4920F /* ZIPFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; };
-		FD11407B26FA074700C4920F /* ZIPFoundation.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407C26FA074700C4920F /* Quick.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; };
-		FD11407D26FA074700C4920F /* Quick.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD11407E26FA074700C4920F /* PromiseKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406826FA074600C4920F /* PromiseKit.xcframework */; };
 		FD11407F26FA074700C4920F /* PromiseKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406826FA074600C4920F /* PromiseKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11408026FA074700C4920F /* Nimble.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; };
-		FD11408126FA074700C4920F /* Nimble.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BAD27021F020035BFFF /* KIF.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BAE27021F1B0035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BAF27021F250035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB027021F2F0035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB127021F780035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB227021F7D0035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB327021F820035BFFF /* KIF.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB427021F880035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB627021FBF0035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB827021FCA0035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BB927021FD00035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BBA27021FD50035BFFF /* KIF.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BBC27021FF00035BFFF /* KIF.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BBD27021FF50035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BBE27021FFD0035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BBF270220010035BFFF /* Swifter.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406526FA074600C4920F /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC0270220060035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC2270220760035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC32702207C0035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC4270220830035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC5270220920035BFFF /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406726FA074600C4920F /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC6270220960035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC8270220A10035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD382BC9270220AC0035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -640,21 +654,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		570424051F832C3B00EE5CBD /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		5747103B1C7BA2B80096B15F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FD382BB027021F2F0035BFFF /* Quick.xcframework in CopyFiles */,
+				FD382BAF27021F250035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
+				FD382BAE27021F1B0035BFFF /* Nimble.xcframework in CopyFiles */,
+				FD382BAD27021F020035BFFF /* KIF.xcframework in CopyFiles */,
 				57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -665,6 +674,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FD382BB427021F880035BFFF /* Nimble.xcframework in CopyFiles */,
+				FD382BB327021F820035BFFF /* KIF.xcframework in CopyFiles */,
+				FD382BB227021F7D0035BFFF /* Quick.xcframework in CopyFiles */,
+				FD382BB127021F780035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
 				57529884226FB9AA002FA614 /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -675,6 +688,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FD382BBA27021FD50035BFFF /* KIF.xcframework in CopyFiles */,
+				FD382BB927021FD00035BFFF /* Quick.xcframework in CopyFiles */,
+				FD382BB827021FCA0035BFFF /* Nimble.xcframework in CopyFiles */,
+				FD382BB627021FBF0035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
 				57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -775,6 +792,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FD382BC0270220060035BFFF /* Quick.xcframework in CopyFiles */,
+				FD382BBF270220010035BFFF /* Swifter.xcframework in CopyFiles */,
+				FD382BBE27021FFD0035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
+				FD382BBD27021FF50035BFFF /* Nimble.xcframework in CopyFiles */,
+				FD382BBC27021FF00035BFFF /* KIF.xcframework in CopyFiles */,
 				5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -825,20 +847,49 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				FD11408126FA074700C4920F /* Nimble.xcframework in Embed Frameworks */,
 				FD11406D26FA074700C4920F /* SwiftyBeaver.xcframework in Embed Frameworks */,
 				FD11406F26FA074700C4920F /* RealmSwift.xcframework in Embed Frameworks */,
-				FD11407526FA074700C4920F /* KIF.xcframework in Embed Frameworks */,
-				FD11407D26FA074700C4920F /* Quick.xcframework in Embed Frameworks */,
 				FD11406B26FA074700C4920F /* Realm.xcframework in Embed Frameworks */,
 				FD11407326FA074700C4920F /* ObjectMapper.xcframework in Embed Frameworks */,
 				FD11407726FA074700C4920F /* PubNub.xcframework in Embed Frameworks */,
-				FD11407926FA074700C4920F /* Swifter.xcframework in Embed Frameworks */,
 				FD11407126FA074700C4920F /* KeychainAccess.xcframework in Embed Frameworks */,
-				FD11407B26FA074700C4920F /* ZIPFoundation.xcframework in Embed Frameworks */,
 				FD11407F26FA074700C4920F /* PromiseKit.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD382B8E2702173F0035BFFF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FD382BC9270220AC0035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD382B912702175A0035BFFF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FD382BC4270220830035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
+				FD382BC32702207C0035BFFF /* Quick.xcframework in CopyFiles */,
+				FD382BC2270220760035BFFF /* Nimble.xcframework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD382B962702186B0035BFFF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FD382BC8270220A10035BFFF /* ZIPFoundation.xcframework in CopyFiles */,
+				FD382BC6270220960035BFFF /* Nimble.xcframework in CopyFiles */,
+				FD382BC5270220920035BFFF /* Quick.xcframework in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1271,17 +1322,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FD11408026FA074700C4920F /* Nimble.xcframework in Frameworks */,
 				FD11406C26FA074700C4920F /* SwiftyBeaver.xcframework in Frameworks */,
 				FD11406E26FA074700C4920F /* RealmSwift.xcframework in Frameworks */,
-				FD11407426FA074700C4920F /* KIF.xcframework in Frameworks */,
-				FD11407C26FA074700C4920F /* Quick.xcframework in Frameworks */,
 				FD11406A26FA074700C4920F /* Realm.xcframework in Frameworks */,
 				FD11407226FA074700C4920F /* ObjectMapper.xcframework in Frameworks */,
 				FD11407626FA074700C4920F /* PubNub.xcframework in Frameworks */,
-				FD11407826FA074700C4920F /* Swifter.xcframework in Frameworks */,
 				FD11407026FA074700C4920F /* KeychainAccess.xcframework in Frameworks */,
-				FD11407A26FA074700C4920F /* ZIPFoundation.xcframework in Frameworks */,
 				FD11407E26FA074700C4920F /* PromiseKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1805,7 +1851,6 @@
 				570423F21F82EC3E00EE5CBD /* Sources */,
 				570423F31F82EC3E00EE5CBD /* Frameworks */,
 				570423F41F82EC3E00EE5CBD /* Resources */,
-				570424051F832C3B00EE5CBD /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1842,6 +1887,7 @@
 				5705B1C41EDF823F0006980A /* Sources */,
 				5705B1C51EDF823F0006980A /* Frameworks */,
 				5705B1C61EDF823F0006980A /* Resources */,
+				FD382B912702175A0035BFFF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1932,6 +1978,7 @@
 				5752980F226FB12A002FA614 /* Sources */,
 				57529838226FB12A002FA614 /* Frameworks */,
 				5752983E226FB12A002FA614 /* Resources */,
+				FD382B962702186B0035BFFF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2241,6 +2288,7 @@
 				57CCBCC720D2CD3F00197CC2 /* Sources */,
 				57CCBCCB20D2CD3F00197CC2 /* Frameworks */,
 				57CCBCD020D2CD3F00197CC2 /* Resources */,
+				FD382B8E2702173F0035BFFF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2324,28 +2372,33 @@
 				TargetAttributes = {
 					570423F51F82EC3E00EE5CBD = {
 						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5765B8431C9771BC00080FFA;
 					};
 					5705B1B71EDF823F0006980A = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					5705B1C71EDF823F0006980A = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5705B1B71EDF823F0006980A;
 					};
 					5705B1D21EDF82400006980A = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = CHSQ3M3P37;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5705B1B71EDF823F0006980A;
 					};
 					57182C4C1F75AF460013A6BD = {
 						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = CHSQ3M3P37;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -2355,16 +2408,19 @@
 					};
 					57182C5F1F75AF470013A6BD = {
 						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = CHSQ3M3P37;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 57182C4C1F75AF460013A6BD;
 					};
 					57182C6A1F75AF470013A6BD = {
 						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = CHSQ3M3P37;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 57182C4C1F75AF460013A6BD;
 					};
 					5765B8431C9771BC00080FFA = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -2377,13 +2433,16 @@
 						};
 					};
 					5771CD3A1ECF6CDC0057E505 = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					5783BA0720F722DC0090D0BD = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					5788708F1DD52EC70087FE78 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -2394,12 +2453,14 @@
 					};
 					578870A21DD52EC80087FE78 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5788708F1DD52EC70087FE78;
 					};
 					578870B31DD52ECF0087FE78 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -2410,47 +2471,58 @@
 					};
 					578870C61DD52ECF0087FE78 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 578870B31DD52ECF0087FE78;
 					};
 					578D9FC11E8DE53900C2B280 = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					578D9FF81E8EC3CB00C2B280 = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					5793B86C1D2306A60088B5F9 = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57A27C801C178F17000DF951 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					57A27C8A1C178F18000DF951 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57A465811CC02A59009E7384 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 5765B8431C9771BC00080FFA;
 					};
 					57CCBCC220D2CD3F00197CC2 = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 					57D642EF1CA3268000F6D16E = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57D643161CA3268600F6D16E = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					57E447EB1DF62DC7003D1AFA = {
+						DevelopmentTeam = CHSQ3M3P37;
 						LastSwiftMigration = 1000;
 					};
 				};
@@ -3470,7 +3542,6 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3478,9 +3549,8 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3489,6 +3559,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = KinveyApp;
@@ -3500,7 +3571,6 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3508,9 +3578,8 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = KinveyAppUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3519,6 +3588,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = KinveyApp;
 			};
@@ -3536,7 +3606,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3563,7 +3633,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3590,7 +3660,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3619,7 +3689,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3697,7 +3767,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BackgroundFetch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3723,7 +3793,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BackgroundFetch/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3856,7 +3926,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3883,7 +3953,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3946,7 +4016,7 @@
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3965,7 +4035,7 @@
 				CODE_SIGN_ENTITLEMENTS = KinveyApp/KinveyApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4036,7 +4106,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4062,7 +4132,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4130,7 +4200,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp1/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4156,7 +4226,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp1/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4180,7 +4250,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp1Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4208,7 +4278,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp1Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4236,7 +4306,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4262,7 +4332,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4286,7 +4356,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4314,7 +4384,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = SSOApp/SSOApp2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4485,7 +4555,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -4514,7 +4584,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -4528,10 +4598,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -4546,7 +4617,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -4576,7 +4647,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -4584,9 +4655,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -4605,8 +4677,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
@@ -4639,8 +4710,7 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
@@ -4715,7 +4785,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = KinveyAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4739,7 +4809,7 @@
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build",
 				);
 				INFOPLIST_FILE = KinveyAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4766,7 +4836,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4793,7 +4863,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = CHSQ3M3P37;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/Mac";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build";
 				INFOPLIST_FILE = KinveyMacAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
