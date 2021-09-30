@@ -74,7 +74,7 @@ public class Metadata: Object, Codable {
     open internal(set) dynamic var authtoken: String?
     
     /// Default Constructor.
-    public required init() {
+    public required override init() {
         super.init()
     }
     
@@ -102,23 +102,7 @@ public class Metadata: Object, Codable {
     }
     
     // MARK: Realm
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    /**
-     WARNING: This is an internal initializer not intended for public use.
-     :nodoc:
-     */
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
-    }
-    
+
     /// Constructor that validates if the map can be build a new instance of Metadata.
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public required convenience init?(map: Map) {
@@ -219,15 +203,7 @@ public final class UserMetadata: Metadata {
         try container.encodeIfPresent(userStatus, forKey: .userStatus)
         try super.encode(to: encoder)
     }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
-    }
-    
+
     @available(*, deprecated, message: "Deprecated in version 3.18.0. Please use Swift.Codable instead")
     public override func mapping(map: Map) {
         super.mapping(map: map)
@@ -274,7 +250,7 @@ public final class EmailVerification: Object, Codable {
     /// Email Address
     public internal(set) var emailAddress: String?
     
-    public required init() {
+    public required override init() {
         super.init()
     }
     
@@ -303,14 +279,7 @@ public final class EmailVerification: Object, Codable {
         try container.encodeIfPresent(lca, forKey: .lastConfirmedAt)
         try container.encodeIfPresent(emailAddress, forKey: .emailAddress)
     }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
-    }
+
 }
 
 /// Allows serialization and deserialization of EmailVerification
@@ -351,7 +320,7 @@ public final class PasswordReset: Object, Codable {
         }
     }
     
-    public required init() {
+    public required override init() {
         super.init()
     }
     
@@ -373,14 +342,6 @@ public final class PasswordReset: Object, Codable {
         var container = encoder.container(keyedBy: PasswordResetCodingKeys.self)
         try container.encodeIfPresent(status, forKey: .status)
         try container.encodeIfPresent(lsca, forKey: .lastStateChangeAt)
-    }
-    
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    public required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
     }
 }
 
@@ -405,10 +366,10 @@ extension PasswordReset: Mappable {
 public final class UserStatus: Object {
     
     /// Current Status
-    public internal(set) var value: String?
+    @objc public internal(set) var value: String?
     
     /// Date of the last Status change
-    public internal(set) var lastChange: Date?
+    @objc public internal(set) var lastChange: Date?
     
     enum CodingKeys: String, CodingKey {
         

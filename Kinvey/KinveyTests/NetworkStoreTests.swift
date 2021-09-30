@@ -2718,7 +2718,7 @@ class NetworkStoreTests: StoreTestCase {
                                 let shortVersions = (Bundle(for: Client.self).infoDictionary?["CFBundleShortVersionString"] as? String)?.split(separator: ".").map { String($0) }
                                 XCTAssertEqual(majorVersion, shortVersions?[0])
                                 XCTAssertEqual(minorVersion, shortVersions?[1])
-                                XCTAssertEqual(patchVersion, shortVersions?[2])
+                                XCTAssertEqual(patchVersion, String(shortVersions?[2].split(separator: "-")[0] ?? ""))
                             }
                         }
                     }

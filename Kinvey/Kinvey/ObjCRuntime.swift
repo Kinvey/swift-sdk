@@ -27,7 +27,11 @@ internal class ObjCRuntime: NSObject {
             return nil
         }
         let attributeValueCString = property_copyAttributeValue(property, "T")
-        defer { free(attributeValueCString) }
+        defer {
+            if attributeValueCString != nil {
+                free(attributeValueCString!)
+            }
+        }
         if let attributeValueCString = attributeValueCString,
             let attributeValue = String(validatingUTF8: attributeValueCString),
             let regexClassName = try? NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\""),

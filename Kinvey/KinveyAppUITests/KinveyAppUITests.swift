@@ -37,8 +37,7 @@ extension RunLoop {
 }
 
 class KinveyAppUITests: XCTestCase {
-    
-    let defaultTimeout: TimeInterval = 60
+    let defaultTimeout: DispatchTimeInterval = DispatchTimeInterval.seconds(60)
         
     func testMICLoginSafariAuthenticationSession() {
         let app = XCUIApplication()
@@ -227,7 +226,7 @@ class KinveyAppUITests: XCTestCase {
         app.buttons["Login"].tap()
         app.tap()
         
-        XCTAssertTrue(userIdValue.waitForExistence(timeout: defaultTimeout))
+      XCTAssertTrue(userIdValue.waitForExistence(timeout: 60))
         expect(userIdValue.exists).toEventually(beTrue(), timeout: defaultTimeout)
         expect(userIdValue.label).toEventually(equal(userId), timeout: defaultTimeout)
     }

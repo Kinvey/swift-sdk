@@ -135,15 +135,7 @@ class EntityWithRefenceCodable: Entity, Codable {
     required init?(map: Map) {
         super.init(map: map)
     }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
-    }
-    
+
     override func encode(to encoder: Encoder) throws {
         var container = try encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(reference, forKey: .reference)
@@ -296,14 +288,6 @@ class PersonCodable: Entity, Codable {
     @available(swift, deprecated: 3.18.0, message: "Please use Swift.Codable instead")
     required init?(map: Map) {
         super.init(map: map)
-    }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-    
-    required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
     }
     
     override func encode(to encoder: Encoder) throws {
@@ -523,14 +507,6 @@ class Issue311_MyModelCodable: Kinvey.Entity, Codable {
 
     required init() {
         super.init()
-    }
-
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
-
-    required init(value: Any, schema: RLMSchema) {
-        super.init(value: value, schema: schema)
     }
 
     @available(*, deprecated)

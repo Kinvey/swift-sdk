@@ -15,10 +15,10 @@ TEST_HOST[sdk=iphonesimulator*] = $(BUNDLE_LOADER)
 
 OTHER_LDFLAGS = $(inherited) -ObjC -framework IOKit -framework PubNub
 
-FRAMEWORK_SEARCH_PATHS[sdk=macosx*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/Mac
-FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/iOS
-FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/iOS
-FRAMEWORK_SEARCH_PATHS[sdk=appletvos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/tvOS
-FRAMEWORK_SEARCH_PATHS[sdk=appletvsimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/tvOS
-FRAMEWORK_SEARCH_PATHS[sdk=watchos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/watchOS
-FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build/watchOS
+FRAMEWORK_SEARCH_PATHS[sdk=macosx*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=appletvos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=appletvsimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=watchos*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build
+FRAMEWORK_SEARCH_PATHS[sdk=watchsimulator*] = $(inherited) $(PROJECT_DIR)/../Carthage/Build

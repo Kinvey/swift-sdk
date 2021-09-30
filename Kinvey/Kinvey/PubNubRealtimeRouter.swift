@@ -127,7 +127,7 @@ class PubNubRealtimeRouter: NSObject, RealtimeRouter {
     
 }
 
-extension PubNubRealtimeRouter: PNEventsListener {
+extension PubNubRealtimeRouter: PNObjectEventListener {
     
     func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
         for (_, callback) in self[message.data.channel] {

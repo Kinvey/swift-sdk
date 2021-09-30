@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1300"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -70,6 +70,9 @@
                <Test
                   Identifier = "PerformanceTestCase">
                </Test>
+               <Test
+                  Identifier = "PushTestCase/testRegisterForPush()">
+               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference
@@ -103,58 +106,6 @@
                BlueprintIdentifier = "57D642EF1CA3268000F6D16E"
                BuildableName = "KinveyTests Migration Database Step 1.xctest"
                BlueprintName = "KinveyTests Migration Database Step 1"
-               ReferencedContainer = "container:Kinvey.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "57E447EB1DF62DC7003D1AFA"
-               BuildableName = "KinveyTests No Cache.xctest"
-               BlueprintName = "KinveyTests No Cache"
-               ReferencedContainer = "container:Kinvey.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "578870A21DD52EC80087FE78"
-               BuildableName = "SSOApp1Tests.xctest"
-               BlueprintName = "SSOApp1Tests"
-               ReferencedContainer = "container:Kinvey.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "578870C61DD52ECF0087FE78"
-               BuildableName = "SSOApp2Tests.xctest"
-               BlueprintName = "SSOApp2Tests"
-               ReferencedContainer = "container:Kinvey.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "578D9FC11E8DE53900C2B280"
-               BuildableName = "PushMissingConfiguration.xctest"
-               BlueprintName = "PushMissingConfiguration"
-               ReferencedContainer = "container:Kinvey.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "578D9FF81E8EC3CB00C2B280"
-               BuildableName = "UserUpgradeFromOldVersion.xctest"
-               BlueprintName = "UserUpgradeFromOldVersion"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -217,6 +168,56 @@
                BlueprintIdentifier = "5752984C226FB9AA002FA614"
                BuildableName = "Kinvey Specs.xctest"
                BlueprintName = "Kinvey Specs"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57E447EB1DF62DC7003D1AFA"
+               BuildableName = "KinveyTests No Cache.xctest"
+               BlueprintName = "KinveyTests No Cache"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578870A21DD52EC80087FE78"
+               BuildableName = "SSOApp1Tests.xctest"
+               BlueprintName = "SSOApp1Tests"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578870C61DD52ECF0087FE78"
+               BuildableName = "SSOApp2Tests.xctest"
+               BlueprintName = "SSOApp2Tests"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FF81E8EC3CB00C2B280"
+               BuildableName = "UserUpgradeFromOldVersion.xctest"
+               BlueprintName = "UserUpgradeFromOldVersion"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "578D9FC11E8DE53900C2B280"
+               BuildableName = "PushMissingConfiguration.xctest"
+               BlueprintName = "PushMissingConfiguration"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>

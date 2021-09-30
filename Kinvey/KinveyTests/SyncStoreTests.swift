@@ -10,6 +10,7 @@ import XCTest
 @testable import Kinvey
 import Nimble
 import RealmSwift
+import ObjectMapper
 
 class SyncStoreTest: StoreTestCase {
 
@@ -26,10 +27,10 @@ class SyncStoreTest: StoreTestCase {
         required override init() {
         }
 
-        required init?(map: Map) {
+        required init?(map: ObjectMapper.Map) {
         }
 
-        func mapping(map: Map) {
+        func mapping(map: ObjectMapper.Map) {
         }
 
         static func decode<T>(from data: Data) throws -> T where T : JSONDecodable {
@@ -7385,7 +7386,7 @@ class SyncStoreTest: StoreTestCase {
         person3.personId = personId
         person3.name = "Victor Barros"
         try! realm.write {
-            realm.add(person3, update: true)
+            realm.add(person3, update: .all)
         }
 
         waitForExpectations(timeout: defaultTimeout) { (error) in

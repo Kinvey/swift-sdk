@@ -20,3 +20,5 @@ scripts/RealtimeSend/Rome
 Package.resolved
 Kinvey.xcodeproj
 .swiftpm
+.env
+.dist

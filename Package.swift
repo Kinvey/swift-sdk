@@ -23,44 +23,31 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(
             url: "https://github.com/realm/realm-cocoa.git",
-            .upToNextMajor(from: "3.18.0")
+            .exact("10.15.1")
         ),
         .package(
             url: "https://github.com/mxcl/PromiseKit.git",
-            .upToNextMajor(from: "6.10.0")
+            .exact("6.15.3")
         ),
         .package(
             url: "https://github.com/kishikawakatsumi/KeychainAccess.git",
-            .upToNextMajor(from: "3.2.0")
+            .exact("4.2.2")
         ),
         .package(
             url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git",
-            .upToNextMajor(from: "1.7.1")
+            .exact("1.9.5")
         ),
         .package(
             url: "https://github.com/tristanhimmelman/ObjectMapper.git",
-            .upToNextMajor(from: "3.5.1")
+            .exact("4.2.0")
         ),
         .package(
-            url: "https://github.com/mbektchiev/objective-c.git",
-            .branch("spm-support")
+            url: "https://github.com/Kinvey/objective-c.git",
+            .exact("4.16.2-with-spm-v0.0.1")
         ),
         .package(
             url: "https://github.com/tjboneman/NSPredicate-MongoDB-Adaptor.git",
             .branch("master")
-        ),
-        .package(
-            url: "https://github.com/Quick/Quick.git",
-            .upToNextMajor(from: "2.2.0")
-        ),
-        .package(
-            url: "https://github.com/Quick/Nimble.git",
-            // In master the package now requires Xcode 11.4 (Swift 5.2) which we still don't have on CI
-            .upToNextMinor(from: "8.0.7")
-        ),
-        .package(
-            url: "https://github.com/weichsel/ZIPFoundation.git",
-            .upToNextMajor(from: "0.9.9")
         ),
     ],
     targets: [

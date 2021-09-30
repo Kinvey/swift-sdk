@@ -4,16 +4,26 @@ CURRENT_BRANCH=$(shell git branch | awk '{split($$0, array, " "); if (array[1] =
 DEVCENTER_GIT=git@github.com:Kinvey/devcenter.git
 DEVCENTER_GIT_TEST=https://git.heroku.com/v3yk1n-devcenter.git
 DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
-CARTFILE_RESOLVED_MD5=$(shell { cat Cartfile.resolved; swift --version | sed -e "s/Apple //" | head -1 | awk '{ print "Swift " $$3 }'; } | tr "\n" "\n" | md5)
-DESTINATION_OS?=13.5
-DESTINATION_NAME?=iPhone 11 Pro
+DESTINATION_OS?=15.0
+DESTINATION_NAME?=iPhone 13 mini
+
+XCODEBUILD_ARCHIVE_COMMAND=xcodebuild archive -scheme Kinvey -configuration Release SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES ONLY_ACTIVE_ARCH=NO
+XCFrameworks=Kinvey.xcframework \
+	KeychainAccess.xcframework \
+	ObjectMapper.xcframework \
+	PromiseKit.xcframework \
+	PubNub.xcframework \
+	Realm.xcframework \
+	RealmSwift.xcframework \
+	SwiftyBeaver.xcframework \
+
 ECHO?=no
 GREEN=\033[0;32m
 RED=\033[0;31m
 YELLOW=\033[1;33m
 NC=\033[0m
 
-all: build archive pack docs
+all: build-prod xcframework archive docs
 
 deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs deploy-devcenter
 
@@ -24,80 +34,95 @@ clean:
 	rm -Rf build
 	rm -Rf Carthage
 
+open:
+	@open Kinvey.xcworkspace 
+
 echo:
 	@echo $(ECHO)
-
-checkout-dependencies:
-	carthage checkout
-
-build-debug:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphoneos
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration Debug BUILD_DIR=build ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator -destination 'platform=iOS Simulator'
 
 show-destinations:
 	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -showdestinations
 
-build-dependencies-ios: checkout-dependencies
-	carthage build --platform iOS
+checkout-dependencies:
+	carthage checkout
+	@sed -i '' 's/EXCLUDED_ARCHS/\/\/EXCLUDED_ARCHS/' Carthage/Checkouts/realm-cocoa/Configuration/Base.xcconfig
 
-cartfile-md5:
-	@echo $(CARTFILE_RESOLVED_MD5)
-
-cache:
-	test -s Carthage/$(CARTFILE_RESOLVED_MD5).tar.lzma || \
-	{ \
-		cd Carthage; \
-		rm *.tar.lzma; \
-		curl -L http://download.kinvey.com/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma -o $(CARTFILE_RESOLVED_MD5).tar.lzma; \
-		tar -xvf $(CARTFILE_RESOLVED_MD5).tar.lzma; \
-	}
-
-cache-upload:
-	cd Carthage; \
-	tar --exclude=Build/**/Kinvey.framework* --lzma -cvf $(CARTFILE_RESOLVED_MD5).tar.lzma Build; \
-	aws s3 cp $(CARTFILE_RESOLVED_MD5).tar.lzma s3://kinvey-downloads/iOS/travisci-cache/$(CARTFILE_RESOLVED_MD5).tar.lzma
+update-deps:
+	carthage update --cache-builds --no-use-binaries --use-xcframeworks
 
 # `--cache-builds` improves build times tremendously. However we need to be careful when doing
 # a production build. `--no-use-binaries` builds every dependency from source instead of
 # downloading it from the GitHub release. This ensures  correct binaries because it's possible
 # that some of the downloaded ones do not contain all platforms that we support
 # (e.g. PubNub v4.13.1 is missing tvOS and watchOS)
-build: checkout-dependencies
-	echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
-	carthage build --no-skip-current --cache-builds --no-use-binaries
+build-warning:
+	@echo "$(YELLOW)warning: $(NC)Building Carthage dependencies with '--cache-builds'. When producing artifacts for a release do it in a clean workspace ('$(GREEN)git clean -fdx$(NC)' or '$(GREEN)make clean$(NC)')"
 
-build-ios: checkout-dependencies
-	carthage build --no-skip-current --platform iOS
+build-deps: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks
 
-build-macos: checkout-dependencies
-	carthage build --no-skip-current --platform macOS
+build-ios: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform iOS
 
-build-tvos: checkout-dependencies
-	carthage build --no-skip-current --platform tvOS
+build-macos: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform macOS
 
-build-watchos: checkout-dependencies
-	carthage build --no-skip-current --platform watchOS
+build-tvos: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform tvOS
 
-archive: archive-ios
+build-watchos: build-warning checkout-dependencies
+	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform watchOS
 
-archive-ios:
-	carthage archive Kinvey
+build-prod:
+	@rm -rf .dist/macOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=macOS' -archivePath .dist/macOS/Kinvey.xcarchive -sdk macosx | xcpretty -c
+	@rm -rf .dist/iOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=iOS' -archivePath .dist/iOS/Kinvey.xcarchive -sdk iphoneos | xcpretty -c
+	@rm -rf .dist/iOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=iOS Simulator' -archivePath .dist/iOSSimulator/Kinvey.xcarchive -sdk iphonesimulator | xcpretty -c
+	@rm -rf .dist/tvOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=tvOS' -archivePath .dist/tvOS/Kinvey.xcarchive -sdk appletvos | xcpretty -c
+	@rm -rf .dist/tvOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=tvOS Simulator' -archivePath .dist/tvOSSimulator/Kinvey.xcarchive -sdk appletvsimulator | xcpretty -c
+	@rm -rf .dist/watchOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=watchOS' -archivePath .dist/watchOS/Kinvey.xcarchive -sdk watchos | xcpretty -c
+	@rm -rf .dist/watchOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=watchOS Simulator' -archivePath .dist/watchOSSimulator/Kinvey.xcarchive -sdk watchsimulator | xcpretty -c
+
+xcframework:
+	@rm -rf Carthage/Build/Kinvey.xcframework
+	xcodebuild -create-xcframework \
+		-framework .dist/macOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/iOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/iOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/tvOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/tvOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/watchOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/watchOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-output Carthage/Build/Kinvey.xcframework
+
+	@# fix swiftinterface files generated with resolved typealiases breaking the build
+	@find Carthage/Build/Kinvey.xcframework -iname \*.swiftinterface -exec sed -i '' 's/Realm\.RealmSwiftObject/RealmSwift\.Object/' {} \;
+
+archive:
+	@rm -rf Carthage/Build/Kinvey-$(VERSION).zip
+	@cd Carthage/Build && mkdir -p .tmp && mv $(XCFrameworks) .tmp
+	@cd Carthage/Build/.tmp && zip --symlinks -r Kinvey-$(VERSION).zip $(XCFrameworks)
+	@cd Carthage/Build/.tmp && mv $(XCFrameworks) Kinvey-$(VERSION).zip ../ && cd .. && rm -rf .tmp
+
+	@rm -rf Carthage/Build/Carthage.xcframework.zip
+	@cd Carthage/Build && mkdir -p Carthage && mv Kinvey.xcframework Carthage
+	@cd Carthage/Build && zip --symlinks -r Carthage.xcframework.zip Carthage
+	@cd Carthage/Build/Carthage && mv Kinvey.xcframework ../ && cd .. && rm -rf Carthage
 
 test: test-ios test-macos
 
-
 test-ios:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' test -enableCodeCoverage YES
+	xcodebuild -workspace Kinvey.xcworkspace \
+		-scheme Kinvey \
+		-destination 'OS=$(DESTINATION_OS),name=$(DESTINATION_NAME)' \
+		'-skip-testing:KinveyTests/PushTestCase/testRegisterForPush' \
+		'-skip-testing:PushMissingConfiguration/PushMissingConfigurationTestCase/testMissingConfigurationError' \
+		test -enableCodeCoverage YES
 
 test-macos:
-	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey-macOS test -enableCodeCoverage YES
-
-pack:
-	mkdir -p build/Kinvey-$(VERSION)
-	cd Carthage/Build; \
-	find . -name "*.framework" ! -name "KIF.framework" ! -name "Nimble.framework" ! -name "Swifter.framework" | awk '{split($$0, array, "/"); system("mkdir -p ../../build/Kinvey-$(VERSION)/" array[2] " && cp -R " array[2] "/" array[3] " ../../build/Kinvey-$(VERSION)/" array[2])}'
-	cd build; \
-	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
+	xcodebuild -workspace Kinvey.xcworkspace \
+		-scheme Kinvey-macOS \
+		-destination 'platform=macOS,arch=x86_64' \
+		test -enableCodeCoverage YES
 
 docs:
 	jazzy --author Kinvey \
@@ -117,7 +142,7 @@ test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
 
 deploy-aws-s3:
-	aws s3 cp build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
+	aws s3 cp Carthage/Build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
 
 deploy-github:
 	cd scripts/github-release; \
@@ -166,7 +191,7 @@ deploy-devcenter:
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
-	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
+	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*.*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
 	@agvtool what-version | awk '0 == NR % 2' | awk {'print $1'} | xargs echo 'Project Version  '
 
 set-version:
@@ -180,7 +205,7 @@ set-version:
 	@read version; \
 	\
 	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $$version" "${PWD}/Kinvey/Kinvey/Info.plist"; \
-	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
+	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*.*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
 	rm Kinvey.podspec-e
 
 	@echo

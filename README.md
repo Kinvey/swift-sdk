@@ -1,8 +1,8 @@
-# Kinvey iOS SDK
+# Kinvey Swift SDK
 
-![badge-pod] ![badge-languages] ![badge-pms] ![badge-platforms] ![badge-status] ![badge-coverage]
+![badge-pod] ![badge-languages] ![badge-pms] ![badge-platforms] [![CI](https://github.com/Kinvey/swift-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/Kinvey/swift-sdk/actions/workflows/ci.yml)
 
-The Kinvey iOS SDK is a package that can be used to develop iOS applications on the Kinvey platform.
+The Kinvey Swift SDK is a package that can be used to develop iOS applications on the Kinvey platform.
 Refer to the Kinvey [DevCenter](http://devcenter.kinvey.com/ios-v3.0) for documentation on using Kinvey.
 
 In the version 3 of the library, all new code is written in Swift and any application using v3 must also use Swift to access the API.
@@ -22,8 +22,9 @@ Note:
 ## Building
 You will need [Carthage](https://github.com/Carthage/Carthage), [Jazzy](https://github.com/realm/jazzy) and `Xcode command line tools` installed to be able to build the SDK.
 
-* `carthage build`: build the dependencies frameworks using `Carthage`
-* `make`: runs a script that compile and generate the documentation files using `Jazzy`
+* `make`: runs build, archive, pack and docs commands one after another which will build and pack the project and also generate the documentation files using `Jazzy`
+
+> Check the Makefile for all available commands
 
 ## Testing
 
@@ -42,6 +43,7 @@ Important Note: adding the environment variables KINVEY_APP_KEY, KINVEY_APP_SECR
 ```
 
 ## Releasing
+
 We use [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow for better management.
 
 The workflow for releasing a new version of the SDK is as follows:
@@ -75,6 +77,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making 
 [badge-languages]: https://img.shields.io/badge/languages-Swift%20%7C%20ObjC-orange.svg
 [badge-mit]: https://img.shields.io/badge/license-MIT-blue.svg
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg
-[badge-status]: https://travis-ci.org/Kinvey/swift-sdk.svg?branch=master
 [badge-coverage]: https://codecov.io/gh/Kinvey/swift-sdk/graph/badge.svg
 [badge-codebeat]: https://codebeat.co/badges/e1a944a5-3090-4d76-bfde-e408a6f97278

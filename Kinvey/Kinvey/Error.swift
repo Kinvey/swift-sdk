@@ -282,7 +282,6 @@ extension MultipleErrors: FailureError {
 }
 
 extension MultipleErrors: RandomAccessCollection {
-    
     public typealias Element = Swift.Error
     
     public typealias Index = Array<Element>.Index
@@ -292,7 +291,20 @@ extension MultipleErrors: RandomAccessCollection {
     public typealias SubSequence = Array<Element>.SubSequence
     
     public subscript(position: Index) -> Element {
+        precondition(indices.contains(position), "out of bounds")
         return errors[position]
+    }
+    
+    public subscript(bounds: Range<Int>) -> SubSequence {
+         precondition(startIndex <= bounds.lowerBound &&
+                      bounds.lowerBound <= bounds.upperBound &&
+                      bounds.upperBound <= endIndex,
+                      "indices out of bounds")
+         return ArraySlice(errors[bounds])
+     }
+    
+    public func index(after i: Index) -> Index {
+      return errors.index(after: i)
     }
     
     public var startIndex: Index {
@@ -303,6 +315,9 @@ extension MultipleErrors: RandomAccessCollection {
         return errors.endIndex
     }
     
+    public var indices: Array<Element>.Indices {
+        return errors.indices
+    }
 }
 
 extension MultipleErrors: CustomStringConvertible, CustomDebugStringConvertible {

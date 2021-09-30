@@ -5,7 +5,7 @@
 We recommend the following guidelines for reporting bugs - 
 
 - For faster response, we recommend using [Kinvey support](https://support.kinvey.com/support/home).
-- For bugs and enhancements specific to the library that are not time critical, please [file a GitHub issue](https://github.com/Kinvey/ios-library/issues).
+- For bugs and enhancements specific to the library that are not time critical, please [file a GitHub issue](https://github.com/Kinvey/swift-sdk/issues).
 
 ### Filing a bug
 
