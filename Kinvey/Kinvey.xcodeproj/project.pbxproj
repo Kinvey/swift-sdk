@@ -372,20 +372,6 @@
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
 		966B1D631DD6528000995A42 /* KinveyDateTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966B1D621DD6528000995A42 /* KinveyDateTransform.swift */; };
 		E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
-		FD11406A26FA074700C4920F /* Realm.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405E26FA074600C4920F /* Realm.xcframework */; };
-		FD11406B26FA074700C4920F /* Realm.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405E26FA074600C4920F /* Realm.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11406C26FA074700C4920F /* SwiftyBeaver.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405F26FA074600C4920F /* SwiftyBeaver.xcframework */; };
-		FD11406D26FA074700C4920F /* SwiftyBeaver.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405F26FA074600C4920F /* SwiftyBeaver.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11406E26FA074700C4920F /* RealmSwift.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406026FA074600C4920F /* RealmSwift.xcframework */; };
-		FD11406F26FA074700C4920F /* RealmSwift.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406026FA074600C4920F /* RealmSwift.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407026FA074700C4920F /* KeychainAccess.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406126FA074600C4920F /* KeychainAccess.xcframework */; };
-		FD11407126FA074700C4920F /* KeychainAccess.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406126FA074600C4920F /* KeychainAccess.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407226FA074700C4920F /* ObjectMapper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406226FA074600C4920F /* ObjectMapper.xcframework */; };
-		FD11407326FA074700C4920F /* ObjectMapper.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406226FA074600C4920F /* ObjectMapper.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407626FA074700C4920F /* PubNub.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406426FA074600C4920F /* PubNub.xcframework */; };
-		FD11407726FA074700C4920F /* PubNub.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406426FA074600C4920F /* PubNub.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FD11407E26FA074700C4920F /* PromiseKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406826FA074600C4920F /* PromiseKit.xcframework */; };
-		FD11407F26FA074700C4920F /* PromiseKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406826FA074600C4920F /* PromiseKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD382BAD27021F020035BFFF /* KIF.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406326FA074600C4920F /* KIF.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD382BAE27021F1B0035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD382BAF27021F250035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -410,6 +396,13 @@
 		FD382BC6270220960035BFFF /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406926FA074600C4920F /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD382BC8270220A10035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FD382BC9270220AC0035BFFF /* ZIPFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD11406626FA074600C4920F /* ZIPFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FD42EE2027055C1C002A1A0B /* KeychainAccess.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406126FA074600C4920F /* KeychainAccess.xcframework */; };
+		FD42EE2327055C1D002A1A0B /* ObjectMapper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406226FA074600C4920F /* ObjectMapper.xcframework */; };
+		FD42EE2527055C1F002A1A0B /* PromiseKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406826FA074600C4920F /* PromiseKit.xcframework */; };
+		FD42EE2727055C20002A1A0B /* PubNub.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406426FA074600C4920F /* PubNub.xcframework */; };
+		FD42EE2927055C22002A1A0B /* Realm.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405E26FA074600C4920F /* Realm.xcframework */; };
+		FD42EE2B27055C24002A1A0B /* RealmSwift.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11406026FA074600C4920F /* RealmSwift.xcframework */; };
+		FD42EE2D27055C25002A1A0B /* SwiftyBeaver.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD11405F26FA074600C4920F /* SwiftyBeaver.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -839,23 +832,6 @@
 			files = (
 				57E447FF1DF62DC7003D1AFA /* Kinvey.framework in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FD11408226FA074700C4920F /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FD11406D26FA074700C4920F /* SwiftyBeaver.xcframework in Embed Frameworks */,
-				FD11406F26FA074700C4920F /* RealmSwift.xcframework in Embed Frameworks */,
-				FD11406B26FA074700C4920F /* Realm.xcframework in Embed Frameworks */,
-				FD11407326FA074700C4920F /* ObjectMapper.xcframework in Embed Frameworks */,
-				FD11407726FA074700C4920F /* PubNub.xcframework in Embed Frameworks */,
-				FD11407126FA074700C4920F /* KeychainAccess.xcframework in Embed Frameworks */,
-				FD11407F26FA074700C4920F /* PromiseKit.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		FD382B8E2702173F0035BFFF /* CopyFiles */ = {
@@ -1322,13 +1298,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FD11406C26FA074700C4920F /* SwiftyBeaver.xcframework in Frameworks */,
-				FD11406E26FA074700C4920F /* RealmSwift.xcframework in Frameworks */,
-				FD11406A26FA074700C4920F /* Realm.xcframework in Frameworks */,
-				FD11407226FA074700C4920F /* ObjectMapper.xcframework in Frameworks */,
-				FD11407626FA074700C4920F /* PubNub.xcframework in Frameworks */,
-				FD11407026FA074700C4920F /* KeychainAccess.xcframework in Frameworks */,
-				FD11407E26FA074700C4920F /* PromiseKit.xcframework in Frameworks */,
+				FD42EE2527055C1F002A1A0B /* PromiseKit.xcframework in Frameworks */,
+				FD42EE2027055C1C002A1A0B /* KeychainAccess.xcframework in Frameworks */,
+				FD42EE2327055C1D002A1A0B /* ObjectMapper.xcframework in Frameworks */,
+				FD42EE2927055C22002A1A0B /* Realm.xcframework in Frameworks */,
+				FD42EE2D27055C25002A1A0B /* SwiftyBeaver.xcframework in Frameworks */,
+				FD42EE2727055C20002A1A0B /* PubNub.xcframework in Frameworks */,
+				FD42EE2B27055C24002A1A0B /* RealmSwift.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2231,7 +2207,6 @@
 				57A27C7E1C178F17000DF951 /* Headers */,
 				57A27C7F1C178F17000DF951 /* Resources */,
 				5713784B2162FF3F005CD0D9 /* SwiftLint */,
-				FD11408226FA074700C4920F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4553,7 +4528,10 @@
 		57A27C931C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -4604,6 +4582,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -4615,7 +4595,10 @@
 		57A27C941C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -4660,6 +4643,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

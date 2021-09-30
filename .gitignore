@@ -21,3 +21,4 @@ Package.resolved
 Kinvey.xcodeproj
 .swiftpm
 .env
+.dist

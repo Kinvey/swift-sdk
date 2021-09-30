@@ -146,9 +146,10 @@ func check(printStatus: Bool = false, completionHandler: @escaping ([String : An
 func uploadFiles(_ draft: [String : Any], completionHandler: @escaping () -> Void) {
     let basePath = NSString(string: arguments[2]).standardizingPath
     let basePathURL = URL(fileURLWithPath: basePath)
-    let carthageZipURL = basePathURL.appendingPathComponent("Kinvey.framework.zip")
+    let carthageBuildURL = basePathURL.appendingPathComponent("Carthage").appendingPathComponent("Build")
+    let carthageZipURL = carthageBuildURL.appendingPathComponent("Carthage.xcframework.zip")
     let version = currentVersion()
-    let zipURL = basePathURL.appendingPathComponent("build").appendingPathComponent("Kinvey-\(version.infoPlist).zip")
+    let zipURL = carthageBuildURL.appendingPathComponent("Kinvey-\(version.infoPlist).zip")
     DispatchQueue.global().async {
         let uploadGroup = DispatchGroup()
 

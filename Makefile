@@ -7,13 +7,23 @@ DEVCENTER_GIT_PROD=https://git.heroku.com/kinvey-devcenter-prod.git
 DESTINATION_OS?=15.0
 DESTINATION_NAME?=iPhone 13 mini
 
+XCODEBUILD_ARCHIVE_COMMAND=xcodebuild archive -scheme Kinvey -configuration Release SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES ONLY_ACTIVE_ARCH=NO
+XCFrameworks=Kinvey.xcframework \
+	KeychainAccess.xcframework \
+	ObjectMapper.xcframework \
+	PromiseKit.xcframework \
+	PubNub.xcframework \
+	Realm.xcframework \
+	RealmSwift.xcframework \
+	SwiftyBeaver.xcframework \
+
 ECHO?=no
 GREEN=\033[0;32m
 RED=\033[0;31m
 YELLOW=\033[1;33m
 NC=\033[0m
 
-all: build archive pack docs
+all: build-prod xcframework archive docs
 
 deploy: deploy-git deploy-aws-s3 deploy-github deploy-cocoapods deploy-docs deploy-devcenter
 
@@ -35,6 +45,7 @@ show-destinations:
 
 checkout-dependencies:
 	carthage checkout
+	@sed -i '' 's/EXCLUDED_ARCHS/\/\/EXCLUDED_ARCHS/' Carthage/Checkouts/realm-cocoa/Configuration/Base.xcconfig
 
 update-deps:
 	carthage update --cache-builds --no-use-binaries --use-xcframeworks
@@ -50,9 +61,6 @@ build-warning:
 build-deps: build-warning checkout-dependencies
 	carthage build --cache-builds --no-use-binaries --use-xcframeworks
 
-build-all: build-warning checkout-dependencies
-	carthage build --no-skip-current --cache-builds --no-use-binaries --use-xcframeworks
-
 build-ios: build-warning checkout-dependencies
 	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform iOS
 
@@ -65,13 +73,42 @@ build-tvos: build-warning checkout-dependencies
 build-watchos: build-warning checkout-dependencies
 	carthage build --cache-builds --no-use-binaries --use-xcframeworks --platform watchOS
 
-archive: archive-ios
+build-prod:
+	@rm -rf .dist/macOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=macOS' -archivePath .dist/macOS/Kinvey.xcarchive -sdk macosx | xcpretty -c
+	@rm -rf .dist/iOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=iOS' -archivePath .dist/iOS/Kinvey.xcarchive -sdk iphoneos | xcpretty -c
+	@rm -rf .dist/iOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=iOS Simulator' -archivePath .dist/iOSSimulator/Kinvey.xcarchive -sdk iphonesimulator | xcpretty -c
+	@rm -rf .dist/tvOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=tvOS' -archivePath .dist/tvOS/Kinvey.xcarchive -sdk appletvos | xcpretty -c
+	@rm -rf .dist/tvOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=tvOS Simulator' -archivePath .dist/tvOSSimulator/Kinvey.xcarchive -sdk appletvsimulator | xcpretty -c
+	@rm -rf .dist/watchOS && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=watchOS' -archivePath .dist/watchOS/Kinvey.xcarchive -sdk watchos | xcpretty -c
+	@rm -rf .dist/watchOSSimulator && $(XCODEBUILD_ARCHIVE_COMMAND) -destination 'generic/platform=watchOS Simulator' -archivePath .dist/watchOSSimulator/Kinvey.xcarchive -sdk watchsimulator | xcpretty -c
 
-archive-ios:
-	carthage archive Kinvey
+xcframework:
+	@rm -rf Carthage/Build/Kinvey.xcframework
+	xcodebuild -create-xcframework \
+		-framework .dist/macOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/iOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/iOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/tvOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/tvOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/watchOS/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-framework .dist/watchOSSimulator/Kinvey.xcarchive/Products/Library/Frameworks/Kinvey.framework \
+		-output Carthage/Build/Kinvey.xcframework
+
+	@# fix swiftinterface files generated with resolved typealiases breaking the build
+	@find Carthage/Build/Kinvey.xcframework -iname \*.swiftinterface -exec sed -i '' 's/Realm\.RealmSwiftObject/RealmSwift\.Object/' {} \;
+
+archive:
+	@rm -rf Carthage/Build/Kinvey-$(VERSION).zip
+	@cd Carthage/Build && mkdir -p .tmp && mv $(XCFrameworks) .tmp
+	@cd Carthage/Build/.tmp && zip --symlinks -r Kinvey-$(VERSION).zip $(XCFrameworks)
+	@cd Carthage/Build/.tmp && mv $(XCFrameworks) Kinvey-$(VERSION).zip ../ && cd .. && rm -rf .tmp
+
+	@rm -rf Carthage/Build/Carthage.xcframework.zip
+	@cd Carthage/Build && mkdir -p Carthage && mv Kinvey.xcframework Carthage
+	@cd Carthage/Build && zip --symlinks -r Carthage.xcframework.zip Carthage
+	@cd Carthage/Build/Carthage && mv Kinvey.xcframework ../ && cd .. && rm -rf Carthage
 
 test: test-ios test-macos
-
 
 test-ios:
 	xcodebuild -workspace Kinvey.xcworkspace \
@@ -86,13 +123,6 @@ test-macos:
 		-scheme Kinvey-macOS \
 		-destination 'platform=macOS,arch=x86_64' \
 		test -enableCodeCoverage YES
-
-pack:
-	mkdir -p build/Kinvey-$(VERSION)
-	cd Carthage/Build; \
-	find . -name "*.framework" ! -name "KIF.framework" ! -name "Nimble.framework" ! -name "Swifter.framework" | awk '{split($$0, array, "/"); system("mkdir -p ../../build/Kinvey-$(VERSION)/" array[2] " && cp -R " array[2] "/" array[3] " ../../build/Kinvey-$(VERSION)/" array[2])}'
-	cd build; \
-	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
 docs:
 	jazzy --author Kinvey \
@@ -112,7 +142,7 @@ test-cocoapods:
 	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
 
 deploy-aws-s3:
-	aws s3 cp build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
+	aws s3 cp Carthage/Build/Kinvey-$(VERSION).zip s3://kinvey-downloads/iOS/
 
 deploy-github:
 	cd scripts/github-release; \
@@ -161,7 +191,7 @@ deploy-devcenter:
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
-	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
+	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*.*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
 	@agvtool what-version | awk '0 == NR % 2' | awk {'print $1'} | xargs echo 'Project Version  '
 
 set-version:
@@ -175,7 +205,7 @@ set-version:
 	@read version; \
 	\
 	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $$version" "${PWD}/Kinvey/Kinvey/Info.plist"; \
-	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
+	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*.*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
 	rm Kinvey.podspec-e
 
 	@echo

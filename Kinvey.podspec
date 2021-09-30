@@ -67,9 +67,9 @@ Pod::Spec.new do |s|
   # s.platform     = :ios, "9.0"
 
   #  When using multiple platforms
-  s.ios.deployment_target = "11.0"
+  s.ios.deployment_target = "12.0"
   s.osx.deployment_target = "10.12"
-  s.tvos.deployment_target = "11.0"
+  s.tvos.deployment_target = "12.0"
   s.watchos.deployment_target = "4.0"
 
 
@@ -137,7 +137,7 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  s.swift_version = '5.2'
+  s.swift_version = '5.5'
 
   s.dependency "PromiseKit", "~> 6.0"
   s.dependency "KeychainAccess", "~> 4.0"

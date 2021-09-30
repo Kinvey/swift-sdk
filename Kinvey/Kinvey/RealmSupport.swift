@@ -6,8 +6,6 @@
 //  Copyright © 2018 Kinvey. All rights reserved.
 //
 
-import Realm
-
-public typealias RLMRealm = Realm.RLMRealm
-public typealias RLMObjectSchema = Realm.RLMObjectSchema
-public typealias RLMSchema = Realm.RLMSchema
+import class Realm.RLMRealm
+import class Realm.RLMObjectSchema
+import class Realm.RLMSchema
