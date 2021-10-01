@@ -6,7 +6,7 @@
 
 
 The Kinvey Swift SDK is a package that can be used to develop iOS applications on the Kinvey platform.
-Refer to the Kinvey [DevCenter](http://devcenter.kinvey.com/ios-v3.0) for documentation on using Kinvey.
+Refer to the Kinvey [DevCenter](https://devcenter.kinvey.com/ios) for documentation on using Kinvey.
 
 In the version 3 of the library, all new code is written in Swift and any application using v3 must also use Swift to access the API.
 
@@ -19,7 +19,7 @@ While we transition from Objective C to the latest Swift versions, we will use t
 | Objective-C | 1.x | 1.x | 
 
 Note: 
-* The `master` branch represents the latest [release](https://devcenter.kinvey.com/ios-v3.0/downloads) of the SDK. See the [CONTRIBUTING](CONTRIBUTING.md) guidelines for details on submitting code.
+* The `master` branch represents the latest [release](https://devcenter.kinvey.com/ios/downloads) of the SDK. See the [CONTRIBUTING](CONTRIBUTING.md) guidelines for details on submitting code.
 * On version 1.x, use the `KinveyKit` workspace. On all other versions, use the `Kinvey` workspace.
 
 ## Building
