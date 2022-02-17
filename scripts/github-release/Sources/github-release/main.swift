@@ -279,7 +279,7 @@ func publish(url: String, completionHandler: @escaping () -> Void) {
     request.httpMethod = "PATCH"
     request.setValue("token \(githubToken!)", forHTTPHeaderField: "Authorization")
     let body = ["draft" : false]
-    request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: JSONSerialization.WritingOptions.sortedKeys)
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
     let task = session.dataTask(with: request) { (data, response, error) -> Void in
         if let httpResponse = response as? HTTPURLResponse,
