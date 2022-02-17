@@ -32,7 +32,7 @@ public protocol Persistable: JSONCodable {
 extension Persistable where Self: Entity {
     
     public func observe(_ block: @escaping (ObjectChange<Self>) -> Void) -> AnyNotificationToken? {
-        let completionHandler = { (objectChange: RealmSwift.ObjectChange) in
+        let completionHandler = { (objectChange: RealmSwift.ObjectChange<Self>) in
             switch objectChange {
             case .change(let propertyChanges):
                 for propertyChange in propertyChanges.1 {
